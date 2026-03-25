@@ -4,6 +4,18 @@
 
 ---
 
+## Session 8c — Message safety net for disconnected users
+**Date:** 2026-03-26
+
+### What changed
+- **Messages no longer get lost when a player's connection drops** — if someone briefly loses WiFi or their phone screen turns off, any game updates that happen during that gap are now saved in a queue. When they reconnect, those queued messages are delivered automatically after the full sync, so they don't miss damage, loot, or condition changes that happened while they were offline.
+- The queue holds up to 50 messages per disconnected user and is cleared on reconnect.
+
+### Files touched
+`backend/ws/manager.py`, `backend/ws/handlers.py`, `SPEC.md`
+
+---
+
 ## Session 8b — State versioning for gap detection
 **Date:** 2026-03-26
 

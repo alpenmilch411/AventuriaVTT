@@ -27,6 +27,9 @@ class ConnectionManager:
         self.attention_mode: dict[str, bool] = {}
         # user_id -> session_code (reverse lookup)
         self.user_sessions: dict[str, str] = {}
+        # Dead letter queue: user_id -> [messages] (max 50 per user)
+        self._dead_letters: dict[str, list[dict]] = {}
+        self._DLQ_MAX = 50
 
     async def connect(self, websocket: WebSocket, session_code: str, user_id: str,
                       role: str = "player", is_table_view: bool = False):
@@ -69,7 +72,11 @@ class ConnectionManager:
             try:
                 await ws.send_json(message)
             except Exception:
+                self._enqueue_dead_letter(user_id, message)
                 self.disconnect(user_id)
+        else:
+            # User not connected — queue for when they reconnect
+            self._enqueue_dead_letter(user_id, message)
 
     async def broadcast_to_room(self, session_code: str, message: dict,
                                 target: str = "all", exclude: str = None):
@@ -116,10 +123,28 @@ class ConnectionManager:
             try:
                 await room[uid].send_json(message)
             except Exception:
+                self._enqueue_dead_letter(uid, message)
                 disconnected.append(uid)
 
         for uid in disconnected:
             self.disconnect(uid)
+
+    def _enqueue_dead_letter(self, user_id: str, message: dict):
+        """Queue a message that couldn't be delivered for later retry."""
+        queue = self._dead_letters.setdefault(user_id, [])
+        if len(queue) < self._DLQ_MAX:
+            queue.append(message)
+
+    async def flush_dead_letters(self, user_id: str):
+        """Send any queued messages to a reconnected user, then clear the queue."""
+        queue = self._dead_letters.pop(user_id, [])
+        for msg in queue:
+            try:
+                session_code = self.user_sessions.get(user_id)
+                if session_code and user_id in self.rooms.get(session_code, {}):
+                    await self.rooms[session_code][user_id].send_json(msg)
+            except Exception:
+                break  # Connection failed again, stop flushing
 
     def is_halted(self, session_code: str) -> bool:
         return self.halted.get(session_code, False)

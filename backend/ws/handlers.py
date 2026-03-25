@@ -1925,6 +1925,8 @@ async def handle_connect(session_code: str, user_id: str, role: str, is_table_vi
     # Send full sync to the connecting client so they have current state
     sync = get_full_sync(session_code)
     await manager.send_to_user(user_id, sync)
+    # Flush any messages that were queued while this user was disconnected
+    await manager.flush_dead_letters(user_id)
     # Store connect event in session_log (no broadcast — player_connected message handles UI)
     if role == "player":
         # Try to get player name for a meaningful log entry

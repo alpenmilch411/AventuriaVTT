@@ -4179,7 +4179,7 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Write-through for critical operations: loot_distribute now awaits DB write before logging; trades already write-through
 - [x] State versioning: increment counter on each update, include in broadcasts and sync_full so clients can detect message gaps
 - [ ] Refactor GMCockpit.jsx (1456 lines) into sub-hooks (useProbeQuickAction, useDiceRoller, etc.) + React.memo children
-- [ ] Dead letter queue for failed broadcasts: queue messages when send_to_user fails, flush on reconnect
+- [x] Dead letter queue for failed broadcasts: queue messages when send_to_user fails, flush on reconnect
 - [ ] Message deduplication: add message IDs to prevent double-processing on flaky connections
 - [ ] Lazy-load databank (combat techniques, creatures, talents) on tab open instead of initial GMCockpit load
 
