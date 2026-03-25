@@ -560,19 +560,20 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     if event_type == "vitals_update" and not _is_gm(session_code, user_id) and payload.get("character_id"):
         cid = payload["character_id"]
         raw_vitals = payload.get("vitals", {})
-        # Ensure max_vitals are cached for delta resolution
-        await _cache_character_vitals(session_code, cid)
-        # Resolve any deltas to absolute values
-        resolved = _resolve_deltas(session_code, cid, raw_vitals)
-        # Update in-memory state with absolute values
-        existing = state.setdefault("vitals", {}).get(cid, {})
-        state["vitals"][cid] = {**existing, **resolved}
-        # Persist absolute values (no deltas reach the DB)
-        _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
-        # Broadcast with absolute values so all clients stay in sync
-        out_payload = {**payload, "vitals": resolved}
-        msg = _msg(event_type, out_payload, from_user=user_id)
-        await manager.broadcast_to_room(session_code, msg)
+        async with _get_char_lock(cid):
+            # Ensure max_vitals are cached for delta resolution
+            await _cache_character_vitals(session_code, cid)
+            # Resolve any deltas to absolute values
+            resolved = _resolve_deltas(session_code, cid, raw_vitals)
+            # Update in-memory state with absolute values
+            existing = state.setdefault("vitals", {}).get(cid, {})
+            state["vitals"][cid] = {**existing, **resolved}
+            # Persist absolute values (no deltas reach the DB)
+            _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
+            # Broadcast with absolute values so all clients stay in sync
+            out_payload = {**payload, "vitals": resolved}
+            msg = _msg(event_type, out_payload, from_user=user_id)
+            await manager.broadcast_to_room(session_code, msg)
         logger.info("Player %s updated vitals for %s: %s", user_id, cid, resolved)
         _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_vitals_{session_code}")
         return
@@ -590,28 +591,29 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         return
 
     if event_type == "conditions_update" and not _is_gm(session_code, user_id) and payload.get("character_id"):
-        # Handle add/remove conditions from player (e.g. item use)
-        conds = state.setdefault("conditions", {}).get(payload["character_id"], [])
-        if payload.get("add_condition"):
-            # Check if condition already exists → increment level
-            existing = next((c for c in conds if c["name"] == payload["add_condition"]), None)
-            if existing:
-                existing["level"] = existing.get("level", 1) + payload.get("level", 1)
-            else:
-                conds.append({"name": payload["add_condition"], "level": payload.get("level", 1)})
-        if payload.get("remove_condition"):
-            reduce = payload.get("reduce_level", 1)
-            for c in conds:
-                if c["name"] == payload["remove_condition"]:
-                    c["level"] = max(0, c.get("level", 1) - reduce)
-                    if c["level"] <= 0:
-                        conds.remove(c)
-                    break
-        state["conditions"][payload["character_id"]] = conds
-        _safe_create_task(_persist_conditions(payload["character_id"], conds), name=f"persist_conditions_{payload['character_id'][:8]}")
-        msg = _msg(event_type, payload, from_user=user_id)
-        await manager.broadcast_to_room(session_code, msg)
-        logger.info("Player %s updated conditions for %s", user_id, payload["character_id"])
+        cid = payload["character_id"]
+        async with _get_char_lock(cid):
+            # Handle add/remove conditions from player (e.g. item use)
+            conds = list(state.setdefault("conditions", {}).get(cid, []))
+            if payload.get("add_condition"):
+                existing = next((c for c in conds if c["name"] == payload["add_condition"]), None)
+                if existing:
+                    existing["level"] = existing.get("level", 1) + payload.get("level", 1)
+                else:
+                    conds.append({"name": payload["add_condition"], "level": payload.get("level", 1)})
+            if payload.get("remove_condition"):
+                reduce = payload.get("reduce_level", 1)
+                for c in conds:
+                    if c["name"] == payload["remove_condition"]:
+                        c["level"] = max(0, c.get("level", 1) - reduce)
+                        if c["level"] <= 0:
+                            conds.remove(c)
+                        break
+            state["conditions"][cid] = conds
+            _safe_create_task(_persist_conditions(cid, conds), name=f"persist_conditions_{cid[:8]}")
+            msg = _msg(event_type, payload, from_user=user_id)
+            await manager.broadcast_to_room(session_code, msg)
+        logger.info("Player %s updated conditions for %s", user_id, cid)
         _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_conditions_{session_code}")
         return
 
@@ -729,59 +731,67 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     ):
         # --- Vitals: resolve deltas to absolute before broadcast ---
         out_payload = payload
-        if event_type == "vitals_update" and payload.get("character_id"):
-            cid = payload["character_id"]
-            raw_vitals = payload.get("vitals", {})
-            await _cache_character_vitals(session_code, cid)
-            resolved = _resolve_deltas(session_code, cid, raw_vitals)
-            existing = state.setdefault("vitals", {}).get(cid, {})
-            state["vitals"][cid] = {**existing, **resolved}
-            _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
-            # Replace deltas with absolute in outgoing message
-            out_payload = {**payload, "vitals": resolved}
-        elif event_type == "state_update" and payload.get("character_id") and payload.get("current_lep") is not None:
-            cid = payload["character_id"]
-            vitals_update = {"lep": payload["current_lep"]}
-            existing = state.setdefault("vitals", {}).get(cid, {})
-            state["vitals"][cid] = {**existing, **vitals_update}
-            _safe_create_task(_persist_vitals(cid, vitals_update), name=f"persist_vitals_{cid[:8]}")
-
-        msg = _msg(event_type, out_payload, from_user=user_id)
-        await manager.broadcast_to_room(session_code, msg)
+        cid = payload.get("character_id")
+        if event_type == "vitals_update" and cid:
+            async with _get_char_lock(cid):
+                raw_vitals = payload.get("vitals", {})
+                await _cache_character_vitals(session_code, cid)
+                resolved = _resolve_deltas(session_code, cid, raw_vitals)
+                existing = state.setdefault("vitals", {}).get(cid, {})
+                state["vitals"][cid] = {**existing, **resolved}
+                _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
+                out_payload = {**payload, "vitals": resolved}
+                msg = _msg(event_type, out_payload, from_user=user_id)
+                await manager.broadcast_to_room(session_code, msg)
+        elif event_type == "state_update" and cid and payload.get("current_lep") is not None:
+            async with _get_char_lock(cid):
+                vitals_update = {"lep": payload["current_lep"]}
+                existing = state.setdefault("vitals", {}).get(cid, {})
+                state["vitals"][cid] = {**existing, **vitals_update}
+                _safe_create_task(_persist_vitals(cid, vitals_update), name=f"persist_vitals_{cid[:8]}")
+                msg = _msg(event_type, out_payload, from_user=user_id)
+                await manager.broadcast_to_room(session_code, msg)
+        else:
+            msg = _msg(event_type, out_payload, from_user=user_id)
+            await manager.broadcast_to_room(session_code, msg)
 
         # --- Conditions ---
-        if event_type == "conditions_update" and payload.get("character_id"):
-            cid = payload["character_id"]
-            conds = list(state.setdefault("conditions", {}).get(cid, []))
-            if payload.get("add_condition"):
-                existing = next((c for c in conds if c["name"] == payload["add_condition"]), None)
-                if existing:
-                    existing["level"] = existing.get("level", 1) + payload.get("level", 1)
-                else:
-                    conds.append({"name": payload["add_condition"], "level": payload.get("level", 1)})
-            elif payload.get("remove_condition"):
-                reduce = payload.get("reduce_level", 1)
-                for c in conds:
-                    if c["name"] == payload["remove_condition"]:
-                        c["level"] = max(0, c.get("level", 1) - reduce)
-                        if c["level"] <= 0:
-                            conds.remove(c)
-                        break
-            elif payload.get("conditions") is not None:
-                conds = payload["conditions"]
-            state["conditions"][cid] = conds
-            _safe_create_task(_persist_conditions(cid, conds), name=f"persist_conditions_{cid[:8]}")
+        if event_type == "conditions_update" and cid:
+            async with _get_char_lock(cid):
+                conds = list(state.setdefault("conditions", {}).get(cid, []))
+                if payload.get("add_condition"):
+                    existing = next((c for c in conds if c["name"] == payload["add_condition"]), None)
+                    if existing:
+                        existing["level"] = existing.get("level", 1) + payload.get("level", 1)
+                    else:
+                        conds.append({"name": payload["add_condition"], "level": payload.get("level", 1)})
+                elif payload.get("remove_condition"):
+                    reduce = payload.get("reduce_level", 1)
+                    for c in conds:
+                        if c["name"] == payload["remove_condition"]:
+                            c["level"] = max(0, c.get("level", 1) - reduce)
+                            if c["level"] <= 0:
+                                conds.remove(c)
+                            break
+                elif payload.get("conditions") is not None:
+                    conds = payload["conditions"]
+                state["conditions"][cid] = conds
+                _safe_create_task(_persist_conditions(cid, conds), name=f"persist_conditions_{cid[:8]}")
             logger.info("GM updated conditions for %s: %s", cid, conds)
-        if event_type == "condition_change" and payload.get("character_id"):
-            conds = state.setdefault("conditions", {}).get(payload["character_id"], [])
-            if payload.get("action") == "add":
-                conds.append({"name": payload.get("condition"), "level": payload.get("level", 1)})
-            elif payload.get("action") == "remove":
-                conds = [c for c in conds if c.get("name") != payload.get("condition")]
-            state["conditions"][payload["character_id"]] = conds
-        # Persist loot to inventory DB
+        if event_type == "condition_change" and cid:
+            async with _get_char_lock(cid):
+                conds = state.setdefault("conditions", {}).get(cid, [])
+                if payload.get("action") == "add":
+                    conds.append({"name": payload.get("condition"), "level": payload.get("level", 1)})
+                elif payload.get("action") == "remove":
+                    conds = [c for c in conds if c.get("name") != payload.get("condition")]
+                state["conditions"][cid] = conds
+        # Persist loot to inventory DB — write-through (await before log)
         if event_type == "loot_distribute" and payload.get("distributions"):
-            _safe_create_task(_persist_loot(payload["distributions"]), name="persist_loot")
+            try:
+                await _persist_loot(payload["distributions"])
+            except Exception as e:
+                logger.error("Failed to persist loot distribution: %s", e)
             await _append_session_log(session_code, "loot", f"Beute verteilt: {payload.get('source_name', 'Unbekannt')}", icon="package")
         # Store combat_log_entry in session_log state for reconnect persistence
         # Do NOT call _append_session_log here — it would broadcast a SECOND
