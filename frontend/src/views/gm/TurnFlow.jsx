@@ -50,10 +50,10 @@ const ACTIONS = [
 const MANEUVERS = [
   // Basis-Manöver — available to everyone
   { id: 'none', label: 'Ohne Manöver', atMod: 0, paMod: 0, tpMod: 0, desc: 'Normaler Angriff ohne Manöver.', type: 'basis' },
-  { id: 'wuchtschlag1', label: 'Wuchtschlag I', atMod: -2, paMod: 0, tpMod: 2, desc: '-2 AT, +2 TP. Härter zuschlagen auf Kosten der Treffsicherheit.', type: 'basis' },
-  { id: 'wuchtschlag2', label: 'Wuchtschlag II', atMod: -4, paMod: 0, tpMod: 4, desc: '-4 AT, +4 TP. Noch härter zuschlagen.', type: 'basis' },
-  { id: 'finte1', label: 'Finte I', atMod: -1, paMod: 0, tpMod: 0, desc: '-1 AT, Gegner erhält -2 auf Parade.', defMod: -2, type: 'basis' },
-  { id: 'finte2', label: 'Finte II', atMod: -2, paMod: 0, tpMod: 0, desc: '-2 AT, Gegner erhält -4 auf Parade.', defMod: -4, type: 'basis' },
+  { id: 'wuchtschlag1', label: 'Wuchtschlag I', atMod: -1, paMod: 0, tpMod: 1, desc: '-1 AT, +1 TP. Härter zuschlagen auf Kosten der Treffsicherheit.', type: 'basis' },
+  { id: 'wuchtschlag2', label: 'Wuchtschlag II', atMod: -2, paMod: 0, tpMod: 2, desc: '-2 AT, +2 TP. Noch härter zuschlagen.', type: 'basis' },
+  { id: 'finte1', label: 'Finte I', atMod: -1, paMod: 0, tpMod: 0, desc: '-1 AT, Gegner erhält -1 auf Parade.', defMod: -1, type: 'basis' },
+  { id: 'finte2', label: 'Finte II', atMod: -2, paMod: 0, tpMod: 0, desc: '-2 AT, Gegner erhält -2 auf Parade.', defMod: -2, type: 'basis' },
   // SF-gated Manöver
   { id: 'hammerschlag', label: 'Hammerschlag', atMod: -4, paMod: 0, tpMod: 4, halveRS: true, desc: 'AT-4, +4 TP und RS des Gegners halbiert. Benötigt Hiebwaffen/Zweihandäxte/Zweihandschwerter.', requiredSF: 'Hammerschlag', techniques: ['Hiebwaffen', 'Zweihandäxte', 'Zweihandschwerter'] },
   { id: 'sturmangriff', label: 'Sturmangriff', atMod: 2, paMod: -2, tpMod: 0, desc: 'AT+2 bei 4+ Schritt Anlauf, PA-2 in dieser KR.', requiredSF: 'Sturmangriff' },

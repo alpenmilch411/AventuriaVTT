@@ -4,6 +4,20 @@
 
 ---
 
+## Session 9 — Battle system fixes: creature privacy, phone layout, maneuver values
+**Date:** 2026-03-26
+
+### What changed
+- **Players can no longer see how much health enemies have** — previously every player's phone showed the exact HP bar and numbers for all creatures. Now players only see creature names and turn order, while their own party's health remains visible. This matches DSA5 rules where players shouldn't know creature stats without a relevant probe.
+- **Combat works properly on phones** — the battle screen used to break on smaller screens because it forced a side-by-side layout that didn't fit. Now the combatant list stacks above the action panel on phones, with a scrollable list that handles any number of fighters.
+- **Maneuver damage corrected (again)** — Wuchtschlag and Finte values in the turn-by-turn combat view had their own copy of the numbers that were still wrong (doubled). Wuchtschlag I now correctly gives -1 AT/+1 TP instead of -2/+2, and Finte I correctly reduces enemy Parade by 1 instead of 2.
+- **Verwirrt condition now reduces ranged accuracy** — the Confusion condition was missing its penalty to Fernkampf (ranged attacks), so confused characters could still shoot perfectly.
+
+### Files touched
+`frontend/src/views/player/CombatActions.jsx`, `frontend/src/views/gm/TurnFlow.jsx`, `frontend/src/engine/conditionsEngine.js`
+
+---
+
 ## Session 8f — GM Cockpit split into manageable pieces
 **Date:** 2026-03-26
 

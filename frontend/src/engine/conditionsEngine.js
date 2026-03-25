@@ -64,7 +64,7 @@ export const CONDITIONS = {
   },
   'Verwirrt': {
     levels: 4, category: 'geistig', icon: '😵',
-    perLevel: { AT: -1, PA: -1, AW: -1, KL: -1, IN: -1 },
+    perLevel: { AT: -1, PA: -1, AW: -1, FK: -1, KL: -1, IN: -1 },
     summary: 'Geistige Verwirrung — erschwert Kampf, Klugheit und Intuition.',
     source: 'Illusionszauber, Kopfverletzungen, Drogen, Schlafentzug, übernatürliche Effekte.',
     removal: 'Willenskraft-Probe, Rast, Ende des auslösenden Effekts.',

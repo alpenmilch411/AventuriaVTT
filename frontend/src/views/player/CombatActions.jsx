@@ -285,10 +285,10 @@ function CombatActions({ sendMessage }) {
         </div>
       </div>
 
-      {/* ── Two columns ── */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      {/* ── Responsive: stacked on phone, side-by-side on wider screens ── */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
         {/* LEFT: Combatant Lists */}
-        <div className="w-64 flex-shrink-0 border-r border-dsa-bg-medium/50 overflow-y-auto p-3 space-y-3">
+        <div className="w-full md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-dsa-bg-medium/50 overflow-y-auto p-3 space-y-3 max-h-[35vh] md:max-h-none">
           <div>
             <h4 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1.5 flex items-center gap-1 bg-dsa-gold/10 rounded px-2 py-1">
               <Shield className="w-3 h-3" /> Helden ({heroes.length})
@@ -318,13 +318,14 @@ function CombatActions({ sendMessage }) {
   )
 }
 
-// ── Combatant Card (identical to GM version) ──
+// ── Combatant Card (player version — hides NPC/creature stats) ──
 
 function CombatantCard({ combatant, isActive, isMe }) {
   const c = combatant
+  const isNPC = c.isNPC || c.isCreature || (!c.userId && !c.characterId)
   const isDead = c.lep !== undefined && c.lep <= 0
   const activeBuffs = useCharacterStore((s) => s.activeBuffs)
-  const buffs = activeBuffs.filter(b => b.characterId === (c.characterId || c.id) && b.expiresAt > Date.now())
+  const buffs = isNPC ? [] : activeBuffs.filter(b => b.characterId === (c.characterId || c.id) && b.expiresAt > Date.now())
 
   return (
     <div className={clsx(
@@ -342,11 +343,21 @@ function CombatantCard({ combatant, isActive, isMe }) {
         {isActive && <Swords className="w-3 h-3 text-dsa-gold flex-shrink-0" />}
         {isDead && <Skull className="w-3 h-3 text-red-400 flex-shrink-0" />}
       </div>
-      <ProgressBar current={c.lep || 0} max={c.lepMax || 1} preset="health" size="sm" />
-      <div className="flex items-center justify-between mt-0.5">
-        <span className="text-[8px] font-mono text-dsa-parchment-dark cursor-help" title="Lebenspunkte — bei 0 bewusstlos, bei negativem KO-Wert tot">LeP {c.lep ?? '?'}/{c.lepMax ?? '?'}</span>
-        <span className="text-[8px] font-mono text-dsa-parchment-dark cursor-help" title="Initiative — bestimmt die Reihenfolge im Kampf">INI {c.initiative}</span>
-      </div>
+      {/* Players see their own party's HP, but NOT creature/NPC HP */}
+      {!isNPC ? (
+        <>
+          <ProgressBar current={c.lep || 0} max={c.lepMax || 1} preset="health" size="sm" />
+          <div className="flex items-center justify-between mt-0.5">
+            <span className="text-[8px] font-mono text-dsa-parchment-dark">LeP {c.lep ?? '?'}/{c.lepMax ?? '?'}</span>
+            <span className="text-[8px] font-mono text-dsa-parchment-dark">INI {c.initiative}</span>
+          </div>
+        </>
+      ) : (
+        <div className="flex items-center justify-between mt-0.5">
+          <span className="text-[8px] font-mono text-dsa-parchment-dark">{isDead ? 'Kampfunfähig' : 'Gegner'}</span>
+          <span className="text-[8px] font-mono text-dsa-parchment-dark">INI {c.initiative}</span>
+        </div>
+      )}
       {buffs.length > 0 && <div className="mt-1"><ActiveBuffs characterId={c.characterId || c.id} compact /></div>}
     </div>
   )
