@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   Wifi, WifiOff, Users, Swords, Dice5, Heart, Shield,
@@ -81,8 +81,36 @@ export default function GMCockpit() {
   const [showProbePopup, setShowProbePopup] = useState(false)
   const [showVitalsPopup, setShowVitalsPopup] = useState(false)
   const [gmNotes, setGmNotes] = useState(() => { try { return localStorage.getItem('aventuria_gm_notes') || '' } catch { return '' } })
-  const [talentList, setTalentList] = useState([]) // from databank
-  const [creatureList, setCreatureList] = useState([]) // from databank
+  const [talentList, setTalentList] = useState([]) // from databank — loaded lazily
+  const [creatureList, setCreatureList] = useState([]) // from databank — loaded lazily
+  const talentsLoaded = useRef(false)
+  const creaturesLoaded = useRef(false)
+
+  const loadTalentsIfNeeded = useCallback(async () => {
+    if (talentsLoaded.current || talentList.length > 0) return
+    talentsLoaded.current = true
+    const token = useAuthStore.getState().token
+    try {
+      const res = await fetch('/api/databank/talents', { headers: { Authorization: `Bearer ${token}` } })
+      if (res.ok) {
+        const data = await res.json()
+        setTalentList(Array.isArray(data) ? data : (data.items || []))
+      }
+    } catch (err) { console.error('Failed to load talents:', err) }
+  }, [talentList.length])
+
+  const loadCreaturesIfNeeded = useCallback(async () => {
+    if (creaturesLoaded.current || creatureList.length > 0) return
+    creaturesLoaded.current = true
+    const token = useAuthStore.getState().token
+    try {
+      const res = await fetch('/api/databank/creatures', { headers: { Authorization: `Bearer ${token}` } })
+      if (res.ok) {
+        const data = await res.json()
+        setCreatureList(Array.isArray(data) ? data : (data.items || []))
+      }
+    } catch (err) { console.error('Failed to load creatures:', err) }
+  }, [creatureList.length])
 
   const { isOffline, OfflineBanner } = useOffline()
 
@@ -90,6 +118,10 @@ export default function GMCockpit() {
     n.type === 'action_request' || n.type === 'probe_request_from_player' ||
     n.type === 'spell_cast_request' || n.type === 'transfer_request' || n.type === 'trade_gm_request'
   ).length
+
+  // Lazy-load databank when features that need them are opened
+  useEffect(() => { if (showBattleSetup) loadCreaturesIfNeeded() }, [showBattleSetup, loadCreaturesIfNeeded])
+  useEffect(() => { if (showProbePopup) loadTalentsIfNeeded() }, [showProbePopup, loadTalentsIfNeeded])
 
   // Clear stale overlays when combat ends
   useEffect(() => {
@@ -137,11 +169,9 @@ export default function GMCockpit() {
       }
       if (!campaignId) return
 
-      const [campRes, playersRes, talentsRes, creaturesRes] = await Promise.all([
+      const [campRes, playersRes] = await Promise.all([
         fetch(`/api/campaigns/${campaignId}`, { headers }),
         fetch(`/api/campaigns/${campaignId}/players-detail`, { headers }).catch(() => ({ ok: false })),
-        fetch('/api/databank/talents', { headers }).catch(() => ({ ok: false })),
-        fetch('/api/databank/creatures', { headers }).catch(() => ({ ok: false })),
       ])
 
       const campaignData = campRes.ok ? await campRes.json() : null
@@ -169,16 +199,7 @@ export default function GMCockpit() {
           }))
         )
       }
-      // Load talent templates for probe launcher
-      if (talentsRes.ok) {
-        const data = await talentsRes.json()
-        setTalentList(Array.isArray(data) ? data : (data.items || []))
-      }
-      // Load creature templates for battle setup
-      if (creaturesRes.ok) {
-        const data = await creaturesRes.json()
-        setCreatureList(Array.isArray(data) ? data : (data.items || []))
-      }
+      // Talents and creatures loaded lazily on first use (see loadTalentsIfNeeded/loadCreaturesIfNeeded)
     } catch (err) { console.error('Failed to load:', err) }
   }
 

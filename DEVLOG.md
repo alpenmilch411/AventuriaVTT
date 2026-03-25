@@ -4,6 +4,17 @@
 
 ---
 
+## Session 8e — Faster startup by loading reference data only when needed
+**Date:** 2026-03-26
+
+### What changed
+- **The GM screen now loads faster** — creature and talent databases used to be fetched right when the GM opens their cockpit, even if they weren't needed yet. Now these are loaded only when the GM actually opens the combat setup or the probe launcher for the first time. This removes two API calls from the initial page load and makes the cockpit appear quicker.
+
+### Files touched
+`frontend/src/views/gm/GMCockpit.jsx`, `SPEC.md`
+
+---
+
 ## Session 8d — Prevent duplicate messages from being processed twice
 **Date:** 2026-03-26
 

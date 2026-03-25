@@ -4181,7 +4181,7 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [ ] Refactor GMCockpit.jsx (1456 lines) into sub-hooks (useProbeQuickAction, useDiceRoller, etc.) + React.memo children
 - [x] Dead letter queue for failed broadcasts: queue messages when send_to_user fails, flush on reconnect
 - [x] Message deduplication: skip messages with identical type+timestamp to prevent double-processing on flaky connections
-- [ ] Lazy-load databank (combat techniques, creatures, talents) on tab open instead of initial GMCockpit load
+- [x] Lazy-load databank (creatures, talents) on first use instead of initial GMCockpit load
 
 ### Code Quality — Hardcoded Data Migration (identified 2026-03-25)
 
