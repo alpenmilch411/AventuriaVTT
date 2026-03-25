@@ -19,6 +19,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
   const reconnectTimeout = useRef(null)
   const heartbeatInterval = useRef(null)
   const pongTimeout = useRef(null)
+  const lastStateVersion = useRef(0)
   const [connected, setConnected] = useState(false)
   const [lastMessage, setLastMessage] = useState(null)
 
@@ -27,6 +28,15 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     setLastMessage(msg)
     const type = msg.type
     const payload = msg.payload || {}
+
+    // Track state version for gap detection
+    if (payload.state_version && payload.state_version > lastStateVersion.current + 1 && lastStateVersion.current > 0) {
+      console.warn('[WS] State version gap detected:', lastStateVersion.current, '→', payload.state_version, '— requesting full sync')
+      wsRef.current?.send(JSON.stringify({ type: 'sync_request', payload: {} }))
+    }
+    if (payload.state_version) {
+      lastStateVersion.current = payload.state_version
+    }
 
     // Helper: log to both combatLog and sessionLog (Protokoll)
     const logCombatAndSession = (entry) => {
@@ -699,6 +709,8 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
 
     // ── Full sync (on reconnect) ──
     else if (type === 'sync_full') {
+      // Reset version tracking to server's current version
+      if (payload.state_version) lastStateVersion.current = payload.state_version
       // Restore all state from server
       if (payload.halted !== undefined) useSessionStore.getState().setHalted(payload.halted)
       if (payload.attention !== undefined) useSessionStore.getState().setAttentionMode(payload.attention)

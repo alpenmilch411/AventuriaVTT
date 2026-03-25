@@ -188,8 +188,15 @@ def _ensure_state(session_code: str) -> dict[str, Any]:
             "max_vitals": {},          # character_id -> {LeP_max, AsP_max, ...}
             "buffs": {},               # character_id -> [{...}]
             "session_log": [],         # unified log: [{type, text, icon, ts}] — last 500 entries
+            "state_version": 0,        # monotonic counter, incremented on every state change
         }
     return _session_state[session_code]
+
+
+def _bump_version(state: dict) -> int:
+    """Increment and return the session state version counter."""
+    state["state_version"] = state.get("state_version", 0) + 1
+    return state["state_version"]
 
 
 def _combat_snapshot(state: dict) -> Optional[dict]:
@@ -472,6 +479,10 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         await manager.send_to_user(user_id, _msg(EventType.PONG, {}))
         return
 
+    if event_type == "sync_request":
+        await manager.send_to_user(user_id, get_full_sync(session_code))
+        return
+
     # ---- GM-only commands ---------------------------------------------
     gm_commands = {
         EventType.SCENE_ACTIVATE: _handle_scene_activate,
@@ -568,10 +579,9 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
             # Update in-memory state with absolute values
             existing = state.setdefault("vitals", {}).get(cid, {})
             state["vitals"][cid] = {**existing, **resolved}
-            # Persist absolute values (no deltas reach the DB)
+            _bump_version(state)
             _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
-            # Broadcast with absolute values so all clients stay in sync
-            out_payload = {**payload, "vitals": resolved}
+            out_payload = {**payload, "vitals": resolved, "state_version": state["state_version"]}
             msg = _msg(event_type, out_payload, from_user=user_id)
             await manager.broadcast_to_room(session_code, msg)
         logger.info("Player %s updated vitals for %s: %s", user_id, cid, resolved)
@@ -610,8 +620,9 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
                             conds.remove(c)
                         break
             state["conditions"][cid] = conds
+            _bump_version(state)
             _safe_create_task(_persist_conditions(cid, conds), name=f"persist_conditions_{cid[:8]}")
-            msg = _msg(event_type, payload, from_user=user_id)
+            msg = _msg(event_type, {**payload, "state_version": state["state_version"]}, from_user=user_id)
             await manager.broadcast_to_room(session_code, msg)
         logger.info("Player %s updated conditions for %s", user_id, cid)
         _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_conditions_{session_code}")
@@ -739,8 +750,9 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
                 resolved = _resolve_deltas(session_code, cid, raw_vitals)
                 existing = state.setdefault("vitals", {}).get(cid, {})
                 state["vitals"][cid] = {**existing, **resolved}
+                _bump_version(state)
                 _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
-                out_payload = {**payload, "vitals": resolved}
+                out_payload = {**payload, "vitals": resolved, "state_version": state["state_version"]}
                 msg = _msg(event_type, out_payload, from_user=user_id)
                 await manager.broadcast_to_room(session_code, msg)
         elif event_type == "state_update" and cid and payload.get("current_lep") is not None:
@@ -748,8 +760,9 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
                 vitals_update = {"lep": payload["current_lep"]}
                 existing = state.setdefault("vitals", {}).get(cid, {})
                 state["vitals"][cid] = {**existing, **vitals_update}
+                _bump_version(state)
                 _safe_create_task(_persist_vitals(cid, vitals_update), name=f"persist_vitals_{cid[:8]}")
-                msg = _msg(event_type, out_payload, from_user=user_id)
+                msg = _msg(event_type, {**out_payload, "state_version": state["state_version"]}, from_user=user_id)
                 await manager.broadcast_to_room(session_code, msg)
         else:
             msg = _msg(event_type, out_payload, from_user=user_id)
@@ -2008,4 +2021,5 @@ def get_full_sync(session_code: str) -> dict:
         "buffs": state.get("buffs", {}),
         "session_log": state.get("session_log", [])[-200:],
         "pending_requests": state.get("pending_requests", {}),
+        "state_version": state.get("state_version", 0),
     })

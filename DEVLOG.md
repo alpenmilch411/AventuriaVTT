@@ -4,6 +4,18 @@
 
 ---
 
+## Session 8b — State versioning for gap detection
+**Date:** 2026-03-26
+
+### What changed
+- **The app now detects when it missed an update** — every change to the game state (health, conditions, combat) increments a version counter. When a player's or GM's browser receives an update, it checks whether the counter jumped by more than 1. If it did, the app automatically requests a full refresh from the server to get back in sync. This means flaky WiFi connections self-heal instead of silently falling out of date.
+- The server also includes the current version number in the full sync it sends when someone reconnects, so everyone starts from the same baseline.
+
+### Files touched
+`backend/ws/handlers.py`, `frontend/src/hooks/useWebSocket.js`, `SPEC.md`
+
+---
+
 ## Session 8 — Architecture: Restart Resilience & Performance
 **Date:** 2026-03-26
 **Type:** Claude Code — 2-agent parallel implementation
