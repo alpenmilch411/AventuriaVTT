@@ -24,7 +24,7 @@ A browser-based GM toolkit for Das Schwarze Auge 5th Edition. Supports — but n
 
 ```bash
 # Clone
-git clone https://github.com/[TBD]/aventuria-vtt.git
+git clone https://github.com/alpenmilch411/AventuriaVTT.git
 cd aventuria-vtt
 
 # Environment
@@ -63,7 +63,6 @@ python -m databank.seed
 ```
 aventuria-vtt/
 ├── SPEC.md              # Full technical specification (source of truth)
-├── OVERVIEW.md          # Plain-language project overview
 ├── DEVLOG.md            # Development session log
 ├── GOTCHAS.md           # Known implementation traps
 ├── backend/             # FastAPI server + DSA5 rules engine + AI assist
@@ -85,7 +84,6 @@ aventuria-vtt/
 
 ## Docs
 
-- [OVERVIEW.md](OVERVIEW.md) — What this project is and why
-- [SPEC.md](SPEC.md) — Full technical specification (~4000 lines)
+- [SPEC.md](SPEC.md) — Full technical specification (source of truth)
 - [DEVLOG.md](DEVLOG.md) — Development history
 - [GOTCHAS.md](GOTCHAS.md) — Known traps and workarounds
