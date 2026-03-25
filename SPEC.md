@@ -4178,7 +4178,7 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Extend per-character locks to cover in-memory state + broadcast (not just DB writes) — eliminates vitals race conditions
 - [x] Write-through for critical operations: loot_distribute now awaits DB write before logging; trades already write-through
 - [x] State versioning: increment counter on each update, include in broadcasts and sync_full so clients can detect message gaps
-- [ ] Refactor GMCockpit.jsx (1456 lines) into sub-hooks (useProbeQuickAction, useDiceRoller, etc.) + React.memo children
+- [x] Refactor GMCockpit.jsx into sub-hooks: useGMSession (auth/loading), useGMPopups (25+ UI states), useGMDatabank (lazy-load)
 - [x] Dead letter queue for failed broadcasts: queue messages when send_to_user fails, flush on reconnect
 - [x] Message deduplication: skip messages with identical type+timestamp to prevent double-processing on flaky connections
 - [x] Lazy-load databank (creatures, talents) on first use instead of initial GMCockpit load

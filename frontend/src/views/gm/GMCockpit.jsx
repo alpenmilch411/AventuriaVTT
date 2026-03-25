@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   Wifi, WifiOff, Users, Swords, Dice5, Heart, Shield,
@@ -11,12 +11,14 @@ import { getConditions } from '../../utils/safeData'
 import useGMControls from '../../hooks/useGMControls'
 import useGameState from '../../hooks/useGameState'
 import useOffline from '../../hooks/useOffline'
+import useGMSession from '../../hooks/useGMSession'
+import useGMPopups from '../../hooks/useGMPopups'
+import useGMDatabank from '../../hooks/useGMDatabank'
 import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import useCampaignStore from '../../stores/campaignStore'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
-import useMapStore from '../../stores/mapStore'
 import CombatOverlay from './CombatOverlay'
 import SessionPrep, { getSessionPool } from './SessionPrep'
 import CampaignManager from '../auth/CampaignManager'
@@ -43,9 +45,6 @@ export default function GMCockpit() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const token = useAuthStore((s) => s.token)
-  const fetchMe = useAuthStore((s) => s.fetchMe)
-  const setSession = useSessionStore((s) => s.setSession)
-  const setCampaignData = useCampaignStore((s) => s.setCampaignData)
   const players = useSessionStore((s) => s.players)
   const notifications = useSessionStore((s) => s.notifications)
   const sessionLog = useSessionStore((s) => s.sessionLog)
@@ -56,61 +55,39 @@ export default function GMCockpit() {
   const activeBuffs = useCharacterStore((s) => s.activeBuffs)
   const activeProcesses = useSessionStore((s) => s.activeProcesses)
 
-  const [showPrep, setShowPrep] = useState(false)
-  const [showNotifications, setShowNotifications] = useState(false)
-  const [showCombatOverlay, setShowCombatOverlay] = useState(null)
-  const [victoryLoot, setVictoryLoot] = useState(null)
-  const [showLoot, setShowLoot] = useState(null)
-  const [showBattleSetup, setShowBattleSetup] = useState(false)
-  const [combatMinimized, setCombatMinimized] = useState(false)
-  const [selectedPlayerIds, setSelectedPlayerIds] = useState(new Set())
-  const [quickAction, setQuickAction] = useState(null) // 'probe' | 'health' | 'items' | 'whisper' | null
-  const [probeTalent, setProbeTalent] = useState('')
-  const [probeDifficulty, setProbeDifficulty] = useState(0)
-  const [probeSearch, setProbeSearch] = useState('')
-  const [whisperText, setWhisperText] = useState('')
-  const [healthInput, setHealthInput] = useState('')
-  const [npcDetail, setNpcDetail] = useState(null) // creature object for detail modal
-  const [showCampaignManager, setShowCampaignManager] = useState(false)
-  const [showDiceRoller, setShowDiceRoller] = useState(false)
-  const [diceFormula, setDiceFormula] = useState('1W6')
-  const [diceResult, setDiceResult] = useState(null)
-  const [showNotes, setShowNotes] = useState(false)
-  const [showQuests, setShowQuests] = useState(false)
-  const [showConditionPopup, setShowConditionPopup] = useState(false)
-  const [showProbePopup, setShowProbePopup] = useState(false)
-  const [showVitalsPopup, setShowVitalsPopup] = useState(false)
-  const [gmNotes, setGmNotes] = useState(() => { try { return localStorage.getItem('aventuria_gm_notes') || '' } catch { return '' } })
-  const [talentList, setTalentList] = useState([]) // from databank — loaded lazily
-  const [creatureList, setCreatureList] = useState([]) // from databank — loaded lazily
-  const talentsLoaded = useRef(false)
-  const creaturesLoaded = useRef(false)
+  // ── Extracted hooks ──
+  const { isAuthorizedGM } = useGMSession(sessionCode)
 
-  const loadTalentsIfNeeded = useCallback(async () => {
-    if (talentsLoaded.current || talentList.length > 0) return
-    talentsLoaded.current = true
-    const token = useAuthStore.getState().token
-    try {
-      const res = await fetch('/api/databank/talents', { headers: { Authorization: `Bearer ${token}` } })
-      if (res.ok) {
-        const data = await res.json()
-        setTalentList(Array.isArray(data) ? data : (data.items || []))
-      }
-    } catch (err) { console.error('Failed to load talents:', err) }
-  }, [talentList.length])
+  const popups = useGMPopups()
+  const {
+    showPrep, setShowPrep,
+    showNotifications, setShowNotifications,
+    showCombatOverlay, setShowCombatOverlay,
+    victoryLoot, setVictoryLoot,
+    showLoot, setShowLoot,
+    showBattleSetup, setShowBattleSetup,
+    combatMinimized, setCombatMinimized,
+    selectedPlayerIds, setSelectedPlayerIds,
+    quickAction, setQuickAction,
+    probeTalent, setProbeTalent,
+    probeDifficulty, setProbeDifficulty,
+    probeSearch, setProbeSearch,
+    whisperText, setWhisperText,
+    healthInput, setHealthInput,
+    npcDetail, setNpcDetail,
+    showCampaignManager, setShowCampaignManager,
+    showDiceRoller, setShowDiceRoller,
+    diceFormula, setDiceFormula,
+    diceResult, setDiceResult,
+    showNotes, setShowNotes,
+    showQuests, setShowQuests,
+    showConditionPopup, setShowConditionPopup,
+    showProbePopup, setShowProbePopup,
+    showVitalsPopup, setShowVitalsPopup,
+    gmNotes, setGmNotes,
+  } = popups
 
-  const loadCreaturesIfNeeded = useCallback(async () => {
-    if (creaturesLoaded.current || creatureList.length > 0) return
-    creaturesLoaded.current = true
-    const token = useAuthStore.getState().token
-    try {
-      const res = await fetch('/api/databank/creatures', { headers: { Authorization: `Bearer ${token}` } })
-      if (res.ok) {
-        const data = await res.json()
-        setCreatureList(Array.isArray(data) ? data : (data.items || []))
-      }
-    } catch (err) { console.error('Failed to load creatures:', err) }
-  }, [creatureList.length])
+  const { talentList, creatureList } = useGMDatabank({ showBattleSetup, showProbePopup })
 
   const { isOffline, OfflineBanner } = useOffline()
 
@@ -118,90 +95,6 @@ export default function GMCockpit() {
     n.type === 'action_request' || n.type === 'probe_request_from_player' ||
     n.type === 'spell_cast_request' || n.type === 'transfer_request' || n.type === 'trade_gm_request'
   ).length
-
-  // Lazy-load databank when features that need them are opened
-  useEffect(() => { if (showBattleSetup) loadCreaturesIfNeeded() }, [showBattleSetup, loadCreaturesIfNeeded])
-  useEffect(() => { if (showProbePopup) loadTalentsIfNeeded() }, [showProbePopup, loadTalentsIfNeeded])
-
-  // Clear stale overlays when combat ends
-  useEffect(() => {
-    if (showCombatOverlay && !battles[showCombatOverlay]) setShowCombatOverlay(null)
-    if (!activeBattleId) { setCombatMinimized(false) }
-  }, [activeBattleId, battles, showCombatOverlay])
-
-  const [isAuthorizedGM, setIsAuthorizedGM] = useState(null) // null=loading, true/false
-
-  useEffect(() => { if (!user && token) fetchMe() }, [user, token])
-  useEffect(() => { setSession({ sessionCode, isGM: true }); loadData() }, [sessionCode, token, user])
-  useEffect(() => {
-    return () => {
-      useSessionStore.getState().reset()
-      useCombatStore.getState().reset()
-      useCharacterStore.getState().reset()
-      useCampaignStore.getState().reset()
-      useMapStore.getState().reset()
-    }
-  }, [])
-
-  const loadData = async () => {
-    if (!token || !user) return
-    const headers = { Authorization: `Bearer ${token}` }
-    try {
-      const sessRes = await fetch(`/api/sessions/by-code/${sessionCode}`, { headers })
-      let campaignId = null
-      if (sessRes.ok) {
-        const sessData = await sessRes.json()
-        campaignId = sessData.campaign_id
-        useSessionStore.getState().setSession({ sessionCode, sessionId: sessData.id, campaignId, isGM: true })
-      }
-      if (!campaignId) {
-        const campRes = await fetch('/api/campaigns', { headers })
-        if (campRes.ok) { const c = await campRes.json(); if (c.length) campaignId = c[0].id }
-      }
-      // Verify this user is the GM of this campaign
-      if (campaignId) {
-        const campCheck = await fetch(`/api/campaigns/${campaignId}`, { headers })
-        if (campCheck.ok) {
-          const campData = await campCheck.json()
-          if (campData.gm_user_id !== user.id) { setIsAuthorizedGM(false); return }
-          setIsAuthorizedGM(true)
-        }
-      }
-      if (!campaignId) return
-
-      const [campRes, playersRes] = await Promise.all([
-        fetch(`/api/campaigns/${campaignId}`, { headers }),
-        fetch(`/api/campaigns/${campaignId}/players-detail`, { headers }).catch(() => ({ ok: false })),
-      ])
-
-      const campaignData = campRes.ok ? await campRes.json() : null
-      const playersData = playersRes.ok ? await playersRes.json() : []
-
-      if (campaignData) {
-        setCampaignData({ campaign: campaignData, scenes: [], npcs: [], quests: [], loreBook: [] })
-      }
-      if (Array.isArray(playersData) && playersData.length > 0) {
-        const cv = (p) => p.current_vitals || {}
-        useSessionStore.getState().setPlayers(playersData.map(p => ({
-          id: p.user_id, username: p.username, characterId: p.character_id, character: p.character,
-          connected: p.connected,
-          current_vitals: cv(p),
-          currentLeP: cv(p).lep ?? p.current_lep, maxLeP: p.character?.derived_values?.LeP_max,
-          currentAsP: cv(p).asp ?? p.current_asp, maxAsP: p.character?.derived_values?.AsP_max,
-          currentKaP: cv(p).kap ?? p.current_kap, maxKaP: p.character?.derived_values?.KaP_max,
-          currentSchiP: cv(p).schip ?? p.current_schip,
-          conditions: getConditions(p),
-        })))
-        useCharacterStore.getState().setAllCharacters(
-          playersData.filter(p => p.character).map(p => ({
-            ...p.character,
-            current_vitals: cv(p),
-          }))
-        )
-      }
-      // Talents and creatures loaded lazily on first use (see loadTalentsIfNeeded/loadCreaturesIfNeeded)
-    } catch (err) { console.error('Failed to load:', err) }
-  }
 
   const { connected, sendMessage } = useWebSocket(sessionCode, user?.id, 'gm')
   const gmControls = useGMControls(sendMessage)

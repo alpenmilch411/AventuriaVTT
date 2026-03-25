@@ -4,6 +4,21 @@
 
 ---
 
+## Session 8f — GM Cockpit split into manageable pieces
+**Date:** 2026-03-26
+
+### What changed
+- **The GM screen code is now organized into clear sections** — the main GM Cockpit file was over 1400 lines of mixed session logic, popup state, and data loading. This has been split into three focused modules:
+  - **Session management** (login checks, loading campaign data, cleaning up when leaving)
+  - **Popup and dialog state** (which panels are open, what's selected, form inputs)
+  - **Reference data loading** (creatures and talents, loaded only when needed)
+- The GM screen works exactly the same as before — this is an internal reorganization that makes it easier to maintain and less likely to have performance issues when updating individual parts of the screen.
+
+### Files touched
+`frontend/src/hooks/useGMSession.js` (new), `frontend/src/hooks/useGMPopups.js` (new), `frontend/src/hooks/useGMDatabank.js` (new), `frontend/src/views/gm/GMCockpit.jsx`, `SPEC.md`
+
+---
+
 ## Session 8e — Faster startup by loading reference data only when needed
 **Date:** 2026-03-26
 
