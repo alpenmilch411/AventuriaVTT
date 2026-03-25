@@ -1,0 +1,326 @@
+[
+  {
+    "id": "fernkampf_dunkelheit",
+    "title": "Fernkampf bei Dunkelheit",
+    "category": "fernkampf",
+    "keywords": ["fernkampf", "sicht", "dunkelheit", "modifikator"],
+    "content": "Bei Dämmerung -2, bei Dunkelheit -4, bei Finsternis -6 auf Fernkampfproben.",
+    "table_data": {"Dämmerung": -2, "Dunkelheit": -4, "Finsternis": -6},
+    "source_reference": "Regelwerk S. 245"
+  },
+  {
+    "id": "fernkampf_entfernung",
+    "title": "Fernkampf-Entfernungsmodifikatoren",
+    "category": "fernkampf",
+    "keywords": ["fernkampf", "entfernung", "reichweite", "modifikator"],
+    "content": "Nahbereich: +2 auf FK. Mittlerer Bereich: kein Modifikator. Weiter Bereich: -2 auf FK.",
+    "table_data": {"Nah": 2, "Mittel": 0, "Weit": -2},
+    "source_reference": "Regelwerk S. 244"
+  },
+  {
+    "id": "fernkampf_bewegung",
+    "title": "Fernkampf gegen bewegliche Ziele",
+    "category": "fernkampf",
+    "keywords": ["fernkampf", "bewegung", "ziel", "modifikator"],
+    "content": "Gegen ein sich bewegendes Ziel: -2. Gegen ein rennendes Ziel: -4.",
+    "table_data": {"Gehend": -2, "Rennend": -4},
+    "source_reference": "Regelwerk S. 245"
+  },
+  {
+    "id": "fernkampf_deckung",
+    "title": "Fernkampf bei Deckung",
+    "category": "fernkampf",
+    "keywords": ["fernkampf", "deckung", "schutz", "modifikator"],
+    "content": "Halbe Deckung: -2. Dreiviertel-Deckung: -4. Fast volle Deckung: -6.",
+    "table_data": {"Halbe Deckung": -2, "Dreiviertel-Deckung": -4, "Fast volle Deckung": -6},
+    "source_reference": "Regelwerk S. 245"
+  },
+  {
+    "id": "fernkampf_groesse",
+    "title": "Fernkampf und Zielgröße",
+    "category": "fernkampf",
+    "keywords": ["fernkampf", "größe", "ziel", "modifikator"],
+    "content": "Winzig: -6. Klein: -4. Mittel: 0. Groß: +2. Riesig: +4.",
+    "table_data": {"Winzig": -6, "Klein": -4, "Mittel": 0, "Groß": 2, "Riesig": 4},
+    "source_reference": "Regelwerk S. 245"
+  },
+  {
+    "id": "zustand_betaeubung",
+    "title": "Zustand: Betäubung",
+    "category": "zustaende",
+    "keywords": ["zustand", "betäubung", "benommen"],
+    "content": "Betäubung I: -1 auf alle Proben. Betäubung II: -2 auf alle Proben. Betäubung III: -3 auf alle Proben. Betäubung IV: Bewusstlosigkeit. Jede Stufe gibt -1 auf AT, PA, AW, FK und INI.",
+    "table_data": {"Stufe I": -1, "Stufe II": -2, "Stufe III": -3, "Stufe IV": "Bewusstlosigkeit"},
+    "source_reference": "Regelwerk S. 34"
+  },
+  {
+    "id": "zustand_furcht",
+    "title": "Zustand: Furcht",
+    "category": "zustaende",
+    "keywords": ["zustand", "furcht", "angst", "panik"],
+    "content": "Furcht I: -1 auf MU-Proben und Kampfwerte. Furcht II: -2, Flucht bei Gelegenheit. Furcht III: -3, sofortige panische Flucht. Furcht IV: Katatonie.",
+    "table_data": {"Stufe I": "-1, beunruhigt", "Stufe II": "-2, verängstigt, flieht bei Gelegenheit", "Stufe III": "-3, panische Flucht", "Stufe IV": "Katatonisch, handlungsunfähig"},
+    "source_reference": "Regelwerk S. 35"
+  },
+  {
+    "id": "zustand_schmerz",
+    "title": "Zustand: Schmerz",
+    "category": "zustaende",
+    "keywords": ["zustand", "schmerz", "verwundung", "wundschwelle"],
+    "content": "Schmerz I: -1 auf alle Proben. Schmerz II: -2 auf alle Proben. Schmerz III: -3 auf alle Proben. Schmerz IV: Handlungsunfähigkeit. Schmerzstufen steigen bei Unterschreiten der Wundschwellen.",
+    "table_data": {"Stufe I": "-1 auf alle Proben", "Stufe II": "-2 auf alle Proben", "Stufe III": "-3 auf alle Proben", "Stufe IV": "Handlungsunfähig"},
+    "source_reference": "Regelwerk S. 36"
+  },
+  {
+    "id": "zustand_paralyse",
+    "title": "Zustand: Paralyse",
+    "category": "zustaende",
+    "keywords": ["zustand", "paralyse", "lähmung", "bewegungsunfähig"],
+    "content": "Paralyse I: -1 auf GE-Proben und AT/PA, GS halbiert. Paralyse II: -2, GS auf 1. Paralyse III: -3, bewegungsunfähig. Paralyse IV: Vollständig gelähmt.",
+    "table_data": {"Stufe I": "-1, GS halbiert", "Stufe II": "-2, GS 1", "Stufe III": "-3, bewegungsunfähig", "Stufe IV": "Vollständig gelähmt"},
+    "source_reference": "Regelwerk S. 36"
+  },
+  {
+    "id": "zustand_verwirrung",
+    "title": "Zustand: Verwirrung",
+    "category": "zustaende",
+    "keywords": ["zustand", "verwirrung", "konfusion"],
+    "content": "Verwirrung I: -1 auf KL-Proben. Verwirrung II: -2, handelt manchmal unlogisch. Verwirrung III: -3, handelt häufig irrational. Verwirrung IV: Völlige Orientierungslosigkeit.",
+    "table_data": {"Stufe I": "-1 auf KL-Proben", "Stufe II": "-2, gelegentlich unlogisch", "Stufe III": "-3, oft irrational", "Stufe IV": "Völlige Orientierungslosigkeit"},
+    "source_reference": "Regelwerk S. 37"
+  },
+  {
+    "id": "zustand_belastung",
+    "title": "Zustand: Belastung",
+    "category": "zustaende",
+    "keywords": ["zustand", "belastung", "last", "gewicht", "behinderung"],
+    "content": "Belastung = BE durch Rüstung + Traglast-Überschreitung. Jede Stufe Belastung gibt -1 auf GE- und KO-Proben, AT, PA, AW, INI.",
+    "table_data": {"Pro Stufe": "-1 auf GE/KO-Proben, AT, PA, AW, INI"},
+    "source_reference": "Regelwerk S. 33"
+  },
+  {
+    "id": "zustand_berauscht",
+    "title": "Zustand: Berauscht",
+    "category": "zustaende",
+    "keywords": ["zustand", "berauscht", "alkohol", "betrunken"],
+    "content": "Berauscht I: -1 auf IN, FF, GE-Proben. +1 auf MU. Berauscht II: -2, laut und ungeschickt. Berauscht III: -3, Sprachprobleme, Koordinationsverlust. Berauscht IV: Bewusstlosigkeit.",
+    "table_data": {"Stufe I": "-1 IN/FF/GE, +1 MU", "Stufe II": "-2, ungeschickt", "Stufe III": "-3, massive Einschränkungen", "Stufe IV": "Bewusstlosigkeit"},
+    "source_reference": "Regelwerk S. 33"
+  },
+  {
+    "id": "zustand_verzueckung",
+    "title": "Zustand: Verzückung",
+    "category": "zustaende",
+    "keywords": ["zustand", "verzückung", "trance", "hypnose"],
+    "content": "Verzückung I: -1 auf Wahrnehmung, +1 auf CH. Verzückung II: -2 auf Wahrnehmung und Kampf. Verzückung III: Handlungsunfähig, in Trance. Verzückung IV: Katatonie.",
+    "table_data": {"Stufe I": "-1 Wahrnehmung, +1 CH", "Stufe II": "-2 Wahrnehmung/Kampf", "Stufe III": "Handlungsunfähig", "Stufe IV": "Katatonie"},
+    "source_reference": "Regelwerk S. 38"
+  },
+  {
+    "id": "manoever_wuchtschlag",
+    "title": "Manöver: Wuchtschlag",
+    "category": "manoever",
+    "keywords": ["manöver", "wuchtschlag", "nahkampf", "schaden"],
+    "content": "Wuchtschlag wird vor dem Angriff angesagt. Je nach Stufe (I-III): AT-2/-4/-6, dafür SP+2/+4/+6. Nicht kombinierbar mit Finte. Benötigt entsprechende Sonderfertigkeit.",
+    "table_data": {"Stufe I": "AT-2, SP+2", "Stufe II": "AT-4, SP+4", "Stufe III": "AT-6, SP+6"},
+    "source_reference": "Regelwerk S. 240"
+  },
+  {
+    "id": "manoever_finte",
+    "title": "Manöver: Finte",
+    "category": "manoever",
+    "keywords": ["manöver", "finte", "nahkampf", "verteidigung"],
+    "content": "Finte wird vor dem Angriff angesagt. Je nach Stufe (I-III): AT-2/-4/-6, Gegner PA-2/-4/-6. Nicht kombinierbar mit Wuchtschlag. Benötigt entsprechende Sonderfertigkeit.",
+    "table_data": {"Stufe I": "AT-2, Gegner PA-2", "Stufe II": "AT-4, Gegner PA-4", "Stufe III": "AT-6, Gegner PA-6"},
+    "source_reference": "Regelwerk S. 239"
+  },
+  {
+    "id": "kritischer_treffer",
+    "title": "Kritischer Treffer (Kritischer Erfolg)",
+    "category": "kampf_allgemein",
+    "keywords": ["kritisch", "treffer", "erfolg", "doppel-1"],
+    "content": "Ein kritischer Treffer tritt bei einem Wurf von 1 auf dem AT-Wurf ein. Der Schaden wird verdoppelt (nach Abzug von RS). Der Gegner kann den kritischen Treffer nicht parieren oder ausweichen (aber RS gilt weiterhin).",
+    "table_data": {"Auslöser": "Wurf von 1 auf AT", "Effekt": "Schaden verdoppelt (nach RS), keine PA/AW möglich"},
+    "source_reference": "Regelwerk S. 234"
+  },
+  {
+    "id": "patzer_nahkampf",
+    "title": "Patzer im Nahkampf",
+    "category": "kampf_allgemein",
+    "keywords": ["patzer", "misserfolg", "nahkampf", "fumble"],
+    "content": "Ein Patzer tritt bei einem Wurf von 20 auf dem AT-Wurf ein. Bestätigungswurf mit 1W20: Bei erneutem Scheitern schwerwiegendere Konsequenzen. Mögliche Folgen: Waffe fallen gelassen, Waffe beschädigt, selbst getroffen, Stolpern.",
+    "table_data": {"Auslöser": "Wurf von 20 auf AT", "Bestätigung": "Erneuter Wurf gegen AT", "Folgen": "Waffe fallen lassen, Selbsttreffer, Stolpern"},
+    "source_reference": "Regelwerk S. 234"
+  },
+  {
+    "id": "qualitaetsstufen",
+    "title": "Qualitätsstufen (QS)",
+    "category": "proben",
+    "keywords": ["qualitätsstufe", "QS", "fertigkeitspunkte", "probe"],
+    "content": "Die QS bestimmt, wie gut eine Probe gelungen ist. QS = übrige FP / 3 (aufgerundet, max 6). QS 1: 1-3 FP übrig. QS 2: 4-6 FP. QS 3: 7-9 FP. QS 4: 10-12 FP. QS 5: 13-15 FP. QS 6: 16+ FP.",
+    "table_data": {"QS 1": "1-3 FP", "QS 2": "4-6 FP", "QS 3": "7-9 FP", "QS 4": "10-12 FP", "QS 5": "13-15 FP", "QS 6": "16+ FP"},
+    "source_reference": "Regelwerk S. 22"
+  },
+  {
+    "id": "wundschwellen",
+    "title": "Wundschwellen und Schmerz",
+    "category": "kampf_allgemein",
+    "keywords": ["wundschwelle", "schmerz", "lebenspunkte", "verwundung"],
+    "content": "Wundschwelle = KO (alternativ: Hälfte der max. LeP). Wenn ein einzelner Angriff mehr SP als die Wundschwelle verursacht, erhält das Ziel Schmerz +1. Bei 75% LeP-Verlust: Schmerz +1. Bei 50% LeP-Verlust: Schmerz +1. Bei 25% LeP-Verlust: Schmerz +1.",
+    "table_data": {"Einzeltreffer > WS": "+1 Schmerz", "75% LeP verloren": "+1 Schmerz", "50% LeP verloren": "+1 Schmerz", "25% LeP verloren": "+1 Schmerz"},
+    "source_reference": "Regelwerk S. 340"
+  },
+  {
+    "id": "regeneration",
+    "title": "Regeneration (Erholung)",
+    "category": "erholung",
+    "keywords": ["regeneration", "heilung", "rast", "erholung", "schlaf"],
+    "content": "Nach 6 Stunden Schlaf: Regeneration 1W6 LeP. Regeneration AsP: 1W6 AsP nach 6 Stunden Schlaf. Regeneration KaP: 1W6 KaP nach 6 Stunden Schlaf und Gebet. Modifikatoren: Gute Unterkunft +1, Schlechte Unterkunft -1, Im Freien ohne Schutz -2. Heilkunde Wunden kann zusätzlich LeP regenerieren.",
+    "table_data": {"LeP": "1W6 pro Nacht", "AsP": "1W6 pro Nacht", "KaP": "1W6 pro Nacht (mit Gebet)", "Gute Unterkunft": "+1", "Freies Feld ohne Schutz": "-2"},
+    "source_reference": "Regelwerk S. 340"
+  },
+  {
+    "id": "belastung_regeln",
+    "title": "Belastung (BE) Regeln",
+    "category": "kampf_allgemein",
+    "keywords": ["belastung", "behinderung", "rüstung", "BE"],
+    "content": "BE = Behinderung durch Rüstung. Beeinflusst: INI (-BE), AW (-BE), GE-basierte Proben (-BE), GS (bei BE >= 4: GS-1 pro BE über 3). Sonderfertigkeit Rüstungsgewöhnung reduziert BE um 1-2.",
+    "table_data": {"INI": "-BE", "AW": "-BE", "GE-Proben": "-BE (wenn 'ja' bei Behinderung)", "GS": "-1 pro BE über 3"},
+    "source_reference": "Regelwerk S. 232"
+  },
+  {
+    "id": "passierschlag",
+    "title": "Passierschlag (Gelegenheitsangriff)",
+    "category": "kampf_allgemein",
+    "keywords": ["passierschlag", "gelegenheitsangriff", "flucht", "nahkampf"],
+    "content": "Wenn ein Kämpfer den Nahkampfbereich eines Gegners verlässt, erhält der Gegner einen Passierschlag. Der Passierschlag ist ein normaler AT-Wurf. Der Fliehende kann nicht parieren oder ausweichen. Pro KR kann ein Kämpfer nur einen Passierschlag ausführen.",
+    "table_data": {"Auslöser": "Verlassen des Nahkampfbereichs", "Abwehr": "Keine PA/AW möglich", "Limit": "1 Passierschlag pro KR pro Kämpfer"},
+    "source_reference": "Regelwerk S. 237"
+  },
+  {
+    "id": "initiative",
+    "title": "Initiative und Kampfreihenfolge",
+    "category": "kampf_allgemein",
+    "keywords": ["initiative", "INI", "kampfreihenfolge", "reihenfolge"],
+    "content": "INI = INI-Basis + 1W6. INI-Basis = (MU + GE) / 2 (abgerundet). Modifikatoren: -BE durch Rüstung, Überraschung -4. Höchste INI handelt zuerst. Bei Gleichstand: höherer INI-Basiswert. Reaktionen (PA, AW) gelten nicht als Aktion.",
+    "table_data": {"Formel": "(MU + GE) / 2 + 1W6", "Rüstung": "-BE", "Überraschung": "-4"},
+    "source_reference": "Regelwerk S. 230"
+  },
+  {
+    "id": "seelenwiderstand",
+    "title": "Seelenkraft (SK) und Zähigkeit (ZK)",
+    "category": "magie_widerstand",
+    "keywords": ["seelenkraft", "SK", "zähigkeit", "ZK", "widerstand", "magie"],
+    "content": "SK = (MU + KL + IN) / 6 (abgerundet). Dient als Widerstand gegen geistige/magische Beeinflussung. ZK = (KO + KO + KK) / 6 (abgerundet). Dient als Widerstand gegen körperliche magische Effekte und Gift/Krankheit. Zauber/Liturgien mit SK/ZK-Widerstand: FP = FP - SK/ZK des Ziels.",
+    "table_data": {"SK-Formel": "(MU + KL + IN) / 6", "ZK-Formel": "(KO + KO + KK) / 6", "Widerstand": "FP der Probe werden um SK/ZK reduziert"},
+    "source_reference": "Regelwerk S. 23"
+  },
+  {
+    "id": "nahkampf_reichweite",
+    "title": "Nahkampf-Reichweiten",
+    "category": "kampf_allgemein",
+    "keywords": ["reichweite", "nahkampf", "kurz", "mittel", "lang"],
+    "content": "Kurz: Dolche, Fäuste. Mittel: Schwerter, Äxte. Lang: Stangenwaffen, Zweihandwaffen. Bei unterschiedlicher Reichweite: Kämpfer mit längerer Reichweite hat +2 AT/PA gegen kürzere Reichweite, wenn er Distanz wahren kann. Kämpfer mit kürzerer Reichweite hat +2 AT/PA im Nahbereich.",
+    "table_data": {"Kurz": "Dolche, Fäuste", "Mittel": "Schwerter, Äxte, Streitkolben", "Lang": "Stangenwaffen, Zweihandwaffen", "Vorteil lange Reichweite": "+2 AT/PA auf Distanz", "Vorteil kurze Reichweite": "+2 AT/PA im Nahbereich"},
+    "source_reference": "Regelwerk S. 236"
+  },
+  {
+    "id": "proben_mechanik",
+    "title": "Talentproben / 3W20-Mechanik",
+    "category": "proben",
+    "keywords": ["probe", "talentprobe", "3W20", "fertigkeitswert", "erleichterung", "erschwernis"],
+    "content": "Eine Talentprobe besteht aus 3 Würfen mit je 1W20 gegen die 3 zugehörigen Eigenschaftswerte. Jeder Wurf, der den Eigenschaftswert übersteigt, muss durch Fertigkeitspunkte (FP) ausgeglichen werden. Wenn FP >= 0 nach Ausgleich: Probe bestanden. QS = restliche FP / 3 (aufgerundet). Erleichterung: Eigenschaftswerte +Mod. Erschwernis: Eigenschaftswerte -Mod.",
+    "table_data": {"Bestanden": "FP >= 0 nach Ausgleich", "Gescheitert": "FP < 0", "Erleichterung": "+X auf jeden Eigenschaftswert", "Erschwernis": "-X auf jeden Eigenschaftswert"},
+    "source_reference": "Regelwerk S. 20"
+  },
+  {
+    "id": "kritische_probe",
+    "title": "Kritischer Erfolg / Patzer bei Proben",
+    "category": "proben",
+    "keywords": ["kritisch", "patzer", "probe", "doppel-1", "doppel-20"],
+    "content": "Kritischer Erfolg: Wenn 2 der 3 Würfe eine 1 zeigen. Probe gilt automatisch als bestanden mit QS = max. erreichbare QS (mind. 1). Patzer: Wenn 2 der 3 Würfe eine 20 zeigen. Probe gilt automatisch als gescheitert mit besonders negativem Ergebnis.",
+    "table_data": {"Kritischer Erfolg": "2x1 bei 3W20", "Patzer": "2x20 bei 3W20"},
+    "source_reference": "Regelwerk S. 22"
+  },
+  {
+    "id": "magieresistenz_zauber",
+    "title": "Magiewiderstand bei Zaubern",
+    "category": "magie_widerstand",
+    "keywords": ["magie", "widerstand", "zauber", "SK", "ZK", "abwehr"],
+    "content": "Zauber, die gegen SK wirken: FP-Pool des Zauberers wird um SK des Ziels reduziert. Zauber, die gegen ZK wirken: FP-Pool wird um ZK des Ziels reduziert. Manche Zauber erlauben zusätzliche Abwehrproben (MU, KL, KO etc.).",
+    "table_data": {"Geistige Zauber": "FP - SK des Ziels", "Körperliche Zauber": "FP - ZK des Ziels"},
+    "source_reference": "Regelwerk S. 255"
+  },
+  {
+    "id": "kampfrunde_struktur",
+    "title": "Struktur einer Kampfrunde",
+    "category": "kampf_allgemein",
+    "keywords": ["kampfrunde", "KR", "aktion", "freie Aktion", "reihenfolge"],
+    "content": "Eine KR dauert ca. 5 Sekunden. Pro KR hat jeder Kämpfer: 1 Aktion (Angriff, Zaubern, Bewegen etc.), 1 Reaktion (Parade oder Ausweichen), beliebig viele freie Aktionen (Sprechen, Waffe ziehen mit SF). Initiative bestimmt die Reihenfolge. Bewegung: bis zu GS/2 Schritt als freie Aktion, volle GS als Aktion.",
+    "table_data": {"Dauer": "~5 Sekunden", "Aktion": "1 pro KR", "Reaktion": "1 PA oder 1 AW", "Freie Aktionen": "beliebig", "Bewegung (frei)": "GS/2 Schritt", "Bewegung (Aktion)": "GS Schritt"},
+    "source_reference": "Regelwerk S. 228"
+  },
+  {
+    "id": "ausweichen_regeln",
+    "title": "Ausweichen (AW)",
+    "category": "kampf_allgemein",
+    "keywords": ["ausweichen", "AW", "verteidigung", "parade"],
+    "content": "AW-Basiswert = GE / 2 (abgerundet). Ausweichen kann anstelle einer Parade verwendet werden. Vorteil: Funktioniert gegen alle Angriffe (auch Fernkampf). Nachteil: Erfordert 1 Schritt Bewegung. Eingeschränkt bei Belastung (-BE). Kann durch SF 'Verbessertes Ausweichen' verbessert werden.",
+    "table_data": {"Formel": "GE / 2 (abgerundet)", "Modifikatoren": "-BE, +SF Verbessertes Ausweichen", "Vorteil": "Gegen alle Angriffe nutzbar", "Nachteil": "1 Schritt Platz nötig"},
+    "source_reference": "Regelwerk S. 235"
+  },
+  {
+    "id": "gift_regeln",
+    "title": "Giftregeln",
+    "category": "gift_krankheit",
+    "keywords": ["gift", "vergiftung", "ZK", "widerstand"],
+    "content": "Bei Vergiftung: ZK-Probe (ggf. mit Modifikator des Gifts). Gescheitert: Gift wirkt. Stufe des Gifts bestimmt die Auswirkung. Gifte haben: Stufe (1-6), Wirkungsintervall, Wirkungsdauer, Art (Einnahme, Kontakt, Inhalation, Wunde). Gegenmaßnahmen: Gegengift, Heilkunde Gift, Liturgie/Zauber.",
+    "table_data": {"Probe": "ZK + Modifikator des Gifts", "Stufe 1-2": "Leichtes Gift", "Stufe 3-4": "Mittleres Gift", "Stufe 5-6": "Tödliches Gift"},
+    "source_reference": "Regelwerk S. 342"
+  },
+  {
+    "id": "krankheit_regeln",
+    "title": "Krankheitsregeln",
+    "category": "gift_krankheit",
+    "keywords": ["krankheit", "seuche", "infektion", "ZK"],
+    "content": "Bei Krankheitsexposition: ZK-Probe (ggf. mit Modifikator). Gescheitert: Krankheit bricht nach Inkubationszeit aus. Krankheiten haben Stufe, Inkubationszeit, Symptome und Dauer. Heilung: Heilkunde Krankheiten, Liturgie, natürliche Erholung (KO-Probe alle X Tage).",
+    "table_data": {"Probe": "ZK + Modifikator der Krankheit", "Inkubation": "Stunden bis Tage", "Heilung": "Heilkunde, Liturgie, natürlich"},
+    "source_reference": "Regelwerk S. 343"
+  },
+  {
+    "id": "sturz_fallschaden",
+    "title": "Fallschaden",
+    "category": "umgebung",
+    "keywords": ["fall", "sturz", "fallschaden", "höhe"],
+    "content": "Pro 1 Schritt Fallhöhe: 1W6 SP (RS gilt). Ab 3 Schritt: Körperbeherrschung-Probe, bei Gelingen: SP halbiert. Ab 10 Schritt: Automatisch bewusstlos bei Aufprall. Maximum: 20W6 SP (ab 20 Schritt).",
+    "table_data": {"Pro Schritt": "1W6 SP", "Ab 3 Schritt": "Körperbeherrschung-Probe möglich", "Maximum": "20W6 SP"},
+    "source_reference": "Regelwerk S. 340"
+  },
+  {
+    "id": "feuer_brandschaden",
+    "title": "Feuer und Brandschaden",
+    "category": "umgebung",
+    "keywords": ["feuer", "brand", "flamme", "schaden"],
+    "content": "Fackel/Kerze: 1W6 SP pro KR. Lagerfeuer: 2W6 SP pro KR. Hausbrand: 3W6 SP pro KR. Brennende Kleidung: 1W6 SP pro KR, GE-Probe zum Löschen (1 Aktion). RS gilt nur bei feuerfester Rüstung.",
+    "table_data": {"Fackel": "1W6 SP/KR", "Lagerfeuer": "2W6 SP/KR", "Hausbrand": "3W6 SP/KR", "Löschen": "GE-Probe, 1 Aktion"},
+    "source_reference": "Regelwerk S. 341"
+  },
+  {
+    "id": "ertrinken",
+    "title": "Ertrinken",
+    "category": "umgebung",
+    "keywords": ["ertrinken", "wasser", "schwimmen", "atem"],
+    "content": "Ein Held kann KO x 2 KR die Luft anhalten (bei Anstrengung: KO KR). Danach: Schwimmen-Probe pro KR, bei Scheitern: 1W6 SP (ignoriert RS). Ab 0 LeP unter Wasser: Bewusstlosigkeit und Ertrinken.",
+    "table_data": {"Luft anhalten": "KO x 2 KR (ruhig), KO KR (Anstrengung)", "Ertrinken": "1W6 SP/KR (ignoriert RS)"},
+    "source_reference": "Regelwerk S. 341"
+  },
+  {
+    "id": "sicht_nahkampf",
+    "title": "Sichtmodifikatoren im Nahkampf",
+    "category": "kampf_allgemein",
+    "keywords": ["sicht", "dunkelheit", "nahkampf", "modifikator"],
+    "content": "Dämmerung: -1 auf AT und PA. Dunkelheit: -2 auf AT und PA. Finsternis: -3 auf AT und PA. Blindheit: -4 auf AT, PA nur mit Kampfgespür oder Blindkampf. Nachtsicht-Fähigkeit: Dämmerung und Dunkelheit ohne Abzüge.",
+    "table_data": {"Dämmerung": "-1 AT/PA", "Dunkelheit": "-2 AT/PA", "Finsternis": "-3 AT/PA", "Blindheit": "-4 AT, PA nur mit SF"},
+    "source_reference": "Regelwerk S. 236"
+  }
+]

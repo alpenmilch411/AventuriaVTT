@@ -1,0 +1,68 @@
+[
+  {
+    "id": "faust_buckler",
+    "name": "Faust-/Buckler",
+    "icon_id": "shield_buckler",
+    "at_mod": -1,
+    "pa_mod": 1,
+    "weight": 0.5,
+    "price": 50,
+    "size": "klein",
+    "description": "Ein kleiner Faustschild, der die Parade mit der Waffenhand unterstützt."
+  },
+  {
+    "id": "kleiner_schild",
+    "name": "Kleiner Schild",
+    "icon_id": "shield_small",
+    "at_mod": -1,
+    "pa_mod": 2,
+    "weight": 1.5,
+    "price": 80,
+    "size": "klein",
+    "description": "Ein leichter Rundschild, der guten Schutz bei geringer Beeinträchtigung bietet."
+  },
+  {
+    "id": "mittlerer_schild",
+    "name": "Mittlerer Schild",
+    "icon_id": "shield_medium",
+    "at_mod": -2,
+    "pa_mod": 3,
+    "weight": 3.0,
+    "price": 120,
+    "size": "mittel",
+    "description": "Ein mittelgroßer Schild, der soliden Schutz gegen die meisten Angriffe bietet."
+  },
+  {
+    "id": "grosser_schild",
+    "name": "Großer Schild",
+    "icon_id": "shield_large",
+    "at_mod": -3,
+    "pa_mod": 4,
+    "weight": 5.0,
+    "price": 200,
+    "size": "groß",
+    "description": "Ein großer Schild, der fast den ganzen Körper schützt, aber die Offensive einschränkt."
+  },
+  {
+    "id": "grossschild",
+    "name": "Großschild",
+    "icon_id": "shield_tower",
+    "at_mod": -4,
+    "pa_mod": 5,
+    "weight": 7.0,
+    "price": 300,
+    "size": "riesig",
+    "description": "Ein mannshoher Turmschild, der fast vollständige Deckung bietet, aber schwer zu handhaben ist."
+  },
+  {
+    "id": "thorwalerschild",
+    "name": "Thorwalerschild",
+    "icon_id": "shield_thorwal",
+    "at_mod": -1,
+    "pa_mod": 2,
+    "weight": 2.0,
+    "price": 100,
+    "size": "mittel",
+    "description": "Ein runder Holzschild thorwalscher Machart mit Metallbuckel, beliebt bei nordischen Kriegern."
+  }
+]

@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-dsa-bg text-dsa-parchment font-body antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-dsa-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-dsa-bg-medium rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-dsa-gold-dark;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-dsa-gold text-dsa-bg font-semibold rounded-lg
+           hover:bg-dsa-gold-light active:bg-dsa-gold-dark
+           transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 border border-dsa-gold text-dsa-gold rounded-lg
+           hover:bg-dsa-gold/10 active:bg-dsa-gold/20
+           transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-dsa-danger text-white font-semibold rounded-lg
+           hover:bg-red-700 active:bg-red-800
+           transition-colors duration-200;
+  }
+
+  .btn-ghost {
+    @apply px-3 py-2 text-dsa-parchment-dark rounded-lg
+           hover:bg-dsa-bg-medium active:bg-dsa-bg-card
+           transition-colors duration-200;
+  }
+
+  .card {
+    @apply bg-dsa-bg-card border border-dsa-bg-medium rounded-xl p-4;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 bg-dsa-bg border border-dsa-bg-medium rounded-lg
+           text-dsa-parchment placeholder-dsa-parchment-dark/50
+           focus:border-dsa-gold focus:outline-none focus:ring-1 focus:ring-dsa-gold/50
+           transition-colors duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-dsa-parchment-dark mb-1;
+  }
+
+  .section-title {
+    @apply text-lg font-display font-semibold text-dsa-gold;
+  }
+
+  .divider {
+    @apply border-t border-dsa-bg-medium;
+  }
+
+  .player-header {
+    @apply bg-gradient-to-r from-dsa-bg-light via-dsa-bg-card to-dsa-bg-light
+           border-b border-dsa-gold/10 px-6 py-3;
+  }
+
+  .player-vitals {
+    @apply bg-gradient-to-b from-dsa-bg-card/80 to-dsa-bg/80
+           border-b border-dsa-bg-medium px-6 py-3;
+  }
+
+  .player-tab {
+    @apply py-2.5 px-4 flex items-center gap-2 text-sm font-medium transition-all
+           whitespace-nowrap border-b-2 border-transparent;
+  }
+
+  .player-tab-active {
+    @apply text-dsa-gold border-dsa-gold bg-dsa-gold/5;
+  }
+
+  .player-tab-inactive {
+    @apply text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-card/50;
+  }
+
+  .player-content {
+    @apply flex-1 overflow-y-auto px-6 lg:px-10 py-6;
+  }
+
+  .fantasy-card {
+    @apply bg-gradient-to-b from-dsa-bg-card to-dsa-bg-light/50
+           border border-dsa-bg-medium rounded-xl
+           shadow-lg shadow-black/20;
+  }
+
+  .fantasy-card-gold {
+    @apply bg-gradient-to-b from-dsa-bg-card to-dsa-bg-light/50
+           border border-dsa-gold/20 rounded-xl
+           shadow-lg shadow-dsa-gold/5;
+  }
+
+  .stat-pill {
+    @apply inline-flex items-center gap-1 px-2 py-0.5
+           bg-dsa-bg rounded-full border border-dsa-bg-medium
+           text-xs text-dsa-parchment;
+  }
+}

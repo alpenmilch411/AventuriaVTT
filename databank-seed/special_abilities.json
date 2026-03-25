@@ -1,0 +1,1071 @@
+[
+  {
+    "id": "wuchtschlag_1",
+    "name": "Wuchtschlag I",
+    "category": "nahkampf",
+    "prerequisites": [
+      "Nahkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 15,
+    "at_modifier": -2,
+    "pa_modifier": null,
+    "damage_modifier": "+2",
+    "combinable_with": [],
+    "exclusive_with": [
+      "finte_1",
+      "finte_2",
+      "finte_3"
+    ],
+    "applicable_techniques": [
+      "Schwerter",
+      "Äxte",
+      "Hiebwaffen",
+      "Zweihandschwerter",
+      "Zweihandäxte",
+      "Stangenwaffen"
+    ],
+    "description": "Ein besonders harter Schlag, der mehr Schaden verursacht.",
+    "rules_text": "Ansage vor dem Angriff. AT-2, bei Treffer SP+2. Nicht kombinierbar mit Finte."
+  },
+  {
+    "id": "wuchtschlag_2",
+    "name": "Wuchtschlag II",
+    "category": "nahkampf",
+    "prerequisites": [
+      "Nahkampf-Kampftechnik 12",
+      "Wuchtschlag I"
+    ],
+    "ap_cost": 20,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": "+4",
+    "combinable_with": [],
+    "exclusive_with": [
+      "finte_1",
+      "finte_2",
+      "finte_3"
+    ],
+    "applicable_techniques": [
+      "Schwerter",
+      "Äxte",
+      "Hiebwaffen",
+      "Zweihandschwerter",
+      "Zweihandäxte",
+      "Stangenwaffen"
+    ],
+    "description": "Ein noch härterer Schlag mit enormer Wucht.",
+    "rules_text": "Ansage vor dem Angriff. AT-4, bei Treffer SP+4. Nicht kombinierbar mit Finte."
+  },
+  {
+    "id": "wuchtschlag_3",
+    "name": "Wuchtschlag III",
+    "category": "nahkampf",
+    "prerequisites": [
+      "Nahkampf-Kampftechnik 14",
+      "Wuchtschlag II"
+    ],
+    "ap_cost": 25,
+    "at_modifier": -6,
+    "pa_modifier": null,
+    "damage_modifier": "+6",
+    "combinable_with": [],
+    "exclusive_with": [
+      "finte_1",
+      "finte_2",
+      "finte_3"
+    ],
+    "applicable_techniques": [
+      "Schwerter",
+      "Äxte",
+      "Hiebwaffen",
+      "Zweihandschwerter",
+      "Zweihandäxte",
+      "Stangenwaffen"
+    ],
+    "description": "Ein vernichtender Schlag, der selbst Rüstungen spalten kann.",
+    "rules_text": "Ansage vor dem Angriff. AT-6, bei Treffer SP+6. Nicht kombinierbar mit Finte."
+  },
+  {
+    "id": "finte_1",
+    "name": "Finte I",
+    "category": "nahkampf",
+    "prerequisites": [
+      "Nahkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 15,
+    "at_modifier": -2,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [
+      "wuchtschlag_1",
+      "wuchtschlag_2",
+      "wuchtschlag_3"
+    ],
+    "applicable_techniques": [
+      "Schwerter",
+      "Dolche",
+      "Fechtwaffen",
+      "Äxte",
+      "Hiebwaffen",
+      "Stangenwaffen"
+    ],
+    "description": "Eine Täuschung, die die Verteidigung des Gegners erschwert.",
+    "rules_text": "Ansage vor dem Angriff. AT-2, Gegner erhält -2 auf PA. Nicht kombinierbar mit Wuchtschlag."
+  },
+  {
+    "id": "finte_2",
+    "name": "Finte II",
+    "category": "nahkampf",
+    "prerequisites": [
+      "Nahkampf-Kampftechnik 12",
+      "Finte I"
+    ],
+    "ap_cost": 20,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [
+      "wuchtschlag_1",
+      "wuchtschlag_2",
+      "wuchtschlag_3"
+    ],
+    "applicable_techniques": [
+      "Schwerter",
+      "Dolche",
+      "Fechtwaffen",
+      "Äxte",
+      "Hiebwaffen",
+      "Stangenwaffen"
+    ],
+    "description": "Eine raffiniertere Täuschung, die den Gegner stärker irritiert.",
+    "rules_text": "Ansage vor dem Angriff. AT-4, Gegner erhält -4 auf PA. Nicht kombinierbar mit Wuchtschlag."
+  },
+  {
+    "id": "finte_3",
+    "name": "Finte III",
+    "category": "nahkampf",
+    "prerequisites": [
+      "Nahkampf-Kampftechnik 14",
+      "Finte II"
+    ],
+    "ap_cost": 25,
+    "at_modifier": -6,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [
+      "wuchtschlag_1",
+      "wuchtschlag_2",
+      "wuchtschlag_3"
+    ],
+    "applicable_techniques": [
+      "Schwerter",
+      "Dolche",
+      "Fechtwaffen",
+      "Äxte",
+      "Hiebwaffen",
+      "Stangenwaffen"
+    ],
+    "description": "Eine meisterhafte Täuschung, die fast jede Parade unmöglich macht.",
+    "rules_text": "Ansage vor dem Angriff. AT-6, Gegner erhält -6 auf PA. Nicht kombinierbar mit Wuchtschlag."
+  },
+  {
+    "id": "hammerschlag",
+    "name": "Hammerschlag",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KK 15",
+      "Nahkampf-Kampftechnik 12",
+      "Wuchtschlag II"
+    ],
+    "ap_cost": 25,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": "+4 und RS des Gegners halbiert",
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Hiebwaffen",
+      "Zweihandäxte",
+      "Zweihandschwerter"
+    ],
+    "description": "Ein gewaltiger Schlag, der Rüstungen durchbricht.",
+    "rules_text": "Ansage vor dem Angriff. AT-4, bei Treffer SP+4 und RS des Ziels wird für diesen Angriff halbiert (abrunden)."
+  },
+  {
+    "id": "klingensturm",
+    "name": "Klingensturm",
+    "category": "nahkampf",
+    "prerequisites": [
+      "GE 15",
+      "Nahkampf-Kampftechnik 14"
+    ],
+    "ap_cost": 30,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Schwerter",
+      "Fechtwaffen"
+    ],
+    "description": "Ein Wirbel schneller Angriffe gegen einen oder mehrere Gegner.",
+    "rules_text": "Ansage als Aktion. AT-4, ermöglicht 2 Angriffe in einer Aktion gegen verschiedene Gegner. Keine PA in dieser KR."
+  },
+  {
+    "id": "todesstoss",
+    "name": "Todesstoß",
+    "category": "nahkampf",
+    "prerequisites": [
+      "Nahkampf-Kampftechnik 14",
+      "Finte II oder Wuchtschlag II"
+    ],
+    "ap_cost": 30,
+    "at_modifier": -8,
+    "pa_modifier": null,
+    "damage_modifier": "verdoppelt",
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Schwerter",
+      "Dolche",
+      "Fechtwaffen",
+      "Stangenwaffen"
+    ],
+    "description": "Ein gezielter Stoß auf eine tödliche Stelle des Gegners.",
+    "rules_text": "Ansage vor dem Angriff. AT-8, bei Treffer wird der Schaden verdoppelt (nach RS). Einmal pro Kampf."
+  },
+  {
+    "id": "meisterparade",
+    "name": "Meisterparade",
+    "category": "nahkampf",
+    "prerequisites": [
+      "Nahkampf-Kampftechnik 12"
+    ],
+    "ap_cost": 20,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Schwerter",
+      "Fechtwaffen",
+      "Stangenwaffen",
+      "Dolche"
+    ],
+    "description": "Erlaubt eine zweite Parade in derselben Kampfrunde.",
+    "rules_text": "Passive Sonderfertigkeit. Erlaubt eine zweite Parade pro KR (normalerweise nur eine). Jede weitere PA nach der ersten hat -4."
+  },
+  {
+    "id": "beidhaendiger_kampf_1",
+    "name": "Beidhändiger Kampf I",
+    "category": "nahkampf",
+    "prerequisites": [
+      "GE 13",
+      "Nahkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 25,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Schwerter",
+      "Dolche",
+      "Fechtwaffen"
+    ],
+    "description": "Erlaubt den Kampf mit einer Waffe in jeder Hand.",
+    "rules_text": "Passive Sonderfertigkeit. Erlaubt einen Bonusangriff mit der Zweitwaffe (AT-4). Voraussetzung: Einhandwaffe in jeder Hand."
+  },
+  {
+    "id": "beidhaendiger_kampf_2",
+    "name": "Beidhändiger Kampf II",
+    "category": "nahkampf",
+    "prerequisites": [
+      "GE 15",
+      "Beidhändiger Kampf I",
+      "Nahkampf-Kampftechnik 12"
+    ],
+    "ap_cost": 30,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Schwerter",
+      "Dolche",
+      "Fechtwaffen"
+    ],
+    "description": "Meisterschaft im beidhändigen Kampf.",
+    "rules_text": "Passive Sonderfertigkeit. AT-Abzug für Zweitwaffe reduziert auf -2."
+  },
+  {
+    "id": "schildkampf_1",
+    "name": "Schildkampf I",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KK 13"
+    ],
+    "ap_cost": 15,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Grundlagen des Kampfes mit Schild.",
+    "rules_text": "Passive Sonderfertigkeit. Reduziert den AT-Malus durch Schildnutzung um 1."
+  },
+  {
+    "id": "schildkampf_2",
+    "name": "Schildkampf II",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KK 15",
+      "Schildkampf I"
+    ],
+    "ap_cost": 20,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Fortgeschrittener Schildkampf mit zusätzlichem Schutz.",
+    "rules_text": "Passive Sonderfertigkeit. PA-Bonus des Schildes erhöht sich um +1. AT-Malus durch Schild um weitere 1 reduziert."
+  },
+  {
+    "id": "ausfall",
+    "name": "Ausfall",
+    "category": "nahkampf",
+    "prerequisites": [
+      "GE 13",
+      "Nahkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 15,
+    "at_modifier": -2,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Fechtwaffen",
+      "Schwerter"
+    ],
+    "description": "Ein überraschender Vorstoß, der die Reichweite erhöht.",
+    "rules_text": "Ansage vor dem Angriff. AT-2, Reichweite der Waffe gilt als eine Stufe größer."
+  },
+  {
+    "id": "windmuehle",
+    "name": "Windmühle",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KK 15",
+      "Nahkampf-Kampftechnik 12"
+    ],
+    "ap_cost": 25,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Zweihandschwerter",
+      "Zweihandäxte",
+      "Stangenwaffen"
+    ],
+    "description": "Ein kreisender Angriff gegen alle Gegner in Reichweite.",
+    "rules_text": "Ansage als Aktion. AT-4 gegen alle Gegner in Nahkampfreichweite (max 3). Keine PA in dieser KR."
+  },
+  {
+    "id": "kreuzblock",
+    "name": "Kreuzblock",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KO 13",
+      "Nahkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 20,
+    "at_modifier": null,
+    "pa_modifier": 2,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Zweihandschwerter",
+      "Zweihandäxte",
+      "Stangenwaffen"
+    ],
+    "description": "Eine verstärkte Blockade mit einer Zweihandwaffe.",
+    "rules_text": "Ansage als Reaktion. PA+2 bei Nutzung einer Zweihandwaffe. Kann statt normaler Parade eingesetzt werden."
+  },
+  {
+    "id": "niederwerfen",
+    "name": "Niederwerfen",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KK 13",
+      "Raufen 8"
+    ],
+    "ap_cost": 15,
+    "at_modifier": -2,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Raufen"
+    ],
+    "description": "Versucht den Gegner zu Boden zu werfen.",
+    "rules_text": "Ansage vor dem Angriff. AT-2, bei Treffer: Vergleichsprobe KK gegen KK/GE des Gegners. Gegner liegt bei Scheitern am Boden."
+  },
+  {
+    "id": "sturmangriff",
+    "name": "Sturmangriff",
+    "category": "nahkampf",
+    "prerequisites": [
+      "MU 13"
+    ],
+    "ap_cost": 15,
+    "at_modifier": 2,
+    "pa_modifier": -2,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Schwerter",
+      "Äxte",
+      "Hiebwaffen",
+      "Stangenwaffen"
+    ],
+    "description": "Ein wilder Ansturm aus der Bewegung heraus.",
+    "rules_text": "Ansage bei Bewegung. AT+2 wenn mind. 4 Schritt Anlauf. PA-2 in der gleichen KR. Nicht mit Fernkampf kombinierbar."
+  },
+  {
+    "id": "verbessertes_ausweichen_1",
+    "name": "Verbessertes Ausweichen I",
+    "category": "nahkampf",
+    "prerequisites": [
+      "GE 13"
+    ],
+    "ap_cost": 15,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Verbesserte Fähigkeit zum Ausweichen.",
+    "rules_text": "Passive Sonderfertigkeit. AW +2."
+  },
+  {
+    "id": "verbessertes_ausweichen_2",
+    "name": "Verbessertes Ausweichen II",
+    "category": "nahkampf",
+    "prerequisites": [
+      "GE 15",
+      "Verbessertes Ausweichen I"
+    ],
+    "ap_cost": 20,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Meisterhafte Ausweichfähigkeit.",
+    "rules_text": "Passive Sonderfertigkeit. AW +4 (insgesamt mit Stufe I)."
+  },
+  {
+    "id": "schnellziehen",
+    "name": "Schnellziehen",
+    "category": "nahkampf",
+    "prerequisites": [
+      "FF 13"
+    ],
+    "ap_cost": 10,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Ermöglicht das Ziehen einer Waffe als freie Aktion.",
+    "rules_text": "Passive Sonderfertigkeit. Waffe ziehen ist eine freie Aktion statt einer Aktion."
+  },
+  {
+    "id": "schnellladen",
+    "name": "Schnellladen",
+    "category": "fernkampf",
+    "prerequisites": [
+      "FF 13",
+      "Fernkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 15,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Bögen",
+      "Armbrüste"
+    ],
+    "description": "Reduziert die Nachladezeit einer Fernkampfwaffe.",
+    "rules_text": "Passive Sonderfertigkeit. Nachladezeit um 1 Aktion reduziert (Minimum 1)."
+  },
+  {
+    "id": "scharfschuetze",
+    "name": "Scharfschütze",
+    "category": "fernkampf",
+    "prerequisites": [
+      "FF 15",
+      "Fernkampf-Kampftechnik 12"
+    ],
+    "ap_cost": 25,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Bögen",
+      "Armbrüste"
+    ],
+    "description": "Verbesserte Treffgenauigkeit auf große Entfernung.",
+    "rules_text": "Passive Sonderfertigkeit. Fernkampf-Abzüge für Entfernung um 2 reduziert."
+  },
+  {
+    "id": "praeziser_schuss_1",
+    "name": "Präziser Schuss I",
+    "category": "fernkampf",
+    "prerequisites": [
+      "FF 13",
+      "Fernkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 15,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": "+2",
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Bögen",
+      "Armbrüste",
+      "Wurfwaffen"
+    ],
+    "description": "Ein gezielter Schuss auf eine verwundbare Stelle.",
+    "rules_text": "Ansage vor dem Angriff. FK-4, bei Treffer SP+2."
+  },
+  {
+    "id": "praeziser_schuss_2",
+    "name": "Präziser Schuss II",
+    "category": "fernkampf",
+    "prerequisites": [
+      "FF 15",
+      "Präziser Schuss I",
+      "Fernkampf-Kampftechnik 12"
+    ],
+    "ap_cost": 20,
+    "at_modifier": -6,
+    "pa_modifier": null,
+    "damage_modifier": "+4",
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Bögen",
+      "Armbrüste",
+      "Wurfwaffen"
+    ],
+    "description": "Ein Meisterschuss auf die tödlichste Stelle des Ziels.",
+    "rules_text": "Ansage vor dem Angriff. FK-6, bei Treffer SP+4."
+  },
+  {
+    "id": "schnellschuss",
+    "name": "Schnellschuss",
+    "category": "fernkampf",
+    "prerequisites": [
+      "GE 13",
+      "Fernkampf-Kampftechnik 10",
+      "Schnellladen"
+    ],
+    "ap_cost": 20,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Bögen"
+    ],
+    "description": "Ermöglicht zwei Schüsse in einer Kampfrunde.",
+    "rules_text": "Ansage als Aktion. FK-4, ermöglicht 2 Schüsse in einer KR (nur Bögen)."
+  },
+  {
+    "id": "kampfreflexe",
+    "name": "Kampfreflexe",
+    "category": "allgemein",
+    "prerequisites": [
+      "IN 13"
+    ],
+    "ap_cost": 20,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Verbesserte Reflexe im Kampf, schnellere Reaktion auf Gefahren.",
+    "rules_text": "Passive Sonderfertigkeit. INI +2, kann nicht überrascht werden (1 PA gegen Hinterhalt-Angriffe)."
+  },
+  {
+    "id": "kampfgespuer",
+    "name": "Kampfgespür",
+    "category": "allgemein",
+    "prerequisites": [
+      "IN 13",
+      "Kampfreflexe"
+    ],
+    "ap_cost": 25,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Ein instinktives Gespür für Gefahren und Angriffe.",
+    "rules_text": "Passive Sonderfertigkeit. +1 auf alle PA/AW. Erhält Warnung vor unsichtbaren Angreifern (IN-Probe)."
+  },
+  {
+    "id": "blindkampf",
+    "name": "Blindkampf",
+    "category": "allgemein",
+    "prerequisites": [
+      "IN 15",
+      "Kampfgespür"
+    ],
+    "ap_cost": 30,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Die Fähigkeit, ohne Sicht zu kämpfen.",
+    "rules_text": "Passive Sonderfertigkeit. Abzüge für Dunkelheit/Blindheit auf AT und PA werden halbiert."
+  },
+  {
+    "id": "eisenhagel",
+    "name": "Eisenhagel",
+    "category": "fernkampf",
+    "prerequisites": [
+      "FF 15",
+      "Fernkampf-Kampftechnik 12",
+      "Schnellschuss"
+    ],
+    "ap_cost": 30,
+    "at_modifier": -6,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Bögen"
+    ],
+    "description": "Ein Hagel von Pfeilen auf ein Gebiet.",
+    "rules_text": "Ansage als Aktion. FK-6, feuert 3 Pfeile in einen Bereich von 2 Schritt Radius. Jedes Ziel im Bereich kann getroffen werden."
+  },
+  {
+    "id": "festnageln",
+    "name": "Festnageln",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KK 13",
+      "Nahkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 15,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Stangenwaffen"
+    ],
+    "description": "Hält einen Gegner mit einer Stangenwaffe auf Distanz.",
+    "rules_text": "Ansage als Aktion. Stangenwaffe hält einen Gegner auf Distanz. Gegner kann sich nicht nähern ohne GE-Probe gegen AT des Festhaltenden."
+  },
+  {
+    "id": "gegenhalten",
+    "name": "Gegenhalten",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KO 13",
+      "Nahkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 15,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Absorbiert einen Teil des Schadens bei erfolgreicher Parade.",
+    "rules_text": "Passive Sonderfertigkeit. Bei erfolgreicher PA kann eine KO-Probe abgelegt werden. Gelingt sie: SP um 2 reduziert."
+  },
+  {
+    "id": "haltegriff",
+    "name": "Haltegriff",
+    "category": "nahkampf",
+    "prerequisites": [
+      "KK 13",
+      "GE 13",
+      "Raufen 8"
+    ],
+    "ap_cost": 20,
+    "at_modifier": -2,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Raufen"
+    ],
+    "description": "Greift den Gegner und hält ihn fest.",
+    "rules_text": "Ansage vor dem Angriff. AT-2, bei Treffer: Gegner ist im Haltegriff. Vergleichsprobe KK pro KR um sich zu befreien."
+  },
+  {
+    "id": "ruestungsgewoehnung_1",
+    "name": "Rüstungsgewöhnung I",
+    "category": "allgemein",
+    "prerequisites": [
+      "KO 13"
+    ],
+    "ap_cost": 15,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Verringert die Behinderung durch Rüstung.",
+    "rules_text": "Passive Sonderfertigkeit. BE durch Rüstung um 1 reduziert (Minimum 0)."
+  },
+  {
+    "id": "ruestungsgewoehnung_2",
+    "name": "Rüstungsgewöhnung II",
+    "category": "allgemein",
+    "prerequisites": [
+      "KO 15",
+      "Rüstungsgewöhnung I"
+    ],
+    "ap_cost": 25,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Weitere Verringerung der Behinderung durch Rüstung.",
+    "rules_text": "Passive Sonderfertigkeit. BE durch Rüstung um weitere 1 reduziert (insgesamt 2, Minimum 0)."
+  },
+  {
+    "id": "waffenspezialisierung",
+    "name": "Waffenspezialisierung",
+    "category": "allgemein",
+    "prerequisites": [
+      "Nahkampf- oder Fernkampf-Kampftechnik 14"
+    ],
+    "ap_cost": 30,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": "+1 permanent",
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Meisterschaft mit einer bestimmten Waffengattung.",
+    "rules_text": "Passive Sonderfertigkeit. Wähle eine Kampftechnik: +1 SP permanent mit Waffen dieser Kampftechnik."
+  },
+  {
+    "id": "aufmerksamkeit",
+    "name": "Aufmerksamkeit",
+    "category": "allgemein",
+    "prerequisites": [
+      "IN 13"
+    ],
+    "ap_cost": 10,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Erhöhte Wachsamkeit und Aufmerksamkeit.",
+    "rules_text": "Passive Sonderfertigkeit. +2 auf Sinnenschärfe-Proben für Hinterhalt und Fallen."
+  },
+  {
+    "id": "gezielter_stich",
+    "name": "Gezielter Stich",
+    "category": "nahkampf",
+    "prerequisites": [
+      "FF 13",
+      "Nahkampf-Kampftechnik 10"
+    ],
+    "ap_cost": 15,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": "ignoriert 2 RS",
+    "combinable_with": [
+      "finte_1",
+      "finte_2"
+    ],
+    "exclusive_with": [
+      "wuchtschlag_1"
+    ],
+    "applicable_techniques": [
+      "Dolche",
+      "Fechtwaffen"
+    ],
+    "description": "Ein präziser Stich, der Rüstungslücken ausnutzt.",
+    "rules_text": "Ansage vor dem Angriff. AT-4, bei Treffer ignoriert der Schaden 2 Punkte RS des Ziels."
+  },
+  {
+    "id": "berittener_kampf",
+    "name": "Berittener Kampf",
+    "category": "allgemein",
+    "prerequisites": [
+      "Reiten 8"
+    ],
+    "ap_cost": 20,
+    "at_modifier": null,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Erlaubt effektiven Kampf vom Pferderücken.",
+    "rules_text": "Passive Sonderfertigkeit. Halbiert die Abzüge für Kampf zu Pferd."
+  },
+  {
+    "id": "entwaffnen",
+    "name": "Entwaffnen",
+    "category": "nahkampf",
+    "prerequisites": [
+      "GE 13",
+      "Nahkampf-Kampftechnik 12"
+    ],
+    "ap_cost": 20,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": [
+      "Schwerter",
+      "Fechtwaffen",
+      "Stangenwaffen"
+    ],
+    "description": "Versucht dem Gegner die Waffe aus der Hand zu schlagen.",
+    "rules_text": "Ansage vor dem Angriff. AT-4, kein Schaden. Vergleichsprobe KK: Bei Erfolg verliert der Gegner seine Waffe."
+  },
+  {
+    "id": "unterbrechung",
+    "name": "Unterbrechung",
+    "category": "nahkampf",
+    "prerequisites": [
+      "IN 13",
+      "Kampfreflexe"
+    ],
+    "ap_cost": 20,
+    "at_modifier": -4,
+    "pa_modifier": null,
+    "damage_modifier": null,
+    "combinable_with": [],
+    "exclusive_with": [],
+    "applicable_techniques": null,
+    "description": "Unterbricht die Aktion eines Gegners durch einen schnellen Angriff.",
+    "rules_text": "Reaktion. AT-4, wenn erfolgreich wird die aktuelle Aktion des Gegners unterbrochen (z.B. Zaubern, Nachladen)."
+  },
+  {
+    "id": "ortskenntnis",
+    "name": "Ortskenntnis",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 2,
+    "description": "Erleichterung von 1 auf Gassenwissen und Orientierung am betreffenden Ort.",
+    "rules_text": "Pro Ort einzeln zu erwerben. Voraussetzung: 6 Monate am Ort gelebt."
+  },
+  {
+    "id": "gelaendekunde",
+    "name": "Gelaendekunde",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 15,
+    "description": "Erleichterung von 1 auf Faehrtensuchen, Orientierung, Pflanzenkunde, Tierkunde, Wildnisleben im passenden Gelaende.",
+    "rules_text": "10 Varianten: Dschungel, Eis, Gebirge, Hoehlen, Kulturland, Meer, Steppe, Sumpf, Wald, Wueste."
+  },
+  {
+    "id": "athlet",
+    "name": "Athlet",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 20,
+    "description": "Proben auf Koerperbeherrschung und Kraftakt gelten bei Gelingen als um 1 QS besser.",
+    "rules_text": "Max. 6 QS. Voraussetzung: Alle betroffenen Talente 4."
+  },
+  {
+    "id": "schmerzen_unterdruecken",
+    "name": "Schmerzen unterdruecken",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 20,
+    "description": "Selbstbeherrschung-Probe: pro QS wird 1 Stufe Schmerz unterdrueckt. Dauer: 1 Kampf.",
+    "rules_text": "Danach 1 Stufe Betaeubung. Freie Aktion."
+  },
+  {
+    "id": "eiserner_wille_1",
+    "name": "Eiserner Wille I",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 15,
+    "description": "Seelenkraft um 1 verbessert durch Konzentration. Alle anderen Proben um 1 erschwert.",
+    "rules_text": "Endet bei Schlaf/Bewusstlosigkeit. Danach 1 Stufe Betaeubung."
+  },
+  {
+    "id": "anfuehrer",
+    "name": "Anfuehrer",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 10,
+    "description": "Ueberreden-Probe: bis zu QS+1 Verbuendete erhalten +1 AT, +1 VW, +1 FK fuer naechste KR.",
+    "rules_text": "Kostet 1 Aktion. Nicht kumulativ."
+  },
+  {
+    "id": "fischer",
+    "name": "Fischer",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 3,
+    "description": "Bei erfolgreicher Probe auf Fischen & Angeln: 1 QS mehr Nahrung.",
+    "rules_text": "Voraussetzung: Fischen & Angeln 4, Verbergen 4."
+  },
+  {
+    "id": "jaeger",
+    "name": "Jaeger",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 5,
+    "description": "Bei erfolgreicher Probe auf Tierkunde um Nahrung zu erbeuten: 1 QS mehr Nahrung.",
+    "rules_text": "Voraussetzung: FK 10, Faehrtensuchen 4, Tierkunde 4, Verbergen 4."
+  },
+  {
+    "id": "sammler",
+    "name": "Sammler",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 2,
+    "description": "Bei erfolgreicher Probe auf Pflanzenkunde: 1 QS mehr Nahrung beim Sammeln.",
+    "rules_text": "Voraussetzung: Pflanzenkunde 4, Wildnisleben 4."
+  },
+  {
+    "id": "nerven_aus_stahl",
+    "name": "Nerven aus Stahl",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 5,
+    "description": "Willenskraft-Proben gegen Einschuechtern um 1 QS besser.",
+    "rules_text": "Voraussetzung: Menschenkenntnis 4, Willenskraft 8."
+  },
+  {
+    "id": "navigation",
+    "name": "Navigation",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 10,
+    "description": "Held kann einen Kurs setzen und nautische Berechnungen durchfuehren.",
+    "rules_text": "Voraussetzung: Boote & Schiffe 8, Rechnen 8, Sternkunde 8."
+  },
+  {
+    "id": "fallen_entschaerfen",
+    "name": "Fallen entschaerfen",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 5,
+    "description": "Neues Anwendungsgebiet des Talents Schloesserknacken.",
+    "rules_text": "Voraussetzung: Mechanik 4, Schloesserknacken 4."
+  },
+  {
+    "id": "entfesselungskuenstler",
+    "name": "Entfesselungskuenstler",
+    "category": "allgemein_nichtkampf",
+    "ap_cost": 8,
+    "description": "Koerperbeherrschung (Entwinden) um 2 erleichtert und halbe Befreiungszeit.",
+    "rules_text": "Voraussetzung: Koerperbeherrschung 10."
+  },
+  {
+    "id": "astrale_meditation",
+    "name": "Astrale Meditation",
+    "category": "magisch",
+    "ap_cost": 15,
+    "description": "Kann LeP im Verhaeltnis 1:1 in AsP umwandeln. Max QS x 3 LeP.",
+    "rules_text": "Mind. 5 Min Meditation. Selbstbeherrschung-Probe. 24h Sperre."
+  },
+  {
+    "id": "kraftkontrolle",
+    "name": "Kraftkontrolle",
+    "category": "magisch",
+    "ap_cost": 20,
+    "description": "Bei erfolgreichem Zauber sinken Gesamtkosten um 1 AsP. Minimum 1 AsP.",
+    "rules_text": "Voraussetzung: Kleine Kraftkontrolle, LE Tradition 15."
+  },
+  {
+    "id": "magische_regeneration_1",
+    "name": "Magische Regeneration I",
+    "category": "magisch",
+    "ap_cost": 12,
+    "description": "Regeneriert 1 zusaetzlichen AsP pro Regenerationsphase.",
+    "rules_text": "Kumulativ mit Vorteil Verbesserte Regeneration."
+  },
+  {
+    "id": "fernzaubern",
+    "name": "Fernzaubern",
+    "category": "magisch",
+    "ap_cost": 15,
+    "description": "Reichweite eines Zaubers kann um weitere 50% vergroessert werden.",
+    "rules_text": "AsP-Kosten steigen ebenfalls um 50%."
+  },
+  {
+    "id": "zauber_abbrechen",
+    "name": "Zauber abbrechen",
+    "category": "magisch",
+    "ap_cost": 12,
+    "description": "Kann eigene gewirkte Zauber jederzeit waehrend der Wirkungsdauer beenden.",
+    "rules_text": "Kostet 1 freie Aktion."
+  },
+  {
+    "id": "aura_verbergen",
+    "name": "Aura verbergen",
+    "category": "magisch",
+    "ap_cost": 20,
+    "description": "Magieerkennungs-Zauber werden um QS erschwert. Kein Zaubern waehrend Verhuelllung.",
+    "rules_text": "Willenskraft-Probe. Bei Beendigung: 1 Stufe Verwirrung."
+  },
+  {
+    "id": "karmale_meditation",
+    "name": "Karmale Meditation",
+    "category": "karmal",
+    "ap_cost": 15,
+    "description": "Verzicht auf LeP-Regeneration, dafuer zusaetzlich 1W6 KaP regenerieren.",
+    "rules_text": "Voraussetzung: Geweihter, LE Tradition 13."
+  },
+  {
+    "id": "karmale_regeneration_1",
+    "name": "Karmale Regeneration I",
+    "category": "karmal",
+    "ap_cost": 12,
+    "description": "Regeneriert 1 zusaetzlichen KaP pro Regenerationsphase.",
+    "rules_text": "Kumulativ mit Verbesserte Regeneration."
+  },
+  {
+    "id": "aspektkenntnis",
+    "name": "Aspektkenntnis",
+    "category": "karmal",
+    "ap_cost": 15,
+    "description": "Erst mit Aspektkenntnis kann ein Geweihter Liturgien ueber FW 14 steigern.",
+    "rules_text": "Voraussetzung: LE Tradition 15, 3 Liturgien des Aspekts auf FW 10."
+  }
+]
