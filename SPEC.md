@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.0.0
-**Last updated:** 2026-03-22
-**Status:** Architecture complete — ready for implementation
+**Version:** 1.2.0
+**Last updated:** 2026-03-25
+**Status:** Core features complete — SSOT refactor done, deploying to Render
 
 ---
 
@@ -70,8 +70,9 @@ Three pillars:
 
 ## 2. Current State
 
-- **Status**: Fully functional — all core systems operational, active UI/UX iteration
-- **Last updated**: 2026-03-24 (Session 4)
+- **Status**: Fully functional — all core systems operational, SSOT refactor complete, deploying to Render
+- **Last updated**: 2026-03-25 (Session 5)
+- **Repository**: https://github.com/alpenmilch411/AventuriaVTT (private)
 - **Key decisions locked in**:
   - Human GM, not AI GM — app is a toolkit, not a replacement
   - DSA5 rules only (no DSA4.1 or other systems in v1)
@@ -79,17 +80,24 @@ Three pillars:
   - AI as GM whisper-assistant only, never visible to players
   - **100% browser-based** — no native app, no install. Same URL on phone, tablet, laptop, TV
   - **Account-based** — every player/GM has a personal account. Characters, campaigns, groups travel with the account across devices and groups
-  - **Cloud-hosted** — always-on service so players can access characters, lore, and prep between sessions from any device
+  - **Cloud-hosted** — deploying to Render with GitHub auto-deploy on push
   - Responsive single codebase — device size determines the view (Player Dashboard, GM Cockpit, Table View)
   - All combat/probe mechanics computed deterministically — centralized `useCombatValues` hook as single source of truth
+  - **Server-side delta resolution** — backend resolves vitals deltas to absolute values before broadcasting. Frontend handles both formats as fallback.
+  - **Safe data extraction** — all components use `src/utils/safeData.js` helpers (`getConditions()`, `getVitalsFrom()`, `getMaxVitals()`) instead of raw field access. API fields may be `[]`, `{}`, or `undefined`.
+  - **Reactive store subscriptions** — components use `useStore((s) => s.field)` selectors, never `getState()` in render paths
 - **What works end-to-end**:
   - Full combat workflow: initiative → action → target → maneuver → attack → defense → damage → conditions → off-hand (dual-wield)
   - Item usage: potions (heal/restore/buff), poisons (apply to weapon → trigger on hit), herbs (Heilkunde probe), combat throwables (AoE damage/stun/smoke), condition items (drinks → Berauscht)
-  - Real-time sync: vitals, conditions, inventory changes, combat log — all broadcast via WebSocket
+  - GM quick actions: Probe (talent probes with consequences), Leben (vitals popup), Zustand (conditions popup), all with live preview and confirmation
+  - Probe workflow: GM setup → player rolls 3W20 → consequence dice → results with auto-apply damage/heal
+  - Real-time sync: vitals, conditions, inventory, buffs, combat state, session log — all live without refresh
   - Dynamic value computation: all AT/PA/FK/AW/INI/GS/RS/BE derived from KTW + weapon mods - BE - condition modifiers
   - SF-gated combat maneuvers: 13 maneuvers (5 basis + 8 SF-gated) with full modifier chains
   - Trade/transfer system between players with GM approval
   - Rich tooltips showing full value derivation for every stat
+  - Session Protokoll: Bloomberg-terminal style log with type labels, deduplication, auto-scroll + "Aktuell" jump button
+  - Quest tracking with per-player objectives and session end AP distribution
 
 ---
 
@@ -4069,10 +4077,29 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Colored tab headers across all player dashboard tabs
 - [ ] Fernkampf range brackets, Ladezeit, movement penalties — engine built, UI pending
 - [ ] Schicksalspunkte usage flow in combat UI
-- [ ] Critical hits + Patzer tables in combat UI
+- [x] Critical hits + Patzer tables in combat UI
 - [ ] Guided combat flow (Basic complexity mode with step-by-step hints)
 - [ ] Group inventory
 - [ ] Map editor: draw tool, difficult terrain painting, fog brush for GM
+
+### Phase 2b: SSOT Refactor & Live Sync — DONE (2026-03-25)
+- [x] Backend safety: per-character asyncio locks, `_safe_create_task` error handling, inventory persistence backup
+- [x] Server-side delta resolution: backend resolves `lep_delta` to absolute before broadcast
+- [x] API normalization: `players-detail` returns `current_vitals` object, consistent shapes
+- [x] Frontend single store: `current_vitals` as SSOT, removed legacy `currentLeP` writes
+- [x] Frontend delta fallback: handles both absolute and delta values from any backend version
+- [x] Cross-store sync: vitals/conditions propagate to characterStore + sessionStore + combatStore
+- [x] Reactive buff display: all 4 components subscribe to `activeBuffs` via selector
+- [x] Conditions sync to sessionStore.players[] for live GM display
+- [x] JournalTab + QuestSessionTab read from campaignStore (not API fetch)
+- [x] CharacterSheet conditions read from reactive `myCharacter.conditions`
+- [x] GMCockpit `activeProcesses` subscribed via selector
+- [x] `safeData.js` utility: `getConditions()`, `getVitalsFrom()`, `getMaxVitals()`
+- [x] `ssot-lint.sh` PostToolUse hook: auto-checks for unsafe conditions access, getState() in render, bare asyncio.create_task
+- [x] Protokoll deduplication: backend stores without double-broadcast, frontend time-based dedup
+- [x] Protokoll improved: type labels, player names in connect log, "Aktuell" jump button
+- [x] Pending requests cleanup: `_handle_dice_result` clears probes so they don't reappear on refresh
+- [x] REST vitals PATCH invalidates WS in-memory cache
 
 ### Phase 3: Persistence & Campaign — PARTIALLY DONE
 - [x] Campaign persistence (world clock, weather in DB)
@@ -4081,7 +4108,7 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Timeline — DB + API
 - [x] AP award dialog in session controls
 - [x] Character leveling UI with cost validation
-- [ ] Session logs (auto-recorded from WebSocket events) — model exists, recording pending
+- [x] Session logs (auto-recorded from WebSocket events into session_log state, survives reconnect via sync_full)
 - [ ] Session recap (AI-generated) — API stub exists
 - [ ] Character death memorial + archive — model exists, UI pending
 - [ ] Inventory hybrid model carry-over flow at campaign end
@@ -4235,6 +4262,18 @@ Affected: which files or modules
 Found: YYYY-MM-DD
 ```
 
+### Pre-Commit Protocol (MANDATORY)
+
+Before EVERY commit and push, Claude MUST:
+
+1. **Update SPEC.md** — Section 2 (Current State), Roadmap checkboxes, any sections affected by the changes
+2. **Update DEVLOG.md** — Add a session entry or append to the current session entry describing what was built/fixed
+3. **Bump the version** in SPEC.md header (patch for fixes, minor for features)
+4. **Run E2E tests** — `node e2e/vitals_flow.cjs && node e2e/probe_damage_flow.cjs` — do NOT commit if tests fail
+5. **Build check** — `npx vite build --mode development` — do NOT commit if build fails
+
+This is not optional. A commit without updated docs means the next session starts with stale context.
+
 ### GitHub Hygiene
 - Commit messages should be descriptive (what changed and why, not just "update")
 - Never commit `.env` files or secrets
@@ -4263,3 +4302,11 @@ Found: YYYY-MM-DD
 - 2026-03-22: WebSocket for all live session communication, REST for CRUD outside sessions
 - 2026-03-22: AI-generated maps default to structured JSON (Mode 1), image generation (Mode 2) optional
 - 2026-03-22: Asset library pre-populated, every databank entity has a default icon
+- 2026-03-25: Server-side delta resolution — backend resolves deltas to absolute before broadcast, frontend handles both as fallback
+- 2026-03-25: Never trust API field types — use `safeData.js` helpers (`getConditions()`, `getVitalsFrom()`, `getMaxVitals()`) for all data extraction
+- 2026-03-25: Never use `getState()` in component render paths — use `useStore((s) => s.field)` selectors for displayed data
+- 2026-03-25: All background persistence uses `_safe_create_task` with error logging, never bare `asyncio.create_task`
+- 2026-03-25: Per-character locks (`_get_char_lock`) for all database write functions
+- 2026-03-25: Components read from Zustand stores (live WS updates), never from API fetches during active sessions
+- 2026-03-25: DEVLOG entries written in non-technical language describing user-visible changes, not implementation details
+- 2026-03-25: SPEC.md + DEVLOG.md MUST be updated before every commit (Pre-Commit Protocol in section 12)

@@ -4,6 +4,34 @@
 
 ---
 
+## Session 5 — Live Sync, Data Safety & Deployment Prep
+**Date:** 2026-03-25
+**Type:** Claude Code — architecture refactor + bug fixes + deployment
+
+### What changed
+- **All data updates now appear live** — health, conditions, buffs, quests, lore, and the session log update instantly on both the GM and player views without needing a page refresh. Previously many values only appeared after reloading.
+- **Health changes are now safe from race conditions** — when the GM deals damage to a player while the player drinks a healing potion at the same time, both changes are applied correctly. Previously one could overwrite the other.
+- **Background task errors are no longer silent** — if saving health or conditions to the database fails, the error is now logged instead of silently lost.
+- **Conditions display fixed on GM view** — the GM's player cards now show the correct current conditions (e.g. Schmerz, Furcht) immediately when they change, instead of showing nothing or outdated data.
+- **Buff icons update in real-time** — active buff indicators on all combat and player cards now refresh instantly when a buff is added or expires.
+- **Probe results no longer reappear after refresh** — completing a dice probe correctly clears it from the server, so refreshing the page doesn't bring back an already-finished probe popup.
+- **Session Protokoll no longer shows duplicate entries** — a single action (like dealing damage) previously created 2-3 identical log lines. Now each action produces exactly one entry.
+- **Protokoll improved** — each entry now shows a type label (SCHADEN, HEILUNG, WURF, RUNDE, etc.) in color next to the timestamp. Player connect messages show the player's name instead of generic "Spieler verbunden". Auto-scrolls to latest by default, with an "Aktuell" button to jump back when scrolled up.
+- **Conditions popup reads live data** — the GM's condition management popup now shows the current conditions from the live session instead of fetching stale data from the database.
+- **Quest and lore tabs read live data** — both the player's journal and the GM's quest panel now update instantly when quests change or lore is revealed, instead of requiring a refresh.
+- **Safe data extraction** — created a shared utility so all components handle unexpected data shapes gracefully. The API sometimes returns conditions as an empty object instead of an empty list, which previously caused crashes.
+- **Automated quality checks** — a lint script now runs automatically after every code edit, catching common mistakes: unsafe data access patterns, non-reactive UI reads, and missing error handling.
+- **GitHub repository created** — code pushed to `github.com/alpenmilch411/AventuriaVTT` (private). Proper .gitignore excludes database files, secrets, and build artifacts.
+- **Render deployment planned** — migration path documented: PostgreSQL switch, Dockerize, deploy, CI pipeline.
+
+### E2E tests
+69/69 pass (vitals flow 19/19, probe damage flow 50/50).
+
+### Files touched
+`backend/ws/handlers.py`, `backend/api/campaigns.py`, `backend/api/characters.py`, `frontend/src/hooks/useWebSocket.js`, `frontend/src/stores/characterStore.js`, `frontend/src/stores/sessionStore.js`, `frontend/src/components/common/SessionLog.jsx`, `frontend/src/utils/safeData.js` (new), `frontend/.claude/scripts/ssot-lint.sh` (new), `SSOT_ANALYSIS.md` (new), `frontend/src/views/gm/GMCockpit.jsx`, `frontend/src/views/gm/ConditionPopup.jsx`, `frontend/src/views/gm/PlayerOverview.jsx`, `frontend/src/views/gm/CombatTracker.jsx`, `frontend/src/views/gm/TurnFlow.jsx`, `frontend/src/views/gm/QuestSessionTab.jsx`, `frontend/src/views/player/JournalTab.jsx`, `frontend/src/views/player/CharacterSheet.jsx`, `frontend/src/views/player/CombatActions.jsx`, `SPEC.md`, `DEVLOG.md`
+
+---
+
 ## Session 4 — Item System, Combat Maneuvers & Data Consistency (2026-03-24)
 
 **What happened:**
