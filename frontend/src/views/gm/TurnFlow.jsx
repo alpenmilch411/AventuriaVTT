@@ -11,7 +11,7 @@ import { confirmCritical, lookupFumble } from '../../engine/criticalTables'
 import { createBuff, getStatModifier } from '../../engine/buffSystem'
 import { getConditionModifier, isIncapacitated, calculatePainLevel, addCondition, formatConditions, getConditionBreakdown } from '../../engine/conditionsEngine'
 import { getCreatureAttackModifiers, getOnHitEffects, getImmunities, getDamageMultiplier, getRoundStartEffects } from '../../engine/creatureRules'
-import { getReachModifier, getAbilityModifiers, getManeuverModifiers, getHolyDamageMultiplier } from '../../engine/weaponProperties'
+import { getReachModifier, getAbilityModifiers, getManeuverModifiers, getHolyDamageMultiplier, getRangedDistanceMod } from '../../engine/weaponProperties'
 import Badge from '../../components/common/Badge'
 import clsx from 'clsx'
 
@@ -102,6 +102,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
   const [selectedAction, setSelectedAction] = useState(approvedAction?.type === 'attack' ? ACTIONS.find(a => a.id === 'melee') : null)
   const [selectedTarget, setSelectedTarget] = useState(getInitialTarget)
   const [selectedWeapon, setSelectedWeapon] = useState(null) // { name, damage, at, pa, reach, isRanged }
+  const [rangeDistance, setRangeDistance] = useState('mittel') // nah, mittel, weit, extrem
   const [selectedManeuver, setSelectedManeuver] = useState(getInitialManeuver)
   const [attackRoll, setAttackRoll] = useState('')
   const [attackResult, setAttackResult] = useState(null) // { hit, critical, patzer }
@@ -387,7 +388,8 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
   const weaponName = activeWeapon.name
   const weaponReach = activeWeapon.reach
   const baseAT = activeWeapon.at + getStatModifier(attackerBuffs, 'AT')
-  const effectiveAT = baseAT + (selectedManeuver?.atMod || 0) + atkCondMod + creatureMods.atMod + reachMod
+  const rangeMod = activeWeapon.isRanged ? getRangedDistanceMod(rangeDistance) : 0
+  const effectiveAT = baseAT + (selectedManeuver?.atMod || 0) + atkCondMod + creatureMods.atMod + reachMod + rangeMod
 
   const basePA = (selectedTarget?.pa || 8) + getStatModifier(defenderBuffs, 'PA') + defCondModPA
   const baseAW = (selectedTarget?.aw || 5) + getStatModifier(defenderBuffs, 'AW') + defCondModAW
@@ -961,7 +963,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
           {enemies.map(target => (
             <button
               key={target.id}
-              onClick={() => { setSelectedTarget(target); setStep('maneuver') }}
+              onClick={() => { setSelectedTarget(target); setStep(activeWeapon?.isRanged ? 'range' : 'maneuver') }}
               className="w-full flex items-center gap-2 px-2 py-2 bg-dsa-bg rounded-sm border border-dsa-bg-medium hover:border-dsa-gold/20 transition-colors text-left"
             >
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${target.isNPC ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
@@ -982,6 +984,36 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
             </button>
           ))}
           {enemies.length === 0 && <p className="text-[10px] text-dsa-parchment-dark text-center">Keine Ziele verfügbar.</p>}
+        </div>
+      </div>
+    )
+  }
+
+  // ── Step: RANGE DISTANCE (ranged attacks only) ──
+  if (step === 'range') {
+    const RANGE_BRACKETS = [
+      { id: 'nah', label: 'Nah', mod: -2, desc: 'Unter 5 Schritt — Ziel ist zu nah' },
+      { id: 'mittel', label: 'Mittel', mod: 0, desc: 'Normale Schussdistanz — keine Modifikation' },
+      { id: 'weit', label: 'Weit', mod: -4, desc: 'Weite Entfernung — erschwerter Schuss' },
+      { id: 'extrem', label: 'Extrem', mod: -8, desc: 'Extreme Distanz — fast unmöglich' },
+    ]
+    return (
+      <div className="space-y-2">
+        <StepHeader title="Entfernung wählen" step="3/6" onBack={() => setStep('target')} />
+        <p className="text-[9px] text-dsa-parchment-dark">Wie weit ist das Ziel entfernt? Die Distanz beeinflusst den Fernkampfwert.</p>
+        <div className="space-y-1">
+          {RANGE_BRACKETS.map(b => (
+            <button key={b.id} onClick={() => { setRangeDistance(b.id); setStep('maneuver') }}
+              className="w-full flex items-center justify-between px-3 py-2 bg-dsa-bg rounded-sm border border-dsa-bg-medium hover:border-dsa-gold/20 transition-colors text-left">
+              <div>
+                <span className="text-xs text-dsa-parchment font-semibold">{b.label}</span>
+                <span className="text-[9px] text-dsa-parchment-dark ml-2">{b.desc}</span>
+              </div>
+              <span className={`text-xs font-mono ${b.mod === 0 ? 'text-dsa-gold' : 'text-red-400'}`}>
+                {b.mod === 0 ? '±0' : b.mod}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
     )

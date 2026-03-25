@@ -4,6 +4,18 @@
 
 ---
 
+## Session 9b — Ranged attacks now account for distance
+**Date:** 2026-03-26
+
+### What changed
+- **Shooting at far-away targets is now harder, as DSA5 requires** — when the GM selects a ranged attack, a new step asks how far the target is: nah (-2), mittel (no change), weit (-4), or extrem (-8). These penalties are applied to the Fernkampf value before the roll. Previously all ranged attacks used the same accuracy regardless of distance.
+- The GM picks the distance based on the situation at the table (no grid needed — fits the offline play style).
+
+### Files touched
+`frontend/src/views/gm/TurnFlow.jsx`, `frontend/src/engine/weaponProperties.js` (import only)
+
+---
+
 ## Session 9 — Battle system fixes: creature privacy, phone layout, maneuver values
 **Date:** 2026-03-26
 
