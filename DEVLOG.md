@@ -4,6 +4,17 @@
 
 ---
 
+## Session 9c — Multiple reactions now require Schicksalspunkte
+**Date:** 2026-03-26
+
+### What changed
+- **Defenders can no longer dodge unlimited attacks** — in DSA5, the first defense per round is free, but every additional defense costs one Schicksalspunkt (fate point) and gets a -3 penalty. Previously the penalty was shown but there was no check for available SchiP. Now if a creature or character has no SchiP left, their Parade and Ausweichen buttons are greyed out and they must accept the hit. A clear warning message explains why.
+
+### Files touched
+`frontend/src/views/gm/TurnFlow.jsx`
+
+---
+
 ## Session 9b — Ranged attacks now account for distance
 **Date:** 2026-03-26
 

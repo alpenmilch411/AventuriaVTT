@@ -1218,13 +1218,26 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
         <StepHeader title={`${selectedTarget?.name} verteidigt sich`} step="5/6" />
         <p className="text-[9px] text-dsa-parchment-dark">
           {selectedTarget?.name} wurde getroffen! Wie verteidigt {selectedTarget?.isNPC ? 'er/sie' : 'der Spieler'} sich?
-          {targetReactionCount > 0 && <span className="text-yellow-400"> ({targetReactionCount + 1}. Verteidigung: {reactionPenalty} Malus)</span>}
+          {targetReactionCount > 0 && <span className="text-yellow-400"> ({targetReactionCount + 1}. Verteidigung: {reactionPenalty} Malus, kostet 1 SchiP)</span>}
         </p>
+        {/* SchiP requirement: additional reactions (2+) require Schicksalspunkte */}
+        {targetReactionCount > 0 && (selectedTarget?.schip ?? selectedTarget?.currentSchiP ?? 1) <= 0 && (
+          <div className="px-3 py-2 bg-red-900/20 border border-red-800/30 rounded text-[10px] text-red-400">
+            Keine Schicksalspunkte übrig — keine weitere Verteidigung möglich! Treffer wird akzeptiert.
+          </div>
+        )}
         <div className="space-y-1">
-          {DEFENSE_OPTIONS.map(opt => (
+          {DEFENSE_OPTIONS.map(opt => {
+            // Block Parade/Ausweichen if no SchiP left for additional reactions
+            const needsSchiP = targetReactionCount > 0 && opt.id !== 'accept'
+            const hasSchiP = (selectedTarget?.schip ?? selectedTarget?.currentSchiP ?? 1) > 0
+            const blocked = needsSchiP && !hasSchiP
+            return (
             <button
               key={opt.id}
+              disabled={blocked}
               onClick={() => {
+                if (blocked) return
                 setDefenseType(opt)
                 if (opt.id === 'accept') {
                   setDefenseResult({ success: false })
@@ -1232,7 +1245,10 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
                   setStep('damage')
                 }
               }}
-              className="w-full flex items-center gap-2 px-2 py-2 bg-dsa-bg rounded-sm border border-dsa-bg-medium hover:border-dsa-gold/20 transition-colors text-left"
+              className={clsx(
+                'w-full flex items-center gap-2 px-2 py-2 rounded-sm border transition-colors text-left',
+                blocked ? 'bg-dsa-bg-medium/50 border-dsa-bg-medium opacity-40 cursor-not-allowed' : 'bg-dsa-bg border-dsa-bg-medium hover:border-dsa-gold/20'
+              )}
             >
               <opt.icon className="w-4 h-4 text-dsa-gold flex-shrink-0" />
               <div className="flex-1">
@@ -1242,7 +1258,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
               {opt.id === 'parade' && <span className="text-xs font-mono text-dsa-gold">{effectivePA}</span>}
               {opt.id === 'ausweichen' && <span className="text-xs font-mono text-dsa-gold">{effectiveAW}</span>}
             </button>
-          ))}
+          )})}
         </div>
 
         {/* Defense roll input */}
