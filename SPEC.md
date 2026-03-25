@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.4.0
-**Last updated:** 2026-03-25
-**Status:** Core features complete — audited, dead code removed (~40%), deploying to Render
+**Version:** 1.5.0
+**Last updated:** 2026-03-26
+**Status:** Core features complete — audited, optimized, restart-resilient, deploying to Render
 
 ---
 
@@ -4173,12 +4173,22 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [ ] Weather system frontend
 - [ ] Ranged weapon reload tracking (Schnellladen SF)
 
+### Architecture & Stability (identified 2026-03-25)
+
+- [ ] Extend per-character locks to cover in-memory state + broadcast (not just DB writes) — eliminates vitals race conditions
+- [ ] Write-through for critical operations: audit all GM actions, await DB write before broadcast for trade_approved, loot_distribute, combat_end
+- [ ] State versioning: increment counter on each update, include in broadcasts and sync_full so clients can detect message gaps
+- [ ] Refactor GMCockpit.jsx (1456 lines) into sub-hooks (useProbeQuickAction, useDiceRoller, etc.) + React.memo children
+- [ ] Dead letter queue for failed broadcasts: queue messages when send_to_user fails, flush on reconnect
+- [ ] Message deduplication: add message IDs to prevent double-processing on flaky connections
+- [ ] Lazy-load databank (combat techniques, creatures, talents) on tab open instead of initial GMCockpit load
+
 ### Code Quality — Hardcoded Data Migration (identified 2026-03-25)
 
 **High Priority:**
 - [ ] Migrate `COMBAT_SPECIAL_ABILITIES` (weaponProperties.js:54-87) to API-driven from `/api/databank/special_abilities`
 - [ ] Migrate advancement tables `SF_TABLES`, `ATTR_COST`, `GRADE_LIMITS` (SteigerungTab.jsx:8-46) to backend engine or API
-- [ ] Replace hardcoded `SPELL_DB`/`LITURGY_DB` in spellEngine.js with API calls (SpellBook already loads from API, engine still uses local copy)
+- [x] ~~Replace hardcoded `SPELL_DB`/`LITURGY_DB` in spellEngine.js~~ — file deleted (dead code), SpellBook loads from API directly
 
 **Medium Priority:**
 - [ ] Centralize `ktw: 6` default into a single constant (currently in useCombatValues.js, ArmoryTab.jsx, CombatActions.jsx, TurnFlow.jsx — 5 files)

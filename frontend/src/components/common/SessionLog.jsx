@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import {
   Swords, Heart, Droplet, Shield, Dice5, Zap, Flag, Clock,
   Map, User, Info, Repeat, Package, AlertTriangle, Star, Sparkles,
@@ -70,7 +70,7 @@ const TYPE_LABELS = {
  *   maxHeight: CSS max-height (default: '100%')
  *   compact: boolean — smaller text for embedded use
  */
-export default function SessionLog({ entries = [], maxHeight = '100%', compact = false }) {
+function SessionLog({ entries = [], maxHeight = '100%', compact = false }) {
   const bottomRef = useRef(null)
   const containerRef = useRef(null)
   const [isAtBottom, setIsAtBottom] = useState(true)
@@ -160,3 +160,5 @@ export default function SessionLog({ entries = [], maxHeight = '100%', compact =
     </div>
   )
 }
+
+export default React.memo(SessionLog)

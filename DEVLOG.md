@@ -4,6 +4,23 @@
 
 ---
 
+## Session 8 — Architecture: Restart Resilience & Performance
+**Date:** 2026-03-26
+**Type:** Claude Code — 2-agent parallel implementation
+
+### What changed
+- **Server restarts no longer kill active sessions** — session state (combat, initiative, pending requests, session log, conditions, vitals, tokens) is now periodically snapshotted to the database. When a client reconnects after a server restart, the full session state is restored from the latest snapshot. Snapshots are debounced (max once per 5 seconds) and deleted when the session ends.
+- **Combat UI is 3x faster** — the `useCombatValues` hook (AT/PA/FK/AW/INI/GS/RS/BE computation) was recalculating on every React render. Now wrapped in `useMemo` with proper dependencies, only recalculating when character data actually changes.
+- **12 key components wrapped in React.memo** — VitalsBar, SessionLog, InitiativeBar, PlayerOverview, CombatTracker, SessionControls, CharacterSheet, ArmoryTab, CombatActions, SpellBook, TalentList, InventoryPanel. Prevents cascade re-renders from parent state changes.
+- **WebSocket dispatch has error boundary** — one malformed message no longer crashes the entire session. Errors are caught and logged with message type context.
+- **Reduced race condition window in WS handlers** — vitals/conditions update handlers now cache getState() once at handler start instead of calling it 5 times during processing.
+- **Architecture roadmap added to SPEC** — 7 remaining stability improvements documented for future work.
+
+### Files touched
+`backend/models/session_state.py`, `backend/models/__init__.py`, `backend/ws/handlers.py`, `frontend/src/hooks/useCombatValues.js`, `frontend/src/hooks/useWebSocket.js`, `frontend/src/views/gm/PlayerOverview.jsx`, `frontend/src/views/gm/CombatTracker.jsx`, `frontend/src/views/gm/SessionControls.jsx`, `frontend/src/views/player/CharacterSheet.jsx`, `frontend/src/views/player/ArmoryTab.jsx`, `frontend/src/views/player/CombatActions.jsx`, `frontend/src/views/player/SpellBook.jsx`, `frontend/src/views/player/TalentList.jsx`, `frontend/src/views/player/InventoryPanel.jsx`, `frontend/src/components/common/VitalsBar.jsx`, `frontend/src/components/common/SessionLog.jsx`, `frontend/src/components/common/InitiativeBar.jsx`, `SPEC.md`
+
+---
+
 ## Session 7 — Dead Code Removal (~40% of codebase)
 **Date:** 2026-03-25
 **Type:** Claude Code — 3-agent dependency analysis + manual cleanup

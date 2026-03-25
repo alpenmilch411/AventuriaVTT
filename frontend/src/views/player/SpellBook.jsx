@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Sparkles, Clock, Send, Check, ChevronDown, ChevronUp, HelpCircle, Zap, Target, Shield } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useAuthStore from '../../stores/authStore'
@@ -28,7 +28,7 @@ const ATTR_COLORS = {
 // SPELL_INFO and LITURGY_INFO are now loaded from DB spell/liturgy templates
 // Hardcoded maps removed — data comes from /api/databank/spells and /api/databank/liturgies
 
-export default function SpellBook({ sendMessage }) {
+function SpellBook({ sendMessage }) {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getAttributes = useCharacterStore((s) => s.getAttributes)
   const getVitals = useCharacterStore((s) => s.getVitals)
@@ -292,3 +292,5 @@ export default function SpellBook({ sendMessage }) {
     </div>
   )
 }
+
+export default React.memo(SpellBook)

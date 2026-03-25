@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Heart, Sparkles, Sun, Weight, Coins, Shield, Swords, Crosshair, Zap, Flame, Brain, Eye, Crown, Hand, Wind, HeartPulse, Hammer, ChevronDown, AlertTriangle, Star, Footprints, Timer, Activity, ShieldAlert, Gauge, User } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
@@ -112,7 +112,7 @@ function FateDiamond() {
   )
 }
 
-export default function VitalsBar({
+function VitalsBar({
   portraitUrl = null, characterName = null,
   lep = 0, lepMax = 30, asp = 0, aspMax = 0, kap = 0, kapMax = 0,
   schip = 0, schipMax = 3, conditions = [], characterId = null,
@@ -581,3 +581,5 @@ export default function VitalsBar({
     </div>
   )
 }
+
+export default React.memo(VitalsBar)

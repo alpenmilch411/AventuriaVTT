@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Swords, Shield, Target, ChevronRight,
   Crosshair, Zap, HelpCircle, X, Sparkles
@@ -121,7 +121,7 @@ function DetailPopup({ title, children, onClose, accentClass }) {
   )
 }
 
-export default function ArmoryTab() {
+function ArmoryTab() {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const setMyCharacter = useCharacterStore((s) => s.setMyCharacter)
   const getVitals = useCharacterStore((s) => s.getVitals)
@@ -1146,3 +1146,5 @@ export default function ArmoryTab() {
     </div>
   )
 }
+
+export default React.memo(ArmoryTab)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Send, Check, Clock, HelpCircle, ChevronDown, ChevronUp,
   Flame, Brain, Eye, Crown, Hand, Wind, HeartPulse, Hammer,
@@ -50,7 +50,7 @@ const CATEGORIES = [
 
 const normName = s => s.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' }[m] || m)).replace(/\s+/g, '_')
 
-export default function TalentList({ sendMessage }) {
+function TalentList({ sendMessage }) {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getAttributes = useCharacterStore((s) => s.getAttributes)
   const pendingDiceRequest = useCombatStore((s) => s.pendingDiceRequest)
@@ -462,3 +462,5 @@ export default function TalentList({ sendMessage }) {
     </div>
   )
 }
+
+export default React.memo(TalentList)

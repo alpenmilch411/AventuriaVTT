@@ -1,10 +1,10 @@
-import { useRef } from 'react'
+import React, { useRef } from 'react'
 import { Swords } from 'lucide-react'
 import ProgressBar from './ProgressBar'
 import Badge from './Badge'
 import clsx from 'clsx'
 
-export default function InitiativeBar({
+function InitiativeBar({
   combatants = [],
   currentIndex = 0,
   onSelect,
@@ -116,3 +116,5 @@ export default function InitiativeBar({
     </div>
   )
 }
+
+export default React.memo(InitiativeBar)

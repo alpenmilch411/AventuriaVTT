@@ -23,6 +23,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
   const [lastMessage, setLastMessage] = useState(null)
 
   const dispatchMessage = useCallback((msg) => {
+    try {
     setLastMessage(msg)
     const type = msg.type
     const payload = msg.payload || {}
@@ -169,7 +170,11 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     // ── Character/vitals updates ──
     // Backend now always sends absolute values (deltas resolved server-side).
     else if (type === 'state_update' || type === 'vitals_update' || type === 'conditions_update' || type === 'condition_change') {
-      useCharacterStore.getState().handleCharacterMessage(msg)
+      const combatState = useCombatStore.getState()
+      const sessionState = useSessionStore.getState()
+      const charState = useCharacterStore.getState()
+
+      charState.handleCharacterMessage(msg)
       // Sync vitals to combatStore (combat HP bars) and sessionStore (GM player list)
       // Handles both absolute values (from new backend) and deltas (fallback for old backend)
       if (type === 'vitals_update' || type === 'state_update') {
@@ -188,20 +193,20 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
         }
 
         // Update combatStore combatants (HP bars)
-        const battles = useCombatStore.getState().battles
+        const battles = combatState.battles
         for (const battle of Object.values(battles)) {
           const match = battle.initiativeOrder.find(c =>
             (cid && (c.characterId === cid || c.id === cid)) || (tid && c.id === tid)
           )
           if (match) {
             const newLep = resolve(rawVitals.lep, rawVitals.lep_delta, match.lep, match.lepMax)
-            if (newLep !== undefined) useCombatStore.getState().updateCombatant(match.id, { lep: newLep })
+            if (newLep !== undefined) combatState.updateCombatant(match.id, { lep: newLep })
           }
         }
 
         // Update sessionStore players (GM's player list)
         if (cid) {
-          const players = useSessionStore.getState().players || []
+          const players = sessionState.players || []
           const playerIdx = players.findIndex(p => p.characterId === cid || p.character?.id === cid)
           if (playerIdx !== -1) {
             const updated = [...players]
@@ -224,7 +229,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
               ...(rawVitals.schip !== undefined ? { schip: rawVitals.schip } : {}),
             }
             updated[playerIdx] = up
-            useSessionStore.getState().setPlayers(updated)
+            sessionState.setPlayers(updated)
           }
         }
       }
@@ -234,27 +239,27 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
         const cid = payload.character_id
         if (cid) {
           // Read the freshly-updated conditions from characterStore (already applied above)
-          const allChars = useCharacterStore.getState().allCharacters
-          const myChar = useCharacterStore.getState().myCharacter
+          const allChars = charState.allCharacters
+          const myChar = charState.myCharacter
           const charMatch = allChars.find(c => c.id === cid) || (myChar?.id === cid ? myChar : null)
           const conditions = charMatch?.conditions || []
 
           // Sync to combatStore combatants (condition icons on HP bars)
-          const battles = useCombatStore.getState().battles
+          const battles = combatState.battles
           for (const battle of Object.values(battles)) {
             const match = battle.initiativeOrder.find(c => c.characterId === cid || c.id === cid)
             if (match) {
-              useCombatStore.getState().updateCombatant(match.id, { conditions })
+              combatState.updateCombatant(match.id, { conditions })
             }
           }
 
           // Sync to sessionStore players (GM player cards show condition badges)
-          const players = useSessionStore.getState().players || []
+          const players = sessionState.players || []
           const playerIdx = players.findIndex(p => p.characterId === cid || p.character?.id === cid)
           if (playerIdx !== -1) {
             const updated = [...players]
             updated[playerIdx] = { ...updated[playerIdx], conditions }
-            useSessionStore.getState().setPlayers(updated)
+            sessionState.setPlayers(updated)
           }
         }
       }
@@ -830,6 +835,9 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     else {
       try { useSessionStore.getState().handleSessionMessage(msg) } catch(e) { console.error('Unhandled session message:', e) }
       try { useCampaignStore.getState().handleCampaignMessage(msg) } catch(e) { console.error('Unhandled campaign message:', e) }
+    }
+    } catch (error) {
+      console.error('[WS] Message dispatch error:', error, 'Message:', msg.type)
     }
   }, [])
 

@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
+import uuid
 from datetime import datetime
 from typing import Any, Optional
 
@@ -64,6 +66,102 @@ def cleanup_session_state(session_code: str) -> None:
     _session_state.pop(session_code, None)
     # Clean up character locks for this session to prevent unbounded growth
     # (locks are per-character, not per-session, so we leave them — they're cheap)
+
+
+# ---------------------------------------------------------------------------
+# Snapshot persistence — debounced upsert of full session state to DB
+# ---------------------------------------------------------------------------
+
+_last_snapshot: dict[str, float] = {}
+SNAPSHOT_DEBOUNCE = 5.0  # seconds
+
+
+async def _snapshot_session_state(session_code: str) -> None:
+    """Persist a full copy of the in-memory session state to the DB.
+
+    Debounced: skips if fewer than SNAPSHOT_DEBOUNCE seconds have elapsed
+    since the last snapshot for this session.
+    """
+    now = time.monotonic()
+    if session_code in _last_snapshot and (now - _last_snapshot[session_code]) < SNAPSHOT_DEBOUNCE:
+        return
+
+    state = _session_state.get(session_code)
+    if state is None:
+        return
+
+    try:
+        from database import async_session
+        from sqlalchemy import select, delete
+        from models.session_state import SessionSnapshot
+
+        # Make a shallow copy of the state dict so the JSON serialiser
+        # sees a stable snapshot even if the live dict mutates.
+        snapshot_data = dict(state)
+
+        async with async_session() as db:
+            result = await db.execute(
+                select(SessionSnapshot).where(SessionSnapshot.session_code == session_code)
+            )
+            existing = result.scalar_one_or_none()
+            if existing:
+                existing.snapshot_json = snapshot_data
+                existing.updated_at = datetime.utcnow()
+            else:
+                db.add(SessionSnapshot(
+                    id=str(uuid.uuid4()),
+                    session_code=session_code,
+                    snapshot_json=snapshot_data,
+                    updated_at=datetime.utcnow(),
+                ))
+            await db.commit()
+
+        _last_snapshot[session_code] = time.monotonic()
+        logger.debug("Snapshot saved for session %s", session_code)
+    except Exception as e:
+        logger.error("Failed to save snapshot for session %s: %s", session_code, e)
+
+
+async def _delete_session_snapshot(session_code: str) -> None:
+    """Remove the persisted snapshot for a session (called on session end)."""
+    try:
+        from database import async_session
+        from sqlalchemy import delete
+        from models.session_state import SessionSnapshot
+
+        async with async_session() as db:
+            await db.execute(
+                delete(SessionSnapshot).where(SessionSnapshot.session_code == session_code)
+            )
+            await db.commit()
+        _last_snapshot.pop(session_code, None)
+        logger.info("Snapshot deleted for ended session %s", session_code)
+    except Exception as e:
+        logger.error("Failed to delete snapshot for session %s: %s", session_code, e)
+
+
+async def _restore_state_from_snapshot(session_code: str) -> bool:
+    """Try to restore in-memory session state from a DB snapshot.
+
+    Returns True if a snapshot was found and restored, False otherwise.
+    """
+    try:
+        from database import async_session
+        from sqlalchemy import select
+        from models.session_state import SessionSnapshot
+
+        async with async_session() as db:
+            result = await db.execute(
+                select(SessionSnapshot).where(SessionSnapshot.session_code == session_code)
+            )
+            snap = result.scalar_one_or_none()
+            if snap:
+                _session_state[session_code] = snap.snapshot_json
+                logger.info("Restored session state from snapshot for %s", session_code)
+                return True
+    except Exception as e:
+        logger.error("Failed to restore snapshot for session %s: %s", session_code, e)
+    return False
 
 
 def _ensure_state(session_code: str) -> dict[str, Any]:
@@ -476,6 +574,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         msg = _msg(event_type, out_payload, from_user=user_id)
         await manager.broadcast_to_room(session_code, msg)
         logger.info("Player %s updated vitals for %s: %s", user_id, cid, resolved)
+        _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_vitals_{session_code}")
         return
 
     if event_type == "combat_log_entry" and not _is_gm(session_code, user_id):
@@ -513,6 +612,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         msg = _msg(event_type, payload, from_user=user_id)
         await manager.broadcast_to_room(session_code, msg)
         logger.info("Player %s updated conditions for %s", user_id, payload["character_id"])
+        _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_conditions_{session_code}")
         return
 
     # Inventory change — broadcast to all and persist as backup
@@ -698,6 +798,9 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
             if len(log) > 500:
                 state["session_log"] = log[-500:]
         logger.info("GM broadcast %s in %s", event_type, session_code)
+        # Snapshot after state-mutating GM events
+        if event_type in ("vitals_update", "conditions_update", "condition_change"):
+            _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_gm_{event_type}_{session_code}")
         return
 
     # GM → buff tracking
@@ -785,6 +888,7 @@ async def _handle_scene_activate(session_code: str, user_id: str, payload: dict,
         except Exception as e:
             logger.error("Failed to persist scene activation: %s", e)
     logger.info("Scene activated: %s in session %s", scene_name, session_code)
+    _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_scene_{session_code}")
 
 
 async def _handle_combat_start(session_code: str, user_id: str, payload: dict, state: dict):
@@ -814,6 +918,7 @@ async def _handle_combat_start(session_code: str, user_id: str, payload: dict, s
     names = ", ".join(c.get("name", "?") for c in initiative_order[:5])
     await _append_session_log(session_code, "combat", f"Kampf beginnt! Teilnehmer: {names}", icon="swords")
     logger.info("Combat started in session %s with %d combatants", session_code, len(combatants))
+    _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_combat_start_{session_code}")
 
 
 async def _handle_combat_end(session_code: str, user_id: str, payload: dict, state: dict):
@@ -824,6 +929,7 @@ async def _handle_combat_end(session_code: str, user_id: str, payload: dict, sta
     await manager.broadcast_to_room(session_code, msg)
     await _append_session_log(session_code, "combat", f"Kampf beendet. {summary}", icon="flag")
     logger.info("Combat ended in session %s", session_code)
+    _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_combat_end_{session_code}")
 
 
 async def _handle_combat_next_turn(session_code: str, user_id: str, payload: dict, state: dict):
@@ -858,6 +964,7 @@ async def _handle_combat_next_turn(session_code: str, user_id: str, payload: dic
     await manager.broadcast_to_room(session_code, msg)
     cname = current.get("name", "?")
     await _append_session_log(session_code, "turn", f"Runde {round_number} — {cname} ist am Zug", icon="clock")
+    _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_combat_turn_{session_code}")
 
 
 async def _handle_probe_request(session_code: str, user_id: str, payload: dict, state: dict):
@@ -1167,6 +1274,8 @@ async def _handle_session_end(session_code: str, user_id: str, payload: dict, st
     await manager.broadcast_to_room(session_code, msg)
     # Clean up in-memory state after a short delay to allow clients to process
     _session_state.pop(session_code, None)
+    # Delete the persisted snapshot — session is over, no need to restore
+    _safe_create_task(_delete_session_snapshot(session_code), name=f"snapshot_delete_{session_code}")
     logger.info("Session %s ended", session_code)
 
 
@@ -1776,6 +1885,10 @@ def _inv_add(inv, items: list, money) -> dict:
 
 async def handle_connect(session_code: str, user_id: str, role: str, is_table_view: bool = False):
     """Called after a WebSocket is accepted — notify the room and send full sync."""
+    # If this session has no in-memory state, try to restore from a DB snapshot
+    # (e.g. after a server restart while a session was active).
+    if session_code not in _session_state:
+        await _restore_state_from_snapshot(session_code)
     state = _ensure_state(session_code)
     state["connected_users"] = manager.get_connected_users(session_code)
 
@@ -1829,6 +1942,9 @@ async def handle_reconnect(session_code: str, user_id: str):
 
     Sends a SYNC_FULL to the reconnecting client so they catch up.
     """
+    # Restore from snapshot if in-memory state was lost (e.g. server restart)
+    if session_code not in _session_state:
+        await _restore_state_from_snapshot(session_code)
     state = _ensure_state(session_code)
     state["connected_users"] = manager.get_connected_users(session_code)
 

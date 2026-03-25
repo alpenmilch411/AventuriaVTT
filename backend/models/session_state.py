@@ -168,3 +168,25 @@ class APAward(Base):
 
     def __repr__(self) -> str:
         return f"<APAward {self.amount} AP -> character={self.character_id}>"
+
+
+# ---------------------------------------------------------------------------
+# SessionSnapshot — persists in-memory session state for restart resilience
+# ---------------------------------------------------------------------------
+
+class SessionSnapshot(Base):
+    __tablename__ = "session_snapshots"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    session_code: Mapped[str] = mapped_column(
+        String(16), unique=True, nullable=False, index=True
+    )
+    snapshot_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.utcnow
+    )
+
+    def __repr__(self) -> str:
+        return f"<SessionSnapshot session={self.session_code} @ {self.updated_at}>"

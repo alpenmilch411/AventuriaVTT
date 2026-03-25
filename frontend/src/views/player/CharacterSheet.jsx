@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Shield, Swords, Heart, Sparkles, Star, Info, Eye, HelpCircle, Flame, Brain, Crown, Hand, Wind, HeartPulse, Hammer, AlertTriangle, Crosshair, Sun, User, BookOpen, X, ChevronRight } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useAuthStore from '../../stores/authStore'
@@ -112,7 +112,7 @@ function Tip({ text }) {
   )
 }
 
-export default function CharacterSheet() {
+function CharacterSheet() {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getAttributes = useCharacterStore((s) => s.getAttributes)
   const getVitals = useCharacterStore((s) => s.getVitals)
@@ -413,3 +413,5 @@ export default function CharacterSheet() {
     </div>
   )
 }
+
+export default React.memo(CharacterSheet)

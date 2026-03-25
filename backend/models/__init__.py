@@ -23,6 +23,7 @@ from models.session_state import (
     CombatState,
     SessionLog,
     APAward,
+    SessionSnapshot,
 )
 
 # Inventory
@@ -63,6 +64,7 @@ __all__ = [
     "CombatState",
     "SessionLog",
     "APAward",
+    "SessionSnapshot",
     # inventory
     "InventoryItem",
     "GroupInventory",

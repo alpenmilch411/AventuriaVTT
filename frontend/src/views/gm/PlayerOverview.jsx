@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { User, Wifi, WifiOff, MessageSquare, Dice5, Eye } from 'lucide-react'
 import useSessionStore from '../../stores/sessionStore'
 import useCharacterStore from '../../stores/characterStore'
@@ -8,7 +8,7 @@ import Modal from '../../components/common/Modal'
 import DiceInput from '../../components/common/DiceInput'
 import clsx from 'clsx'
 
-export default function PlayerOverview({ sendMessage, gmControls }) {
+function PlayerOverview({ sendMessage, gmControls }) {
   const players = useSessionStore((s) => s.players)
   const allCharacters = useCharacterStore((s) => s.allCharacters)
 
@@ -220,3 +220,5 @@ export default function PlayerOverview({ sendMessage, gmControls }) {
     </div>
   )
 }
+
+export default React.memo(PlayerOverview)

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { X, Play, Pause, Square, Gift, Clock, Cloud, Sun, CloudRain, CloudSnow, Wind } from 'lucide-react'
 import useSessionStore from '../../stores/sessionStore'
 import useCampaignStore from '../../stores/campaignStore'
@@ -13,7 +13,7 @@ const WEATHER_OPTIONS = [
   { id: 'sturm', label: 'Sturm', icon: Wind },
 ]
 
-export default function SessionControls({ onClose, sendMessage, gmControls }) {
+function SessionControls({ onClose, sendMessage, gmControls }) {
   const players = useSessionStore((s) => s.players)
   const worldClock = useCampaignStore((s) => s.worldClock)
   const weather = useCampaignStore((s) => s.weather)
@@ -206,3 +206,5 @@ export default function SessionControls({ onClose, sendMessage, gmControls }) {
     </div>
   )
 }
+
+export default React.memo(SessionControls)

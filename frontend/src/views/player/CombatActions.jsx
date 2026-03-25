@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Swords, Shield, Skull, Clock, AlertTriangle, ChevronRight,
   Star, Move, SkipForward
@@ -21,7 +21,7 @@ const DEFENSE_OPTIONS = [
   { id: 'none', label: 'Nicht verteidigen', icon: AlertTriangle, desc: 'Schaden vollständig hinnehmen' },
 ]
 
-export default function CombatActions({ sendMessage }) {
+function CombatActions({ sendMessage }) {
   const combatActive = useCombatStore((s) => s.combatActive)
   const combatResult = useCombatStore((s) => s.combatResult)
   const isMyTurn = useCombatStore((s) => s.isMyTurn)
@@ -351,3 +351,5 @@ function CombatantCard({ combatant, isActive, isMe }) {
     </div>
   )
 }
+
+export default React.memo(CombatActions)

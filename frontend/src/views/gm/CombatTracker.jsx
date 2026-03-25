@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Swords, SkipForward, Plus, Trash2, Play, Square, Minimize2,
   Shield, Heart, Skull, Zap, Clock, ChevronRight, Users, Send
@@ -14,7 +14,7 @@ import TurnFlow from './TurnFlow'
 import { getCreatureIcon } from '../../utils/icons'
 import clsx from 'clsx'
 
-export default function CombatTracker({ sendMessage, gmControls, onMinimize }) {
+function CombatTracker({ sendMessage, gmControls, onMinimize }) {
   const combatActive = useCombatStore((s) => s.combatActive)
   const activeBattleId = useCombatStore((s) => s.activeBattleId)
   const battles = useCombatStore((s) => s.battles)
@@ -424,3 +424,5 @@ function PlayerTurnWaiting({ combatant, sendMessage, onIntervene, onSkip, onAppr
     </div>
   )
 }
+
+export default React.memo(CombatTracker)

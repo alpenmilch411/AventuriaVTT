@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { getItemIcon as getItemEmoji } from '../../utils/icons'
 import {
   Package, ChevronDown, ChevronUp, FlaskConical, Swords, Shield,
@@ -269,7 +269,7 @@ function MoneyBox({ purse, moneyItems, currencies, totalKreuzer, getItemEmoji })
   )
 }
 
-export default function InventoryPanel({ sendMessage }) {
+function InventoryPanel({ sendMessage }) {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getAttributes = useCharacterStore((s) => s.getAttributes)
   const players = useSessionStore((s) => s.players)
@@ -1478,3 +1478,5 @@ export default function InventoryPanel({ sendMessage }) {
     </div>
   )
 }
+
+export default React.memo(InventoryPanel)
