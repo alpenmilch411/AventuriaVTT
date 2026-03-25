@@ -4,6 +4,17 @@
 
 ---
 
+## Session 8d — Prevent duplicate messages from being processed twice
+**Date:** 2026-03-26
+
+### What changed
+- **The same game update can no longer appear twice** — when someone reconnects after a brief disconnect, the app now remembers the last 200 messages it already processed. If the server replays a message that was already handled (e.g. damage that was already applied), the app skips it instead of applying it a second time. This prevents double damage, double healing, or duplicate log entries after reconnects.
+
+### Files touched
+`frontend/src/hooks/useWebSocket.js`, `SPEC.md`
+
+---
+
 ## Session 8c — Message safety net for disconnected users
 **Date:** 2026-03-26
 

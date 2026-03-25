@@ -20,14 +20,28 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
   const heartbeatInterval = useRef(null)
   const pongTimeout = useRef(null)
   const lastStateVersion = useRef(0)
+  const recentMessages = useRef(new Set())
   const [connected, setConnected] = useState(false)
   const [lastMessage, setLastMessage] = useState(null)
 
   const dispatchMessage = useCallback((msg) => {
     try {
-    setLastMessage(msg)
     const type = msg.type
     const payload = msg.payload || {}
+
+    // Deduplicate: skip messages with identical type+timestamp (can happen on reconnect replay)
+    if (msg.timestamp && type !== 'sync_full' && type !== 'pong') {
+      const key = `${type}:${msg.timestamp}`
+      if (recentMessages.current.has(key)) return
+      recentMessages.current.add(key)
+      // Keep set bounded (last 200 messages)
+      if (recentMessages.current.size > 200) {
+        const first = recentMessages.current.values().next().value
+        recentMessages.current.delete(first)
+      }
+    }
+
+    setLastMessage(msg)
 
     // Track state version for gap detection
     if (payload.state_version && payload.state_version > lastStateVersion.current + 1 && lastStateVersion.current > 0) {
