@@ -1,4 +1,4 @@
-"""Map, token, trigger, and fog-of-war models."""
+"""Map, token, and trigger models."""
 
 import uuid
 from datetime import datetime
@@ -57,11 +57,6 @@ class GameMap(Base):
         "MapTrigger", back_populates="game_map", lazy="selectin",
         cascade="all, delete-orphan",
     )
-    fog_state: Mapped[Optional["FogState"]] = relationship(
-        "FogState", back_populates="game_map", uselist=False, lazy="selectin",
-        cascade="all, delete-orphan",
-    )
-
     def __repr__(self) -> str:
         return f"<GameMap {self.name!r}>"
 
@@ -140,28 +135,3 @@ class MapTrigger(Base):
 
     def __repr__(self) -> str:
         return f"<MapTrigger {self.name!r} ({self.trigger_type})>"
-
-
-# ---------------------------------------------------------------------------
-# FogState
-# ---------------------------------------------------------------------------
-
-class FogState(Base):
-    __tablename__ = "fog_states"
-
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    map_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("game_maps.id", ondelete="CASCADE"),
-        nullable=False, unique=True, index=True,
-    )
-    revealed_cells: Mapped[Optional[list]] = mapped_column(
-        JSON, nullable=True, comment="list of [x, y] pairs"
-    )
-
-    # relationships
-    game_map: Mapped["GameMap"] = relationship("GameMap", back_populates="fog_state")
-
-    def __repr__(self) -> str:
-        return f"<FogState map={self.map_id}>"

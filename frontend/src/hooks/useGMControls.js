@@ -157,13 +157,6 @@ export default function useGMControls(sendMessage) {
     })
   }, [sendMessage])
 
-  const updateFog = useCallback((action, cells) => {
-    sendMessage?.({
-      type: 'fog_update',
-      payload: { action, cells },
-    })
-  }, [sendMessage])
-
   const pushHandout = useCallback((handout) => {
     sendMessage?.({
       type: 'handout_push',
@@ -234,7 +227,6 @@ export default function useGMControls(sendMessage) {
     spawnToken,
     moveToken,
     removeToken,
-    updateFog,
     pushHandout,
     sceneActivate,
     sendVitalsUpdate,

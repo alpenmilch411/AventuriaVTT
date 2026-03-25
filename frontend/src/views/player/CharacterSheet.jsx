@@ -124,7 +124,7 @@ export default function CharacterSheet() {
     if (!token) return
     fetch('/api/databank/special_abilities', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : []).then(d => setSfTemplates(Array.isArray(d) ? d : d.items || []))
-      .catch(() => {})
+      .catch(err => console.error('Failed to fetch special abilities:', err))
   }, [token])
 
   if (!myCharacter) return <div className="flex items-center justify-center py-12"><p className="text-dsa-parchment-dark">Kein Charakter geladen.</p></div>

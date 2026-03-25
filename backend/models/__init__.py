@@ -32,12 +32,11 @@ from models.adventure import (
     Scene,
 )
 
-# Maps, tokens, fog
+# Maps, tokens, triggers
 from models.map import (
     GameMap,
     MapToken,
     MapTrigger,
-    FogState,
 )
 
 # NPCs
@@ -89,7 +88,6 @@ __all__ = [
     "GameMap",
     "MapToken",
     "MapTrigger",
-    "FogState",
     # npc
     "NPC",
     # inventory

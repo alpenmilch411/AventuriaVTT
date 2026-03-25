@@ -267,7 +267,7 @@ class CombatTechniqueTemplate(Base):
     improvement_cost: Mapped[Optional[str]] = mapped_column(
         String(4), nullable=True, comment="Steigerungsfaktor: B, C, or D"
     )
-    can_parry: Mapped[bool] = mapped_column(Integer, nullable=False, default=True)
+    can_parry: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     parry_restrictions: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     special_rules: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 

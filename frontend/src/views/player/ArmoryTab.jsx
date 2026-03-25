@@ -290,7 +290,7 @@ export default function ArmoryTab() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ basis_inventory: newInv }),
-      }).catch(() => {})
+      }).catch(err => console.error('Failed to persist inventory:', err))
     }
   }
 

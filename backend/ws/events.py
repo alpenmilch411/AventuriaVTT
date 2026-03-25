@@ -23,7 +23,6 @@ class EventType(str, Enum):
     HALT_RELEASE = "halt_release"
     TOKEN_SPAWN = "token_spawn"
     TOKEN_REMOVE = "token_remove"
-    FOG_UPDATE = "fog_update"
     HANDOUT_PUSH = "handout_push"
     TIME_ADVANCE = "time_advance"
     WEATHER_CHANGE = "weather_change"

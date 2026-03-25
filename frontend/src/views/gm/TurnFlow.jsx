@@ -185,6 +185,9 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
           type: success ? 'defense' : 'damage',
           text: `${selectedTarget?.name} ${defLabel}: ${success ? 'Verteidigung gelingt!' : 'Verteidigung misslingt!'}`,
         }})
+        if (selectedTarget) {
+          selectedTarget._reactionsThisRound = (selectedTarget._reactionsThisRound || 0) + 1
+        }
         useCombatStore.getState().clearLastDiceResult()
         if (success) {
           setTimeout(onComplete, 1500)

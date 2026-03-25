@@ -35,6 +35,7 @@ export default function CombatActions({ sendMessage }) {
 
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getVitals = useCharacterStore((s) => s.getVitals)
+  const conditions = useCharacterStore((s) => s.myCharacter?.conditions || [])
   const vitals = getVitals()
 
   // Dynamic combat values (not stale backend data)
@@ -74,7 +75,7 @@ export default function CombatActions({ sendMessage }) {
     for (const inv of eqWeapons) { const m = weapons.find(w => inv.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0])); if (m && !m.ranged) { primaryW = m; break } }
 
     // Apply condition modifiers (Schmerz, Belastung, Furcht, etc.)
-    const conds = useCharacterStore.getState().getConditions?.() || []
+    const conds = conditions
     const pa = primaryW ? Math.floor(getKTW(primaryW.technique) / 2) + (primaryW.pa_mod || 0) + shieldPA - effBE + getConditionModifier(conds, 'PA') : 0
     const aw = Math.max(0, (dv.AW || 0) - effBE + getConditionModifier(conds, 'AW'))
     return { pa, aw }

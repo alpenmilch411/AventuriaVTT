@@ -514,7 +514,7 @@ export default function InventoryPanel({ sendMessage }) {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
               body: JSON.stringify({ basis_inventory: newInv }),
-            }).catch(() => {})
+            }).catch(err => console.error('Failed to persist inventory:', err))
           }
           sendMessage?.({ type: 'inventory_change', payload: { character_id: myCharacter.id, inventory: newInv } })
         }
@@ -665,7 +665,7 @@ export default function InventoryPanel({ sendMessage }) {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ basis_inventory: newInv }),
-          }).catch(() => {})
+          }).catch(err => console.error('Failed to persist inventory:', err))
         }
         // Broadcast inventory change so GM and other players see updated counts
         sendMessage?.({ type: 'inventory_change', payload: { character_id: myCharacter.id, inventory: newInv } })

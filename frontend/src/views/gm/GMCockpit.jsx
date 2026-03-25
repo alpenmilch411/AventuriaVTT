@@ -16,6 +16,7 @@ import useAuthStore from '../../stores/authStore'
 import useCampaignStore from '../../stores/campaignStore'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
+import useMapStore from '../../stores/mapStore'
 import CombatOverlay from './CombatOverlay'
 import SessionPrep, { getSessionPool } from './SessionPrep'
 import CampaignManager from '../auth/CampaignManager'
@@ -100,6 +101,15 @@ export default function GMCockpit() {
 
   useEffect(() => { if (!user && token) fetchMe() }, [user, token])
   useEffect(() => { setSession({ sessionCode, isGM: true }); loadData() }, [sessionCode, token, user])
+  useEffect(() => {
+    return () => {
+      useSessionStore.getState().reset()
+      useCombatStore.getState().reset()
+      useCharacterStore.getState().reset()
+      useCampaignStore.getState().reset()
+      useMapStore.getState().reset()
+    }
+  }, [])
 
   const loadData = async () => {
     if (!token || !user) return
@@ -844,7 +854,7 @@ function BattleSetup({ players, creatureList, token, sendMessage, gmControls, on
     fetch('/api/databank/items', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : [])
       .then(data => setItemList(Array.isArray(data) ? data : (data.items || [])))
-      .catch(() => {})
+      .catch(err => console.error('Failed to fetch items:', err))
   }, [token])
 
   // Auto-add loot from selected creatures' guaranteed_loot

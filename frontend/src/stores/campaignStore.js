@@ -115,6 +115,13 @@ const useCampaignStore = create((set, get) => ({
         break
     }
   },
+
+  reset: () => set({
+    campaign: null, loreBook: [], quests: [], timeline: [],
+    npcs: [], scenes: [],
+    worldClock: { date: '1. Praios 1040 BF', time: '12:00', dayNight: 'day' },
+    weather: 'klar', loading: false, error: null,
+  }),
 }))
 
 export default useCampaignStore

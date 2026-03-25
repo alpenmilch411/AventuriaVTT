@@ -1,4 +1,9 @@
 import { create } from 'zustand'
+import useSessionStore from './sessionStore'
+import useCombatStore from './combatStore'
+import useCharacterStore from './characterStore'
+import useCampaignStore from './campaignStore'
+import useMapStore from './mapStore'
 
 const API = '/api'
 
@@ -83,6 +88,11 @@ const useAuthStore = create((set, get) => ({
   logout: () => {
     localStorage.removeItem('avtt_token')
     set({ user: null, token: null, error: null })
+    useSessionStore.getState().reset()
+    useCombatStore.getState().reset()
+    useCharacterStore.getState().reset()
+    useCampaignStore.getState().reset()
+    useMapStore.getState().reset()
   },
 
   fetchMe: async () => {

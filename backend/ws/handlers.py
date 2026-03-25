@@ -59,6 +59,13 @@ def _safe_create_task(coro, *, name: str = ""):
 _session_state: dict[str, dict[str, Any]] = {}
 
 
+def cleanup_session_state(session_code: str) -> None:
+    """Remove in-memory state for a session when all clients disconnect."""
+    _session_state.pop(session_code, None)
+    # Clean up character locks for this session to prevent unbounded growth
+    # (locks are per-character, not per-session, so we leave them — they're cheap)
+
+
 def _ensure_state(session_code: str) -> dict[str, Any]:
     """Return (and lazily create) the in-memory state dict for a session."""
     if session_code not in _session_state:
@@ -67,7 +74,6 @@ def _ensure_state(session_code: str) -> dict[str, Any]:
             "active_scene": None,
             "combat": None,           # None | CombatSnapshot dict
             "tokens": [],
-            "fog_revealed": [],
             "in_game_time": None,
             "weather": None,
             "halted": False,
@@ -80,6 +86,9 @@ def _ensure_state(session_code: str) -> dict[str, Any]:
             "lore_entries": [],
             "pending_requests": {},    # request_id -> request data
             "vitals": {},              # character_id -> {lep, asp, kap, schip}
+            "conditions": {},          # character_id -> [{name, level}]
+            "max_vitals": {},          # character_id -> {LeP_max, AsP_max, ...}
+            "buffs": {},               # character_id -> [{...}]
             "session_log": [],         # unified log: [{type, text, icon, ts}] — last 500 entries
         }
     return _session_state[session_code]
@@ -154,7 +163,14 @@ def _resolve_deltas(session_code: str, character_id: str, vitals: dict) -> dict:
         if key.endswith("_delta"):
             base_key = key.replace("_delta", "")
             max_key = {"lep": "LeP_max", "asp": "AsP_max", "kap": "KaP_max"}.get(base_key)
-            max_val = max_vals.get(max_key, 999) if max_key else 999
+            max_val = max_vals.get(max_key) if max_key else None
+            if max_val is None:
+                logger.warning(
+                    "max_vitals not cached for %s key=%s — clamping to 999. "
+                    "Ensure _cache_character_vitals ran before delta resolution.",
+                    character_id, max_key,
+                )
+                max_val = 999
             current_val = current.get(base_key, max_val)
             resolved[base_key] = max(0, min(max_val, current_val + value))
         else:
@@ -371,7 +387,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.HALT_RELEASE: _handle_halt_release,
         EventType.TOKEN_SPAWN: _handle_token_spawn,
         EventType.TOKEN_REMOVE: _handle_token_remove,
-        EventType.FOG_UPDATE: _handle_fog_update,
         EventType.HANDOUT_PUSH: _handle_handout_push,
         EventType.TIME_ADVANCE: _handle_time_advance,
         EventType.WEATHER_CHANGE: _handle_weather_change,
@@ -437,6 +452,13 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     # Player → GM requests (action_request, probe_request_from_player, spell_cast_request)
     # These get forwarded to the GM
     # Player self-updates (item use effects) — persist and broadcast
+
+    # Halt gate — block player state mutations while session is halted
+    halt_gated_events = {"vitals_update", "conditions_update", "inventory_change", "combat_log_entry"}
+    if event_type in halt_gated_events and not _is_gm(session_code, user_id) and manager.is_halted(session_code):
+        await manager.send_to_user(user_id, _error("Session is halted — please wait for the GM"))
+        return
+
     if event_type == "vitals_update" and not _is_gm(session_code, user_id) and payload.get("character_id"):
         cid = payload["character_id"]
         raw_vitals = payload.get("vitals", {})
@@ -595,8 +617,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     if _is_gm(session_code, user_id) and event_type == "map_state_push":
         if payload.get("tokens"):
             state["tokens"] = payload["tokens"]
-        if payload.get("fog_revealed"):
-            state["fog_revealed"] = payload["fog_revealed"]
         msg = _msg(event_type, payload, from_user=user_id)
         await manager.broadcast_to_room(session_code, msg)
         logger.info("GM pushed map state to players in %s (%d tokens)", session_code, len(payload.get("tokens", [])))
@@ -734,12 +754,10 @@ async def _handle_scene_activate(session_code: str, user_id: str, payload: dict,
     scene_name = payload.get("scene_name", "")
     state["active_scene"] = {"scene_id": scene_id, "scene_name": scene_name}
     state["tokens"] = payload.get("tokens", [])
-    state["fog_revealed"] = payload.get("fog_revealed", [])
     msg = _msg(EventType.SCENE_ACTIVATE, {
         "scene_id": scene_id,
         "scene_name": scene_name,
         "tokens": state["tokens"],
-        "fog_revealed": state["fog_revealed"],
     }, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     await _append_session_log(session_code, "scene", f"Szene: {scene_name}", icon="map")
@@ -957,30 +975,6 @@ async def _handle_token_remove(session_code: str, user_id: str, payload: dict, s
     token_id = payload.get("token_id")
     state["tokens"] = [t for t in state["tokens"] if t.get("token_id") != token_id]
     msg = _msg(EventType.TOKEN_REMOVE, {"token_id": token_id}, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
-
-
-async def _handle_fog_update(session_code: str, user_id: str, payload: dict, state: dict):
-    """Update fog-of-war revealed cells."""
-    action = payload.get("action", "reveal")  # "reveal" | "hide" | "reset"
-    cells = payload.get("cells", [])
-
-    if action == "reveal":
-        existing = set(tuple(c) for c in state["fog_revealed"])
-        for cell in cells:
-            existing.add(tuple(cell))
-        state["fog_revealed"] = [list(c) for c in existing]
-    elif action == "hide":
-        hide_set = set(tuple(c) for c in cells)
-        state["fog_revealed"] = [c for c in state["fog_revealed"] if tuple(c) not in hide_set]
-    elif action == "reset":
-        state["fog_revealed"] = []
-
-    msg = _msg(EventType.FOG_UPDATE, {
-        "action": action,
-        "cells": cells,
-        "fog_revealed": state["fog_revealed"],
-    }, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
 
 
@@ -1808,8 +1802,8 @@ async def handle_connect(session_code: str, user_id: str, role: str, is_table_vi
                 _u = _r.scalar_one_or_none()
                 if _u:
                     name = _u.username
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("Failed to load user: %s", e)
         log = state["session_log"]
         log.append({"type": "connect", "text": f"{name} verbunden", "icon": "user", "ts": _ts()})
         if len(log) > 500:
@@ -1874,7 +1868,6 @@ def get_full_sync(session_code: str) -> dict:
         "active_scene": state["active_scene"],
         "combat": combat_snapshot,
         "tokens": state["tokens"],
-        "fog_revealed": state["fog_revealed"],
         "in_game_time": state["in_game_time"],
         "weather": state["weather"],
         "halted": state["halted"],

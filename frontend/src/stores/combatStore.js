@@ -348,6 +348,13 @@ const useCombatStore = create((set, get) => ({
         break
     }
   },
+
+  reset: () => set({
+    battles: {}, activeBattleId: null, combatActive: false,
+    currentRound: 0, initiativeOrder: [], currentTurnIndex: 0,
+    combatLog: [], combatResult: null, pendingDiceRequest: null,
+    pendingDefense: null, myCharacterId: null,
+  }),
 }))
 
 // Auto-sync legacy fields whenever battles change

@@ -3,7 +3,6 @@ import { create } from 'zustand'
 const useMapStore = create((set, get) => ({
   currentMap: null,
   tokens: [],
-  fogState: [],
   triggers: [],
   drawings: [],
   selectedToken: null,
@@ -36,7 +35,6 @@ const useMapStore = create((set, get) => ({
     mapHeight: map?.height || 800,
     gridSize: map?.gridSize || 50,
     tokens: map?.tokens || [],
-    fogState: map?.fog || [],
     triggers: map?.triggers || [],
     drawings: map?.drawings || [],
   }),
@@ -68,21 +66,6 @@ const useMapStore = create((set, get) => ({
 
   deselectToken: () => set({ selectedToken: null }),
 
-  updateFog: (fogUpdates) => set((state) => {
-    const newFog = [...state.fogState]
-    fogUpdates.forEach(({ x, y, revealed }) => {
-      const idx = newFog.findIndex(f => f.x === x && f.y === y)
-      if (idx >= 0) {
-        newFog[idx] = { ...newFog[idx], revealed }
-      } else {
-        newFog.push({ x, y, revealed })
-      }
-    })
-    return { fogState: newFog }
-  }),
-
-  clearFog: () => set({ fogState: [] }),
-
   addDrawing: (drawing) => set((state) => ({
     drawings: [...state.drawings, drawing],
   })),
@@ -109,12 +92,6 @@ const useMapStore = create((set, get) => ({
     viewScale: scale || get().viewScale,
   }),
 
-  isCellRevealed: (cellX, cellY) => {
-    const state = get()
-    const fogCell = state.fogState.find(f => f.x === cellX && f.y === cellY)
-    return fogCell ? fogCell.revealed : false
-  },
-
   handleMapMessage: (msg) => {
     const { type, payload } = msg
     switch (type) {
@@ -134,31 +111,9 @@ const useMapStore = create((set, get) => ({
       case 'token_update':
         get().updateToken(payload.token_id, payload.updates || payload)
         break
-      case 'fog_update': {
-        // Backend sends {action, cells, fog_revealed} — handle both formats
-        if (payload.action === 'reset') {
-          get().clearFog()
-        } else if (payload.fog_revealed) {
-          // Full state replacement
-          const fogUpdates = payload.fog_revealed.map(c => ({ x: c[0], y: c[1], revealed: true }))
-          set({ fogState: fogUpdates })
-        } else if (payload.cells) {
-          const revealed = payload.action !== 'hide'
-          get().updateFog(payload.cells.map(c => ({ x: c[0] ?? c.x, y: c[1] ?? c.y, revealed })))
-        } else if (payload.updates) {
-          get().updateFog(payload.updates)
-        }
-        break
-      }
-      case 'fog_clear':
-        get().clearFog()
-        break
       case 'map_state_push': {
-        // Full authoritative state from GM — replace tokens and fog
+        // Full authoritative state from GM — replace tokens
         if (payload.tokens) set({ tokens: payload.tokens })
-        if (payload.fog_revealed) {
-          set({ fogState: payload.fog_revealed.map(c => Array.isArray(c) ? { x: c[0], y: c[1], revealed: true } : { ...c, revealed: true }) })
-        }
         break
       }
       case 'drawing_add':
@@ -174,6 +129,14 @@ const useMapStore = create((set, get) => ({
         break
     }
   },
+
+  reset: () => set({
+    currentMap: null, tokens: [], triggers: [], drawings: [],
+    selectedToken: null, measureMode: false, measureStart: null, measureEnd: null,
+    gridSize: 50, mapImage: null, mapWidth: 1000, mapHeight: 800,
+    viewOffset: { x: 0, y: 0 }, viewScale: 1,
+    pendingChanges: [], hasPendingChanges: false,
+  }),
 }))
 
 export default useMapStore

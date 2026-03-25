@@ -27,7 +27,7 @@ from config import get_settings  # noqa: E402
 from database import Base  # noqa: E402
 from models.adventure import Adventure, Chapter, Scene  # noqa: E402
 from models.campaign import Campaign, CampaignPlayer, Quest, LoreEntry, TimelineEvent  # noqa: E402
-from models.map import GameMap, MapToken, MapTrigger, FogState  # noqa: E402
+from models.map import GameMap, MapToken, MapTrigger  # noqa: E402
 from models.npc import NPC  # noqa: E402
 from models.session_state import GameSession, CombatState, SessionLog  # noqa: E402
 
@@ -75,7 +75,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
         "maps": 0,
         "tokens": 0,
         "triggers": 0,
-        "fog_states": 0,
         "quests": 0,
         "lore_entries": 0,
         "timeline_events": 0,
@@ -581,14 +580,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
             session.add(t)
             counts["tokens"] += 1
 
-        # Tavern fog: fully revealed
-        fog_taverne = FogState(
-            id=_id(),
-            map_id=map_taverne_id,
-            revealed_cells=[[x, y] for x in range(12) for y in range(10)],
-        )
-        session.add(fog_taverne)
-        counts["fog_states"] += 1
 
         # Tavern triggers
         trigger_secret_door = MapTrigger(
@@ -673,14 +664,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
             session.add(t)
             counts["tokens"] += 1
 
-        # Nordpfad fog: all hidden
-        fog_nordpfad = FogState(
-            id=_id(),
-            map_id=map_nordpfad_id,
-            revealed_cells=[],
-        )
-        session.add(fog_nordpfad)
-        counts["fog_states"] += 1
 
         # --- Map 2b: Dunkelwald - Wildpfad (18x12) ---
         map_dunkelwald_id = _id()
@@ -821,14 +804,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
             session.add(t)
             counts["triggers"] += 1
 
-        # Dunkelwald fog: all hidden (explored incrementally)
-        fog_dunkelwald = FogState(
-            id=_id(),
-            map_id=map_dunkelwald_id,
-            revealed_cells=[],
-        )
-        session.add(fog_dunkelwald)
-        counts["fog_states"] += 1
 
         # --- Map 3: Dunkelwald Lichtung (14x12) ---
         map_lichtung_id = _id()
@@ -885,13 +860,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
             session.add(t)
             counts["tokens"] += 1
 
-        fog_lichtung = FogState(
-            id=_id(),
-            map_id=map_lichtung_id,
-            revealed_cells=[],
-        )
-        session.add(fog_lichtung)
-        counts["fog_states"] += 1
 
         # --- Map 4: Turmvorplatz (12x12) ---
         map_vorplatz_id = _id()
@@ -949,13 +917,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
             session.add(t)
             counts["tokens"] += 1
 
-        fog_vorplatz = FogState(
-            id=_id(),
-            map_id=map_vorplatz_id,
-            revealed_cells=[],
-        )
-        session.add(fog_vorplatz)
-        counts["fog_states"] += 1
 
         # --- Map 5: Turm Erdgeschoss (10x10) ---
         map_turm_eg_id = _id()
@@ -1099,13 +1060,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
         session.add(trigger_poison_dart)
         counts["triggers"] += 1
 
-        fog_turm_eg = FogState(
-            id=_id(),
-            map_id=map_turm_eg_id,
-            revealed_cells=[],
-        )
-        session.add(fog_turm_eg)
-        counts["fog_states"] += 1
 
         # --- Map 5b: Taverne Privatzimmer — close-up for Koehler scene (8x8) ---
         map_privatzimmer_id = _id()
@@ -1161,13 +1115,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
             session.add(t)
             counts["tokens"] += 1
 
-        fog_privatzimmer = FogState(
-            id=_id(),
-            map_id=map_privatzimmer_id,
-            revealed_cells=[[x, y] for x in range(8) for y in range(8)],
-        )
-        session.add(fog_privatzimmer)
-        counts["fog_states"] += 1
 
         # --- Map 5c: Folterkammer — zoomed torture chamber (8x6) ---
         map_folterkammer_id = _id()
@@ -1220,13 +1167,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
             session.add(t)
             counts["tokens"] += 1
 
-        fog_folterkammer = FogState(
-            id=_id(),
-            map_id=map_folterkammer_id,
-            revealed_cells=[],
-        )
-        session.add(fog_folterkammer)
-        counts["fog_states"] += 1
 
         # --- Map 5d: Schatzkammer — trapped treasure vault (8x6) ---
         map_schatzkammer_id = _id()
@@ -1304,13 +1244,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
         session.add(schatzkammer_trigger)
         counts["triggers"] += 1
 
-        fog_schatzkammer = FogState(
-            id=_id(),
-            map_id=map_schatzkammer_id,
-            revealed_cells=[],
-        )
-        session.add(fog_schatzkammer)
-        counts["fog_states"] += 1
 
         # --- Map 6: Turmspitze - Kammer des Schamanen (8x8) ---
         map_turmspitze_id = _id()
@@ -1410,13 +1343,6 @@ def seed_adventure(database_url: str | None = None) -> dict[str, int]:
         session.add(trigger_alarm)
         counts["triggers"] += 1
 
-        fog_turmspitze = FogState(
-            id=_id(),
-            map_id=map_turmspitze_id,
-            revealed_cells=[],
-        )
-        session.add(fog_turmspitze)
-        counts["fog_states"] += 1
 
         # ==================================================================
         # 5. CREATE CHAPTERS AND SCENES

@@ -198,9 +198,9 @@ class CampaignPlayer(Base):
         String(36), ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
-    character_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("characters.id", ondelete="CASCADE"),
-        nullable=False,
+    character_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("characters.id", ondelete="SET NULL"),
+        nullable=True,
     )
     joined_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False

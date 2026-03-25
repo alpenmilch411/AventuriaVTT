@@ -320,6 +320,10 @@ async def update_scene(
     if not scene:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scene not found")
 
+    # Verify ownership: scene must belong to an adventure the user owns
+    if scene.adventure_id:
+        await _get_own_adventure(scene.adventure_id, current_user, db)
+
     update_data = body.model_dump(exclude_unset=True)
     if "status" in update_data and update_data["status"] not in ("upcoming", "active", "completed"):
         raise HTTPException(

@@ -207,7 +207,7 @@ export default function SteigerungTab() {
       setCombatTechTemplates(Array.isArray(ct) ? ct : ct.items || [])
       setSpellTemplates(Array.isArray(s) ? s : s.items || [])
       setLiturgyTemplates(Array.isArray(l) ? l : l.items || [])
-    }).catch(() => {})
+    }).catch(err => console.error('Failed to fetch databank:', err))
   }, [token])
 
   if (!myCharacter) return <div className="p-4 text-dsa-parchment-dark text-sm">Kein Charakter geladen.</div>

@@ -419,7 +419,7 @@ async def join_campaign_by_code(
         id=str(uuid.uuid4()),
         campaign_id=str(campaign.id),
         user_id=str(current_user.id),
-        character_id=character_id or "",
+        character_id=character_id,
         status="active",
     )
     db.add(player)

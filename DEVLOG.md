@@ -4,6 +4,32 @@
 
 ---
 
+## Session 6 — Full Codebase Audit & Bug Fixes
+**Date:** 2026-03-25
+**Type:** Claude Code — 7-agent parallel audit + 3-agent parallel fix team
+
+### What changed
+- **DSA5 rules corrected** — Two critical rule violations fixed: characters now become Handlungsunfähig when the sum of all condition levels reaches 8 (not just at level IV of a single condition). Magical condition sources no longer stack incorrectly — highest wins, while physical sources stack as intended.
+- **Combat maneuver modifiers fixed** — Wuchtschlag and Finte had double the correct penalty. Wuchtschlag I is now -1 AT/+1 TP (was -2/+2), Finte I is now -1 AT/-1 enemy PA (was -1/-2). All three tiers corrected for both maneuvers.
+- **Critical success now requires confirmation** — Rolling two 1s on a probe no longer auto-grants a critical. The third die must confirm by rolling at or below its attribute value, matching DSA5 rules.
+- **Defense penalties now work** — The reaction counter was never being incremented, so defenders never received the cumulative -3 penalty for multiple reactions per Kampfrunde. Now tracks and applies correctly.
+- **GM HALT actually freezes everything** — Previously, players could still update vitals, conditions, and inventory while halted. All player state modifications are now blocked during halt.
+- **Security holes closed** — Map token updates and scene edits no longer accept requests from non-GM users. Campaign join no longer breaks with a missing character.
+- **Fog of war removed completely** — All dead code for the cut feature deleted from both frontend and backend (~200 lines removed across 11 files).
+- **App no longer leaks state between sessions** — Logging out or navigating away now properly resets all Zustand stores. Previously, combat data, character info, and campaign state persisted in memory between sessions.
+- **Errors are no longer silently swallowed** — 10 locations that caught and discarded errors now log them. Failed API calls are visible in the console for debugging.
+- **Player route now requires login** — Previously, `/play/:sessionCode` was accessible without authentication.
+- **WebSocket heartbeat detects dead connections** — If the server stops responding to pings within 10 seconds, the client now triggers a reconnect instead of sitting in a broken state.
+- **Berauscht II now correctly penalizes KL and IN** — The drunkenness condition at level 2 was missing its Klugheit and Intuition penalties.
+
+### E2E tests
+Build passes. 69/69 E2E tests status maintained.
+
+### Files touched (33 files)
+`backend/ws/handlers.py`, `backend/ws/manager.py`, `backend/ws/events.py`, `backend/api/maps.py`, `backend/api/adventures.py`, `backend/api/campaigns.py`, `backend/models/map.py`, `backend/models/__init__.py`, `backend/models/campaign.py`, `backend/models/databank.py`, `backend/databank/seed_adventure.py`, `frontend/src/engine/conditionsEngine.js`, `frontend/src/engine/spellEngine.js`, `frontend/src/engine/weaponProperties.js`, `frontend/src/hooks/useCombatValues.js`, `frontend/src/hooks/useGMControls.js`, `frontend/src/hooks/useWebSocket.js`, `frontend/src/stores/authStore.js`, `frontend/src/stores/campaignStore.js`, `frontend/src/stores/characterStore.js`, `frontend/src/stores/combatStore.js`, `frontend/src/stores/mapStore.js`, `frontend/src/stores/sessionStore.js`, `frontend/src/views/gm/GMCockpit.jsx`, `frontend/src/views/gm/ProbeSetupPopup.jsx`, `frontend/src/views/gm/TurnFlow.jsx`, `frontend/src/views/player/ArmoryTab.jsx`, `frontend/src/views/player/CharacterSheet.jsx`, `frontend/src/views/player/CombatActions.jsx`, `frontend/src/views/player/InventoryPanel.jsx`, `frontend/src/views/player/PlayerDashboard.jsx`, `frontend/src/views/player/SteigerungTab.jsx`, `frontend/src/views/player/TalentList.jsx`
+
+---
+
 ## Session 5 — Live Sync, Data Safety & Deployment Prep
 **Date:** 2026-03-25
 **Type:** Claude Code — architecture refactor + bug fixes + deployment

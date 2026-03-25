@@ -56,6 +56,10 @@ class ConnectionManager:
                 self.room_gms.pop(session_code, None)
                 self.room_tables.pop(session_code, None)
                 self.halted.pop(session_code, None)
+                self.attention_mode.pop(session_code, None)
+                # Clean up in-memory session state to prevent memory leak
+                from ws.handlers import cleanup_session_state
+                cleanup_session_state(session_code)
         self.user_sessions.pop(user_id, None)
 
     async def send_to_user(self, user_id: str, message: dict):

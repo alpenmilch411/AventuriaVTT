@@ -55,10 +55,23 @@ export function resolveProbe(attrs, attrNames, fw, mod = 0, rollFn = null) {
     }
   }
 
-  // Critical: all 1s = auto-success, all 20s = auto-fail
-  if (rolls[0] === 1 && rolls[1] === 1) { return { rolls, success: true, qs: Math.max(1, Math.ceil(fw / 3)), remaining: fw, critical: true, details: [...details, 'Doppel-1: Kritischer Erfolg!'] } }
-  if (rolls.filter(r => r === 1).length === 3) { return { rolls, success: true, qs: Math.max(1, Math.ceil(fw / 3)), remaining: fw, critical: true, details: [...details, 'Dreifach-1: Kritischer Erfolg!'] } }
-  if (rolls[0] === 20 && rolls[1] === 20) { return { rolls, success: false, qs: 0, remaining: -1, patzer: true, details: [...details, 'Doppel-20: Patzer!'] } }
+  // Critical: triple-1 = automatic critical success
+  if (rolls.filter(r => r === 1).length === 3) {
+    return { rolls, success: true, qs: Math.max(1, Math.ceil(fw / 3)), remaining: fw, critical: true, details: [...details, 'Dreifach-1: Kritischer Erfolg!'] }
+  }
+  // Two 1s: critical only if the third die confirms (<= its modified attribute)
+  const onesIndices = rolls.map((r, i) => r === 1 ? i : -1).filter(i => i >= 0)
+  if (onesIndices.length === 2) {
+    const thirdIdx = [0, 1, 2].find(i => !onesIndices.includes(i))
+    const thirdAttrVal = (attrs[attrNames[thirdIdx]] || 10) + mod
+    if (rolls[thirdIdx] <= thirdAttrVal) {
+      return { rolls, success: true, qs: Math.max(1, Math.ceil(fw / 3)), remaining: fw, critical: true, details: [...details, `Doppel-1 bestätigt (${rolls[thirdIdx]} ≤ ${thirdAttrVal}): Kritischer Erfolg!`] }
+    }
+    // Unconfirmed double-1: still counts as a normal success (the probe itself may still pass or fail normally)
+    details.push(`Doppel-1 nicht bestätigt (${rolls[thirdIdx]} > ${thirdAttrVal})`)
+  }
+  // Patzer: two or more 20s
+  if (rolls.filter(r => r === 20).length >= 2) { return { rolls, success: false, qs: 0, remaining: -1, patzer: true, details: [...details, 'Doppel-20: Patzer!'] } }
 
   const success = remaining >= 0
   // DSA5 QS: FP 0 → QS1, FP 1-3 → QS1, FP 4-6 → QS2, FP 7-9 → QS3, etc.

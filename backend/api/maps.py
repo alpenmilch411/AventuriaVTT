@@ -1,4 +1,4 @@
-"""Map CRUD, tokens, fog-of-war, and trigger management endpoints."""
+"""Map CRUD, tokens, and trigger management endpoints."""
 
 import uuid
 from datetime import datetime
@@ -13,7 +13,7 @@ from api.auth import get_current_user
 from database import get_db
 from models.user import User
 from models.campaign import Campaign
-from models.map import GameMap, MapToken, MapTrigger, FogState
+from models.map import GameMap, MapToken, MapTrigger
 
 router = APIRouter(prefix="/api/maps", tags=["maps"])
 
@@ -82,14 +82,6 @@ class MapTriggerResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class FogStateResponse(BaseModel):
-    id: str
-    map_id: str
-    revealed_cells: Optional[list] = None
-
-    model_config = {"from_attributes": True}
-
-
 class MapResponse(BaseModel):
     id: str
     name: str
@@ -104,7 +96,6 @@ class MapResponse(BaseModel):
     created_at: datetime
     tokens: list[MapTokenResponse] = []
     triggers: list[MapTriggerResponse] = []
-    fog_state: Optional[FogStateResponse] = None
 
     model_config = {"from_attributes": True}
 
@@ -133,10 +124,6 @@ class TokenUpdate(BaseModel):
     conditions: Optional[list] = None
     current_lep: Optional[int] = None
     max_lep: Optional[int] = None
-
-
-class FogUpdate(BaseModel):
-    revealed_cells: list  # list of [x, y] pairs
 
 
 class TriggerCreate(BaseModel):
@@ -195,122 +182,6 @@ async def _verify_map_gm(game_map: GameMap, user: User, db: AsyncSession) -> Non
 # Map endpoints
 # ---------------------------------------------------------------------------
 
-# IMPORTANT: Routes without path params must come BEFORE /{map_id} to avoid FastAPI matching "by-scene" as a map_id
-
-@router.get("/by-scene/{scene_id}")
-async def get_map_for_scene_early(
-    scene_id: str,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Get map data for a scene, including tokens and triggers."""
-    from models.adventure import Scene
-    scene_result = await db.execute(select(Scene).where(Scene.id == scene_id))
-    scene = scene_result.scalar_one_or_none()
-    if not scene or not scene.map_id:
-        raise HTTPException(status_code=404, detail="No map for this scene")
-    result = await db.execute(select(GameMap).where(GameMap.id == scene.map_id))
-    game_map = result.scalar_one_or_none()
-    if not game_map:
-        raise HTTPException(status_code=404, detail="Map not found")
-    tokens_result = await db.execute(select(MapToken).where(MapToken.map_id == game_map.id))
-    tokens = tokens_result.scalars().all()
-    triggers_result = await db.execute(select(MapTrigger).where(MapTrigger.map_id == game_map.id))
-    triggers = triggers_result.scalars().all()
-    return {
-        "id": game_map.id, "name": game_map.name, "grid_config": game_map.grid_config,
-        "walls": game_map.walls or [], "difficult_terrain": game_map.difficult_terrain or [],
-        "landmarks": game_map.landmarks or [],
-        "tokens": [{"id": t.id, "name": t.name, "entity_type": t.entity_type, "position_x": t.position_x,
-                     "position_y": t.position_y, "token_size": t.token_size, "visible_to_players": t.visible_to_players,
-                     "icon_id": t.icon_id, "current_lep": t.current_lep, "max_lep": t.max_lep} for t in tokens],
-        "triggers": [{"id": tr.id, "name": tr.name, "trigger_type": tr.trigger_type, "position_x": tr.position_x,
-                       "position_y": tr.position_y, "gm_description": tr.gm_description} for tr in triggers],
-    }
-
-
-@router.get("/session/{session_code}/map")
-async def get_session_map_early(
-    session_code: str,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Get current map for a session, including player tokens."""
-    from models.session_state import GameSession
-    from models.campaign import Campaign, CampaignPlayer
-    from models.adventure import Scene
-    from models.character import Character
-
-    sess_result = await db.execute(select(GameSession).where(GameSession.session_code == session_code))
-    session = sess_result.scalar_one_or_none()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-    camp_result = await db.execute(select(Campaign).where(Campaign.id == session.campaign_id))
-    campaign = camp_result.scalar_one_or_none()
-    if not campaign or not campaign.current_scene_id:
-        raise HTTPException(status_code=404, detail="No active scene")
-    scene_result = await db.execute(select(Scene).where(Scene.id == campaign.current_scene_id))
-    scene = scene_result.scalar_one_or_none()
-    if not scene or not scene.map_id:
-        raise HTTPException(status_code=404, detail="Scene has no map")
-    map_result = await db.execute(select(GameMap).where(GameMap.id == scene.map_id))
-    game_map = map_result.scalar_one_or_none()
-    if not game_map:
-        raise HTTPException(status_code=404, detail="Map not found")
-
-    tokens_result = await db.execute(select(MapToken).where(MapToken.map_id == game_map.id))
-    map_tokens = list(tokens_result.scalars().all())
-    triggers_result = await db.execute(select(MapTrigger).where(MapTrigger.map_id == game_map.id))
-    triggers = list(triggers_result.scalars().all())
-    fog_result = await db.execute(select(FogState).where(FogState.map_id == game_map.id))
-    fog = fog_result.scalar_one_or_none()
-
-    # Player tokens
-    cp_result = await db.execute(select(CampaignPlayer).where(CampaignPlayer.campaign_id == session.campaign_id))
-    campaign_players = list(cp_result.scalars().all())
-    player_tokens = []
-    for cp in campaign_players:
-        if not cp.character_id: continue
-        char_result = await db.execute(select(Character).where(Character.id == cp.character_id))
-        char = char_result.scalar_one_or_none()
-        if not char: continue
-        dv = char.derived_values or {}
-        snapshot = cp.campaign_snapshot or {}
-        player_tokens.append({
-            "id": f"player_{cp.user_id}", "name": char.name, "entity_type": "player",
-            "position_x": snapshot.get("position_x", len(player_tokens) + 1),
-            "position_y": snapshot.get("position_y", (game_map.grid_config or {}).get("height", 10) - 2),
-            "token_size": 1, "visible_to_players": True, "icon_id": None,
-            "user_id": str(cp.user_id), "character_id": str(cp.character_id),
-            "current_lep": snapshot.get("current_lep", dv.get("LeP_max", 30)),
-            "max_lep": dv.get("LeP_max", 30),
-            "current_asp": snapshot.get("current_asp", dv.get("AsP_max", 0)),
-            "max_asp": dv.get("AsP_max", 0),
-            "species": char.species, "profession": char.profession,
-        })
-
-    is_gm = str(campaign.gm_user_id) == str(current_user.id)
-    all_tokens = []
-    for t in map_tokens:
-        if not is_gm and not t.visible_to_players: continue
-        all_tokens.append({"id": t.id, "name": t.name, "entity_type": t.entity_type,
-            "position_x": t.position_x, "position_y": t.position_y, "token_size": t.token_size,
-            "visible_to_players": t.visible_to_players, "icon_id": t.icon_id,
-            "current_lep": t.current_lep, "max_lep": t.max_lep})
-    all_tokens.extend(player_tokens)
-
-    result = {
-        "id": game_map.id, "name": game_map.name, "scene_id": scene.id, "scene_title": scene.title,
-        "grid_config": game_map.grid_config, "walls": game_map.walls or [],
-        "difficult_terrain": game_map.difficult_terrain or [], "tokens": all_tokens,
-        "fog_revealed": (fog.revealed_cells if fog else []) or [],
-        "triggers": [{"id": tr.id, "name": tr.name, "trigger_type": tr.trigger_type,
-            "position_x": tr.position_x, "position_y": tr.position_y,
-            "gm_description": tr.gm_description} for tr in triggers] if is_gm else [],
-    }
-    return result
-
-
 @router.post("", response_model=MapResponse, status_code=status.HTTP_201_CREATED)
 async def create_map(
     body: MapCreate,
@@ -331,16 +202,190 @@ async def create_map(
 
     game_map = GameMap(**body.model_dump())
     db.add(game_map)
-    await db.flush()
-
-    # Create initial fog state
-    if body.initial_fog:
-        fog = FogState(map_id=game_map.id, revealed_cells=[])
-        db.add(fog)
 
     await db.commit()
     await db.refresh(game_map)
     return game_map
+
+
+# IMPORTANT: Routes without path params must come BEFORE /{map_id} to avoid FastAPI matching "by-scene" as a map_id
+
+@router.get("/by-scene/{scene_id}")
+async def get_map_for_scene(
+    scene_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get map data for a scene, including tokens and triggers."""
+    from models.adventure import Scene
+    scene = await db.execute(select(Scene).where(Scene.id == scene_id))
+    scene = scene.scalar_one_or_none()
+    if not scene or not scene.map_id:
+        raise HTTPException(status_code=404, detail="No map for this scene")
+
+    result = await db.execute(select(GameMap).where(GameMap.id == scene.map_id))
+    game_map = result.scalar_one_or_none()
+    if not game_map:
+        raise HTTPException(status_code=404, detail="Map not found")
+
+    tokens_result = await db.execute(select(MapToken).where(MapToken.map_id == game_map.id))
+    tokens = tokens_result.scalars().all()
+
+    triggers_result = await db.execute(select(MapTrigger).where(MapTrigger.map_id == game_map.id))
+    triggers = triggers_result.scalars().all()
+
+    return {
+        "id": game_map.id,
+        "name": game_map.name,
+        "grid_config": game_map.grid_config,
+        "walls": game_map.walls or [],
+        "difficult_terrain": game_map.difficult_terrain or [],
+        "landmarks": game_map.landmarks or [],
+        "tokens": [
+            {
+                "id": t.id, "name": t.name, "entity_type": t.entity_type,
+                "position_x": t.position_x, "position_y": t.position_y,
+                "token_size": t.token_size, "visible_to_players": t.visible_to_players,
+                "icon_id": t.icon_id, "current_lep": t.current_lep, "max_lep": t.max_lep,
+            }
+            for t in tokens
+        ],
+        "triggers": [
+            {
+                "id": tr.id, "name": tr.name, "trigger_type": tr.trigger_type,
+                "position_x": tr.position_x, "position_y": tr.position_y,
+                "gm_description": tr.gm_description,
+            }
+            for tr in triggers
+        ],
+    }
+
+
+@router.get("/session/{session_code}/map")
+async def get_session_map(
+    session_code: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get current map for a session, including player tokens.
+    GM gets everything. Players get only visible tokens."""
+    from models.session_state import GameSession
+    from models.campaign import Campaign, CampaignPlayer
+    from models.adventure import Scene
+    from models.character import Character
+
+    # Find session -> campaign -> current scene -> map
+    sess_result = await db.execute(select(GameSession).where(GameSession.session_code == session_code))
+    session = sess_result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    camp_result = await db.execute(select(Campaign).where(Campaign.id == session.campaign_id))
+    campaign = camp_result.scalar_one_or_none()
+    if not campaign or not campaign.current_scene_id:
+        raise HTTPException(status_code=404, detail="No active scene")
+
+    scene_result = await db.execute(select(Scene).where(Scene.id == campaign.current_scene_id))
+    scene = scene_result.scalar_one_or_none()
+    if not scene or not scene.map_id:
+        raise HTTPException(status_code=404, detail="Scene has no map")
+
+    # Get map data
+    map_result = await db.execute(select(GameMap).where(GameMap.id == scene.map_id))
+    game_map = map_result.scalar_one_or_none()
+    if not game_map:
+        raise HTTPException(status_code=404, detail="Map not found")
+
+    tokens_result = await db.execute(select(MapToken).where(MapToken.map_id == game_map.id))
+    map_tokens = list(tokens_result.scalars().all())
+
+    triggers_result = await db.execute(select(MapTrigger).where(MapTrigger.map_id == game_map.id))
+    triggers = list(triggers_result.scalars().all())
+
+    # Get campaign players with characters for player tokens
+    cp_result = await db.execute(
+        select(CampaignPlayer).where(CampaignPlayer.campaign_id == session.campaign_id)
+    )
+    campaign_players = list(cp_result.scalars().all())
+
+    player_tokens = []
+    for cp in campaign_players:
+        if not cp.character_id:
+            continue
+        char_result = await db.execute(select(Character).where(Character.id == cp.character_id))
+        char = char_result.scalar_one_or_none()
+        if not char:
+            continue
+        dv = char.derived_values or {}
+        snapshot = cp.campaign_snapshot or {}
+        cv = char.combat_values or {}
+        weapons = cv.get("weapons", [])
+        primary_weapon = weapons[0] if weapons else {}
+        player_tokens.append({
+            "id": f"player_{cp.user_id}",
+            "name": char.name,
+            "entity_type": "player",
+            "position_x": snapshot.get("position_x", len(player_tokens) + 1),
+            "position_y": snapshot.get("position_y", game_map.grid_config.get("height", 10) - 2),
+            "token_size": 1,
+            "visible_to_players": True,
+            "icon_id": None,
+            "user_id": cp.user_id,
+            "character_id": cp.character_id,
+            "current_lep": snapshot.get("current_lep", dv.get("LeP_max", 30)),
+            "max_lep": dv.get("LeP_max", 30),
+            "current_asp": snapshot.get("current_asp", dv.get("AsP_max", 0)),
+            "max_asp": dv.get("AsP_max", 0),
+            "species": char.species,
+            "profession": char.profession,
+            # Combat data for BattleManager
+            "derived_values": dv,
+            "combat_values": cv,
+            "weaponName": primary_weapon.get("name", "Unbewaffnet"),
+            "weaponDamage": primary_weapon.get("TP") or primary_weapon.get("damage", "1W6"),
+            "weaponReach": primary_weapon.get("reach", "kurz"),
+            "attacks": weapons,  # All weapons as attack options
+        })
+
+    is_gm = str(campaign.gm_user_id) == str(current_user.id)
+
+    # Build token list
+    all_tokens = []
+    for t in map_tokens:
+        # Players only see visible tokens
+        if not is_gm and not t.visible_to_players:
+            continue
+        all_tokens.append({
+            "id": t.id, "name": t.name, "entity_type": t.entity_type,
+            "position_x": t.position_x, "position_y": t.position_y,
+            "token_size": t.token_size, "visible_to_players": t.visible_to_players,
+            "icon_id": t.icon_id, "current_lep": t.current_lep, "max_lep": t.max_lep,
+        })
+    all_tokens.extend(player_tokens)
+
+    result = {
+        "id": game_map.id,
+        "name": game_map.name,
+        "scene_id": scene.id,
+        "scene_title": scene.title,
+        "grid_config": game_map.grid_config,
+        "walls": game_map.walls or [],
+        "difficult_terrain": game_map.difficult_terrain or [],
+        "tokens": all_tokens,
+    }
+
+    # GM sees triggers; players don't
+    if is_gm:
+        result["triggers"] = [
+            {"id": tr.id, "name": tr.name, "trigger_type": tr.trigger_type,
+             "position_x": tr.position_x, "position_y": tr.position_y,
+             "gm_description": tr.gm_description}
+            for tr in triggers
+        ]
+    else:
+        result["triggers"] = []
+
+    return result
 
 
 @router.get("/{map_id}", response_model=MapResponse)
@@ -412,6 +457,7 @@ async def update_token(
 ):
     """Update a token (position, visibility, etc.)."""
     game_map = await _get_map(map_id, db)
+    await _verify_map_gm(game_map, current_user, db)
 
     result = await db.execute(
         select(MapToken).where(MapToken.id == token_id, MapToken.map_id == map_id)
@@ -448,40 +494,6 @@ async def remove_token(
 
     await db.delete(token)
     await db.commit()
-
-
-# ---------------------------------------------------------------------------
-# Fog endpoints
-# ---------------------------------------------------------------------------
-
-@router.put("/{map_id}/fog", response_model=FogStateResponse)
-async def update_fog(
-    map_id: str,
-    body: FogUpdate,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Update fog-of-war state (GM only)."""
-    game_map = await _get_map(map_id, db)
-    await _verify_map_gm(game_map, current_user, db)
-
-    result = await db.execute(
-        select(FogState).where(FogState.map_id == map_id)
-    )
-    fog = result.scalar_one_or_none()
-    if not fog:
-        fog = FogState(map_id=map_id, revealed_cells=body.revealed_cells)
-        db.add(fog)
-    else:
-        # Merge revealed cells (union, no duplicates)
-        existing = set(tuple(c) for c in (fog.revealed_cells or []))
-        new_cells = set(tuple(c) for c in body.revealed_cells)
-        merged = list(existing | new_cells)
-        fog.revealed_cells = [list(c) for c in merged]
-
-    await db.commit()
-    await db.refresh(fog)
-    return fog
 
 
 # ---------------------------------------------------------------------------
@@ -560,185 +572,3 @@ async def remove_trigger(
 
     await db.delete(trigger)
     await db.commit()
-
-
-@router.get("/by-scene/{scene_id}")
-async def get_map_for_scene(
-    scene_id: str,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Get map data for a scene, including tokens and triggers."""
-    from models.adventure import Scene
-    scene = await db.execute(select(Scene).where(Scene.id == scene_id))
-    scene = scene.scalar_one_or_none()
-    if not scene or not scene.map_id:
-        raise HTTPException(status_code=404, detail="No map for this scene")
-    
-    result = await db.execute(select(GameMap).where(GameMap.id == scene.map_id))
-    game_map = result.scalar_one_or_none()
-    if not game_map:
-        raise HTTPException(status_code=404, detail="Map not found")
-    
-    tokens_result = await db.execute(select(MapToken).where(MapToken.map_id == game_map.id))
-    tokens = tokens_result.scalars().all()
-    
-    triggers_result = await db.execute(select(MapTrigger).where(MapTrigger.map_id == game_map.id))
-    triggers = triggers_result.scalars().all()
-    
-    return {
-        "id": game_map.id,
-        "name": game_map.name,
-        "grid_config": game_map.grid_config,
-        "walls": game_map.walls or [],
-        "difficult_terrain": game_map.difficult_terrain or [],
-        "landmarks": game_map.landmarks or [],
-        "tokens": [
-            {
-                "id": t.id, "name": t.name, "entity_type": t.entity_type,
-                "position_x": t.position_x, "position_y": t.position_y,
-                "token_size": t.token_size, "visible_to_players": t.visible_to_players,
-                "icon_id": t.icon_id, "current_lep": t.current_lep, "max_lep": t.max_lep,
-            }
-            for t in tokens
-        ],
-        "triggers": [
-            {
-                "id": tr.id, "name": tr.name, "trigger_type": tr.trigger_type,
-                "position_x": tr.position_x, "position_y": tr.position_y,
-                "gm_description": tr.gm_description,
-            }
-            for tr in triggers
-        ],
-    }
-
-
-@router.get("/session/{session_code}/map")
-async def get_session_map(
-    session_code: str,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Get current map for a session, including player tokens.
-    GM gets everything. Players get only visible tokens and revealed fog."""
-    from models.session_state import GameSession
-    from models.campaign import Campaign, CampaignPlayer
-    from models.adventure import Scene
-    from models.character import Character
-
-    # Find session → campaign → current scene → map
-    sess_result = await db.execute(select(GameSession).where(GameSession.session_code == session_code))
-    session = sess_result.scalar_one_or_none()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-
-    camp_result = await db.execute(select(Campaign).where(Campaign.id == session.campaign_id))
-    campaign = camp_result.scalar_one_or_none()
-    if not campaign or not campaign.current_scene_id:
-        raise HTTPException(status_code=404, detail="No active scene")
-
-    scene_result = await db.execute(select(Scene).where(Scene.id == campaign.current_scene_id))
-    scene = scene_result.scalar_one_or_none()
-    if not scene or not scene.map_id:
-        raise HTTPException(status_code=404, detail="Scene has no map")
-
-    # Get map data
-    map_result = await db.execute(select(GameMap).where(GameMap.id == scene.map_id))
-    game_map = map_result.scalar_one_or_none()
-    if not game_map:
-        raise HTTPException(status_code=404, detail="Map not found")
-
-    tokens_result = await db.execute(select(MapToken).where(MapToken.map_id == game_map.id))
-    map_tokens = list(tokens_result.scalars().all())
-
-    triggers_result = await db.execute(select(MapTrigger).where(MapTrigger.map_id == game_map.id))
-    triggers = list(triggers_result.scalars().all())
-
-    fog_result = await db.execute(select(FogState).where(FogState.map_id == game_map.id))
-    fog = fog_result.scalar_one_or_none()
-
-    # Get campaign players with characters for player tokens
-    cp_result = await db.execute(
-        select(CampaignPlayer).where(CampaignPlayer.campaign_id == session.campaign_id)
-    )
-    campaign_players = list(cp_result.scalars().all())
-
-    player_tokens = []
-    for cp in campaign_players:
-        if not cp.character_id:
-            continue
-        char_result = await db.execute(select(Character).where(Character.id == cp.character_id))
-        char = char_result.scalar_one_or_none()
-        if not char:
-            continue
-        dv = char.derived_values or {}
-        snapshot = cp.campaign_snapshot or {}
-        cv = char.combat_values or {}
-        weapons = cv.get("weapons", [])
-        primary_weapon = weapons[0] if weapons else {}
-        player_tokens.append({
-            "id": f"player_{cp.user_id}",
-            "name": char.name,
-            "entity_type": "player",
-            "position_x": snapshot.get("position_x", len(player_tokens) + 1),
-            "position_y": snapshot.get("position_y", game_map.grid_config.get("height", 10) - 2),
-            "token_size": 1,
-            "visible_to_players": True,
-            "icon_id": None,
-            "user_id": cp.user_id,
-            "character_id": cp.character_id,
-            "current_lep": snapshot.get("current_lep", dv.get("LeP_max", 30)),
-            "max_lep": dv.get("LeP_max", 30),
-            "current_asp": snapshot.get("current_asp", dv.get("AsP_max", 0)),
-            "max_asp": dv.get("AsP_max", 0),
-            "species": char.species,
-            "profession": char.profession,
-            # Combat data for BattleManager
-            "derived_values": dv,
-            "combat_values": cv,
-            "weaponName": primary_weapon.get("name", "Unbewaffnet"),
-            "weaponDamage": primary_weapon.get("TP") or primary_weapon.get("damage", "1W6"),
-            "weaponReach": primary_weapon.get("reach", "kurz"),
-            "attacks": weapons,  # All weapons as attack options
-        })
-
-    is_gm = str(campaign.gm_user_id) == str(current_user.id)
-
-    # Build token list
-    all_tokens = []
-    for t in map_tokens:
-        # Players only see visible tokens
-        if not is_gm and not t.visible_to_players:
-            continue
-        all_tokens.append({
-            "id": t.id, "name": t.name, "entity_type": t.entity_type,
-            "position_x": t.position_x, "position_y": t.position_y,
-            "token_size": t.token_size, "visible_to_players": t.visible_to_players,
-            "icon_id": t.icon_id, "current_lep": t.current_lep, "max_lep": t.max_lep,
-        })
-    all_tokens.extend(player_tokens)
-
-    result = {
-        "id": game_map.id,
-        "name": game_map.name,
-        "scene_id": scene.id,
-        "scene_title": scene.title,
-        "grid_config": game_map.grid_config,
-        "walls": game_map.walls or [],
-        "difficult_terrain": game_map.difficult_terrain or [],
-        "tokens": all_tokens,
-        "fog_revealed": (fog.revealed_cells if fog else []) or [],
-    }
-
-    # GM sees triggers and all fog; players don't
-    if is_gm:
-        result["triggers"] = [
-            {"id": tr.id, "name": tr.name, "trigger_type": tr.trigger_type,
-             "position_x": tr.position_x, "position_y": tr.position_y,
-             "gm_description": tr.gm_description}
-            for tr in triggers
-        ]
-    else:
-        result["triggers"] = []
-
-    return result

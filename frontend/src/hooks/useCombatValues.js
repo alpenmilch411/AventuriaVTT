@@ -23,7 +23,7 @@ export default function useCombatValues() {
     if (!token) return
     fetch('/api/databank/combat_techniques', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : []).then(d => setCombatTechTemplates(Array.isArray(d) ? d : d.items || []))
-      .catch(() => {})
+      .catch(err => console.error('Failed to fetch combat techniques:', err))
   }, [token])
 
   if (!myCharacter) return null

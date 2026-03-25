@@ -52,6 +52,8 @@ export const CONDITIONS = {
   'Berauscht': {
     levels: 2, category: 'geistig', icon: '🍺',
     perLevel: { AT: -1, PA: -1, AW: -1, FF: -1, MU: 1 },
+    // DSA5: at level 2, additionally -1 KL and -1 IN (not per-level, only at II)
+    level2Extra: { KL: -1, IN: -1 },
     summary: 'Alkoholrausch — senkt Kampfwerte und Fingerfertigkeit, erhöht aber den Mut.',
     source: 'Alkoholkonsum (Bier, Wein, Zwergenschnaps). Zechen-Probe kann Stufe reduzieren.',
     removal: 'Abklingen mit der Zeit (ca. 1 Stufe pro 2 Stunden), Kaffee beschleunigt.',
@@ -203,10 +205,12 @@ export function getConditionModifier(conditions, stat) {
   if (!conditions || conditions.length === 0) return 0
 
   let total = 0
+  let totalLevel = 0
   for (const cond of conditions) {
     const def = CONDITIONS[cond.name]
     if (!def) continue
     const level = cond.level || 1
+    totalLevel += level
 
     // Check if incapacitated (level IV of most conditions, or Paralyse/Betäubt)
     if (def.effect === 'incapacitated') return -999
@@ -216,11 +220,17 @@ export function getConditionModifier(conditions, stat) {
     if (def.perLevel && def.perLevel[stat]) {
       total += def.perLevel[stat] * level
     }
+    // Level-threshold extras (e.g. Berauscht II adds -1 KL/IN)
+    if (def.level2Extra && def.level2Extra[stat] && level >= 2) {
+      total += def.level2Extra[stat]
+    }
     // Flat modifiers
     if (def.flat && def.flat[stat]) {
       total += def.flat[stat]
     }
   }
+  // DSA5: sum of all condition levels >= 8 also causes Handlungsunfähig
+  if (totalLevel >= 8) return -999
   return total
 }
 
@@ -230,19 +240,23 @@ export function getConditionModifier(conditions, stat) {
  */
 export function getConditionModifierGross(conditions, stat) {
   if (!conditions || conditions.length === 0) return { pos: 0, neg: 0 }
-  let pos = 0, neg = 0
+  let pos = 0, neg = 0, totalLevel = 0
   for (const cond of conditions) {
     const def = CONDITIONS[cond.name]
     if (!def) continue
     const level = cond.level || 1
+    totalLevel += level
     if (def.effect === 'incapacitated') return { pos: 0, neg: -999 }
     if (level >= 4 && def.levels === 4) return { pos: 0, neg: -999 }
     let val = 0
     if (def.perLevel && def.perLevel[stat]) val += def.perLevel[stat] * level
+    if (def.level2Extra && def.level2Extra[stat] && level >= 2) val += def.level2Extra[stat]
     if (def.flat && def.flat[stat]) val += def.flat[stat]
     if (val > 0) pos += val
     if (val < 0) neg += val
   }
+  // DSA5: sum of all condition levels >= 8 also causes Handlungsunfähig
+  if (totalLevel >= 8) return { pos: 0, neg: -999 }
   return { pos, neg }
 }
 
@@ -251,12 +265,17 @@ export function getConditionModifierGross(conditions, stat) {
  */
 export function isIncapacitated(conditions) {
   if (!conditions || conditions.length === 0) return false
+  let totalLevel = 0
   for (const cond of conditions) {
     const def = CONDITIONS[cond.name]
     if (!def) continue
+    const level = cond.level || 1
     if (def.effect === 'incapacitated') return true
-    if ((cond.level || 1) >= 4 && def.levels === 4) return true
+    if (level >= 4 && def.levels === 4) return true
+    totalLevel += level
   }
+  // DSA5: sum of all condition levels >= 8 also causes Handlungsunfähig
+  if (totalLevel >= 8) return true
   return false
 }
 
@@ -280,14 +299,31 @@ export function calculatePainLevel(currentLeP, maxLeP) {
  * @returns {Array} Updated conditions array
  */
 export function addCondition(conditions, name, level = 1, duration = null, source = null) {
-  const existing = conditions.find(c => c.name === name)
+  const def = CONDITIONS[name]
+  const maxLevel = def?.levels || 4
+
+  // DSA5: magical sources don't stack (highest wins), physical sources stack
+  const existing = conditions.find(c => c.name === name && c.source === source)
+
+  if (source === 'magical') {
+    // Magical + magical: take the higher level (don't stack)
+    const magicalExisting = conditions.find(c => c.name === name && c.source === 'magical')
+    if (magicalExisting) {
+      magicalExisting.level = Math.min(Math.max(magicalExisting.level || 1, level), maxLevel)
+      if (duration) magicalExisting.duration = duration
+      return [...conditions]
+    }
+    // New magical entry (physical may already exist separately)
+    return [...conditions, { name, level: Math.min(level, maxLevel), duration, source, addedRound: null }]
+  }
+
+  // Physical or unspecified source: stack normally
   if (existing) {
-    const def = CONDITIONS[name]
-    existing.level = Math.min((existing.level || 1) + level, def?.levels || 4)
+    existing.level = Math.min((existing.level || 1) + level, maxLevel)
     if (duration) existing.duration = duration
     return [...conditions]
   }
-  return [...conditions, { name, level, duration, source, addedRound: null }]
+  return [...conditions, { name, level: Math.min(level, maxLevel), duration, source, addedRound: null }]
 }
 
 /**

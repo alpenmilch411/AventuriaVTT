@@ -53,12 +53,12 @@ export function getRangedDistanceMod(bracket = 'mittel') {
 // ── Special Abilities that affect weapon use ──
 export const COMBAT_SPECIAL_ABILITIES = {
   // Melee offense
-  'Wuchtschlag I':     { atMod: -2, tpMod: 2, desc: 'Wuchtschlag I: -2 AT, +2 TP' },
-  'Wuchtschlag II':    { atMod: -4, tpMod: 4, desc: 'Wuchtschlag II: -4 AT, +4 TP' },
-  'Wuchtschlag III':   { atMod: -6, tpMod: 6, desc: 'Wuchtschlag III: -6 AT, +6 TP' },
-  'Finte I':           { atMod: -1, defMod: -2, desc: 'Finte I: -1 AT, Gegner -2 PA' },
-  'Finte II':          { atMod: -2, defMod: -4, desc: 'Finte II: -2 AT, Gegner -4 PA' },
-  'Finte III':         { atMod: -3, defMod: -6, desc: 'Finte III: -3 AT, Gegner -6 PA' },
+  'Wuchtschlag I':     { atMod: -1, tpMod: 1, desc: 'Wuchtschlag I: -1 AT, +1 TP' },
+  'Wuchtschlag II':    { atMod: -2, tpMod: 2, desc: 'Wuchtschlag II: -2 AT, +2 TP' },
+  'Wuchtschlag III':   { atMod: -3, tpMod: 3, desc: 'Wuchtschlag III: -3 AT, +3 TP' },
+  'Finte I':           { atMod: -1, defMod: -1, desc: 'Finte I: -1 AT, Gegner -1 PA' },
+  'Finte II':          { atMod: -2, defMod: -2, desc: 'Finte II: -2 AT, Gegner -2 PA' },
+  'Finte III':         { atMod: -3, defMod: -3, desc: 'Finte III: -3 AT, Gegner -3 PA' },
   'Hammerschlag':      { atMod: -4, tpMod: 4, halveRS: true, desc: 'Hammerschlag: -4 AT, +4 TP, RS halbiert' },
   'Todesstoss':        { atMod: -8, tpMultiplier: 2, oncePerCombat: true, desc: 'Todesstoss: -8 AT, Schaden x2 (1x pro Kampf)' },
   'Niederwerfen':      { atMod: -2, onHit: 'knockdown', desc: 'Niederwerfen: -2 AT, bei Treffer KK-Vergleich → Liegend' },

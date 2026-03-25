@@ -221,6 +221,11 @@ const useCharacterStore = create((set, get) => ({
         break
     }
   },
+
+  reset: () => set({
+    myCharacter: null, allCharacters: [], activeBuffs: [],
+    loading: false, error: null,
+  }),
 }))
 
 export default useCharacterStore

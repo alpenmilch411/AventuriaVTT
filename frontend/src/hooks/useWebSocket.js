@@ -11,12 +11,14 @@ import { classifyItem } from '../engine/itemEffects'
 const RECONNECT_BASE_DELAY = 1000
 const RECONNECT_MAX_DELAY = 30000
 const HEARTBEAT_INTERVAL = 30000
+const PONG_TIMEOUT = 10000
 
 export default function useWebSocket(sessionCode, userId, role = 'player', isTableView = false) {
   const wsRef = useRef(null)
   const reconnectAttempts = useRef(0)
   const reconnectTimeout = useRef(null)
   const heartbeatInterval = useRef(null)
+  const pongTimeout = useRef(null)
   const [connected, setConnected] = useState(false)
   const [lastMessage, setLastMessage] = useState(null)
 
@@ -142,7 +144,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     }
 
     // ── Map events ──
-    else if (type === 'token_move' || type === 'token_spawn' || type === 'token_remove' || type === 'fog_update') {
+    else if (type === 'token_move' || type === 'token_spawn' || type === 'token_remove') {
       useMapStore.getState().handleMapMessage(msg)
     }
 
@@ -577,9 +579,9 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
                       fetch(`/api/inventory/${char.id}/use`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                         body: JSON.stringify({ item_id: dbItem.id, quantity: 1 })
-                      }).catch(() => {})
+                      }).catch(err => console.error('Failed to consume item:', err))
                     }
-                  }).catch(() => {})
+                  }).catch(err => console.error('Failed to fetch inventory:', err))
               }
             }
           }
@@ -826,8 +828,8 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
 
     // ── Fallback: try all handlers ──
     else {
-      try { useSessionStore.getState().handleSessionMessage(msg) } catch(e) {}
-      try { useCampaignStore.getState().handleCampaignMessage(msg) } catch(e) {}
+      try { useSessionStore.getState().handleSessionMessage(msg) } catch(e) { console.error('Unhandled session message:', e) }
+      try { useCampaignStore.getState().handleCampaignMessage(msg) } catch(e) { console.error('Unhandled campaign message:', e) }
     }
   }, [])
 
@@ -854,6 +856,10 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
         heartbeatInterval.current = setInterval(() => {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: 'ping' }))
+            pongTimeout.current = setTimeout(() => {
+              console.warn('[WS] Pong timeout — triggering reconnect')
+              ws.close(4000, 'Pong timeout')
+            }, PONG_TIMEOUT)
           }
         }, HEARTBEAT_INTERVAL)
         // Flush queued messages on reconnect
@@ -870,7 +876,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       ws.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data)
-          if (msg.type === 'pong') return
+          if (msg.type === 'pong') { clearTimeout(pongTimeout.current); return }
           dispatchMessage(msg)
         } catch (err) {
           console.error('[WS] Parse error:', err)
@@ -921,6 +927,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
   const disconnect = useCallback(() => {
     clearTimeout(reconnectTimeout.current)
     clearInterval(heartbeatInterval.current)
+    clearTimeout(pongTimeout.current)
     if (wsRef.current) {
       wsRef.current.close(1000, 'Client disconnect')
       wsRef.current = null

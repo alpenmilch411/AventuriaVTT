@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Last updated:** 2026-03-25
-**Status:** Core features complete — SSOT refactor done, deploying to Render
+**Status:** Core features complete — full audit done, 25 bugs fixed, deploying to Render
 
 ---
 
@@ -4142,20 +4142,26 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [ ] Export (character, campaign, session log)
 - ~~[ ] Dice camera (on-device ML)~~ — REMOVED per user request
 
-### Open TODOs (updated 2026-03-24)
+### Open TODOs (updated 2026-03-25)
 
 **Resolved since last update:**
 - [x] Full dice flow end-to-end — working for attacks, defense, damage (GM ↔ player via WS)
 - [x] Combat turn system — TurnFlow with full step-by-step wizard integrated
+- [x] DSA5 rules audit — Handlungsunfähig sum>=8, condition stacking (magical/physical), critical confirmation, Wuchtschlag/Finte modifiers corrected
+- [x] Security audit — auth guards on token/scene update, FK constraint fix, HALT gate covers all player actions
+- [x] Fog of war — removed entirely (feature cut, all dead code cleaned from frontend + backend)
+- [x] State management — store cleanup on logout/navigation, silent error catches replaced with logging
+- [x] WebSocket — heartbeat timeout detection, session state memory leak fix, missing state initialization
+- [x] Reaction penalties — defender reaction counter now increments, -3 cumulative penalty applies
+- [x] Item give in probe consequences now persists to inventory API
+- [x] Player route now requires authentication
 
 **Still open:**
 - [ ] GM scene view right panel: rework with collapsible sections, fix all non-functional buttons
-- [ ] Fog of war: GM paint/erase fog brush tool, fog respects token visibility
 - [ ] Player pending requests: show open requests with withdraw option
 - [ ] Battle/probe overlay on table view so all players see what's happening
 - [ ] WebSocket real-time scene switching: GM activates scene → all player views update instantly
 - [ ] Map token spawn: spawned tokens should appear immediately without page reload
-- [ ] Player map: fog of war enforcement, only see revealed areas
 - [ ] Creature stat editing: GM can modify creature stats on the fly during combat
 - [ ] Multi-GM / Co-GM mode
 - [ ] Mobile responsive header (compact on small screens)

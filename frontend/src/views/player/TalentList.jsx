@@ -69,7 +69,7 @@ export default function TalentList({ sendMessage }) {
     fetch('/api/databank/talents', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : [])
       .then(d => setDbTalents(Array.isArray(d) ? d : d.items || []))
-      .catch(() => {})
+      .catch(err => console.error('Failed to fetch talents:', err))
   }, [token])
 
   // Auto-mark talent as approved when dice_request arrives

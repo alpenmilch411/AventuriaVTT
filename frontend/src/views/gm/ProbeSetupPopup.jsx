@@ -298,8 +298,14 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
             sendMessage?.({ type: 'conditions_update', payload: { character_id: charId, remove_condition: c.condition, reduce_level: c.level || 1 } })
             break
           case 'item_give':
-            // TODO: add to inventory via REST
             sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${p.character?.name} erhält: ${c.quantity || 1}x ${c.itemName}` } })
+            if (token && charId) {
+              fetch(`/api/inventory/${charId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ item_name: c.itemName, quantity: c.quantity || 1 }),
+              }).catch(err => console.error('Failed to add item to inventory:', err))
+            }
             break
           case 'money':
             sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${p.character?.name} erhält: ${c.dukaten || 0}D ${c.silber || 0}S ${c.heller || 0}H` } })
