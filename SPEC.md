@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.3.0
+**Version:** 1.4.0
 **Last updated:** 2026-03-25
-**Status:** Core features complete — full audit done, 25 bugs fixed, deploying to Render
+**Status:** Core features complete — audited, dead code removed (~40%), deploying to Render
 
 ---
 

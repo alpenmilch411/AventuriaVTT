@@ -4,6 +4,29 @@
 
 ---
 
+## Session 7 — Dead Code Removal (~40% of codebase)
+**Date:** 2026-03-25
+**Type:** Claude Code — 3-agent dependency analysis + manual cleanup
+
+### What changed
+- **Removed ~50 dead files** — traced the full import dependency graph from entry points and found that ~40% of the codebase was unreachable. Maps, adventures, AI assist, importers, NPC management, and most of the backend rules engine were defined but never wired to any UI or WebSocket handler.
+- **Deleted entire backend directories**: `ai/` (5 files, NPC/map generation, Claude API integration), `importers/` (3 files, Optolith/DSA Ultimate/PDF importers). These were built in Session 1 but no frontend UI was ever created for them.
+- **Deleted 6 backend API route files**: adventures, assist, combat (REST — combat is WS-only), maps, npcs, probes (REST — probes are WS-only). 85 endpoints removed.
+- **Deleted 11 of 13 backend engine modules** — only `leveling.py` is used (by character advancement API). Combat, probes, conditions, damage, initiative, magic, liturgies, movement, inventory, modifiers, and rest engine modules were only imported by the dead REST API routes, never by WebSocket handlers.
+- **Deleted 3 backend model files**: adventure.py (Adventure, Chapter, Scene), map.py (GameMap, MapToken, MapTrigger), npc.py (NPC). Removed corresponding FK columns and relationship fields from Campaign and User models.
+- **Deleted 8 frontend files**: spellEngine.js (probe resolution done in ProbePopup instead), Card.jsx, CombatLogEntry.jsx, DSATooltip.jsx, SearchInput.jsx, ActionComposer.jsx, QuickActions.jsx, JournalTab.jsx — all orphaned from earlier iterations.
+- **Removed konva and react-konva** from package.json — canvas map rendering was never imported in any component.
+- **Removed 7 dead WebSocket event types**: SOUND_PLAY, TABLE_VIEW_MODE, MOVE_REQUEST, SCHIP_USE, LITURGY_CAST, WHISPER_REPLY, SESSION_RESUME.
+- **Cleaned up seed_adventure.py** — created Adventures/NPCs/Maps for demo data that no longer has models.
+
+### Files deleted (~50)
+Frontend: 8 files. Backend: ~40 files (6 API routes, 3 models, 11 engine modules, 5 AI files, 3 importers, 1 seed file, plus __init__ updates).
+
+### What remains
+The focused core: auth, campaigns, characters, sessions, inventory, databank (6 API routes), WebSocket real-time layer, 6 Zustand stores, 4 hooks, 6 engine modules, 12 common components, 15 GM views, 11 player views.
+
+---
+
 ## Session 6 — Full Codebase Audit & Bug Fixes
 **Date:** 2026-03-25
 **Type:** Claude Code — 7-agent parallel audit + 3-agent parallel fix team

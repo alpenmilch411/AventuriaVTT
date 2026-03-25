@@ -101,9 +101,6 @@ class Campaign(Base):
     gm_user_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    adventure_id: Mapped[Optional[str]] = mapped_column(
-        String(36), ForeignKey("adventures.id", ondelete="SET NULL"), nullable=True
-    )
     current_scene_id: Mapped[Optional[str]] = mapped_column(
         String(36), nullable=True
     )
@@ -129,9 +126,6 @@ class Campaign(Base):
     # relationships
     group: Mapped[Optional["Group"]] = relationship("Group", back_populates="campaigns")
     gm: Mapped["User"] = relationship("User", back_populates="gm_campaigns")  # noqa: F821
-    adventure: Mapped[Optional["Adventure"]] = relationship(  # noqa: F821
-        "Adventure", back_populates="campaigns"
-    )
     players: Mapped[list["CampaignPlayer"]] = relationship(
         "CampaignPlayer", back_populates="campaign", lazy="selectin",
         cascade="all, delete-orphan",
@@ -151,18 +145,6 @@ class Campaign(Base):
     sessions: Mapped[list["GameSession"]] = relationship(  # noqa: F821
         "GameSession", back_populates="campaign", lazy="selectin",
         cascade="all, delete-orphan",
-    )
-    maps: Mapped[list["GameMap"]] = relationship(  # noqa: F821
-        "GameMap", back_populates="campaign", lazy="selectin"
-    )
-    npcs: Mapped[list["NPC"]] = relationship(  # noqa: F821
-        "NPC", back_populates="campaign", lazy="selectin"
-    )
-    scenes: Mapped[list["Scene"]] = relationship(  # noqa: F821
-        "Scene",
-        back_populates="campaign",
-        lazy="selectin",
-        foreign_keys="[Scene.campaign_id]",
     )
     group_inventory: Mapped[Optional["GroupInventory"]] = relationship(  # noqa: F821
         "GroupInventory", back_populates="campaign", uselist=False, lazy="selectin"
@@ -255,8 +237,7 @@ class Quest(Base):
         String(16), nullable=False, default="active"
     )  # "active" | "completed" | "failed" | "abandoned"
     given_by: Mapped[Optional[str]] = mapped_column(
-        String(36), ForeignKey("npcs.id", ondelete="SET NULL"),
-        nullable=True,
+        String(36), nullable=True,
     )
     reward_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     objectives: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
@@ -269,10 +250,6 @@ class Quest(Base):
     assigned_character: Mapped[Optional["Character"]] = relationship(  # noqa: F821
         "Character", foreign_keys=[assigned_to]
     )
-    given_by_npc: Mapped[Optional["NPC"]] = relationship(  # noqa: F821
-        "NPC", foreign_keys=[given_by]
-    )
-
     __table_args__ = (
         Index("ix_quests_campaign_status", "campaign_id", "status"),
     )

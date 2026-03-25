@@ -26,7 +26,6 @@ class EventType(str, Enum):
     HANDOUT_PUSH = "handout_push"
     TIME_ADVANCE = "time_advance"
     WEATHER_CHANGE = "weather_change"
-    SOUND_PLAY = "sound_play"
     ATTENTION = "attention"
     ATTENTION_RELEASE = "attention_release"
     AP_AWARD = "ap_award"
@@ -34,8 +33,6 @@ class EventType(str, Enum):
     LORE_REVEAL = "lore_reveal"
     SPOTLIGHT = "spotlight"
     SPOTLIGHT_RELEASE = "spotlight_release"
-    TABLE_VIEW_MODE = "table_view_mode"
-
     # Trade / Transfer
     TRADE_PROPOSE = "trade_propose"
     TRADE_ACCEPT = "trade_accept"
@@ -55,13 +52,9 @@ class EventType(str, Enum):
     ACTION_DECLARE = "action_declare"
     DICE_RESULT = "dice_result"
     DEFENSE_CHOICE = "defense_choice"
-    MOVE_REQUEST = "move_request"
     ITEM_USE = "item_use"
     ITEM_TRANSFER = "item_transfer"
-    SCHIP_USE = "schip_use"
     SPELL_CAST = "spell_cast"
-    LITURGY_CAST = "liturgy_cast"
-    WHISPER_REPLY = "whisper_reply"
 
     # State Updates (server → clients)
     STATE_UPDATE = "state_update"
@@ -91,7 +84,6 @@ class EventType(str, Enum):
     # Session Control
     SESSION_START = "session_start"
     SESSION_PAUSE = "session_pause"
-    SESSION_RESUME = "session_resume"
     SESSION_END = "session_end"
     PLAYER_CONNECTED = "player_connected"
     PLAYER_DISCONNECTED = "player_disconnected"

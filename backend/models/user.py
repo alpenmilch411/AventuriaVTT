@@ -47,10 +47,6 @@ class User(Base):
     group_memberships: Mapped[list["GroupMember"]] = relationship(  # noqa: F821
         "GroupMember", back_populates="user", lazy="selectin"
     )
-    created_adventures: Mapped[list["Adventure"]] = relationship(  # noqa: F821
-        "Adventure", back_populates="creator", lazy="selectin"
-    )
-
     __table_args__ = (
         Index("ix_users_username", "username"),
     )
