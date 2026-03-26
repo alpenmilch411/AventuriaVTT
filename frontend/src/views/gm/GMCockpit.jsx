@@ -29,7 +29,8 @@ import NotificationPanel from './NotificationPanel'
 import ConditionPopup from './ConditionPopup'
 import ProbeSetupPopup from './ProbeSetupPopup'
 import VitalsPopup from './VitalsPopup'
-import PlayerOverview from './PlayerOverview'
+import PlayerOverview, { PlayerDetailView } from './PlayerOverview'
+import Modal from '../../components/common/Modal'
 import SessionControls from './SessionControls'
 import TurnFlow from './TurnFlow'
 import QuestSessionTab from './QuestSessionTab'
@@ -85,6 +86,7 @@ export default function GMCockpit() {
     showProbePopup, setShowProbePopup,
     showVitalsPopup, setShowVitalsPopup,
     gmNotes, setGmNotes,
+    detailPlayer, setDetailPlayer,
   } = popups
 
   const { talentList, creatureList } = useGMDatabank({ showBattleSetup, showProbePopup })
@@ -267,19 +269,22 @@ export default function GMCockpit() {
               const isCritical = lepPct < 0.25
               const conds = getConditions(p)
               return (
-                <button
+                <div
                   key={p.id}
-                  onClick={() => togglePlayer(p.id)}
+                  onClick={() => setDetailPlayer(p)}
                   className={clsx(
-                    'w-full text-left rounded-sm px-2.5 py-2 border transition',
+                    'w-full text-left rounded-sm px-2.5 py-2 border transition cursor-pointer',
                     !isOnline && 'opacity-40',
                     selected ? 'bg-dsa-bg border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg border-dsa-bg-medium hover:border-dsa-bg-card'
                   )}
                 >
-                  {/* Row 1: Checkbox + Name + Online dot */}
+                  {/* Row 1: Checkbox (stops propagation) + Name + Online dot */}
                   <div className="flex items-center gap-2 mb-1">
-                    <div className={clsx('w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 transition',
-                      selected ? 'bg-dsa-gold border-dsa-gold' : 'border-dsa-bg-medium')}>
+                    <div
+                      onClick={(e) => { e.stopPropagation(); togglePlayer(p.id) }}
+                      className={clsx('w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 transition cursor-pointer hover:border-dsa-gold',
+                        selected ? 'bg-dsa-gold border-dsa-gold' : 'border-dsa-bg-medium')}
+                    >
                       {selected && <Check className="w-2.5 h-2.5 text-dsa-bg" />}
                     </div>
                     <span className="text-xs font-semibold text-dsa-parchment truncate flex-1">{charName}</span>
@@ -325,7 +330,7 @@ export default function GMCockpit() {
                       </div>
                     )}
                   </div>
-                </button>
+                </div>
               )
             })}
           </div>
@@ -676,6 +681,35 @@ export default function GMCockpit() {
           sendMessage={sendMessage}
           onClose={() => { setShowConditionPopup(false); setQuickAction(null) }}
         />
+      )}
+
+      {/* Player Detail Modal */}
+      {detailPlayer && (
+        <Modal
+          isOpen={!!detailPlayer}
+          onClose={() => setDetailPlayer(null)}
+          title={detailPlayer.character?.name || detailPlayer.username || 'Spieler'}
+          size="lg"
+        >
+          <PlayerDetailView
+            player={{
+              ...detailPlayer,
+              vitals: (() => {
+                const cv = detailPlayer.current_vitals || {}
+                const dv = detailPlayer.character?.derived_values || {}
+                return { lep: cv.lep ?? dv.LeP_max ?? 0, asp: cv.asp ?? dv.AsP_max ?? 0, kap: cv.kap ?? dv.KaP_max ?? 0, schip: cv.schip ?? dv.Schip ?? 0 }
+              })(),
+              maxVitals: (() => {
+                const dv = detailPlayer.character?.derived_values || {}
+                return { lepMax: dv.LeP_max ?? 0, aspMax: dv.AsP_max ?? 0, kapMax: dv.KaP_max ?? 0, schipMax: dv.Schip ?? 3 }
+              })(),
+              conditions: getConditions(detailPlayer),
+            }}
+            sendMessage={sendMessage}
+            gmControls={gmControls}
+            onClose={() => setDetailPlayer(null)}
+          />
+        </Modal>
       )}
 
 

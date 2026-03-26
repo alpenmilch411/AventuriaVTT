@@ -360,4 +360,5 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
   )
 }
 
+export { PlayerDetailView }
 export default React.memo(PlayerOverview)
