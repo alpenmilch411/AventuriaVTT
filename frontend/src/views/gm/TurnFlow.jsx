@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Swords, Shield, Footprints, Sparkles, Package, ArrowRight,
   LogOut, Dice5, ChevronRight, X, Heart, AlertTriangle,
-  Target, Crosshair, Eye, Zap, Check
+  Target, Crosshair, Eye, Zap, Check, Sun
 } from 'lucide-react'
 import useCombatStore from '../../stores/combatStore'
 import useCharacterStore from '../../stores/characterStore'
+import useAuthStore from '../../stores/authStore'
 import { resolveItemEffect, classifyItem } from '../../engine/itemEffects'
 import { confirmCritical, lookupFumble } from '../../engine/criticalTables'
 import { createBuff, getStatModifier } from '../../engine/buffSystem'
@@ -39,6 +40,7 @@ const ACTIONS = [
   { id: 'melee', icon: Swords, label: 'Nahkampfangriff', desc: 'Greife ein Ziel in Waffenreichweite an.', cost: '1 Aktion' },
   { id: 'ranged', icon: Target, label: 'Fernkampfangriff', desc: 'Schieße auf ein Ziel mit einer Fernkampfwaffe.', cost: '1 Aktion' },
   { id: 'spell', icon: Sparkles, label: 'Zauber wirken', desc: 'Wirke einen Zauberspruch (kostet AsP).', cost: '1+ Aktionen' },
+  { id: 'liturgy', icon: Sun, label: 'Liturgie wirken', desc: 'Wirke eine Liturgie oder Zeremonie (kostet KaP).', cost: '1+ Aktionen' },
   { id: 'item', icon: Package, label: 'Gegenstand benutzen', desc: 'Einen Gegenstand einsetzen (Trank, Werkzeug).', cost: '1 Aktion' },
   { id: 'move', icon: Footprints, label: 'Volle Bewegung', desc: 'Bewege dich bis zu doppelter GS (statt Angriff).', cost: '1 Aktion' },
   { id: 'ready', icon: Eye, label: 'Bereithalten', desc: 'Spare deine Aktion auf und reagiere später.', cost: '1 Aktion' },
@@ -118,6 +120,16 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
   const [fumbleResult, setFumbleResult] = useState(null) // lookupFumble result
   const [criticalConfirmed, setCriticalConfirmed] = useState(false) // doubles damage in damage step
 
+  // Spell/liturgy casting state
+  const [selectedSpell, setSelectedSpell] = useState(null) // { name, fw, probe, cost, template }
+  const [spellModifier, setSpellModifier] = useState(0)
+  const [spellRolls, setSpellRolls] = useState(['', '', ''])
+  const [spellResult, setSpellResult] = useState(null) // { success, qs, fpRemaining, rolls, details }
+  const [isLiturgy, setIsLiturgy] = useState(false)
+  const [spellTemplates, setSpellTemplates] = useState({}) // name → template from databank
+  const [liturgyTemplates, setLiturgyTemplates] = useState({})
+  const [spellTemplatesLoaded, setSpellTemplatesLoaded] = useState(false)
+
   // Item use state (declared here to satisfy React hooks rules — used in 'use_item' step)
   const [selectedItem, setSelectedItem] = useState(null)
   const [itemEffect, setItemEffect] = useState(null) // resolveItemEffect result
@@ -139,6 +151,34 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
   useEffect(() => {
     return () => { useCombatStore.getState().clearLastDiceResult() }
   }, [])
+
+  // Lazy-load spell/liturgy templates from databank when entering spell steps
+  const token = useAuthStore((s) => s.token)
+  useEffect(() => {
+    if (spellTemplatesLoaded || !token) return
+    if (step !== 'spell_select') return
+    const h = { Authorization: `Bearer ${token}` }
+    Promise.all([
+      fetch('/api/databank/spells', { headers: h }).then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch('/api/databank/liturgies', { headers: h }).then(r => r.ok ? r.json() : []).catch(() => []),
+    ]).then(([sl, ll]) => {
+      const spells = Array.isArray(sl) ? sl : sl.items || []
+      const lits = Array.isArray(ll) ? ll : ll.items || []
+      const sMap = {}
+      for (const s of spells) {
+        const key = s.name.toLowerCase().replace(/\s+/g, '_')
+        sMap[key] = { probe: s.probe || [], cost: parseInt(s.asp_cost) || 0, time: s.casting_time || '?', range: s.range || '?', duration: s.duration || '?', desc: s.description || s.effect || '', target: s.target || '', damage: s.damage || '', effect_per_qs: s.effect_per_qs || null }
+      }
+      const lMap = {}
+      for (const l of lits) {
+        const key = l.name.toLowerCase().replace(/\s+/g, '_')
+        lMap[key] = { probe: l.probe || [], cost: parseInt(l.kap_cost) || 0, time: l.casting_time || '?', range: l.range || '?', duration: l.duration || '?', desc: l.description || l.effect || '', target: l.target || '', damage: l.damage || '', effect_per_qs: l.effect_per_qs || null }
+      }
+      setSpellTemplates(sMap)
+      setLiturgyTemplates(lMap)
+      setSpellTemplatesLoaded(true)
+    })
+  }, [step, token, spellTemplatesLoaded])
 
   // Auto-process incoming dice results from players
   useEffect(() => {
@@ -284,6 +324,37 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
         } else {
           setTimeout(onComplete, 1500)
         }
+      }
+    } else if (step === 'spell_roll' && r.request_type === 'spell_probe' && !spellResult && selectedSpell) {
+      // Player sent their 3W20 spell probe rolls
+      const rolls = r.rolls || []
+      if (rolls.length === 3 && rolls.every(v => v >= 1 && v <= 20)) {
+        useCombatStore.getState().clearLastDiceResult()
+        const charData = useCharacterStore.getState().allCharacters.find(c => c.id === combatant.characterId)
+          || useCharacterStore.getState().myCharacter
+        const attrs = combatant.attributes || charData?.attributes || {}
+        const probeAttrs = selectedSpell.probe
+        const targets = probeAttrs.map(a => (attrs[a] || 10) + spellModifier)
+        let fpUsed = 0
+        const details = rolls.map((roll, i) => {
+          const target = targets[i]
+          const over = Math.max(0, roll - target)
+          fpUsed += over
+          return { attr: probeAttrs[i], target, roll, over, ok: roll <= target }
+        })
+        const fpRemaining = selectedSpell.fw - fpUsed
+        const success = fpRemaining >= 0
+        const qs = success ? Math.max(1, Math.ceil(Math.max(0, fpRemaining) / 3)) : 0
+        const ones = rolls.filter(v => v === 1).length
+        const twenties = rolls.filter(v => v === 20).length
+        const critical = ones >= 2
+        const patzer = twenties >= 2
+        setSpellRolls(rolls.map(String))
+        setSpellResult({ success, qs, fpRemaining, rolls, details, critical, patzer })
+        const resultText = critical ? 'KRITISCHER ERFOLG!' : patzer ? 'PATZER!' : success ? `Gelungen! QS ${qs}` : 'Misslungen!'
+        addBattleLogEntry(battleId, { type: success ? 'system' : 'miss', text: `${combatant.name} ${isLiturgy ? 'Liturgie' : 'Zauber'} "${selectedSpell.name}": [${rolls.join(', ')}] — ${resultText}` })
+        sendMessage?.({ type: 'combat_log_entry', payload: { type: success ? 'system' : 'miss', text: `${combatant.name} ${isLiturgy ? 'Liturgie' : 'Zauber'} "${selectedSpell.name}": ${resultText}` } })
+        setStep('spell_result')
       }
     }
   }, [lastDiceResult])
@@ -465,10 +536,18 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
                   sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${combatant.name} wechselt die Waffe (1 Aktion).` } })
                   setStep('switch_weapon')
                   return
-                } else if (action.id === 'spell') {
-                  addBattleLogEntry(battleId, { type: 'system', text: `${combatant.name} bereitet einen Zauber vor.` })
-                  sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${combatant.name} bereitet einen Zauber vor.` } })
-                  onComplete()
+                } else if (action.id === 'spell' || action.id === 'liturgy') {
+                  const isLit = action.id === 'liturgy'
+                  setIsLiturgy(isLit)
+                  setSelectedSpell(null)
+                  setSpellModifier(0)
+                  setSpellRolls(['', '', ''])
+                  setSpellResult(null)
+                  setSelectedTarget(null)
+                  addBattleLogEntry(battleId, { type: 'system', text: `${combatant.name} bereitet ${isLit ? 'eine Liturgie' : 'einen Zauber'} vor.` })
+                  sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${combatant.name} bereitet ${isLit ? 'eine Liturgie' : 'einen Zauber'} vor.` } })
+                  setStep('spell_select')
+                  return
                 } else {
                   addBattleLogEntry(battleId, { type: 'system', text: `${combatant.name}: ${action.label}` })
                   if (action.id === 'disengage') {

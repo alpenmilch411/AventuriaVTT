@@ -241,7 +241,7 @@ export default function GMCockpit() {
       <div className="flex-1 flex overflow-hidden">
 
         {/* ── LEFT: Players + Quick Actions ── */}
-        <div className="w-72 flex-shrink-0 border-r border-dsa-bg-medium bg-dsa-bg-light overflow-y-auto flex flex-col">
+        <div className="w-72 flex-shrink-0 border-r border-dsa-bg-medium bg-dsa-bg overflow-y-auto flex flex-col">
           {/* Player List with multi-select */}
           <div className="p-3 space-y-1">
             <div className="flex items-center justify-between mb-1">
@@ -275,8 +275,8 @@ export default function GMCockpit() {
                   onClick={() => setDetailPlayer(p)}
                   className={clsx(
                     'w-full text-left rounded-sm px-2.5 py-2 border transition cursor-pointer',
-                    !isOnline && 'opacity-40',
-                    selected ? 'bg-dsa-bg border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg border-dsa-bg-medium hover:border-dsa-gold/10'
+                    !isOnline && 'opacity-70',
+                    selected ? 'bg-dsa-bg-card border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg-card border-dsa-bg-medium hover:border-dsa-gold/10'
                   )}
                 >
                   {/* Row 1: Checkbox + Name + Online */}
@@ -352,7 +352,7 @@ export default function GMCockpit() {
 
           {/* Action Icons Bar */}
           <div className="px-3 pb-2">
-            <div className="flex items-center justify-around bg-dsa-bg rounded p-1.5 border border-dsa-bg-medium">
+            <div className="flex items-center justify-around bg-dsa-bg-card rounded p-1.5 border border-dsa-bg-medium">
               {[
                 { id: 'probe', icon: Dice5, label: 'Probe', color: 'text-dsa-gold' },
                 { id: 'health', icon: Heart, label: 'Leben', color: 'text-red-400' },
