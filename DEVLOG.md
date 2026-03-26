@@ -4,6 +4,33 @@
 
 ---
 
+## Session 12 — Characters tab: full stack build (2026-03-26)
+**Type:** Claude Code — multi-agent team (TeamCreate + DSA Veteran + Backend Auditor + Backend Builder + Character Creator + Character Manager)
+
+### Wave 1 — Research findings
+
+**DSA Veteran rules spec produced** covering all DSA5 character creation rules:
+- 7 Erfahrungsgrade with start-AP (900–2100), attribute/skill/kt caps per grade
+- 6 species (Mensch/Elf/Halbelf/Zwerg/Ork/Goblin) with base attributes, free +7 distribution, magic flags, GS bases
+- Culture and profession AP package mechanics
+- Full AP budget flow (species → culture → profession → free allocation)
+- Vor-/Nachteil rules: creation-only lock, 80 AP Nachteilsdeckelung
+- All derived value formulas verified against useCombatValues.js
+- 10 creation-specific gotchas documented (GS species defaults, +7 free points ≠ AP, Kampftechnik minimum 6, etc.)
+
+**Backend Auditor gap report produced:**
+- All character CRUD endpoints present (create, read, update, delete, import, export, level-up, quick-template)
+- 5 quick-template archetypes exist (Krieger, Magier, Geweihter, Waldläufer, Streuner)
+- **Blockers found:** No species/cultures/professions in DB — no seed files, no models, no endpoints (currently plain strings)
+- Missing fields: `creation_finalized` (bool), `creation_ap_spent` (int) on Character model
+- Advantages/disadvantages: inconsistent shape (list vs. dict) — standardize to list of strings
+- No Alembic — migrations handled via startup Python functions in database.py
+
+### Wave 2 — Implementation (in progress)
+*Files listed after completion*
+
+---
+
 ## Session 11 — Databank browser UX + full compatibility audit (2026-03-26)
 **Type:** Claude Code — multi-agent team (TeamCreate + 5 verify agents + 1 build agent)
 

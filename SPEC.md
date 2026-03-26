@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.8.0
+**Version:** 1.8.2
 **Last updated:** 2026-03-26
-**Status:** Databank UX complete, compatibility audit done, 10 items remaining for v1
+**Status:** Characters tab in progress (Session 12) — backend audited, Wave 2 building creator + manager + DB data
 
 ---
 
@@ -4128,7 +4128,7 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Claude API integration code (anthropic SDK)
 - [x] AI assist panel in GM cockpit with mode tabs
 - [ ] AI Import Portal (PDF upload → extraction) — backend code exists, UI needs polish
-- [ ] AI Map Generation (structured JSON) — backend code exists, UI pending
+- ~~[ ] AI Map Generation (structured JSON)~~ — REMOVED (maps cut from scope)
 - [ ] AI NPC dialog generation — backend code exists, needs live testing with API key
 - [ ] AI session recap — backend code exists
 
@@ -4138,7 +4138,8 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Player journal (notes with session tagging)
 - [x] Help/rules reference tab for players
 - [x] Beginner explanations throughout (attributes, probes, combat, spells)
-- [ ] Trade & shop system
+- [x] Trade system (player-to-player item + money transfer)
+- [ ] Shop system (NPC merchants)
 - [ ] Weather & environment modifier auto-calculation
 - [ ] Regeneration & rest workflow
 - [ ] Session feedback & voting
@@ -4190,20 +4191,25 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
   - `TurnFlow.jsx`: `abilityMods` now applied to correct combatants (attacker AT, defender PA/AW); `awMod` (Verbessertes Ausweichen) no longer silently discarded; weapon field lookup covers all naming variants
   - `backend/models/databank.py` + `databank-seed/special_abilities.json`: `at_modifier`/`pa_modifier` → `at_mod`/`pa_mod` — SA combat bonuses were silently null in frontend; migration added for existing DBs
 
+**Resolved (codebase audit 2026-03-26):**
+- [x] Creature databank quick-add to battle setup — BattleManager has full databank search + multi-select spawn
+- [x] Abbreviation lookup / glossary panel — TOOLTIPS object in Tooltip.jsx has all 32 entries (AT/PA/FK/AW/INI/TP/SP/RS/BE/GS/SchiP/LeP/AsP/KaP + all attributes + system terms), TipAbbr/TipIcon components used throughout app
+- [x] Character level-up UI — SteigerungTab fully functional in-session (AP spend on attributes, talents, spells, combat techniques with cost validation)
+- [x] Wiki tab — WikiTab.jsx + wikiStore.js: searchable, 3 content categories (App-Handbuch, DSA5 Regeln, Einschränkungen), inline data cards for creatures/weapons/spells/etc.
+- [x] Dashboard Database tab — DatenbankTab.jsx: all 9 reference categories, search/filter, collapsible sidebar, GM homebrew create/edit/delete, detail modals
+
 **Still open:**
-- [ ] Combat victory screen + AP award + loot prompt
-- [ ] Creature databank quick-add to battle setup
+- [ ] Combat victory screen — AP award handler + loot system exist, but no dedicated victory UI shown after combat ends
 - [ ] Creature stat editing mid-combat
-- [ ] Player pending requests with withdraw option
+- [ ] Player pending requests with withdraw option — system works but dismiss/withdraw UX needs polish
 - [ ] Mobile responsive header
-- [ ] Character import/export (Optolith JSON)
-- [ ] Character level-up UI
+- [ ] Character import/export UI (Optolith JSON) — backend fully supports import/export, no frontend UI yet (blocked on Characters tab)
+- [ ] Characters tab UI — dashboard shows "Kommt bald..." placeholder; backend (import, export, level-up, quick templates) all ready
 - [ ] Opposed probes UI
-- [ ] In-game time tracking
-- [ ] Weather system
-- [ ] Ranged reload tracking
+- [ ] In-game time tracking — backend handler exists (`_handle_time_advance`), no frontend UI
+- [ ] Weather system — backend handler exists (`_handle_weather_change`), no UI or auto-modifier calculation
+- [ ] Ranged reload tracking — reload modifiers defined, no mid-combat reload state UI
 - [ ] Protokoll entry fix ("Singen — 0 bestanden" malformed group probe)
-- [ ] **[UX] Abbreviation lookup / glossary panel** — Add a searchable DSA5 abbreviation reference accessible from anywhere in the app (e.g., a "?" button in the toolbar or a `/glossar` route). Should cover all combat KPIs (AT, PA, FK, AW, INI, TP, SP, RS, BE, GS, SchiP), vitals (LeP, AsP, KaP), attributes (MU/KL/IN/CH/FF/GE/KO/KK), and system terms (KR, QS, FW, SF, AP, RW). The `TOOLTIPS` object in `src/components/Tooltip.jsx` already has all 32 entries with full/desc/formula/applied fields — the panel can be driven from this data source.
 
 **Removed (cut from scope):**
 - ~~GM scene view right panel~~ — scenes/maps removed from scope
@@ -4246,30 +4252,36 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] ~~QuickActions.jsx~~ — entire file deleted (dead code, replaced by individual panels)
 - [x] ~~Soundboard~~ — cut from scope
 
-### Dashboard Tabs (Post-Login) — PLANNED
+### Dashboard Tabs (Post-Login)
 
-The dashboard has 4 tabs. **Sessions** is being implemented now. The remaining 3 tabs need brainstorming and implementation:
+The dashboard has 4 tabs. Sessions, Database, and Wiki are done. Characters tab UI is the remaining work.
 
-**Characters Tab (Charaktere)**
-- [ ] Character management outside of sessions (create, edit, delete)
-- [ ] Character import (Optolith JSON, DSA Ultimate JSON formats)
-- [ ] Character export
-- [ ] View character history across completed sessions
-- [ ] Character portrait/avatar management
-- [ ] Level-up / AP spending between sessions
+**Characters Tab (Charaktere) — IN PROGRESS (Session 12)**
+- [ ] Character management UI (list/grid, edit, delete) — all CRUD endpoints present
+- [ ] Character creator wizard (multi-step, AP budget, derived values preview) — needs species/culture/profession DB data
+- [ ] Character import UI (Optolith JSON / DSA Ultimate) — `import_character()` endpoint ready
+- [ ] Character export UI — `export_character()` endpoint ready
+- [ ] Quick character templates UI (5 archetypes: Krieger, Magier, Geweihter, Waldläufer, Streuner) — `quick_template()` ready
+- [ ] Between-session AP spend modal — `level-up` endpoint ready; adapt SteigerungTab
+- [ ] View character history across sessions — endpoint missing, low priority
+- [ ] Character portrait upload — currently uses `portrait_url` string; upload endpoint missing
 
-**Database Tab (Datenbank)**
-- [ ] Browse reference data: creatures, weapons, armor, shields, items, spells, liturgies, special abilities, talents
-- [ ] Search and filter
-- [ ] GM can create custom entries (homebrew)
-- [ ] Links to databank-seed data
+**Characters Tab — Backend gaps (identified Session 12):**
+- [ ] Species/cultures/professions seed data (JSON) + DB models + API endpoints — currently plain strings, no referential data
+- [ ] `creation_finalized` (bool) + `creation_ap_spent` (int) fields on Character model + migration
+- [ ] Standardize `advantages`/`disadvantages` to list-of-strings (currently inconsistent list vs. dict)
 
-**Wiki Tab**
-- [ ] Combined DSA5 rules reference and app manual
-- [ ] Explains how the app works (session flow, combat system, dice input, etc.)
-- [ ] Clearly states limitations of the implementation vs full DSA5 rules
-- [ ] Searchable
-- [ ] Could be markdown-based or structured pages
+**Database Tab (Datenbank) — DONE**
+- [x] Browse reference data: creatures, weapons, armor, shields, items, spells, liturgies, special abilities, talents
+- [x] Search and filter with collapsible subcategory sidebar
+- [x] GM can create/edit/delete custom entries (homebrew)
+- [x] Detail popup modals with full data display
+
+**Wiki Tab — DONE**
+- [x] Combined DSA5 rules reference and app manual (WikiTab.jsx + wikiStore.js)
+- [x] Three content categories: App-Handbuch, DSA5 Regeln, Einschränkungen
+- [x] Inline data cards for creatures, weapons, armor, spells, liturgies
+- [x] Searchable with category filtering
 
 ---
 
