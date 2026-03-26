@@ -320,17 +320,17 @@ function CharacterSheet() {
               </div>
               <div className="p-4 space-y-3">
                 {/* Stat modifiers */}
-                {tpl && (tpl.at_modifier || tpl.pa_modifier || tpl.damage_modifier) && (
+                {tpl && (tpl.at_mod || tpl.pa_mod || tpl.damage_modifier) && (
                   <div className="flex flex-wrap gap-2">
-                    {tpl.at_modifier != null && tpl.at_modifier !== 0 && (
+                    {tpl.at_mod != null && tpl.at_mod !== 0 && (
                       <div className="bg-red-900/15 border border-red-900/20 rounded-sm px-3 py-1.5 text-center">
-                        <div className="text-lg font-mono font-bold text-red-400">{tpl.at_modifier > 0 ? '+' : ''}{tpl.at_modifier}</div>
+                        <div className="text-lg font-mono font-bold text-red-400">{tpl.at_mod > 0 ? '+' : ''}{tpl.at_mod}</div>
                         <div className="text-[9px] text-dsa-parchment-dark/50">Attacke</div>
                       </div>
                     )}
-                    {tpl.pa_modifier != null && tpl.pa_modifier !== 0 && (
+                    {tpl.pa_mod != null && tpl.pa_mod !== 0 && (
                       <div className="bg-blue-900/15 border border-blue-900/20 rounded-sm px-3 py-1.5 text-center">
-                        <div className="text-lg font-mono font-bold text-blue-400">{tpl.pa_modifier > 0 ? '+' : ''}{tpl.pa_modifier}</div>
+                        <div className="text-lg font-mono font-bold text-blue-400">{tpl.pa_mod > 0 ? '+' : ''}{tpl.pa_mod}</div>
                         <div className="text-[9px] text-dsa-parchment-dark/50">Parade</div>
                       </div>
                     )}
@@ -349,7 +349,7 @@ function CharacterSheet() {
                   </div>
                 )}
                 {/* AP cost if no modifiers shown */}
-                {tpl && !tpl.at_modifier && !tpl.pa_modifier && !tpl.damage_modifier && tpl.ap_cost != null && (
+                {tpl && !tpl.at_mod && !tpl.pa_mod && !tpl.damage_modifier && tpl.ap_cost != null && (
                   <div className="flex items-center gap-2 text-xs">
                     <span className="text-dsa-parchment-dark">AP-Kosten:</span>
                     <span className="font-mono font-bold text-dsa-gold">{tpl.ap_cost}</span>

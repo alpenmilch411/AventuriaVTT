@@ -87,6 +87,8 @@ export default function BattleManager({ sendMessage, mapTokens = [], onOpenComba
           pa: w.PA || w.pa, reach: w.reach, isRanged: w.ranged || false,
           technique: w.technique,
         })),
+        attributes: t.attributes || {},
+        gs: cv.GS || cv.gs || dv.GS || 7,
         conditions: [],
         position: { x: t.position_x, y: t.position_y },
         entityType: t.entity_type,

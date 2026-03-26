@@ -941,8 +941,8 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
               <div className="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
                 {/* Stat modifiers from template or CSA engine */}
                 {(tpl || csaEntry) && (() => {
-                  const at = tpl?.at_modifier ?? csaEntry?.atMod
-                  const pa = tpl?.pa_modifier ?? csaEntry?.paMod ?? (csaEntry?.paBonus ? csaEntry.paBonus : null)
+                  const at = tpl?.at_mod ?? csaEntry?.atMod
+                  const pa = tpl?.pa_mod ?? csaEntry?.paMod ?? (csaEntry?.paBonus ? csaEntry.paBonus : null)
                   const dmg = tpl?.damage_modifier ?? (csaEntry?.tpMod ? `+${csaEntry.tpMod}` : null)
                   const aw = csaEntry?.awBonus
                   const ini = csaEntry?.iniBonus
@@ -990,7 +990,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
                   )
                 })()}
                 {/* AP cost if no modifiers shown */}
-                {tpl && !tpl.at_modifier && !tpl.pa_modifier && !tpl.damage_modifier && !COMBAT_SPECIAL_ABILITIES[sfPopup] && tpl.ap_cost != null && (
+                {tpl && !tpl.at_mod && !tpl.pa_mod && !tpl.damage_modifier && !COMBAT_SPECIAL_ABILITIES[sfPopup] && tpl.ap_cost != null && (
                   <div className="flex items-center gap-2 text-xs">
                     <span className="text-dsa-parchment-dark">AP-Kosten:</span>
                     <span className="font-mono font-bold text-dsa-gold">{tpl.ap_cost}</span>

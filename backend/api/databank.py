@@ -1,6 +1,8 @@
 """Databank reference data — browse, search, and user-contributed entries."""
 
+import json
 import uuid
+from collections import Counter
 from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -69,6 +71,19 @@ def _supports_custom(entity_type: str) -> bool:
     return entity_type in _USER_CONTRIB_CATEGORIES
 
 
+# Maps entity type → the DB column used as subcategory filter
+SUBCATEGORY_FIELD: dict[str, str] = {
+    "creatures":         "category",
+    "weapons":           "combat_technique",
+    "items":             "category",
+    "spells":            "tradition",
+    "liturgies":         "tradition",
+    "special_abilities": "category",
+    "talents":           "category",
+    "combat_techniques": "category",
+}
+
+
 # ---------------------------------------------------------------------------
 # Pydantic schemas
 # ---------------------------------------------------------------------------
@@ -123,6 +138,7 @@ async def list_entities(
     page_size: int = Query(50, ge=1, le=200),
     search: Optional[str] = Query(None, min_length=1, description="Filter by name LIKE"),
     custom_only: bool = Query(False, description="Show only user-contributed entries"),
+    subcategory: Optional[str] = Query(None, description="Filter by subcategory value"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -147,6 +163,17 @@ async def list_entities(
     # Custom-only filter
     if custom_only and _supports_custom(entity_type):
         conditions.append(model.is_custom == True)  # noqa: E712
+
+    # Subcategory filter
+    if subcategory:
+        subcat_field = SUBCATEGORY_FIELD.get(entity_type)
+        if subcat_field and hasattr(model, subcat_field):
+            col = getattr(model, subcat_field)
+            if subcat_field == "tradition":
+                # tradition is stored as JSON array string, e.g. '["Gildenmagier"]'
+                conditions.append(col.ilike(f'%"{subcategory}"%'))
+            else:
+                conditions.append(col == subcategory)
 
     # Count
     count_q = select(func.count()).select_from(model)
@@ -214,6 +241,45 @@ async def search_entities(
         page=page,
         page_size=page_size,
     )
+
+
+@router.get("/{entity_type}/subcategories")
+async def list_subcategories(
+    entity_type: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Return distinct subcategory values with counts for the given entity type."""
+    subcat_field = SUBCATEGORY_FIELD.get(entity_type)
+    if not subcat_field:
+        return []
+
+    model = _get_model(entity_type)
+    if not hasattr(model, subcat_field):
+        return []
+
+    col = getattr(model, subcat_field)
+    result = await db.execute(select(col).where(col.isnot(None)))
+    raw_values = result.scalars().all()
+
+    counter: Counter = Counter()
+    is_tradition = subcat_field == "tradition"
+
+    for val in raw_values:
+        if not val:
+            continue
+        if is_tradition:
+            try:
+                parsed = json.loads(val)
+                items = parsed if isinstance(parsed, list) else [str(parsed)]
+                for t in items:
+                    counter[str(t)] += 1
+            except (json.JSONDecodeError, TypeError):
+                counter[str(val)] += 1
+        else:
+            counter[str(val)] += 1
+
+    return [{"value": k, "count": v} for k, v in sorted(counter.items(), key=lambda x: -x[1])]
 
 
 @router.get("/{entity_type}/{entity_id}", response_model=DatabankItemResponse)

@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.7.0
+**Version:** 1.8.0
 **Last updated:** 2026-03-26
-**Status:** Audited, optimized, spell casting in combat, GM UX polished — 12 items remaining for v1
+**Status:** Databank UX complete, compatibility audit done, 10 items remaining for v1
 
 ---
 
@@ -2613,8 +2613,8 @@ class SpecialAbilityTemplate:
     category: str                   # "kampf_basis" | "kampf_spezial" | "kampf_passiv" | "allgemein" | "magisch"
     prerequisites: Dict             # {"combat_technique": {"Schwerter": 10}, "SF": ["Wuchtschlag I"]}
     ap_cost: int
-    at_modifier: Optional[int]
-    pa_modifier: Optional[int]
+    at_mod: Optional[int]
+    pa_mod: Optional[int]
     damage_modifier: Optional[str]
     combinable_with: Optional[List[str]]
     exclusive_with: Optional[List[str]]
@@ -4178,17 +4178,19 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Consistent dark card theme across entire app
 - [x] Collapsible player cards in GM sidebar
 - [x] Fixed seed data — wrong magic abilities removed from warrior characters
+- [x] Collapsible subcategory sidebar in both DB browsers (DatenbankTab + SessionPrep) — replaces chip bar
+- [x] DatenbankDetailModal popup on item click in both browsers and player InventoryPanel
+- [x] DSA5 abbreviation hover tooltips throughout both DB browsers (AT/PA/RS/BE/LeP/AsP/KaP etc.)
+- [x] Color/icon consistency across all DB browsers — CATEGORIES synced to dsa-* palette, ATTR_META per-attribute colors on probe chips
+- [x] **[AUDIT] Databank entry compatibility check** — fixed 10 bugs found across 7 files:
+  - `useCombatValues.js`: shield AT mod now applied to baseAT; FK no longer penalized by BE; RS/BE computed consistently from equipped armor
+  - `BattleManager.jsx`: creature `attributes` + `gs` transferred to combatant object
+  - `InventoryPanel.jsx`: 12 English category names (`weapon`, `shield`, `potion`, `tool`, `torch`, `bandage`, `rope`, `container`, `clothing`, `item`, `misc`) now mapped to display buckets
+  - `itemEffects.js` + `databank-seed/items.json`: `stop_bleeding` → `bleeding_stop`
+  - `TurnFlow.jsx`: `abilityMods` now applied to correct combatants (attacker AT, defender PA/AW); `awMod` (Verbessertes Ausweichen) no longer silently discarded; weapon field lookup covers all naming variants
+  - `backend/models/databank.py` + `databank-seed/special_abilities.json`: `at_modifier`/`pa_modifier` → `at_mod`/`pa_mod` — SA combat bonuses were silently null in frontend; migration added for existing DBs
 
 **Still open:**
-- [ ] **[AUDIT] Databank entry compatibility check** — Exhaustively verify that user-created DB entries (all 9 categories) flow correctly through every app function that consumes them. Specifically:
-  - **Weapons**: Does adding a custom weapon to a character's inventory correctly populate ArmoryTab? Does `useCombatValues.js` pick it up for AT/PA/FK derivation? Does TurnFlow's weapon selector show it? Does the combat log format TP correctly from the new `dice` field format?
-  - **Armor/Shields**: Does RS/BE from custom armor apply in `useCombatValues.js`? Does ArmoryTab equip/unequip work? Is BE included in condition penalty calculations?
-  - **Items/Tränke**: Does `effects.heal_lep` from EffectsBuilder (now dice object → serialized string) parse correctly in `itemEffects.js`? Does the usable-item flow in InventoryPanel call the right WS handler? Does the item show in the correct InventoryPanel category (`item.category` field propagated)?
-  - **Spells/Liturgies**: Does custom spell appear in ProbeSetupPopup? Is `probe` array used correctly for skill check? Is `asp_cost`/`kap_cost` deducted on cast? Does `tradition` filter (if any) work?
-  - **Talents**: Does custom talent appear in TalentList and ProbeSetupPopup? Is `probe` array wired to the 3-attribute check?
-  - **Special Abilities**: Does `applicable_techniques` filter restrict maneuver availability in TurnFlow? Do AT/PA modifiers from SAs apply in `useCombatValues.js`?
-  - **Creatures**: Does `combat_values` (now structured grid) correctly populate HP/RS/GS/INI in BattleSetup and combat tracking? Do `attacks` JSON entries appear in GM's creature action panel?
-  - **Category sync**: InventoryPanel shows categories like "Besondere Gegenstände" (`besonderes`) that have no direct DB `category` value — only reachable via name patterns or `schatz`. Audit the full mapping between DB `item_templates.category` values and InventoryPanel display categories to ensure no items fall into the wrong bucket or disappear.
 - [ ] Combat victory screen + AP award + loot prompt
 - [ ] Creature databank quick-add to battle setup
 - [ ] Creature stat editing mid-combat

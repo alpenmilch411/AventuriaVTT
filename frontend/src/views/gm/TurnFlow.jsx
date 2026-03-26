@@ -411,7 +411,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
         if (atk.name === combatant.weaponName && weapons.length > 0) continue
         weapons.push({
           name: atk.name || 'Angriff',
-          damage: atk.damage || atk.tp || '1W6+4',
+          damage: atk.damage || atk.TP || atk.tp || '1W6+4',
           at: atk.at || atk.AT || combatant.at || 12,
           pa: atk.pa || atk.PA || combatant.pa || 8,
           reach: atk.reach || atk.reichweite || 'mittel',
@@ -453,6 +453,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
 
   // Weapon properties + special abilities
   const abilityMods = getAbilityModifiers(combatant.specialAbilities || combatant.specials || [])
+  const defenderAbilityMods = selectedTarget ? getAbilityModifiers(selectedTarget.specialAbilities || selectedTarget.specials || []) : { atMod: 0, paMod: 0, awMod: 0, tpMod: 0, iniMod: 0, beMod: 0, details: [] }
   const reachMod = selectedTarget ? getReachModifier(activeWeapon.reach, selectedTarget.weaponReach || 'mittel') : 0
 
   // Combatant stats — weapon + buffs + conditions + creature rules + abilities
@@ -461,10 +462,10 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
   const weaponReach = activeWeapon.reach
   const baseAT = activeWeapon.at + getStatModifier(attackerBuffs, 'AT')
   const rangeMod = activeWeapon.isRanged ? getRangedDistanceMod(rangeDistance) : 0
-  const effectiveAT = baseAT + (selectedManeuver?.atMod || 0) + atkCondMod + creatureMods.atMod + reachMod + rangeMod
+  const effectiveAT = baseAT + (selectedManeuver?.atMod || 0) + atkCondMod + creatureMods.atMod + reachMod + rangeMod + (abilityMods?.atMod || 0)
 
-  const basePA = (selectedTarget?.pa || 8) + getStatModifier(defenderBuffs, 'PA') + defCondModPA
-  const baseAW = (selectedTarget?.aw || 5) + getStatModifier(defenderBuffs, 'AW') + defCondModAW
+  const basePA = (selectedTarget?.pa || 8) + getStatModifier(defenderBuffs, 'PA') + defCondModPA + (defenderAbilityMods?.paMod || 0)
+  const baseAW = (selectedTarget?.aw || 5) + getStatModifier(defenderBuffs, 'AW') + defCondModAW + (defenderAbilityMods?.awMod || 0)
   const targetRS = (selectedTarget?.rs || 0) + getStatModifier(defenderBuffs, 'RS')
   const reactionPenalty = targetReactionCount > 0 ? targetReactionCount * -3 : 0
   const fintePenalty = selectedManeuver?.defMod || 0
@@ -808,9 +809,9 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
       const wpnStats = charWeapons.find(w => (w.name || '').toLowerCase() === wpnName.toLowerCase())
       updateCombatant(combatant.id, {
         weaponName: wpnName,
-        weaponDamage: wpnStats?.TP || wpnStats?.damage || weapon.damage || '1W6+4',
-        at: wpnStats?.AT || combatant.at || 12,
-        pa: wpnStats?.PA || combatant.pa || 8,
+        weaponDamage: wpnStats?.damage || wpnStats?.TP || weapon.damage || '1W6+4',
+        at: wpnStats?.at_mod != null ? (combatant.at || 12) + wpnStats.at_mod : wpnStats?.AT || combatant.at || 12,
+        pa: wpnStats?.pa_mod != null ? (combatant.pa || 8) + wpnStats.pa_mod : wpnStats?.PA || combatant.pa || 8,
         weaponReach: wpnStats?.reach || 'mittel',
       })
       addBattleLogEntry(battleId, { type: 'system', text: `${combatant.name} zieht ${wpnName}. (1 Aktion)` })

@@ -12,6 +12,30 @@ import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import Badge from '../../components/common/Badge'
 import Modal from '../../components/common/Modal'
+import DatenbankDetailModal from '../../components/DatenbankDetail'
+
+// Databank categories to search when looking up an item by name
+const DB_SEARCH_CATS = ['items', 'weapons', 'armor', 'shields']
+
+async function lookupItemInDatabank(name, token) {
+  const encoded = encodeURIComponent(name)
+  for (const cat of DB_SEARCH_CATS) {
+    try {
+      const res = await fetch(`/api/databank/${cat}?search=${encoded}&page_size=5`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) continue
+      const data = await res.json()
+      const items = data.items || []
+      const match = items.find(i => i.name?.toLowerCase() === name.toLowerCase()) || items[0]
+      if (match) {
+        const { id, name: n, ...rest } = match
+        return { id, name: n, data: rest, category: cat }
+      }
+    } catch {}
+  }
+  return null
+}
 
 // ── Item knowledge base ──
 const ITEM_INFO = {
@@ -296,6 +320,24 @@ function InventoryPanel({ sendMessage }) {
   // Counter-offer state for incoming trades
   const [counterOffer, setCounterOffer] = useState(null) // { items: [], money: {} }
 
+  // Databank detail popup
+  const [dbDetail, setDbDetail] = useState(null) // { name, data, category } | null
+  const [dbDetailLoading, setDbDetailLoading] = useState(false)
+
+  const handleOpenDbDetail = async (item) => {
+    const token = useAuthStore.getState().token
+    if (!token) return
+    setDbDetailLoading(true)
+    setDbDetail({ name: item.name, data: null, category: 'items' })
+    const result = await lookupItemInDatabank(item.name, token)
+    setDbDetailLoading(false)
+    if (result) {
+      setDbDetail(result)
+    } else {
+      setDbDetail({ name: item.name, data: {}, category: 'items' })
+    }
+  }
+
   // Auto-open first non-empty category on mount (hook must be before early returns)
   const inventoryForEffect = myCharacter?.basis_inventory || myCharacter?.campaign_inventory || {}
   const inventoryItemsForEffect = Array.isArray(inventoryForEffect) ? inventoryForEffect : (inventoryForEffect.items || [])
@@ -315,16 +357,23 @@ function InventoryPanel({ sendMessage }) {
       const n = (item.name || '').toLowerCase()
       const eff = item.effects || {}
       const dbCat = (item.category || '').toLowerCase()
-      if (dbCat === 'weapons' || dbCat === 'armor' || dbCat === 'shields') return 'kampfausruestung'
-      if (dbCat === 'trank') return 'heilmittel'
+      if (dbCat === 'weapons' || dbCat === 'weapon' || dbCat === 'armor' || dbCat === 'shields' || dbCat === 'shield') return 'kampfausruestung'
+      if (dbCat === 'trank' || dbCat === 'potion') return 'heilmittel'
       if (dbCat === 'heilkraut') return 'kraeuter'
       if (dbCat === 'alchemie') return /leuchtstab/.test(n) ? 'licht' : 'wurfstoffe'
       if (dbCat === 'munition') return 'munition'
-      if (dbCat === 'werkzeug') return 'werkzeug'
-      if (dbCat === 'licht') return 'licht'
+      if (dbCat === 'werkzeug' || dbCat === 'tool') return 'werkzeug'
+      if (dbCat === 'licht' || dbCat === 'torch') return 'licht'
       if (dbCat === 'proviant') return 'proviant'
       if (dbCat === 'schatz') return 'besonderes'
       if (dbCat === 'gift') return 'wurfstoffe'
+      if (dbCat === 'ausruestung' || dbCat === 'clothing') return 'sonstiges'
+      if (dbCat === 'behaelter' || dbCat === 'container') return 'sonstiges'
+      if (dbCat === 'verbrauchsmaterial' || dbCat === 'bandage') return 'werkzeug'
+      if (dbCat === 'unterhaltung') return 'sonstiges'
+      if (dbCat === 'krankheit') return 'sonstiges'
+      if (dbCat === 'rope') return 'werkzeug'
+      if (dbCat === 'item' || dbCat === 'misc') return 'sonstiges'
       if (item.type === 'weapon' || item.type === 'armor' || item.type === 'helm' || item.type === 'shield') return 'kampfausruestung'
       if (/schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|armbrust|ruestung|hemd|harnisch|panzer|schild|buckler|helm/i.test(n)) return 'kampfausruestung'
       if (eff.heal_lep || eff.restore_asp || eff.cure_poison || eff.cure_disease || n.includes('trank') || n.includes('elixier') || n.includes('weihwasser') || n.includes('fieber')) return 'heilmittel'
@@ -376,16 +425,23 @@ function InventoryPanel({ sendMessage }) {
     const n = (item.name || '').toLowerCase()
     const eff = item.effects || {}
     const dbCat = (item.category || '').toLowerCase()
-    if (dbCat === 'weapons' || dbCat === 'armor' || dbCat === 'shields') return 'kampfausruestung'
-    if (dbCat === 'trank') return 'heilmittel'
+    if (dbCat === 'weapons' || dbCat === 'weapon' || dbCat === 'armor' || dbCat === 'shields' || dbCat === 'shield') return 'kampfausruestung'
+    if (dbCat === 'trank' || dbCat === 'potion') return 'heilmittel'
     if (dbCat === 'heilkraut') return 'kraeuter'
     if (dbCat === 'alchemie') return /leuchtstab/.test(n) ? 'licht' : 'wurfstoffe'
     if (dbCat === 'munition') return 'munition'
-    if (dbCat === 'werkzeug') return 'werkzeug'
-    if (dbCat === 'licht') return 'licht'
+    if (dbCat === 'werkzeug' || dbCat === 'tool') return 'werkzeug'
+    if (dbCat === 'licht' || dbCat === 'torch') return 'licht'
     if (dbCat === 'proviant') return 'proviant'
     if (dbCat === 'schatz') return 'besonderes'
     if (dbCat === 'gift') return 'wurfstoffe'
+    if (dbCat === 'ausruestung' || dbCat === 'clothing') return 'sonstiges'
+    if (dbCat === 'behaelter' || dbCat === 'container') return 'sonstiges'
+    if (dbCat === 'verbrauchsmaterial' || dbCat === 'bandage') return 'werkzeug'
+    if (dbCat === 'unterhaltung') return 'sonstiges'
+    if (dbCat === 'krankheit') return 'sonstiges'
+    if (dbCat === 'rope') return 'werkzeug'
+    if (dbCat === 'item' || dbCat === 'misc') return 'sonstiges'
     // Combat gear → shown in Ausrüstung tab, not here
     if (item.type === 'weapon' || item.type === 'armor' || item.type === 'helm' || item.type === 'shield') return 'kampfausruestung'
     if (/schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|armbrust|ruestung|hemd|harnisch|panzer|schild|buckler|helm/i.test(n)) return 'kampfausruestung'
@@ -830,26 +886,33 @@ function InventoryPanel({ sendMessage }) {
         key={`${item.name}_${i}`}
         className={`bg-dsa-bg-card border rounded overflow-hidden transition-colors ${isExpanded ? 'border-dsa-gold/30' : 'border-dsa-bg-medium'}`}
       >
-        <button
-          onClick={() => setExpandedItem(isExpanded ? null : `${item.name}_${i}`)}
-          className="w-full flex items-center gap-3 px-4 py-3 text-left"
-        >
-          <div className={`w-8 h-8 rounded-sm bg-dsa-bg flex items-center justify-center flex-shrink-0 ${catColor}`}>
-            <Icon className="w-4 h-4" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-dsa-parchment">{item.name}</span>
-              <Badge variant="default" size="sm">x{item.quantity || 1}</Badge>
-              {item.equipped && <Badge variant="gold" size="sm">Angelegt</Badge>}
+        <div className="flex items-center gap-3 px-4 py-3">
+          <button
+            onClick={() => handleOpenDbDetail(item)}
+            className="flex items-center gap-3 flex-1 min-w-0 text-left group"
+          >
+            <div className={`w-8 h-8 rounded-sm bg-dsa-bg flex items-center justify-center flex-shrink-0 ${catColor}`}>
+              <Icon className="w-4 h-4" />
             </div>
-            {info && <p className="text-[10px] text-dsa-parchment-dark/60 mt-0.5">{info.category}</p>}
-          </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-dsa-parchment group-hover:text-dsa-gold transition-colors">{item.name}</span>
+                <Badge variant="default" size="sm">x{item.quantity || 1}</Badge>
+                {item.equipped && <Badge variant="gold" size="sm">Angelegt</Badge>}
+              </div>
+              {info && <p className="text-[10px] text-dsa-parchment-dark/60 mt-0.5">{info.category}</p>}
+            </div>
+          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
             {item.weight != null && <span className="text-xs text-dsa-parchment-dark">{item.weight} Stein</span>}
-            {isExpanded ? <ChevronUp className="w-4 h-4 text-dsa-parchment-dark/40" /> : <ChevronDown className="w-4 h-4 text-dsa-parchment-dark/40" />}
+            <button
+              onClick={() => setExpandedItem(isExpanded ? null : `${item.name}_${i}`)}
+              className="p-1 text-dsa-parchment-dark/40 hover:text-dsa-parchment transition-colors"
+            >
+              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
           </div>
-        </button>
+        </div>
 
         {isExpanded && (
           <div className="px-4 pb-4 border-t border-dsa-bg-medium pt-3 space-y-3">
@@ -905,6 +968,17 @@ function InventoryPanel({ sendMessage }) {
   }
 
   return (
+    <>
+    {dbDetail && (
+      <DatenbankDetailModal
+        data={dbDetail.data}
+        name={dbDetail.name}
+        category={dbDetail.category}
+        loading={dbDetailLoading}
+        isOwn={false}
+        onClose={() => setDbDetail(null)}
+      />
+    )}
     <div className="animate-fade-in">
       {/* Toast */}
       {actionResult && (
@@ -1011,10 +1085,13 @@ function InventoryPanel({ sendMessage }) {
                       const isConsumable = !!(item.effects || info?.effect)
                       return (
                         <div key={i} className="grid grid-cols-12 gap-1 px-3 py-1 hover:bg-dsa-bg-light/10 transition items-center border-t border-dsa-bg-medium/20">
-                          <div className="col-span-4 flex items-center gap-1.5 min-w-0">
+                          <button
+                            onClick={() => handleOpenDbDetail(item)}
+                            className="col-span-4 flex items-center gap-1.5 min-w-0 text-left group"
+                          >
                             <span className="text-xs">{getItemEmoji(item.name)}</span>
-                            <span className="text-[11px] text-dsa-parchment truncate">{item.name}</span>
-                          </div>
+                            <span className="text-[11px] text-dsa-parchment group-hover:text-dsa-gold transition-colors truncate">{item.name}</span>
+                          </button>
                           <div className="col-span-1 text-center text-[11px] font-mono text-dsa-parchment">{item.quantity || 1}</div>
                           <div className="col-span-1 text-center text-[10px] font-mono text-dsa-parchment-dark/50">{item.weight ? ((item.weight * (item.quantity || 1)) === item.weight ? `${item.weight}` : `${(item.weight * (item.quantity || 1)).toFixed(1)}`) : '\u2014'}</div>
                           <div className="col-span-4 text-[10px] text-dsa-parchment-dark truncate">{effectStr.slice(0, 50)}</div>
@@ -1498,6 +1575,7 @@ function InventoryPanel({ sendMessage }) {
         )}
       </Modal>
     </div>
+    </>
   )
 }
 

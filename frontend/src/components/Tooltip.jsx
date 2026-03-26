@@ -89,7 +89,7 @@ export function Tooltip({ children, term }) {
 export function TipAbbr({ term, className = '' }) {
   return (
     <Tooltip term={term}>
-      <span className={`border-b border-dotted border-current/50 ${className}`}>{term}</span>
+      <span className={className}>{term}</span>
     </Tooltip>
   )
 }

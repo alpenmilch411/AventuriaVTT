@@ -60,11 +60,15 @@ export default function useCombatValues() {
     // Equipped armor
     const eqArmor = items.filter(i => isArmorName(i.name) && i.equipped)
     const eqShield = items.find(i => isShieldName(i.name) && i.equipped)
+    // TODO (known gap): ArmoryTab falls back to armorTemplates when a.rs/a.be are missing.
+    // This hook reads the fields directly and treats missing as 0. Add template lookup here
+    // once armorTemplates are fetched in this hook scope (mirror the combatTechTemplates pattern).
     const computedRS = eqArmor.reduce((s, a) => s + (a.rs || 0), 0)
     const computedBE = eqArmor.reduce((s, a) => s + (a.be || 0), 0)
     const beRed = specials.some(s => /stungsgew.*II/i.test(s)) ? 2 : specials.some(s => /stungsgew/i.test(s)) ? 1 : 0
     const effBE = Math.max(0, computedBE - beRed)
     const shieldPA = eqShield ? (eqShield.pa_mod || 0) : 0
+    const shieldAT = eqShield ? (eqShield.at_mod || 0) : 0
 
     // RS/BE from equipped armor only (no stale backend fallback)
     const rs = computedRS
@@ -86,9 +90,9 @@ export default function useCombatValues() {
     const mu = attrs.MU || 0
 
     // Base values (with BE, without conditions)
-    const baseAT = primaryMelee ? lookupKTW(primaryMelee.technique).ktw + (primaryMelee.at_mod || 0) - be : 0
+    const baseAT = primaryMelee ? lookupKTW(primaryMelee.technique).ktw + (primaryMelee.at_mod || 0) - shieldAT - be : 0
     const basePA = primaryMelee ? Math.floor(lookupKTW(primaryMelee.technique).ktw / 2) + (primaryMelee.pa_mod || 0) + shieldPA - be : 0
-    const baseFK = primaryRanged ? lookupKTW(primaryRanged.technique).ktw + (primaryRanged.at_mod || 0) - be : null
+    const baseFK = primaryRanged ? lookupKTW(primaryRanged.technique).ktw + (primaryRanged.at_mod || 0) : null // DSA5: ranged attacks are not penalized by BE
     const baseAW = Math.max(0, (dv.AW || Math.floor(ge / 2)) - be)
     const baseINI = (dv.INI_basis || Math.floor((mu + ge) / 2)) - be
     const baseGS = Math.max(0, (dv.GS || 8) - be)
@@ -125,7 +129,7 @@ export default function useCombatValues() {
       // Derived
       wundschwelle, schadensbonus,
       // Weapons
-      primaryMelee, primaryRanged, shieldPA,
+      primaryMelee, primaryRanged, shieldPA, shieldAT,
       // Helpers
       lookupKTW, eqArmor, eqShield,
       // Conditions

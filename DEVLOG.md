@@ -4,6 +4,47 @@
 
 ---
 
+## Session 11 — Databank browser UX + full compatibility audit (2026-03-26)
+**Type:** Claude Code — multi-agent team (TeamCreate + 5 verify agents + 1 build agent)
+
+### What changed
+
+**Databank browser UX — collapsible subcategory sidebar**
+Both DB browsers (DatenbankTab dashboard and SessionPrep GM view) now show subcategories as collapsible sub-items inside the category sidebar TOC rather than a separate chip bar. Clicking the active category toggles the sub-list open/closed with a chevron indicator. DatenbankTab uses the server-side `/api/databank/{cat}/subcategories` endpoint; SessionPrep derives subcategories client-side from loaded items (including JSON.parse for the `tradition` array field).
+
+**Detail popups everywhere**
+Clicking any item in both DB browsers opens `DatenbankDetailModal` with full DB info. Player `InventoryPanel` compact table rows are now also clickable — clicking an item name searches the databank by name across items/weapons/armor/shields and opens the same modal. The separate ⓘ info button was removed; the name itself is the tap target.
+
+**DSA5 abbreviation hover tooltips**
+All DSA5 abbreviations in both browsers (AT, PA, RS, BE, LeP, AsP, KaP, GS, INI, AW, SK, ZK, TP, SP, QS, FW, RW, SF, all 8 attributes) now show the `Tooltip`/`TipAbbr` component on hover. No dotted underlines — only the cursor changes to `cursor-help`.
+
+**Color/icon consistency**
+SessionPrep CATEGORIES array updated to match DatenbankDetail's dsa-* color palette and correct icons (ShieldHalf for shields, Zap for SAs instead of Crosshair). Probe attribute chips in TalentDetail, SpellDetail, and LiturgyDetail now use `ATTR_META` per-attribute colors (Flame=MU, Brain=KL, Eye=IN, etc.) instead of a flat category color.
+
+**Databank compatibility audit — 10 bugs fixed across 7 files**
+
+A coordinated agent team (5 verify agents + 1 build agent) audited and fixed:
+
+| File | Bug | Fix |
+|------|-----|-----|
+| `useCombatValues.js` | Shield AT mod never applied to `baseAT` | Added `shieldAT` subtracted from AT (mirrors `shieldPA`) |
+| `useCombatValues.js` | FK incorrectly penalized by BE | Removed `- be` from `baseFK`; DSA5 ranged is BE-free |
+| `BattleManager.jsx` | Creature `attributes` + `gs` not in combatant | Added both; `gs` falls back through `combat_values` → `derived_values` → 7 |
+| `InventoryPanel.jsx` | 12 English category names missing from `categorize()` | All mapped: `weapon`/`shield`→kampfausruestung, `potion`→heilmittel, `tool`/`torch`/`bandage`/`rope`→werkzeug, `container`/`clothing`/`item`/`misc`→sonstiges |
+| `itemEffects.js` + `items.json` | `stop_bleeding` key mismatch | Renamed to `bleeding_stop` in both engine and seed data |
+| `TurnFlow.jsx` | `abilityMods.paMod` applied to wrong combatant (attacker's PA bonus boosted defender's Parade) | Separate `defenderAbilityMods` computed from target's special abilities |
+| `TurnFlow.jsx` | `awMod` (Verbessertes Ausweichen I/II, Kampfgespür) silently discarded | `defenderAbilityMods.awMod` now applied to `baseAW` |
+| `TurnFlow.jsx` | Creature attack field `TP` not in fallback chain | Changed to `atk.damage \|\| atk.TP \|\| atk.tp` |
+| `ProbeSetupPopup.jsx` | Custom talents not surfaced | `mergedTalentList` now synthesizes talents from all player character sheets before querying databank |
+| `backend/models/databank.py` + seed + migration | `at_modifier`/`pa_modifier` in `SpecialAbilityTemplate` vs `at_mod`/`pa_mod` everywhere else — SA combat bonuses were silently null frontend-side | Renamed in model + seed; `_migrate_rename_special_ability_columns()` patches existing SQLite DBs on startup |
+
+Build: clean ✓
+
+### Files touched
+`frontend/src/views/auth/DatenbankTab.jsx`, `frontend/src/views/gm/SessionPrep.jsx`, `frontend/src/views/player/InventoryPanel.jsx`, `frontend/src/components/DatenbankDetail.jsx`, `frontend/src/components/Tooltip.jsx`, `frontend/src/hooks/useCombatValues.js`, `frontend/src/views/gm/BattleManager.jsx`, `frontend/src/views/gm/TurnFlow.jsx`, `frontend/src/views/gm/ProbeSetupPopup.jsx`, `frontend/src/views/auth/CreateEntryModal.jsx`, `frontend/src/views/gm/PlayerOverview.jsx`, `frontend/src/views/player/CharacterSheet.jsx`, `frontend/src/engine/itemEffects.js`, `databank-seed/items.json`, `databank-seed/special_abilities.json`, `backend/models/databank.py`, `backend/database.py`, `SPEC.md`, `DEVLOG.md`
+
+---
+
 ## Session 10 — Databank UX overhaul: structured forms, inline expand, tooltips (2026-03-26)
 **Type:** Claude Code — multi-part session covering DB entry creation, category fixes, and DB viewer UX
 

@@ -133,9 +133,41 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
     return 0
   }
 
+  // Build merged talent list: character-specific entries first, then databank entries not already present
+  const mergedTalentList = (() => {
+    // Collect every talent name that appears in any selected player's character
+    const charTalents = []
+    const seenNames = new Set()
+    for (const p of players) {
+      const rawTalents = p.character?.talents || {}
+      for (const [name, val] of Object.entries(rawTalents)) {
+        const key = name.toLowerCase()
+        if (!seenNames.has(key)) {
+          seenNames.add(key)
+          // Build a minimal databank-compatible shape so the popup can render and send it
+          const fw = typeof val === 'object' ? (val.fw || val.value || 0) : (val || 0)
+          charTalents.push({
+            id: key,
+            name,
+            probe: typeof val === 'object' ? (val.probe || []) : [],
+            category: typeof val === 'object' ? (val.category || '') : '',
+            encumbrance: typeof val === 'object' ? (val.encumbrance || 'nein') : 'nein',
+            _fw: fw,
+            _fromCharacter: true,
+          })
+        }
+      }
+    }
+    // Append databank entries whose name isn't already covered by a character entry
+    const databankExtras = (talentList || []).filter(
+      t => !seenNames.has((t.name || '').toLowerCase())
+    )
+    return [...charTalents, ...databankExtras]
+  })()
+
   // Filter talents
   const filteredTalents = talentSearch
-    ? (talentList || []).filter(t => (t.name || '').toLowerCase().includes(talentSearch.toLowerCase())).slice(0, 12)
+    ? mergedTalentList.filter(t => (t.name || '').toLowerCase().includes(talentSearch.toLowerCase())).slice(0, 12)
     : []
 
   // Send probe to players

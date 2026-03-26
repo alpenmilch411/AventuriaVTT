@@ -11,13 +11,17 @@ const useDatenbankStore = create((set, get) => ({
   perPage: 50,
   searchQuery: '',
   customOnly: false,
+  subcategory: null,
+  subcategories: [],       // [{ value, count }]
+  subcatsLoading: false,
   selectedEntry: null,
   loading: false,
   error: null,
 
   setCategory: (cat) => {
-    set({ category: cat, entries: [], page: 1, selectedEntry: null, error: null })
+    set({ category: cat, entries: [], page: 1, subcategory: null, subcategories: [], selectedEntry: null, error: null })
     get().fetchEntries()
+    get().fetchSubcategories()
   },
 
   setSearch: (query) => {
@@ -35,10 +39,33 @@ const useDatenbankStore = create((set, get) => ({
     get().fetchEntries()
   },
 
+  setSubcategory: (val) => {
+    set({ subcategory: val, page: 1 })
+    get().fetchEntries()
+  },
+
+  fetchSubcategories: async () => {
+    const { category } = get()
+    const token = useAuthStore.getState().token
+    if (!token) return
+    set({ subcatsLoading: true })
+    try {
+      const res = await fetch(`${API}/databank/${category}/subcategories`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        set({ subcategories: data || [] })
+      }
+    } finally {
+      set({ subcatsLoading: false })
+    }
+  },
+
   clearSelectedEntry: () => set({ selectedEntry: null }),
 
   fetchEntries: async () => {
-    const { category, page, perPage, searchQuery, customOnly } = get()
+    const { category, page, perPage, searchQuery, customOnly, subcategory } = get()
     const token = useAuthStore.getState().token
     if (!token) return
 
@@ -53,6 +80,9 @@ const useDatenbankStore = create((set, get) => ({
       }
       if (customOnly) {
         params.set('custom_only', 'true')
+      }
+      if (subcategory) {
+        params.set('subcategory', subcategory)
       }
 
       const res = await fetch(`${API}/databank/${category}?${params}`, {

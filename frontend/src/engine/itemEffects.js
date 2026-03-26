@@ -113,7 +113,7 @@ export function resolveItemEffect(item) {
       result.description = `${item.name}: Heilt ${formula} LeP`
       result.effectSummary = `heilt {value} LeP`
       result.steps = [{ type: 'heal', target: 'self', resource: 'lep' }]
-      if (effects.stop_bleeding) {
+      if (effects.bleeding_stop) {
         result.steps.push({ type: 'condition', target: 'self', condition: 'Blutend', action: 'remove' })
         result.description += ', stoppt Blutungen'
       }

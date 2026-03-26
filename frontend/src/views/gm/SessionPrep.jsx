@@ -1,12 +1,46 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
-  Swords, Shield, Package, Sparkles, BookOpen, Search, Plus, X, Check,
-  ChevronDown, ChevronRight, Star, Skull, FlaskConical, Crosshair, Scroll
+  Swords, Shield, ShieldHalf, Package, Sparkles, BookOpen, Search, Plus, X, Check,
+  ChevronDown, ChevronRight, Star, Skull, Zap, Scroll
 } from 'lucide-react'
 import useAuthStore from '../../stores/authStore'
 import { getCreatureIcon, getItemIcon, getSpellIcon } from '../../utils/icons'
 import Badge from '../../components/common/Badge'
+import DatenbankDetailModal from '../../components/DatenbankDetail'
 import clsx from 'clsx'
+
+// Subcategory field per entity type
+const SUBCAT_FIELD = {
+  creatures: 'category', weapons: 'combat_technique', items: 'category',
+  spells: 'tradition', liturgies: 'tradition',
+  special_abilities: 'category', talents: 'category',
+}
+
+const SUBCAT_LABELS = {
+  humanoid: 'Humanoid', tier: 'Tier', untot: 'Untot', daemon: 'Dämon',
+  magisch: 'Magisch', feenwesen: 'Feenwesen', elementar: 'Elementar',
+  konstrukt: 'Konstrukt', pflanze: 'Pflanze',
+  trank: 'Trank', heilkraut: 'Heilkraut', alchemie: 'Alchemie', munition: 'Munition',
+  werkzeug: 'Werkzeug', licht: 'Licht', proviant: 'Proviant', schatz: 'Schatz',
+  ausruestung: 'Ausrüstung', behaelter: 'Behälter', gift: 'Gift',
+  verbrauchsmaterial: 'Verbrauchsmaterial', unterhaltung: 'Unterhaltung', krankheit: 'Krankheit',
+  nahkampf: 'Nahkampf', fernkampf: 'Fernkampf', allgemein: 'Allgemein',
+  allgemein_nichtkampf: 'Allgemein (NK)', karmal: 'Karmal',
+  körper: 'Körper', gesellschaft: 'Gesellschaft', natur: 'Natur',
+  wissen: 'Wissen', handwerk: 'Handwerk',
+}
+
+function getSubcatValues(item, catField) {
+  const raw = item[catField]
+  if (!raw) return []
+  if (catField === 'tradition') {
+    try {
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed.map(String) : [String(parsed)]
+    } catch { return [String(raw)] }
+  }
+  return [String(raw)]
+}
 
 /**
  * Session Prep Dashboard — GM prepares everything needed for the session.
@@ -20,16 +54,16 @@ import clsx from 'clsx'
  */
 
 const CATEGORIES = [
-  { id: 'creatures', label: 'Kreaturen & NSCs', icon: Skull, color: 'text-red-400', desc: 'Monster, Tiere, humanoide Gegner' },
-  { id: 'weapons', label: 'Waffen', icon: Swords, color: 'text-orange-400', desc: 'Nah- und Fernkampfwaffen' },
-  { id: 'armor', label: 'Ruestungen', icon: Shield, color: 'text-blue-400', desc: 'Ruestungen und Helme' },
-  { id: 'shields', label: 'Schilde', icon: Shield, color: 'text-cyan-400', desc: 'Schilde aller Groessen' },
-  { id: 'items', label: 'Gegenstaende', icon: Package, color: 'text-green-400', desc: 'Traenke, Werkzeuge, Verbrauchsgueter, Alchemie' },
-  { id: 'spells', label: 'Zauber', icon: Sparkles, color: 'text-purple-400', desc: 'Zaubersprueche und Formeln' },
-  { id: 'liturgies', label: 'Liturgien', icon: Star, color: 'text-yellow-400', desc: 'Goetterwirken und Segen' },
-  { id: 'special_abilities', label: 'Sonderfertigkeiten', icon: Crosshair, color: 'text-amber-400', desc: 'Kampf- und allgemeine SF' },
-  { id: 'talents', label: 'Talente', icon: BookOpen, color: 'text-dsa-gold', desc: 'Alle 59 Talente mit Proben-Attributen' },
-  { id: 'rules', label: 'Regeln', icon: Scroll, color: 'text-dsa-parchment-dark', desc: 'Regelnachschlagewerk' },
+  { id: 'creatures',         label: 'Kreaturen & NSCs',  icon: Skull,      color: 'text-dsa-gold' },
+  { id: 'weapons',           label: 'Waffen',             icon: Swords,     color: 'text-dsa-rust-light' },
+  { id: 'armor',             label: 'Rüstungen',          icon: Shield,     color: 'text-dsa-parchment' },
+  { id: 'shields',           label: 'Schilde',            icon: ShieldHalf, color: 'text-dsa-parchment' },
+  { id: 'items',             label: 'Gegenstände',        icon: Package,    color: 'text-dsa-forest-light' },
+  { id: 'spells',            label: 'Zauber',             icon: Sparkles,   color: 'text-dsa-mana-light' },
+  { id: 'liturgies',         label: 'Liturgien',          icon: Star,       color: 'text-dsa-karma-light' },
+  { id: 'special_abilities', label: 'Sonderfertigkeiten', icon: Zap,        color: 'text-dsa-gold-light' },
+  { id: 'talents',           label: 'Talente',            icon: BookOpen,   color: 'text-dsa-parchment' },
+  { id: 'rules',             label: 'Regeln',             icon: Scroll,     color: 'text-dsa-parchment-dark' },
 ]
 
 // Field display config per type
@@ -78,12 +112,23 @@ export default function SessionPrep({ onClose }) {
   const [customData, setCustomData] = useState('{}')
   const [loading, setLoading] = useState(false)
   const [expandedPoolCat, setExpandedPoolCat] = useState(null)
+  const [selectedSubcat, setSelectedSubcat] = useState(null)
+  const [subcatsExpanded, setSubcatsExpanded] = useState(true)
+
+  // Detail popup state
+  const [detailItem, setDetailItem] = useState(null)
+  const [detailData, setDetailData] = useState(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const detailCacheRef = useRef({})
 
   // Fetch databank items for active category
   useEffect(() => {
     if (databankItems[activeCategory]) return // already loaded
     fetchCategory(activeCategory)
   }, [activeCategory])
+
+  // Reset subcat filter when category changes
+  useEffect(() => { setSelectedSubcat(null); setSubcatsExpanded(true) }, [activeCategory])
 
   const fetchCategory = async (cat) => {
     if (!token) return
@@ -132,16 +177,58 @@ export default function SessionPrep({ onClose }) {
 
   const clearPool = () => { setPool({}); savePool({}) }
 
+  const handleOpenDetail = async (item) => {
+    setDetailItem(item)
+    setDetailData(null)
+    const cacheKey = `${activeCategory}/${item.id}`
+    if (detailCacheRef.current[cacheKey]) {
+      setDetailData(detailCacheRef.current[cacheKey])
+      return
+    }
+    setDetailLoading(true)
+    try {
+      const res = await fetch(`/api/databank/${activeCategory}/${item.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        detailCacheRef.current[cacheKey] = data
+        setDetailData(data)
+      }
+    } finally {
+      setDetailLoading(false)
+    }
+  }
+
   const items = databankItems[activeCategory] || []
-  const filtered = search
-    ? items.filter(i => (i.name || i.title || i.id || '').toLowerCase().includes(search.toLowerCase()))
-    : items
+
+  // Derive subcategory counts from loaded items
+  const catField = SUBCAT_FIELD[activeCategory]
+  const subcatCounts = {}
+  for (const item of items) {
+    for (const val of getSubcatValues(item, catField)) {
+      subcatCounts[val] = (subcatCounts[val] || 0) + 1
+    }
+  }
+  const subcats = Object.entries(subcatCounts)
+    .map(([value, count]) => ({ value, count }))
+    .sort((a, b) => b.count - a.count)
+
+  // Filter by search and subcategory
+  let filtered = items
+  if (search) {
+    filtered = filtered.filter(i => (i.name || i.title || i.id || '').toLowerCase().includes(search.toLowerCase()))
+  }
+  if (selectedSubcat) {
+    filtered = filtered.filter(item => getSubcatValues(item, catField).some(v => v.toLowerCase() === selectedSubcat.toLowerCase()))
+  }
   const poolItems = pool[activeCategory] || []
   const poolIds = new Set(poolItems.map(i => i.id))
   const totalPoolCount = Object.values(pool).reduce((sum, arr) => sum + arr.length, 0)
   const displayFn = DISPLAY_FIELDS[activeCategory] || (() => '')
 
   return (
+    <>
     <div className="h-full flex flex-col bg-dsa-bg">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-dsa-bg-medium bg-dsa-bg-light flex-shrink-0">
@@ -159,19 +246,58 @@ export default function SessionPrep({ onClose }) {
           {CATEGORIES.map(cat => {
             const count = (pool[cat.id] || []).length
             const Icon = cat.icon
+            const isActive = activeCategory === cat.id
+            const hasSubs = isActive && subcats.length > 0
             return (
-              <button
-                key={cat.id}
-                onClick={() => { setActiveCategory(cat.id); setSearch('') }}
-                className={clsx(
-                  'w-full text-left px-3 py-2 flex items-center gap-2 text-xs transition border-l-2',
-                  activeCategory === cat.id ? `border-dsa-gold bg-dsa-gold/5 ${cat.color}` : 'border-transparent text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-medium/30'
+              <div key={cat.id}>
+                <button
+                  onClick={() => {
+                    if (isActive && hasSubs) {
+                      setSubcatsExpanded(v => !v)
+                    } else {
+                      setActiveCategory(cat.id)
+                      setSearch('')
+                    }
+                  }}
+                  className={clsx(
+                    'w-full text-left px-3 py-2 flex items-center gap-2 text-xs transition border-l-2',
+                    isActive ? `border-dsa-gold bg-dsa-gold/5 ${cat.color}` : 'border-transparent text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-medium/30'
+                  )}
+                >
+                  <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="flex-1 truncate">{cat.label}</span>
+                  {count > 0 && <span className="text-[9px] bg-dsa-gold/20 text-dsa-gold rounded-full px-1.5">{count}</span>}
+                  {hasSubs && <ChevronDown className={clsx('w-3 h-3 flex-shrink-0 transition-transform', subcatsExpanded ? '' : '-rotate-90')} />}
+                </button>
+
+                {/* Collapsible subcategory items */}
+                {hasSubs && subcatsExpanded && (
+                  <div>
+                    <button
+                      onClick={() => setSelectedSubcat(null)}
+                      className={clsx(
+                        'w-full text-left pl-8 pr-3 py-1 text-[10px] transition border-l-2',
+                        !selectedSubcat ? `border-dsa-gold ${cat.color} font-semibold` : 'border-transparent text-dsa-parchment-dark/60 hover:text-dsa-parchment',
+                      )}
+                    >
+                      Alle ({items.length})
+                    </button>
+                    {subcats.map(({ value, count: cnt }) => (
+                      <button
+                        key={value}
+                        onClick={() => setSelectedSubcat(selectedSubcat === value ? null : value)}
+                        className={clsx(
+                          'w-full text-left pl-8 pr-3 py-1 text-[10px] transition border-l-2',
+                          selectedSubcat === value ? `border-dsa-gold ${cat.color} font-semibold` : 'border-transparent text-dsa-parchment-dark/60 hover:text-dsa-parchment',
+                        )}
+                      >
+                        {SUBCAT_LABELS[value] || SUBCAT_LABELS[value?.toLowerCase()] || value}
+                        <span className="ml-1 opacity-40">{cnt}</span>
+                      </button>
+                    ))}
+                  </div>
                 )}
-              >
-                <Icon className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="flex-1 truncate">{cat.label}</span>
-                {count > 0 && <span className="text-[9px] bg-dsa-gold/20 text-dsa-gold rounded-full px-1.5">{count}</span>}
-              </button>
+              </div>
             )
           })}
 
@@ -245,10 +371,9 @@ export default function SessionPrep({ onClose }) {
               <div className="divide-y divide-dsa-bg-medium/30">
                 {filtered.map(item => {
                   const isInPool = poolIds.has(item.id)
-                  const catConfig = CATEGORIES.find(c => c.id === activeCategory)
                   return (
                     <div key={item.id}
-                      className={clsx('flex items-center gap-3 px-4 py-2 hover:bg-dsa-bg-card/30 transition', isInPool && 'bg-dsa-gold/5')}
+                      className={clsx('flex items-center gap-3 px-4 py-2 hover:bg-dsa-bg-card/30 transition group', isInPool && 'bg-dsa-gold/5')}
                     >
                       <button
                         onClick={() => isInPool ? removeFromPool(activeCategory, item.id) : addToPool(item)}
@@ -258,7 +383,7 @@ export default function SessionPrep({ onClose }) {
                       >
                         {isInPool && <Check className="w-3 h-3 text-dsa-bg" />}
                       </button>
-                      <div className="flex-1 min-w-0">
+                      <button className="flex-1 min-w-0 text-left" onClick={() => handleOpenDetail(item)}>
                         <div className="flex items-center gap-2">
                           <span className="text-sm">{
                             activeCategory === 'creatures' ? getCreatureIcon(item.name, item.category) :
@@ -266,7 +391,7 @@ export default function SessionPrep({ onClose }) {
                             activeCategory === 'spells' || activeCategory === 'liturgies' ? getSpellIcon(item.name) :
                             '📋'
                           }</span>
-                          <span className="text-xs font-semibold text-dsa-parchment">{item.name || item.title}</span>
+                          <span className="text-xs font-semibold text-dsa-parchment group-hover:text-dsa-gold transition-colors">{item.name || item.title}</span>
                           {item.category && <span className="text-[8px] text-dsa-parchment-dark bg-dsa-bg-medium rounded px-1">{item.category}</span>}
                           {item.custom && <Badge variant="warning" size="sm">Eigenes</Badge>}
                         </div>
@@ -276,7 +401,8 @@ export default function SessionPrep({ onClose }) {
                         {item.description && (
                           <div className="text-[9px] text-dsa-parchment-dark/40 mt-0.5 line-clamp-1">{item.description}</div>
                         )}
-                      </div>
+                      </button>
+                      <ChevronRight className="w-3 h-3 text-dsa-parchment-dark/20 group-hover:text-dsa-parchment-dark/50 flex-shrink-0 transition-colors" />
                     </div>
                   )
                 })}
@@ -291,6 +417,20 @@ export default function SessionPrep({ onClose }) {
         </div>
       </div>
     </div>
+
+    {/* Detail popup */}
+    {detailItem && (
+      <DatenbankDetailModal
+        data={detailData?.data || detailData}
+        name={detailItem.name || detailItem.title || detailItem.id}
+        category={activeCategory}
+        loading={detailLoading && !detailData}
+        isOwn={false}
+        onClose={() => { setDetailItem(null); setDetailData(null) }}
+        onSelect={() => { addToPool(detailItem); setDetailItem(null); setDetailData(null) }}
+      />
+    )}
+    </>
   )
 }
 
@@ -595,8 +735,8 @@ function CreatorForm({ type, onSave, onCancel, token, existingItems }) {
           <Field label="AP Kosten"><NumberInput value={form.ap_cost ?? ''} onChange={v => set('ap_cost', v)} /></Field>
         </div>
         <div className={row3}>
-          <Field label="AT Mod"><NumberInput value={form.at_modifier ?? ''} onChange={v => set('at_modifier', v)} /></Field>
-          <Field label="PA Mod"><NumberInput value={form.pa_modifier ?? ''} onChange={v => set('pa_modifier', v)} /></Field>
+          <Field label="AT Mod"><NumberInput value={form.at_mod ?? ''} onChange={v => set('at_mod', v)} /></Field>
+          <Field label="PA Mod"><NumberInput value={form.pa_mod ?? ''} onChange={v => set('pa_mod', v)} /></Field>
           <Field label="TP Mod"><TextInput value={form.damage_modifier ?? ''} onChange={v => set('damage_modifier', v)} placeholder="+2" /></Field>
         </div>
         <Field label="Regeltext">

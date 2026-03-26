@@ -56,6 +56,7 @@ async def init_db():
         # Add missing columns to existing SQLite tables (lightweight migration)
         if "sqlite" in settings.DATABASE_URL:
             await conn.run_sync(_migrate_add_user_contribution_columns)
+            await conn.run_sync(_migrate_rename_special_ability_columns)
 
 
 def _migrate_add_user_contribution_columns(connection):
@@ -93,3 +94,22 @@ def _migrate_add_user_contribution_columns(connection):
                 connection.execute(
                     text(f"ALTER TABLE {table} ADD COLUMN {col_name} {col_type}")
                 )
+
+
+def _migrate_rename_special_ability_columns(connection):
+    """Rename at_modifier→at_mod, pa_modifier→pa_mod in special_ability_templates.
+
+    Aligns with the naming convention used by weapon_templates and shield_templates.
+    SQLite >= 3.25 supports ALTER TABLE RENAME COLUMN.
+    """
+    from sqlalchemy import text
+
+    result = connection.execute(text("PRAGMA table_info(special_ability_templates)"))
+    existing_cols = {row[1] for row in result.fetchall()}
+
+    renames = [("at_modifier", "at_mod"), ("pa_modifier", "pa_mod")]
+    for old, new in renames:
+        if old in existing_cols and new not in existing_cols:
+            connection.execute(
+                text(f"ALTER TABLE special_ability_templates RENAME COLUMN {old} TO {new}")
+            )

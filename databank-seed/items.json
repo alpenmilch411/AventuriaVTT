@@ -674,7 +674,7 @@
     "usable": true,
     "usable_in_combat": true,
     "use_action_cost": "2 Aktionen",
-    "effects": {"heal_lep": "1W3", "stop_bleeding": true},
+    "effects": {"heal_lep": "1W3", "bleeding_stop": true},
     "consumable": true,
     "charges": 1,
     "description": "Saubere Leinenbinden zum Versorgen von Wunden."
