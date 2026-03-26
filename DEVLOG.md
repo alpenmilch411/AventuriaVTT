@@ -54,8 +54,28 @@
 
 Build: ✓ clean (10.34s)
 
+### Wave 3 — Post-session audit and fixes (2026-03-26)
+
+Three-agent audit team (backend-audit, frontend-audit, dsa-researcher) ran full verification.
+
+**Critical fix — CharacterCreator not wired (frontend-audit):**
+- `CharakterTab.jsx` had `// TODO: import CharacterCreator` — file was fully built but never imported or rendered
+- Fixed: imported `CharacterCreator`, added `showCreator` state, "Neuer Charakter" button now opens full wizard; QuickTemplateModal demoted to "Schnellstart" secondary button; empty-state button also opens wizard
+
+**Bug fix — derived values not recomputed on level-up (backend-audit):**
+- `POST /api/characters/{id}/level-up` updated attributes but left `derived_values` stale
+- Fixed: added `_recompute_derived()` helper in `characters.py` using DSA5 formulas (LeP=KO×2, AsP=⌈(MU+IN+CH)/2⌉ if magic, etc.); called after applying attribute changes
+
+**Bugs identified, not yet fixed (TODOs added to SPEC):**
+- Optolith import missing: combat_techniques, derived_values, inventory extraction
+- `creation_finalized` / `creation_ap_spent` fields dead (never set, no finalize endpoint)
+- Culture/profession seed packages empty (all 33 cultures + 46 professions have skill_bonuses={}, combat_techniques={})
+
+**Audit finding — CharacterCreator.jsx quality:**
+- All 10 steps complete, AP budget correct including Nachteilsdeckelung (80 AP cap), derived values match useCombatValues.js exactly, submit payload includes all 11 derived values + attributes + talents + KT + advantages/disadvantages, per-step validation enforced
+
 ### Files created/modified
-`frontend/src/views/auth/CharakterTab.jsx` (new), `frontend/src/views/auth/CharacterCreator.jsx` (new), `frontend/src/views/auth/SteigerungModal.jsx` (new), `frontend/src/views/auth/Dashboard.jsx` (updated), `backend/models/databank.py` (updated), `backend/models/character.py` (updated), `backend/api/databank.py` (updated), `backend/databank/seed.py` (updated), `backend/database.py` (updated), `databank-seed/species.json` (new), `databank-seed/cultures.json` (new), `databank-seed/professions.json` (new), `SPEC.md` v1.9.0, `DEVLOG.md`
+`frontend/src/views/auth/CharakterTab.jsx` (new), `frontend/src/views/auth/CharacterCreator.jsx` (new), `frontend/src/views/auth/SteigerungModal.jsx` (new), `frontend/src/views/auth/Dashboard.jsx` (updated), `backend/models/databank.py` (updated), `backend/models/character.py` (updated), `backend/api/characters.py` (updated — wiring fix + _recompute_derived), `backend/api/databank.py` (updated), `backend/databank/seed.py` (updated), `backend/database.py` (updated), `databank-seed/species.json` (new), `databank-seed/cultures.json` (new), `databank-seed/professions.json` (new), `SPEC.md` v1.9.0, `DEVLOG.md`
 
 ---
 

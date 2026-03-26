@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
 import Modal from '../../components/common/Modal'
 import Badge from '../../components/common/Badge'
-// TODO: import CharacterCreator from './CharacterCreator'
+import CharacterCreator from './CharacterCreator'
 import SteigerungModal from './SteigerungModal'
 
 const GRADE_COLORS = {
@@ -462,6 +462,7 @@ export default function CharakterTab() {
 
   const [showImport, setShowImport] = useState(false)
   const [showTemplate, setShowTemplate] = useState(false)
+  const [showCreator, setShowCreator] = useState(false)
   const [showDelete, setShowDelete] = useState(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [levelUpChar, setLevelUpChar] = useState(null)
@@ -570,11 +571,18 @@ export default function CharakterTab() {
       {/* Actions bar */}
       <div className="flex flex-wrap items-center gap-3">
         <button
-          onClick={() => setShowTemplate(true)}
+          onClick={() => setShowCreator(true)}
           className="btn-primary flex items-center gap-2 text-sm"
         >
           <Plus className="w-4 h-4" />
           Neuer Charakter
+        </button>
+        <button
+          onClick={() => setShowTemplate(true)}
+          className="btn-secondary flex items-center gap-2 text-sm"
+        >
+          <Swords className="w-4 h-4" />
+          Schnellstart
         </button>
         <button
           onClick={() => setShowImport(true)}
@@ -621,7 +629,7 @@ export default function CharakterTab() {
           <p className="text-lg font-display">Noch keine Charaktere</p>
           <p className="text-sm mt-1 mb-4">Erstelle deinen ersten Helden oder importiere einen bestehenden.</p>
           <button
-            onClick={() => setShowTemplate(true)}
+            onClick={() => setShowCreator(true)}
             className="btn-primary flex items-center gap-2 text-sm"
           >
             <Plus className="w-4 h-4" />
@@ -669,6 +677,15 @@ export default function CharakterTab() {
           character={levelUpChar}
           onClose={() => setLevelUpChar(null)}
           onSaved={handleLevelUpSaved}
+        />
+      )}
+      {showCreator && (
+        <CharacterCreator
+          onClose={() => setShowCreator(false)}
+          onCreated={(character) => {
+            handleCreated(character)
+            setShowCreator(false)
+          }}
         />
       )}
     </div>

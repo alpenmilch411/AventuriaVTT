@@ -4203,8 +4203,8 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [ ] Creature stat editing mid-combat
 - [ ] Player pending requests with withdraw option — system works but dismiss/withdraw UX needs polish
 - [ ] Mobile responsive header
-- [ ] Character import/export UI (Optolith JSON) — backend fully supports import/export, no frontend UI yet (blocked on Characters tab)
-- [ ] Characters tab UI — dashboard shows "Kommt bald..." placeholder; backend (import, export, level-up, quick templates) all ready
+- [x] Character import/export UI (Optolith JSON) — ImportModal + export trigger in CharakterTab
+- [x] Characters tab UI — CharakterTab.jsx: card grid, import, Schnellstart, full 10-step wizard (CharacterCreator wired in Session 12 audit)
 - [ ] Opposed probes UI
 - [ ] In-game time tracking — backend handler exists (`_handle_time_advance`), no frontend UI
 - [ ] Weather system — backend handler exists (`_handle_weather_change`), no UI or auto-modifier calculation
@@ -4281,6 +4281,10 @@ All 4 dashboard tabs are now done.
 - [x] Between-session AP spend — `SteigerungModal.jsx`: full upgrade UI as modal, REST-only, calls `POST /api/characters/{id}/level-up`
 - [x] Species/cultures/professions in DB — `SpeciesTemplate`, `CultureTemplate`, `ProfessionTemplate` models + seed data (6 species, 8 cultures, 11 professions) + API endpoints
 - [x] `creation_finalized` + `creation_ap_spent` fields on Character model + startup migration
+- [x] Derived values recomputed on level-up — `_recompute_derived()` helper called after attribute changes (fixed Session 12 audit)
+- [ ] `creation_finalized` / `creation_ap_spent` dead code — fields exist but never set; finalize endpoint missing
+- [ ] Optolith import missing fields — combat_techniques, derived_values, inventory not extracted from Optolith JSON
+- [ ] Culture/profession seed data incomplete — all 33 cultures and 46 professions have empty skill_bonuses/combat_techniques/skills packages (AP costs present; packages need manual entry or Optolith local install)
 - [ ] View character history across sessions — endpoint missing, low priority
 - [ ] Character portrait upload — uses `portrait_url` string; binary upload endpoint missing
 

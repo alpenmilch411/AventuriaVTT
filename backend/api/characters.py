@@ -1,6 +1,7 @@
 """Character CRUD, import, export, and level-up endpoints."""
 
 import json
+import math
 import uuid
 from datetime import datetime
 from typing import Any, Optional
@@ -16,6 +17,38 @@ from models.user import User
 from models.character import Character
 
 router = APIRouter(prefix="/api/characters", tags=["characters"])
+
+
+def _recompute_derived(attributes: dict, spells: dict, liturgies: dict, existing: dict) -> dict:
+    """Recompute derived values from raw attributes after a level-up.
+
+    Keeps GS and SchiP from existing (species-specific), only recomputes
+    attribute-driven values: LeP_max, AsP_max, KaP_max, INI_basis, AW, WS, SB, SK, ZK.
+    """
+    a = attributes or {}
+    mu = a.get("MU", 8)
+    kl = a.get("KL", 8)
+    in_ = a.get("IN", 8)
+    ch = a.get("CH", 8)
+    ge = a.get("GE", 8)
+    ko = a.get("KO", 8)
+    kk = a.get("KK", 8)
+
+    result = dict(existing or {})
+    result["LeP_max"] = ko * 2
+    result["INI_basis"] = (mu + ge) // 2
+    result["AW"] = ge // 2
+    result["WS"] = math.ceil(ko / 2)
+    result["SB"] = max(0, (kk - 15) // 3)
+    result["SK"] = (mu + kl + in_) // 3 + result.get("SK_modifier", 0)
+    result["ZK"] = (ko + ko + kk) // 3 + result.get("ZK_modifier", 0)
+
+    is_magic = bool(spells)
+    is_blessed = bool(liturgies)
+    result["AsP_max"] = math.ceil((mu + in_ + ch) / 2) if is_magic else 0
+    result["KaP_max"] = math.ceil((mu + kl + in_) / 2) if is_blessed else 0
+
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -516,6 +549,12 @@ async def level_up(
     char.spells = char_data["spells"]
     char.liturgies = char_data["liturgies"]
     char.special_abilities = char_data["special_abilities"]
+    char.derived_values = _recompute_derived(
+        char_data["attributes"],
+        char_data["spells"],
+        char_data["liturgies"],
+        char.derived_values,
+    )
 
     await db.commit()
     await db.refresh(char)
