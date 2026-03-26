@@ -310,25 +310,33 @@ export default function GMCockpit() {
                       <span className={clsx('text-[9px] font-mono w-11 text-right', isCritical ? 'text-red-400 font-bold' : 'text-dsa-parchment-dark')}>{lep}/{lepMax}</span>
                     </div>
                     {/* Astralenergie */}
-                    {aspMax > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <Sparkles className="w-3 h-3 flex-shrink-0 text-dsa-mana" />
-                        <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden border border-dsa-bg-medium/30">
-                          <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-700" style={{ width: `${aspMax > 0 ? Math.max(0, asp / aspMax * 100) : 0}%` }} />
-                        </div>
-                        <span className="text-[9px] font-mono text-dsa-mana/70 w-11 text-right">{asp}/{aspMax}</span>
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className={clsx('w-3 h-3 flex-shrink-0', aspMax > 0 ? 'text-dsa-mana' : 'text-blue-400/30')} />
+                      <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden border border-dsa-bg-medium/30 relative">
+                        {aspMax > 0 ? (
+                          <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-700" style={{ width: `${Math.max(0, asp / aspMax * 100)}%` }} />
+                        ) : (
+                          <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 3px, rgba(96,165,250,0.15) 3px, rgba(96,165,250,0.15) 6px)' }} />
+                        )}
                       </div>
-                    )}
+                      <span className="text-[9px] font-mono w-11 text-right" style={{ color: aspMax > 0 ? undefined : 'var(--tw-text-opacity, 1)' }}>
+                        <span className={aspMax > 0 ? 'text-dsa-mana/70' : 'text-dsa-parchment-dark/40'}>{aspMax > 0 ? `${asp}/${aspMax}` : 'n.a.'}</span>
+                      </span>
+                    </div>
                     {/* Karmaenergie */}
-                    {kapMax > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <Sun className="w-3 h-3 flex-shrink-0 text-dsa-karma" />
-                        <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden border border-dsa-bg-medium/30">
-                          <div className="h-full rounded-full bg-gradient-to-r from-purple-400 to-purple-600 transition-all duration-700" style={{ width: `${kapMax > 0 ? Math.max(0, kap / kapMax * 100) : 0}%` }} />
-                        </div>
-                        <span className="text-[9px] font-mono text-dsa-karma/70 w-11 text-right">{kap}/{kapMax}</span>
+                    <div className="flex items-center gap-1.5">
+                      <Sun className={clsx('w-3 h-3 flex-shrink-0', kapMax > 0 ? 'text-dsa-karma' : 'text-purple-400/30')} />
+                      <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden border border-dsa-bg-medium/30 relative">
+                        {kapMax > 0 ? (
+                          <div className="h-full rounded-full bg-gradient-to-r from-purple-400 to-purple-600 transition-all duration-700" style={{ width: `${Math.max(0, kap / kapMax * 100)}%` }} />
+                        ) : (
+                          <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 3px, rgba(168,85,247,0.15) 3px, rgba(168,85,247,0.15) 6px)' }} />
+                        )}
                       </div>
-                    )}
+                      <span className="text-[9px] font-mono w-11 text-right">
+                        <span className={kapMax > 0 ? 'text-dsa-karma/70' : 'text-dsa-parchment-dark/40'}>{kapMax > 0 ? `${kap}/${kapMax}` : 'n.a.'}</span>
+                      </span>
+                    </div>
                     {/* Zustände */}
                     {conds.length > 0 && (
                       <div className="flex flex-wrap gap-0.5 pt-0.5">
