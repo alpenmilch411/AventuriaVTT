@@ -1,82 +1,663 @@
 [
   {
-    "id": "culture_mittelreich_stadt",
-    "name": "Mittelreich (Stadtmensch)",
-    "ap_cost": 27,
-    "compatible_species": ["Mensch", "Halbelf"],
-    "skill_bonuses": {"Gassenwissen": 2, "Feilschen": 2, "Überreden": 1, "Rechnen": 1, "Menschenkenntnis": 1},
-    "languages": [{"name": "Garethi", "level": 4}],
-    "scripts": [{"name": "Kusliker Zeichen", "level": 2}],
-    "description": "Stadtbewohner des Mittelreichs leben in den Zentren aventurischer Zivilisation. Sie sind gebildet, geschäftstüchtig und kennen die Regeln der städtischen Gesellschaft."
-  },
-  {
-    "id": "culture_mittelreich_land",
-    "name": "Mittelreich (Landbevölkerung)",
-    "ap_cost": 19,
-    "compatible_species": ["Mensch", "Halbelf"],
-    "skill_bonuses": {"Pflanzenkunde": 2, "Tierkunde": 2, "Orientierung": 1, "Wildnisleben": 1},
-    "languages": [{"name": "Garethi", "level": 4}],
+    "id": "culture_andergaster",
+    "name": "Andergaster",
+    "optolith_id": "C_1",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
     "scripts": [],
-    "description": "Die Landbevölkerung des Mittelreichs lebt von Ackerbau und Viehzucht. Sie sind hart arbeitende, bodenständige Leute mit engem Zusammenhalt."
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Andergaster.",
+    "ap_cost": 0
   },
   {
-    "id": "culture_andergast_nostria",
-    "name": "Andergast und Nostria",
-    "ap_cost": 22,
-    "compatible_species": ["Mensch", "Halbelf"],
-    "skill_bonuses": {"Wildnisleben": 2, "Holzbearbeitung": 2, "Kraftakt": 1, "Orientierung": 1},
-    "languages": [{"name": "Garethi", "level": 4}],
+    "id": "culture_aranier",
+    "name": "Aranier",
+    "optolith_id": "C_2",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      },
+      {
+        "name": "Tulamidya",
+        "level": 2
+      }
+    ],
     "scripts": [],
-    "description": "Die Bewohner der Streitenden Königreiche sind raue, unabhängige Waldmenschen, die seit Jahrhunderten gegeneinander und gegen die Wildnis kämpfen."
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Aranier.",
+    "ap_cost": 0
   },
   {
-    "id": "culture_almada",
-    "name": "Almada",
-    "ap_cost": 24,
-    "compatible_species": ["Mensch", "Halbelf"],
-    "skill_bonuses": {"Etikette": 2, "Betören": 1, "Überreden": 1, "Tanzen": 1, "Menschenkenntnis": 1},
-    "languages": [{"name": "Garethi", "level": 4}],
-    "scripts": [{"name": "Kusliker Zeichen", "level": 2}],
-    "description": "Almadaner sind für ihre Leidenschaft, ihren Stolz und ihre Hingabe an die Künste bekannt. Ehre und Familie stehen an oberster Stelle."
-  },
-  {
-    "id": "culture_elfisch",
-    "name": "Elfische Kulturen",
-    "ap_cost": 29,
-    "compatible_species": ["Elf"],
-    "skill_bonuses": {"Sinnesschärfe": 2, "Pflanzenkunde": 2, "Musizieren": 2, "Singen": 1, "Wildnisleben": 1},
-    "languages": [{"name": "Isdira", "level": 4}],
+    "id": "culture_bornlaender",
+    "name": "Bornländer",
+    "optolith_id": "C_3",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
     "scripts": [],
-    "description": "Die elfischen Kulturen leben im Einklang mit der Natur. Ob Au-, Wald- oder Firnelfen — sie alle teilen eine tiefe Verbindung zur Welt um sie herum."
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Bornländer.",
+    "ap_cost": 0
   },
   {
-    "id": "culture_zwergenreich",
-    "name": "Zwergenreich",
-    "ap_cost": 26,
-    "compatible_species": ["Zwerg"],
-    "skill_bonuses": {"Steinbearbeitung": 2, "Mechanik": 2, "Zechen": 2, "Kraftakt": 1, "Bergbau": 1},
-    "languages": [{"name": "Rogolan", "level": 4}, {"name": "Garethi", "level": 3}],
-    "scripts": [{"name": "Rogolan-Runen", "level": 2}],
-    "description": "Die Zwergenvölker leben in gewaltigen unterirdischen Hallen und Stollen. Sie sind legendäre Schmiede, Bergleute und Krieger."
-  },
-  {
-    "id": "culture_ork",
-    "name": "Ork-Kulturen",
-    "ap_cost": 17,
-    "compatible_species": ["Ork"],
-    "skill_bonuses": {"Einschüchtern": 2, "Kraftakt": 2, "Wildnisleben": 1, "Orientierung": 1},
-    "languages": [{"name": "Oloarkh", "level": 4}],
+    "id": "culture_fjarninger",
+    "name": "Fjarninger",
+    "optolith_id": "C_4",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
     "scripts": [],
-    "description": "Die Ork-Kulturen der Orkländer und des Ehernen Schwerts sind kriegerisch und stammesorientiert. Stärke und Mut gelten als höchste Tugenden."
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Fjarninger.",
+    "ap_cost": 0
   },
   {
-    "id": "culture_goblin",
-    "name": "Goblin-Kulturen",
-    "ap_cost": 12,
-    "compatible_species": ["Goblin"],
-    "skill_bonuses": {"Taschendiebstahl": 2, "Verbergen": 2, "Sinnesschärfe": 1, "Gassenwissen": 1},
-    "languages": [{"name": "Goblinisch", "level": 4}],
+    "id": "culture_horasier",
+    "name": "Horasier",
+    "optolith_id": "C_5",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
     "scripts": [],
-    "description": "Goblin-Kulturen sind vielfältig: von Stammesgemeinschaften in den Wäldern bis zu stadtgoblins, die in den Gassen menschlicher Städte leben."
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Horasier.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_maraskaner",
+    "name": "Maraskaner",
+    "optolith_id": "C_6",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Maraskaner.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_mhanadistani",
+    "name": "Mhanadistani",
+    "optolith_id": "C_7",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Tulamidya",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Mhanadistani.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_mittelreicher",
+    "name": "Mittelreicher",
+    "optolith_id": "C_8",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Mittelreicher.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_mohas",
+    "name": "Mohas",
+    "optolith_id": "C_9",
+    "compatible_species": [
+      "Mensch"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Mohisch",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Mohas.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_nivesen",
+    "name": "Nivesen",
+    "optolith_id": "C_10",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Nujuka",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Nivesen.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_norbarden",
+    "name": "Norbarden",
+    "optolith_id": "C_11",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Norbarden.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_nordaventurier",
+    "name": "Nordaventurier",
+    "optolith_id": "C_12",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Nordaventurier.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_nostrier",
+    "name": "Nostrier",
+    "optolith_id": "C_13",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Nostrier.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_novadis",
+    "name": "Novadis",
+    "optolith_id": "C_14",
+    "compatible_species": [
+      "Mensch"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Tulamidya",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Novadis.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_suedaventurier",
+    "name": "Südaventurier",
+    "optolith_id": "C_15",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Südaventurier.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_svellttaler",
+    "name": "Svellttaler",
+    "optolith_id": "C_16",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Svellttaler.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_thorwaler",
+    "name": "Thorwaler",
+    "optolith_id": "C_17",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Thorwalsch",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Thorwaler.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_zyklopaeer",
+    "name": "Zyklopäer",
+    "optolith_id": "C_18",
+    "compatible_species": [
+      "Mensch",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Zyklopäer.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_auelfen",
+    "name": "Auelfen",
+    "optolith_id": "C_19",
+    "compatible_species": [
+      "Elf",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Isdira",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Auelfen.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_firnelfen",
+    "name": "Firnelfen",
+    "optolith_id": "C_20",
+    "compatible_species": [
+      "Elf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Isdira",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Firnelfen.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_waldelfen",
+    "name": "Waldelfen",
+    "optolith_id": "C_21",
+    "compatible_species": [
+      "Elf",
+      "Halbelf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Isdira",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Waldelfen.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_ambosszwerge",
+    "name": "Ambosszwerge",
+    "optolith_id": "C_22",
+    "compatible_species": [
+      "Zwerg"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Rogolan",
+        "level": 4
+      },
+      {
+        "name": "Garethi",
+        "level": 3
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Ambosszwerge.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_brillantzwerge",
+    "name": "Brillantzwerge",
+    "optolith_id": "C_23",
+    "compatible_species": [
+      "Zwerg"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Rogolan",
+        "level": 4
+      },
+      {
+        "name": "Garethi",
+        "level": 3
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Brillantzwerge.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_erzzwerge",
+    "name": "Erzzwerge",
+    "optolith_id": "C_24",
+    "compatible_species": [
+      "Zwerg"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Rogolan",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Erzzwerge.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_huegelzwerge",
+    "name": "Hügelzwerge",
+    "optolith_id": "C_25",
+    "compatible_species": [
+      "Zwerg"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Rogolan",
+        "level": 4
+      },
+      {
+        "name": "Garethi",
+        "level": 3
+      }
+    ],
+    "scripts": [],
+    "source_book": "Grundregelwerk",
+    "description": "Kultur der Hügelzwerge.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_zahori",
+    "name": "Zahori",
+    "optolith_id": "C_26",
+    "compatible_species": [
+      "Mensch"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Tulamidya",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Supplement",
+    "description": "Kultur der Zahori.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_koboldweltler",
+    "name": "Koboldweltler",
+    "optolith_id": "C_27",
+    "compatible_species": [
+      "Mensch"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Supplement",
+    "description": "Kultur der Koboldweltler.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_steppenelfen",
+    "name": "Steppenelfen",
+    "optolith_id": "C_28",
+    "compatible_species": [
+      "Elf"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Isdira",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Supplement",
+    "description": "Kultur der Steppenelfen.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_engasaler",
+    "name": "Engasaler",
+    "optolith_id": "C_29",
+    "compatible_species": [
+      "Mensch"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Supplement",
+    "description": "Kultur der Engasaler.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_ferkina",
+    "name": "Ferkina",
+    "optolith_id": "C_30",
+    "compatible_species": [
+      "Mensch"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Supplement",
+    "description": "Kultur der Ferkina.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_gjalsker",
+    "name": "Gjalsker",
+    "optolith_id": "C_31",
+    "compatible_species": [
+      "Mensch"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Supplement",
+    "description": "Kultur der Gjalsker.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_trollzacker",
+    "name": "Trollzacker",
+    "optolith_id": "C_32",
+    "compatible_species": [
+      "Mensch"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Garethi",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Supplement",
+    "description": "Kultur der Trollzacker.",
+    "ap_cost": 0
+  },
+  {
+    "id": "culture_wildzwerge",
+    "name": "Wildzwerge",
+    "optolith_id": "C_33",
+    "compatible_species": [
+      "Zwerg"
+    ],
+    "skill_bonuses": {},
+    "languages": [
+      {
+        "name": "Rogolan",
+        "level": 4
+      }
+    ],
+    "scripts": [],
+    "source_book": "Supplement",
+    "description": "Kultur der Wildzwerge.",
+    "ap_cost": 0
   }
 ]

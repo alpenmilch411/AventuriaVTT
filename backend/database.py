@@ -162,6 +162,7 @@ def _migrate_add_species_extra_columns(connection):
         ("attribute_adjustments", "TEXT"),
         ("common_cultures", "TEXT"),
         ("auto_advantages", "TEXT"),
+        ("optolith_id", "VARCHAR(16)"),
     ]
 
     for col_name, col_type in columns_to_add:
@@ -169,3 +170,18 @@ def _migrate_add_species_extra_columns(connection):
             connection.execute(
                 text(f"ALTER TABLE species_templates ADD COLUMN {col_name} {col_type}")
             )
+
+    # Also add optolith_id and source_book to culture_templates and profession_templates
+    for table in ["culture_templates", "profession_templates"]:
+        result = connection.execute(text(f"PRAGMA table_info({table})"))
+        table_cols = {row[1] for row in result.fetchall()}
+        if not table_cols:
+            continue
+        extras = [("optolith_id", "VARCHAR(16)"), ("source_book", "VARCHAR(64)")]
+        if table == "profession_templates":
+            extras.append(("name_f", "VARCHAR(128)"))
+        for col_name, col_type in extras:
+            if col_name not in table_cols:
+                connection.execute(
+                    text(f"ALTER TABLE {table} ADD COLUMN {col_name} {col_type}")
+                )

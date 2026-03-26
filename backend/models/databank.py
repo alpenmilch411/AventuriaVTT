@@ -28,6 +28,8 @@ class SpeciesTemplate(Base):
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
     name_en: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    optolith_id: Mapped[Optional[str]] = mapped_column(String(16), nullable=True,
+        comment="Optolith reference ID (e.g. R_1)")
     ap_cost: Mapped[int] = mapped_column(Integer, default=0)
     lep_base: Mapped[int] = mapped_column(Integer, default=5,
         comment="Species LeP base value added to (2*KO)")
@@ -71,11 +73,14 @@ class CultureTemplate(Base):
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
+    optolith_id: Mapped[Optional[str]] = mapped_column(String(16), nullable=True,
+        comment="Optolith reference ID (e.g. C_8)")
     ap_cost: Mapped[int] = mapped_column(Integer, default=0)
     compatible_species: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     skill_bonuses: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     languages: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     scripts: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    source_book: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # User-contribution fields
@@ -98,6 +103,10 @@ class ProfessionTemplate(Base):
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
+    name_f: Mapped[Optional[str]] = mapped_column(String(128), nullable=True,
+        comment="Feminine form of the profession name")
+    optolith_id: Mapped[Optional[str]] = mapped_column(String(16), nullable=True,
+        comment="Optolith reference ID (e.g. P_9)")
     ap_cost: Mapped[int] = mapped_column(Integer, default=0)
     compatible_species: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     requires_magic: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -107,6 +116,7 @@ class ProfessionTemplate(Base):
     special_abilities: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     spells: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     liturgies: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    source_book: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # User-contribution fields
