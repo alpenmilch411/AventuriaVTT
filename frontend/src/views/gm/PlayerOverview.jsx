@@ -23,9 +23,8 @@ function PlayerOverview({ sendMessage, gmControls }) {
     setWhisperText('')
   }
 
-  // Only show connected players — merge with character data
-  const connectedPlayers = players
-    .filter(p => p.connected)
+  // All players who have joined this session — merge with character data, connected first
+  const allPlayers = players
     .map(player => {
       const char = allCharacters.find(c => c.id === player.characterId) || player.character || {}
       const vitals = getVitalsFrom({ ...player, ...char, current_vitals: player.current_vitals || char.current_vitals })
@@ -33,36 +32,49 @@ function PlayerOverview({ sendMessage, gmControls }) {
       const conditions = getConditions({ ...player, ...char })
       return { ...player, character: char, vitals, maxVitals, conditions }
     })
+    .sort((a, b) => (b.connected ? 1 : 0) - (a.connected ? 1 : 0)) // connected first
+
+  const onlineCount = allPlayers.filter(p => p.connected).length
 
   return (
     <div className="space-y-3">
       <h2 className="section-title text-sm flex items-center gap-2">
         <User className="w-4 h-4" />
-        Spieler ({connectedPlayers.length} verbunden)
+        Spieler ({onlineCount}/{allPlayers.length} verbunden)
       </h2>
 
       <div className="space-y-2">
-        {connectedPlayers.map(player => {
+        {allPlayers.map(player => {
           const char = player.character || {}
           const v = player.vitals
           const mv = player.maxVitals
           const lepPct = mv.lepMax > 0 ? v.lep / mv.lepMax : 1
           const isHurt = lepPct < 0.75
           const isCritical = lepPct < 0.25
+          const isOnline = !!player.connected
 
           return (
             <div
               key={player.id}
               onClick={() => setSelectedPlayer(player)}
-              className="bg-dsa-bg-card border border-dsa-bg-medium rounded-sm p-3 space-y-2 cursor-pointer hover:border-dsa-gold/20 transition-colors"
+              className={clsx(
+                'border rounded-sm p-3 space-y-2 cursor-pointer transition-colors',
+                isOnline
+                  ? 'bg-dsa-bg-card border-dsa-bg-medium hover:border-dsa-gold/20'
+                  : 'bg-dsa-bg-card/50 border-dsa-bg-medium/50 opacity-60'
+              )}
             >
               {/* Header: Name + Species/Profession + Actions */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-dsa-success animate-pulse" />
+                  <div className={clsx(
+                    'w-2 h-2 rounded-full',
+                    isOnline ? 'bg-dsa-success animate-pulse' : 'bg-dsa-parchment-dark/40'
+                  )} />
                   <div>
-                    <div className="text-sm font-semibold text-dsa-parchment">
+                    <div className="text-sm font-semibold text-dsa-parchment flex items-center gap-1.5">
                       {char.name || player.username || 'Unbekannt'}
+                      {!isOnline && <span className="text-[8px] font-normal text-dsa-parchment-dark/60 bg-dsa-bg-medium/50 px-1 py-0.5 rounded">Offline</span>}
                     </div>
                     <div className="text-[10px] text-dsa-parchment-dark">
                       {[char.species, char.profession].filter(Boolean).join(' · ') || player.username || ''}
@@ -119,10 +131,10 @@ function PlayerOverview({ sendMessage, gmControls }) {
           )
         })}
 
-        {connectedPlayers.length === 0 && (
+        {allPlayers.length === 0 && (
           <div className="text-center py-8">
             <User className="w-8 h-8 text-dsa-parchment-dark/30 mx-auto mb-2" />
-            <p className="text-sm text-dsa-parchment-dark">Keine Spieler verbunden</p>
+            <p className="text-sm text-dsa-parchment-dark">Noch keine Spieler beigetreten</p>
             <p className="text-[10px] text-dsa-parchment-dark/60 mt-1">Spieler verbinden sich über den Session-Code</p>
           </div>
         )}

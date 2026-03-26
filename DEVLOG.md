@@ -4,6 +4,19 @@
 
 ---
 
+## Session 9f — Player list shows all session members with online/offline status
+**Date:** 2026-03-26
+
+### What changed
+- **All players who joined the session are visible** — not just the ones currently online. This way the GM always sees the full party even if someone's phone disconnects briefly.
+- **Connected players appear first** with a pulsing green dot. Offline players are shown below them, dimmed out with a grey dot and "Offline" label, so the GM immediately sees who's still at the table.
+- The header shows "2/4 verbunden" so the GM knows at a glance how many are online.
+
+### Files touched
+`frontend/src/views/gm/PlayerOverview.jsx`
+
+---
+
 ## Session 9e — Player list shows only connected users with proper detail
 **Date:** 2026-03-26
 
