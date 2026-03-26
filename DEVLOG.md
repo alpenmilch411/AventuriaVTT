@@ -4,6 +4,26 @@
 
 ---
 
+## Session 9k — Spell and liturgy casting in combat
+**Date:** 2026-03-26
+
+### What changed
+- **Spells and liturgies can now be cast during combat** — previously selecting "Zauber" or "Liturgie" in the combat turn just logged a message and ended the turn. Now it opens a full 6-step casting wizard:
+  1. **Spell selection** — shows all spells/liturgies the character knows, with Fertigkeitswert, probe attributes, Astral/Karma cost, casting time. Spells the character can't afford are greyed out.
+  2. **Target selection** — pick an enemy, ally, or self. Zone spells skip this step.
+  3. **Difficulty modifier** — GM sets probe modifier with quick-pick buttons (-6 to +6).
+  4. **3W20 probe roll** — for NPCs the GM enters three dice results; for players a dice request is sent to their phone. Live calculation shows which dice passed, FP consumed, and remaining.
+  5. **Result display** — shows success/failure banner with Qualitätsstufe, per-die breakdown, critical/Patzer detection. Automatically deducts AsP or KaP from the caster.
+  6. **Effect hints** — if the spell has damage or condition effects, they're shown for the GM to apply.
+- Spell and liturgy templates are lazy-loaded from the databank API on first use.
+- Both NPC and player casting flows work (GM enters rolls vs player enters on phone).
+- Also aligned GM sidebar backgrounds to match the NPC list depth pattern, and offline players now show red dot instead of grey.
+
+### Files touched
+`frontend/src/views/gm/TurnFlow.jsx`, `frontend/src/views/gm/GMCockpit.jsx`, `DEVLOG.md`
+
+---
+
 ## Session 9j — Fix GM condition/health editing and remove crashed WS handlers
 **Date:** 2026-03-26
 
