@@ -288,10 +288,7 @@ export default function GMCockpit() {
                     >
                       {selected && <Check className="w-2.5 h-2.5 text-dsa-bg" />}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="text-xs font-semibold text-dsa-parchment truncate block">{charName}</span>
-                      {p.username && <span className="text-[8px] text-dsa-parchment-dark/50 truncate block">{p.username}</span>}
-                    </div>
+                    <span className="text-xs font-semibold text-dsa-parchment truncate flex-1">{charName}</span>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <span className={clsx('w-1.5 h-1.5 rounded-full', isOnline ? 'bg-green-400 animate-pulse' : 'bg-red-400')} />
                     </div>
