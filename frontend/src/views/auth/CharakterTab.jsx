@@ -40,8 +40,8 @@ const ARCHETYPES = [
   { id: 'krieger', name: 'Krieger', desc: 'Nahkampfspezialist mit schwerer Rustung und Waffe.', icon: Swords },
   { id: 'magier', name: 'Magier', desc: 'Gelehrter Zauberwirker der Gildenmagie.', icon: Wand2 },
   { id: 'geweihter', name: 'Geweihter', desc: 'Diener einer Gottheit mit Liturgien und Segen.', icon: Shield },
-  { id: 'waldlaeufer', name: 'Waldlaufer', desc: 'Kundschafter und Fernkampfer in der Wildnis.', icon: User },
-  { id: 'streuner', name: 'Streuner', desc: 'Geschickter Dieb und Trickser in der Stadt.', icon: User },
+  { id: 'waldlaeufer', name: 'Waldläufer', desc: 'Kundschafter und Fernkämpfer in der Wildnis.', icon: User },
+  { id: 'streuner', name: 'Streuner', desc: 'Geschickter Dieb und Trickster in der Stadt.', icon: User },
 ]
 
 const EXPERIENCE_GRADES = [
@@ -209,7 +209,7 @@ function QuickTemplateModal({ isOpen, onClose, onCreated }) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          archetype: selectedArchetype,
+          archetype: ARCHETYPES.find(a => a.id === selectedArchetype)?.name || selectedArchetype,
           name: name.trim(),
           experience_grade: grade,
         }),

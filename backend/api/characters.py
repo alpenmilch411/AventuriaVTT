@@ -257,9 +257,9 @@ ARCHETYPE_TEMPLATES: dict[str, dict] = {
         "talents": {"Goetterundkulte": 6, "Willenskraft": 4, "Menschenkenntnis": 4},
         "liturgies": {"Heilsegen": 6, "Lichtsegen": 4, "Schutzgebet": 3},
     },
-    "Waldlaeufer": {
+    "Waldläufer": {
         "species": "Mensch",
-        "profession": "Waldlaeufer",
+        "profession": "Waldläufer",
         "attributes": {"MU": 12, "KL": 11, "IN": 14, "CH": 10, "FF": 13, "GE": 14, "KO": 13, "KK": 11},
         "talents": {"Faehrtensuchen": 6, "Tierkunde": 4, "Wildnisleben": 6, "Schleichen": 4, "Sinnesschaerfe": 4},
     },
