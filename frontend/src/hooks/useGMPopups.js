@@ -16,6 +16,7 @@ export default function useGMPopups() {
   const [showBattleSetup, setShowBattleSetup] = useState(false)
   const [combatMinimized, setCombatMinimized] = useState(false)
   const [selectedPlayerIds, setSelectedPlayerIds] = useState(new Set())
+  const [expandedCards, setExpandedCards] = useState(new Set())
   const [quickAction, setQuickAction] = useState(null) // 'probe' | 'health' | 'items' | 'whisper' | null
   const [probeTalent, setProbeTalent] = useState('')
   const [probeDifficulty, setProbeDifficulty] = useState(0)
@@ -50,6 +51,7 @@ export default function useGMPopups() {
     showBattleSetup, setShowBattleSetup,
     combatMinimized, setCombatMinimized,
     selectedPlayerIds, setSelectedPlayerIds,
+    expandedCards, setExpandedCards,
     quickAction, setQuickAction,
     probeTalent, setProbeTalent,
     probeDifficulty, setProbeDifficulty,

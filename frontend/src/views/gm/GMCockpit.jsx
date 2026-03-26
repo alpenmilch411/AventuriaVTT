@@ -70,6 +70,7 @@ export default function GMCockpit() {
     showBattleSetup, setShowBattleSetup,
     combatMinimized, setCombatMinimized,
     selectedPlayerIds, setSelectedPlayerIds,
+    expandedCards, setExpandedCards,
     quickAction, setQuickAction,
     probeTalent, setProbeTalent,
     probeDifficulty, setProbeDifficulty,
@@ -248,10 +249,16 @@ export default function GMCockpit() {
               <h2 className="text-xs font-semibold text-dsa-gold flex items-center gap-1">
                 <Users className="w-3.5 h-3.5" /> Spieler ({connectedCount}/{players.length})
               </h2>
-              <button onClick={selectedPlayerIds.size === players.length ? () => setSelectedPlayerIds(new Set()) : selectAllPlayers}
-                className="text-[9px] text-dsa-parchment-dark hover:text-dsa-gold transition">
-                {selectedPlayerIds.size === players.filter(p => p.connected).length ? 'Keine' : 'Alle'}
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => setExpandedCards(expandedCards.size === players.length ? new Set() : new Set(players.map(p => p.id)))}
+                  className="text-[9px] text-dsa-parchment-dark hover:text-dsa-gold transition">
+                  {expandedCards.size === players.length ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+                </button>
+                <button onClick={selectedPlayerIds.size === players.length ? () => setSelectedPlayerIds(new Set()) : selectAllPlayers}
+                  className="text-[9px] text-dsa-parchment-dark hover:text-dsa-gold transition">
+                  {selectedPlayerIds.size === players.length ? 'Keine' : 'Alle'}
+                </button>
+              </div>
             </div>
             {players.map(p => {
               const cv = p.current_vitals || {}
@@ -279,8 +286,8 @@ export default function GMCockpit() {
                     selected ? 'bg-dsa-bg border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg border-dsa-bg-medium hover:border-dsa-gold/30'
                   )}
                 >
-                  {/* Row 1: Checkbox + Name + Online */}
-                  <div className="flex items-center gap-2 mb-1.5">
+                  {/* Row 1: Checkbox + Name + Expand toggle + Online */}
+                  <div className="flex items-center gap-2">
                     <div
                       onClick={(e) => { e.stopPropagation(); togglePlayer(p.id) }}
                       className={clsx('w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 transition cursor-pointer hover:border-dsa-gold',
@@ -289,13 +296,15 @@ export default function GMCockpit() {
                       {selected && <Check className="w-2.5 h-2.5 text-dsa-bg" />}
                     </div>
                     <span className="text-xs font-semibold text-dsa-parchment truncate flex-1">{charName}</span>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <span className={clsx('w-1.5 h-1.5 rounded-full', isOnline ? 'bg-green-400 animate-pulse' : 'bg-red-400')} />
-                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); setExpandedCards(prev => { const next = new Set(prev); next.has(p.id) ? next.delete(p.id) : next.add(p.id); return next }) }}
+                      className="text-dsa-parchment-dark/40 hover:text-dsa-gold transition flex-shrink-0 p-0.5">
+                      {expandedCards.has(p.id) ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    </button>
+                    <span className={clsx('w-1.5 h-1.5 rounded-full flex-shrink-0', isOnline ? 'bg-green-400 animate-pulse' : 'bg-red-400')} />
                   </div>
 
-                  {/* Vitals with icons */}
-                  <div className="space-y-1 ml-5.5 pl-0.5">
+                  {/* Vitals — collapsible */}
+                  {expandedCards.has(p.id) && <div className="space-y-1 ml-5.5 pl-0.5 mt-1.5">
                     {/* Lebensenergie */}
                     <div className="flex items-center gap-1.5">
                       <Heart className={clsx('w-3 h-3 flex-shrink-0', isCritical ? 'text-red-500' : isHurt ? 'text-yellow-500' : 'text-dsa-blood')} />
@@ -349,7 +358,7 @@ export default function GMCockpit() {
                         })}
                       </div>
                     )}
-                  </div>
+                  </div>}
                 </div>
               )
             })}
