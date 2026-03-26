@@ -518,13 +518,9 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.ACTION_DECLARE: _handle_action_declare,
         EventType.DICE_RESULT: _handle_dice_result,
         EventType.DEFENSE_CHOICE: _handle_defense_choice,
-        EventType.MOVE_REQUEST: _handle_move_request,
         EventType.ITEM_USE: _handle_item_use,
         EventType.ITEM_TRANSFER: _handle_item_transfer,
-        EventType.SCHIP_USE: _handle_schip_use,
         EventType.SPELL_CAST: _handle_spell_cast,
-        EventType.LITURGY_CAST: _handle_liturgy_cast,
-        EventType.WHISPER_REPLY: _handle_whisper_reply,
         EventType.TOKEN_MOVE: _handle_token_move,
     }
 
@@ -1353,30 +1349,6 @@ async def _handle_defense_choice(session_code: str, user_id: str, payload: dict,
     })
 
 
-async def _handle_move_request(session_code: str, user_id: str, payload: dict, state: dict):
-    """Player requests to move their token on the map."""
-    token_id = payload.get("token_id")
-    target_x = payload.get("target_x")
-    target_y = payload.get("target_y")
-    path = payload.get("path", [])  # Optional waypoint path for animation
-
-    # Update token position in state
-    for token in state.get("tokens", []):
-        if token.get("token_id") == token_id:
-            token["position_x"] = target_x
-            token["position_y"] = target_y
-            break
-
-    msg = _msg(EventType.TOKEN_MOVE, {
-        "token_id": token_id,
-        "user_id": user_id,
-        "target_x": target_x,
-        "target_y": target_y,
-        "path": path,
-    }, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
-
-
 async def _handle_item_use(session_code: str, user_id: str, payload: dict, state: dict):
     """Player uses an item from their inventory."""
     item_data = {
@@ -1435,27 +1407,6 @@ async def _handle_item_transfer(session_code: str, user_id: str, payload: dict, 
     ))
 
 
-async def _handle_schip_use(session_code: str, user_id: str, payload: dict, state: dict):
-    """Player spends a Schicksalspunkt (fate point)."""
-    usage = {
-        "user_id": user_id,
-        "purpose": payload.get("purpose", ""),  # "reroll" | "extra_reaction" | "mitigate" | ...
-        "details": payload.get("details", {}),
-    }
-    # Notify GM
-    await manager.broadcast_to_room(session_code, _msg(
-        EventType.SCHIP_USE, usage, from_user=user_id,
-    ), target="gm")
-    # Broadcast to all (spending a Schip is public)
-    await manager.broadcast_to_room(session_code, _msg(
-        EventType.COMBAT_LOG_ENTRY, {
-            "entry_type": "schip_use",
-            "user_id": user_id,
-            "purpose": usage["purpose"],
-        }, from_user=user_id,
-    ))
-
-
 async def _handle_spell_cast(session_code: str, user_id: str, payload: dict, state: dict):
     """Player casts a spell (Zauber)."""
     combat = _combat_snapshot(state)
@@ -1495,63 +1446,6 @@ async def _handle_spell_cast(session_code: str, user_id: str, payload: dict, sta
             "data": spell_data,
             "timestamp": _ts(),
         })
-
-
-async def _handle_liturgy_cast(session_code: str, user_id: str, payload: dict, state: dict):
-    """Player casts a liturgy (Liturgie/Zeremonie)."""
-    combat = _combat_snapshot(state)
-    if combat and not _is_current_turn(state, user_id):
-        await manager.send_to_user(user_id, _error("It is not your turn"))
-        return
-
-    liturgy_data = {
-        "user_id": user_id,
-        "liturgy_id": payload.get("liturgy_id"),
-        "liturgy_name": payload.get("liturgy_name", ""),
-        "target": payload.get("target"),
-        "kap_cost": payload.get("kap_cost", 0),
-        "modification": payload.get("modification", {}),
-        "rolls": payload.get("rolls", []),
-        "result": payload.get("result", {}),
-    }
-    # Notify GM
-    await manager.broadcast_to_room(session_code, _msg(
-        EventType.LITURGY_CAST, liturgy_data, from_user=user_id,
-    ), target="gm")
-    # Broadcast to everyone
-    await manager.broadcast_to_room(session_code, _msg(
-        EventType.COMBAT_LOG_ENTRY, {
-            "entry_type": "liturgy_cast",
-            "user_id": user_id,
-            "liturgy_name": liturgy_data["liturgy_name"],
-            "success": liturgy_data["result"].get("success"),
-            "qs": liturgy_data["result"].get("qs"),
-        }, from_user=user_id,
-    ))
-
-    if combat is not None:
-        combat.setdefault("log", []).append({
-            "type": "liturgy_cast",
-            "user_id": user_id,
-            "data": liturgy_data,
-            "timestamp": _ts(),
-        })
-
-
-async def _handle_whisper_reply(session_code: str, user_id: str, payload: dict, state: dict):
-    """Player replies to a GM whisper."""
-    text = payload.get("text", "")
-    gm_id = manager.get_gm_id(session_code)
-    if gm_id:
-        await manager.send_to_user(gm_id, _msg(EventType.WHISPER_REPLY, {
-            "text": text,
-            "from_user": user_id,
-        }, from_user=user_id))
-    # Echo back to the sender so they see their own reply
-    await manager.send_to_user(user_id, _msg(EventType.WHISPER_REPLY, {
-        "text": text,
-        "echo": True,
-    }, from_user=user_id))
 
 
 async def _handle_token_move(session_code: str, user_id: str, payload: dict, state: dict):

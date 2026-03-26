@@ -114,8 +114,7 @@ export default function GMCockpit() {
     })
   }
   const selectAllPlayers = () => {
-    const connected = players.filter(p => p.connected).map(p => p.id)
-    setSelectedPlayerIds(new Set(connected))
+    setSelectedPlayerIds(new Set(players.map(p => p.id)))
   }
 
   const selectedPlayers = players.filter(p => selectedPlayerIds.has(p.id))
@@ -249,7 +248,7 @@ export default function GMCockpit() {
               <h2 className="text-xs font-semibold text-dsa-gold flex items-center gap-1">
                 <Users className="w-3.5 h-3.5" /> Spieler ({connectedCount}/{players.length})
               </h2>
-              <button onClick={selectedPlayerIds.size === players.filter(p => p.connected).length ? () => setSelectedPlayerIds(new Set()) : selectAllPlayers}
+              <button onClick={selectedPlayerIds.size === players.length ? () => setSelectedPlayerIds(new Set()) : selectAllPlayers}
                 className="text-[9px] text-dsa-parchment-dark hover:text-dsa-gold transition">
                 {selectedPlayerIds.size === players.filter(p => p.connected).length ? 'Keine' : 'Alle'}
               </button>

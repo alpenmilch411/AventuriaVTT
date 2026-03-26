@@ -4,6 +4,19 @@
 
 ---
 
+## Session 9j — Fix GM condition/health editing and remove crashed WS handlers
+**Date:** 2026-03-26
+
+### What changed
+- **GM can now edit conditions and health and see changes reflected immediately** — the condition popup, health popup, and probe launcher all work. Previously, changes appeared to be sent but never updated the player cards. The root cause: four handler functions in the WebSocket backend referenced event types that had been deleted (MOVE_REQUEST, SCHIP_USE, LITURGY_CAST, WHISPER_REPLY). This caused Python to crash with an AttributeError on the first WS message, killing the entire WebSocket connection silently. The GM could send messages but never receive the server's responses.
+- **Quick action buttons always work** — Zustand, Leben, and Probe buttons now auto-select all session players (not just connected ones), so the GM can manage offline characters too.
+- Removed the crashed handler functions and cleaned up references to deleted event types.
+
+### Files touched
+`backend/ws/handlers.py`, `frontend/src/views/gm/GMCockpit.jsx`, `frontend/src/hooks/useWebSocket.js`
+
+---
+
 ## Session 9i — Structural fix for infinite re-render loops (root cause eliminated)
 **Date:** 2026-03-26
 

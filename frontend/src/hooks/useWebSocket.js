@@ -262,29 +262,28 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       if (type === 'conditions_update' || type === 'condition_change') {
         const cid = payload.character_id
         if (cid) {
-          // Re-read from store AFTER handleCharacterMessage has applied the update
-          const freshCharState = useCharacterStore.getState()
-          const allChars = freshCharState.allCharacters
-          const myChar = freshCharState.myCharacter
-          const charMatch = allChars.find(c => c.id === cid) || (myChar?.id === cid ? myChar : null)
+          // Re-read ALL stores fresh AFTER handleCharacterMessage has applied the update
+          const freshChars = useCharacterStore.getState().allCharacters
+          const freshMyChar = useCharacterStore.getState().myCharacter
+          const charMatch = freshChars.find(c => c.id === cid) || (freshMyChar?.id === cid ? freshMyChar : null)
           const conditions = charMatch?.conditions || payload.conditions || []
 
           // Sync to combatStore combatants (condition icons on HP bars)
-          const battles = combatState.battles
-          for (const battle of Object.values(battles)) {
-            const match = battle.initiativeOrder.find(c => c.characterId === cid || c.id === cid)
+          const freshBattles = useCombatStore.getState().battles
+          for (const battle of Object.values(freshBattles)) {
+            const match = battle.initiativeOrder?.find(c => c.characterId === cid || c.id === cid)
             if (match) {
-              combatState.updateCombatant(match.id, { conditions })
+              useCombatStore.getState().updateCombatant(match.id, { conditions })
             }
           }
 
           // Sync to sessionStore players (GM player cards show condition badges)
-          const players = sessionState.players || []
-          const playerIdx = players.findIndex(p => p.characterId === cid || p.character?.id === cid)
+          const freshPlayers = useSessionStore.getState().players || []
+          const playerIdx = freshPlayers.findIndex(p => p.characterId === cid || p.character?.id === cid)
           if (playerIdx !== -1) {
-            const updated = [...players]
+            const updated = [...freshPlayers]
             updated[playerIdx] = { ...updated[playerIdx], conditions }
-            sessionState.setPlayers(updated)
+            useSessionStore.getState().setPlayers(updated)
           }
         }
       }
