@@ -326,7 +326,7 @@ function DetailStatCell({ label, val, icon: Icon, iconCls, conditions, statKey, 
       <button
         ref={ref}
         onClick={(e) => { e.stopPropagation(); setShow(!show) }}
-        className="flex flex-col items-center w-full py-1.5 border rounded-sm border-dsa-bg-medium bg-dsa-bg relative cursor-help hover:border-dsa-gold/30 transition-colors"
+        className="flex flex-col items-center w-full py-1.5 border rounded-sm border-dsa-bg-medium bg-dsa-bg-card relative cursor-help hover:border-dsa-gold/30 transition-colors"
       >
         {cg.neg < 0 && cg.neg > -100 && <span className="absolute top-0.5 right-0.5 text-[7px] font-mono font-bold text-red-400 leading-none">{cg.neg}</span>}
         {cg.neg <= -100 && <span className="absolute top-0.5 right-0.5 text-[7px] font-mono font-bold text-red-400 leading-none">X</span>}
@@ -510,7 +510,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
   const activeCats = SF_CATS.filter(c => categorized[c.id].length > 0)
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 -mx-6 -my-4 px-6 py-4 bg-dsa-bg">
       {/* Identity + Status */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-dsa-parchment-dark">
@@ -523,7 +523,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
       </div>
 
       {/* ── Energien ── */}
-      <div className="bg-dsa-bg rounded p-3 space-y-2">
+      <div className="bg-dsa-bg-card rounded p-3 space-y-2">
         <h3 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1">Energien</h3>
         <div className="flex items-center gap-2">
           <Heart className="w-4 h-4 text-dsa-blood flex-shrink-0" />
@@ -596,7 +596,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
       {/* ── Eigenschaften (with condition modifiers + tooltips) ── */}
       <div>
         <h3 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1.5">Eigenschaften</h3>
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-8 gap-1">
           {Object.entries(ATTR_META).map(([key, meta]) => {
             const val = attrs[key] || 0
             const modLines = condLines(key)
@@ -662,7 +662,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
       {/* ── Kampfwerte (with condition modifier corners + derivation tooltips) ── */}
       <div>
         <h3 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1.5">Kampfwerte</h3>
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-8 gap-1">
           {/* AT */}
           <DetailStatCell label="Attacke" val={combatAT ?? 0} icon={Swords} iconCls="text-red-400" conditions={conditions} statKey="AT">
             <TipBlock title="Attacke" desc="Nahkampf-Angriffswert. 1W20 kleiner/gleich = Treffer." lines={[
