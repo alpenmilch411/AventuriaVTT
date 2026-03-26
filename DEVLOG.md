@@ -4,6 +4,27 @@
 
 ---
 
+## End-of-day Summary — Sessions 6–9k (2026-03-26)
+**Type:** Claude Code — full day of audit, architecture, battle system, and GM UX
+
+This was a marathon session. Starting from ~31K lines with 25 known bugs, the codebase is now ~17K clean lines with production-grade sync, correct DSA5 rules, and a polished GM experience. Here's what happened:
+
+**Audit & cleanup:** 25 bugs fixed, ~14K lines of dead code removed (maps, AI, importers, unused engine), 40% of codebase eliminated.
+
+**Architecture:** Session state snapshots (restart resilience), React.memo + useMemo (3x faster combat), character locks, state versioning, dead letter queue, message dedup, lazy-load databank.
+
+**Battle system:** Spell/liturgy casting (full 6-step wizard), ranged distance brackets, SchiP validation, creature HP hidden from players, phone-responsive layout, correct maneuver values.
+
+**GM UX:** Rich player detail view with clickable attributes/combat values/conditions/SFs, collapsible player cards, consistent dark card theme, striped inactive energy bars, condition/health editing works end-to-end.
+
+**Root causes eliminated:** Zustand self-mutating subscriber (infinite loops), deleted event type references (WS crash), stale store snapshots (condition sync).
+
+**12 items remain** for v1 — biggest: victory screen + AP, creature databank quick-add, character import/export.
+
+**33 commits pushed today.**
+
+---
+
 ## Session 9k — Spell and liturgy casting in combat
 **Date:** 2026-03-26
 

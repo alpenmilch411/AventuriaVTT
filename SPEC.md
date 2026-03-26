@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.6.0
+**Version:** 1.7.0
 **Last updated:** 2026-03-26
-**Status:** Audited, optimized, battle system polished — 17 items remaining for v1
+**Status:** Audited, optimized, spell casting in combat, GM UX polished — 12 items remaining for v1
 
 ---
 
@@ -4165,17 +4165,33 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Item give in probe consequences now persists to inventory API
 - [x] Player route now requires authentication
 
+**Resolved (2026-03-26):**
+- [x] Spell/liturgy casting in combat — full 6-step wizard (select → target → modifier → 3W20 roll → result → cost deduction)
+- [x] Ranged distance brackets in combat — GM picks nah/mittel/weit/extrem with FK modifiers
+- [x] SchiP validation for multiple reactions — blocked when no fate points remain
+- [x] Creature HP hidden from players — only names and turn order visible
+- [x] Phone-responsive combat layout — stacks vertically on small screens
+- [x] GM player detail view — click card for full character reference with tooltips, derivations, conditions, SFs
+- [x] GM condition/health editing — quick actions work, changes sync to player cards in real-time
+- [x] Infinite re-render loop eliminated — removed self-mutating Zustand subscriber, computed selectors instead
+- [x] Dead WS handler crash fixed — removed references to deleted event types
+- [x] Consistent dark card theme across entire app
+- [x] Collapsible player cards in GM sidebar
+- [x] Fixed seed data — wrong magic abilities removed from warrior characters
+
 **Still open:**
-- [ ] Player pending requests: show open requests with withdraw option
-- [ ] Battle/probe overlay on table view so all players see what's happening
-- [ ] Creature stat editing: GM can modify creature stats on the fly during combat
-- [ ] Mobile responsive header (compact on small screens)
-- [ ] Character import/export (Optolith JSON format)
-- [ ] Character level-up UI (spend AP to raise attributes/talents/techniques)
+- [ ] Combat victory screen + AP award + loot prompt
+- [ ] Creature databank quick-add to battle setup
+- [ ] Creature stat editing mid-combat
+- [ ] Player pending requests with withdraw option
+- [ ] Mobile responsive header
+- [ ] Character import/export (Optolith JSON)
+- [ ] Character level-up UI
 - [ ] Opposed probes UI
-- [ ] In-game time tracking frontend
-- [ ] Weather system frontend
-- [ ] Ranged weapon reload tracking (Schnellladen SF)
+- [ ] In-game time tracking
+- [ ] Weather system
+- [ ] Ranged reload tracking
+- [ ] Protokoll entry fix ("Singen — 0 bestanden" malformed group probe)
 
 **Removed (cut from scope):**
 - ~~GM scene view right panel~~ — scenes/maps removed from scope
