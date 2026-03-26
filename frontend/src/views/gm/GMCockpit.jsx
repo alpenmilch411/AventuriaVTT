@@ -369,7 +369,7 @@ export default function GMCockpit() {
             <div className="flex items-center justify-around bg-dsa-bg rounded p-1.5 border border-dsa-bg-medium">
               {[
                 { id: 'probe', icon: Dice5, label: 'Probe', color: 'text-dsa-gold' },
-                { id: 'health', icon: Heart, label: 'Leben', color: 'text-red-400' },
+                { id: 'health', icon: Heart, label: 'Energien', color: 'text-red-400' },
                 { id: 'condition', icon: AlertTriangle, label: 'Zustand', color: 'text-amber-400' },
                 { id: 'items', icon: Gift, label: 'Items', color: 'text-emerald-400' },
                 { id: 'whisper', icon: MessageSquare, label: 'Fluestern', color: 'text-blue-400' },
