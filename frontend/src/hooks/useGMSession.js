@@ -47,49 +47,31 @@ export default function useGMSession(sessionCode) {
     if (!currentToken || !currentUser) return
     const headers = { Authorization: `Bearer ${currentToken}` }
     try {
+      // Get session by code
       const sessRes = await fetch(`/api/sessions/by-code/${sessionCode}`, { headers })
-      let campaignId = null
-      if (sessRes.ok) {
-        const sessData = await sessRes.json()
-        campaignId = sessData.campaign_id
-        useSessionStore.getState().setSession({ sessionCode, sessionId: sessData.id, campaignId, isGM: true })
-      }
-      if (!campaignId) {
-        const campRes = await fetch('/api/campaigns', { headers })
-        if (campRes.ok) { const c = await campRes.json(); if (c.length) campaignId = c[0].id }
-      }
-      // Verify this user is the GM of this campaign
-      if (campaignId) {
-        const campCheck = await fetch(`/api/campaigns/${campaignId}`, { headers })
-        if (campCheck.ok) {
-          const campData = await campCheck.json()
-          if (campData.gm_user_id !== currentUser.id) { setIsAuthorizedGM(false); return }
-          setIsAuthorizedGM(true)
-        }
-      }
-      if (!campaignId) return
+      if (!sessRes.ok) return
+      const sessData = await sessRes.json()
 
-      const [campRes, playersRes] = await Promise.all([
-        fetch(`/api/campaigns/${campaignId}`, { headers }),
-        fetch(`/api/campaigns/${campaignId}/players-detail`, { headers }).catch(() => ({ ok: false })),
-      ])
+      // Verify this user is the GM
+      if (sessData.gm_user_id !== currentUser.id) { setIsAuthorizedGM(false); return }
+      setIsAuthorizedGM(true)
 
-      const campaignData = campRes.ok ? await campRes.json() : null
+      useSessionStore.getState().setSession({ sessionCode, sessionId: sessData.id, isGM: true })
+
+      // Get players with full character data
+      const playersRes = await fetch(`/api/sessions/${sessData.id}/players-detail`, { headers }).catch(() => ({ ok: false }))
       const playersData = playersRes.ok ? await playersRes.json() : []
 
-      if (campaignData) {
-        useCampaignStore.getState().setCampaignData({ campaign: campaignData, scenes: [], npcs: [], quests: [], loreBook: [] })
-      }
       if (Array.isArray(playersData) && playersData.length > 0) {
         const cv = (p) => p.current_vitals || {}
         useSessionStore.getState().setPlayers(playersData.map(p => ({
           id: p.user_id, username: p.username, characterId: p.character_id, character: p.character,
           connected: p.connected,
           current_vitals: cv(p),
-          currentLeP: cv(p).lep ?? p.current_lep, maxLeP: p.character?.derived_values?.LeP_max,
-          currentAsP: cv(p).asp ?? p.current_asp, maxAsP: p.character?.derived_values?.AsP_max,
-          currentKaP: cv(p).kap ?? p.current_kap, maxKaP: p.character?.derived_values?.KaP_max,
-          currentSchiP: cv(p).schip ?? p.current_schip,
+          currentLeP: cv(p).lep, maxLeP: p.character?.derived_values?.LeP_max,
+          currentAsP: cv(p).asp, maxAsP: p.character?.derived_values?.AsP_max,
+          currentKaP: cv(p).kap, maxKaP: p.character?.derived_values?.KaP_max,
+          currentSchiP: cv(p).schip,
           conditions: getConditions(p),
         })))
         useCharacterStore.getState().setAllCharacters(

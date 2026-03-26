@@ -5,7 +5,7 @@ import {
   Bell, Pause, Play, X, Send, Plus, Minus, AlertTriangle,
   Package, ChevronDown, ChevronUp, Search, Trash2, Check, Skull, Star,
   Minimize2, Maximize2, MessageSquare, Gift, Moon, StickyNote, Timer, Coins, Scroll,
-  Sparkles, Sun
+  Sparkles, Sun, ArrowLeft
 } from 'lucide-react'
 import useWebSocket from '../../hooks/useWebSocket'
 import { getConditions } from '../../utils/safeData'
@@ -194,6 +194,13 @@ export default function GMCockpit() {
       {/* ── TOP BAR ── */}
       <header className="flex items-center justify-between px-4 py-2 bg-dsa-bg-light border-b border-dsa-bg-medium flex-shrink-0">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="p-1 text-dsa-parchment-dark hover:text-dsa-gold transition-colors"
+            title="Zurück zur Übersicht"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
           <h1 className="text-sm font-display font-bold text-dsa-gold">AventuriaVTT</h1>
           <Badge variant="default" size="sm">{sessionCode}</Badge>
           <div className="flex items-center gap-1 text-xs">
@@ -760,7 +767,7 @@ export default function GMCockpit() {
       {/* Victory Loot Panel */}
       {victoryLoot && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg">
+          <div className="w-full max-w-3xl">
             <LootPanel
               sourceName={victoryLoot.deadNPCs.join(', ')}
               sourceItems={victoryLoot.preparedItems || victoryLoot.loot?.flatMap(l => l.items) || []}
@@ -774,7 +781,7 @@ export default function GMCockpit() {
       {/* Manual Loot Panel */}
       {showLoot && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg">
+          <div className="w-full max-w-3xl">
             <LootPanel
               sourceName={showLoot.sourceName}
               sourceItems={showLoot.sourceItems}
@@ -861,6 +868,8 @@ function BattleSetup({ players, creatureList, token, sendMessage, gmControls, on
   const [activeTab, setActiveTab] = useState('combatants') // 'combatants' | 'loot'
 
   const [itemList, setItemList] = useState([])
+  const [weaponList, setWeaponList] = useState([])
+  const [armorList, setArmorList] = useState([])
 
   const pool = getSessionPool()
   const poolCreatures = pool.creatures || []
@@ -871,15 +880,26 @@ function BattleSetup({ players, creatureList, token, sendMessage, gmControls, on
   const poolCreatureIds = new Set(poolCreatures.map(c => c.id))
   const allCreatures = [...poolCreatures, ...creatureList.filter(c => !poolCreatureIds.has(c.id))]
   const poolItemIds = new Set(poolItems.map(i => i.id))
-  const allItems = [...poolItems, ...poolWeapons, ...poolArmor, ...itemList.filter(i => !poolItemIds.has(i.id))]
+  const allItems = [
+    ...poolItems,
+    ...poolWeapons,
+    ...poolArmor,
+    ...itemList.filter(i => !poolItemIds.has(i.id)),
+    ...weaponList.filter(i => !poolItemIds.has(i.id)),
+    ...armorList.filter(i => !poolItemIds.has(i.id)),
+  ]
 
-  // Fetch items for loot picker
+  // Fetch items, weapons, armor for loot picker
   useEffect(() => {
-    if (itemList.length > 0 || !token) return
-    fetch('/api/databank/items', { headers: { Authorization: `Bearer ${token}` } })
+    if (!token) return
+    const headers = { Authorization: `Bearer ${token}` }
+    const fetch80 = (cat) => fetch(`/api/databank/${cat}?per_page=80`, { headers })
       .then(r => r.ok ? r.json() : [])
-      .then(data => setItemList(Array.isArray(data) ? data : (data.items || [])))
-      .catch(err => console.error('Failed to fetch items:', err))
+      .then(data => Array.isArray(data) ? data : (data.items || []))
+      .catch(() => [])
+    if (itemList.length === 0) fetch80('items').then(setItemList)
+    if (weaponList.length === 0) fetch80('weapons').then(setWeaponList)
+    if (armorList.length === 0) fetch80('armor').then(setArmorList)
   }, [token])
 
   // Auto-add loot from selected creatures' guaranteed_loot

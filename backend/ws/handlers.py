@@ -410,6 +410,33 @@ async def _persist_loot(distributions: list):
                 logger.error("Failed to persist loot for %s: %s", char_id, e)
 
 
+async def _persist_money_distributions(money_distributions: list):
+    """Add currency to character purses in DB."""
+    by_char: dict[str, dict] = {}
+    for dist in money_distributions:
+        cid = dist.get("character_id")
+        if cid:
+            by_char[cid] = dist
+
+    for char_id, dist in by_char.items():
+        async with _get_char_lock(char_id):
+            try:
+                from database import async_session
+                from sqlalchemy import select
+                from models.character import Character
+
+                async with async_session() as db:
+                    result = await db.execute(select(Character).where(Character.id == char_id))
+                    char = result.scalar_one_or_none()
+                    if char:
+                        inv = _inv_add(char.basis_inventory or {}, [], dist)
+                        char.basis_inventory = inv
+                        await db.commit()
+                        logger.info("Persisted money for character %s", char_id)
+            except Exception as e:
+                logger.error("Failed to persist money for %s: %s", char_id, e)
+
+
 async def _persist_inventory(character_id: str, inventory: dict):
     """Persist basis_inventory to Character in DB (backup for frontend REST PUT)."""
     async with _get_char_lock(character_id):
@@ -788,11 +815,17 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
                     conds = [c for c in conds if c.get("name") != payload.get("condition")]
                 state["conditions"][cid] = conds
         # Persist loot to inventory DB — write-through (await before log)
-        if event_type == "loot_distribute" and payload.get("distributions"):
-            try:
-                await _persist_loot(payload["distributions"])
-            except Exception as e:
-                logger.error("Failed to persist loot distribution: %s", e)
+        if event_type == "loot_distribute":
+            if payload.get("distributions"):
+                try:
+                    await _persist_loot(payload["distributions"])
+                except Exception as e:
+                    logger.error("Failed to persist loot distribution: %s", e)
+            if payload.get("money_distributions"):
+                try:
+                    await _persist_money_distributions(payload["money_distributions"])
+                except Exception as e:
+                    logger.error("Failed to persist money distributions: %s", e)
             await _append_session_log(session_code, "loot", f"Beute verteilt: {payload.get('source_name', 'Unbekannt')}", icon="package")
         # Store combat_log_entry in session_log state for reconnect persistence
         # Do NOT call _append_session_log here — it would broadcast a SECOND

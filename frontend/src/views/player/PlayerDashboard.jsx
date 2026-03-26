@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   BookOpen, Backpack, Swords, Sparkles, User, Bell, Gift,
-  X, Wifi, WifiOff, Star, Shield, Handshake
+  X, Wifi, WifiOff, Star, Shield, Handshake, ArrowLeft
 } from 'lucide-react'
 import useWebSocket from '../../hooks/useWebSocket'
 import useOffline from '../../hooks/useOffline'
@@ -56,6 +56,7 @@ export default function PlayerDashboard() {
   const [activeTab, setActiveTab] = useState('character')
   const [showNotifications, setShowNotifications] = useState(false)
   const [probeMinimized, setProbeMinimized] = useState(false)
+  const [loadError, setLoadError] = useState(null)
 
   const { isOffline, OfflineBanner } = useOffline()
 
@@ -97,18 +98,27 @@ export default function PlayerDashboard() {
 
   const loadCharacter = async () => {
     if (!token) return
+    setLoadError(null)
     const headers = { Authorization: `Bearer ${token}` }
     try {
-      // Get session → campaign → my character
+      // Get session by code
       const sessRes = await fetch(`/api/sessions/by-code/${sessionCode}`, { headers })
-      if (!sessRes.ok) return
+      if (!sessRes.ok) {
+        const detail = await sessRes.json().catch(() => ({}))
+        console.error('by-code failed:', sessRes.status, detail)
+        setLoadError(sessRes.status === 403 ? 'Kein Zugriff auf diese Sitzung.' : 'Sitzung konnte nicht geladen werden.')
+        return
+      }
       const sessData = await sessRes.json()
-      const campaignId = sessData.campaign_id
-      if (!campaignId) return
 
-      // Get my character via campaign player detail
-      const playersRes = await fetch(`/api/campaigns/${campaignId}/players-detail`, { headers })
-      if (!playersRes.ok) return
+      // Get players with full character data via session
+      const playersRes = await fetch(`/api/sessions/${sessData.id}/players-detail`, { headers })
+      if (!playersRes.ok) {
+        const detail = await playersRes.json().catch(() => ({}))
+        console.error('players-detail failed:', playersRes.status, detail)
+        setLoadError('Spielerdaten konnten nicht geladen werden.')
+        return
+      }
       const playersData = await playersRes.json()
       const me = playersData.find(p => p.user_id === user?.id)
       if (me?.character) {
@@ -117,21 +127,27 @@ export default function PlayerDashboard() {
         useCharacterStore.getState().setMyCharacter({
           ...me.character,
           current_vitals: {
-            lep: cv.lep ?? me.current_lep ?? dv.LeP_max ?? 0,
-            asp: cv.asp ?? me.current_asp ?? dv.AsP_max ?? 0,
-            kap: cv.kap ?? me.current_kap ?? 0,
-            schip: cv.schip ?? me.current_schip ?? 3,
+            lep: cv.lep ?? dv.LeP_max ?? 0,
+            asp: cv.asp ?? dv.AsP_max ?? 0,
+            kap: cv.kap ?? 0,
+            schip: cv.schip ?? 3,
           },
         })
         useCombatStore.getState().setMyCharacterId(me.character.id)
+      } else {
+        console.warn('No character found for user', user?.id, 'in players list:', playersData.map(p => p.user_id))
+        setLoadError('Kein Charakter in dieser Sitzung gefunden.')
       }
       // Store session info
-      useSessionStore.getState().setSession({ sessionCode, sessionId: sessData.id, campaignId, isGM: false })
+      useSessionStore.getState().setSession({ sessionCode, sessionId: sessData.id, isGM: false })
       useSessionStore.getState().setPlayers(playersData.map(p => ({
         id: p.user_id, username: p.username, characterId: p.character_id,
         character: p.character, connected: p.connected,
       })))
-    } catch (err) { console.error('Failed to load character:', err) }
+    } catch (err) {
+      console.error('Failed to load character:', err)
+      setLoadError('Verbindungsfehler beim Laden des Charakters.')
+    }
   }
 
   const { connected, sendMessage } = useWebSocket(sessionCode, user?.id, 'player')
@@ -155,7 +171,14 @@ export default function PlayerDashboard() {
       <header className="flex-shrink-0 bg-dsa-bg-light border-b border-dsa-bg-medium px-4 py-2">
         <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
-            <h1 className="text-sm font-display font-bold text-dsa-gold">{myCharacter?.name || 'Lade...'}</h1>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="p-1 text-dsa-parchment-dark hover:text-dsa-gold transition-colors"
+              title="Zurück zur Übersicht"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <h1 className="text-sm font-display font-bold text-dsa-gold">{myCharacter?.name || (loadError ? 'Fehler' : 'Lade...')}</h1>
             {myCharacter?.species && <span className="text-[10px] text-dsa-parchment-dark">{myCharacter.species} {myCharacter.profession}</span>}
           </div>
           <div className="flex items-center gap-2">
@@ -228,6 +251,13 @@ export default function PlayerDashboard() {
           )
         })()}
       </header>
+
+      {/* ── ERROR BANNER ── */}
+      {loadError && (
+        <div className="flex-shrink-0 bg-red-900/30 border-b border-red-700/50 px-4 py-2 text-xs text-red-300">
+          {loadError}
+        </div>
+      )}
 
       {/* ── TAB BAR ── */}
       <div className="flex border-b border-dsa-bg-medium bg-dsa-bg-light/50 flex-shrink-0">

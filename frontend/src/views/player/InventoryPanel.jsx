@@ -314,6 +314,17 @@ function InventoryPanel({ sendMessage }) {
     const categorize = (item) => {
       const n = (item.name || '').toLowerCase()
       const eff = item.effects || {}
+      const dbCat = (item.category || '').toLowerCase()
+      if (dbCat === 'weapons' || dbCat === 'armor' || dbCat === 'shields') return 'kampfausruestung'
+      if (dbCat === 'trank') return 'heilmittel'
+      if (dbCat === 'heilkraut') return 'kraeuter'
+      if (dbCat === 'alchemie') return /leuchtstab/.test(n) ? 'licht' : 'wurfstoffe'
+      if (dbCat === 'munition') return 'munition'
+      if (dbCat === 'werkzeug') return 'werkzeug'
+      if (dbCat === 'licht') return 'licht'
+      if (dbCat === 'proviant') return 'proviant'
+      if (dbCat === 'schatz') return 'besonderes'
+      if (dbCat === 'gift') return 'wurfstoffe'
       if (item.type === 'weapon' || item.type === 'armor' || item.type === 'helm' || item.type === 'shield') return 'kampfausruestung'
       if (/schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|armbrust|ruestung|hemd|harnisch|panzer|schild|buckler|helm/i.test(n)) return 'kampfausruestung'
       if (eff.heal_lep || eff.restore_asp || eff.cure_poison || eff.cure_disease || n.includes('trank') || n.includes('elixier') || n.includes('weihwasser') || n.includes('fieber')) return 'heilmittel'
@@ -364,6 +375,17 @@ function InventoryPanel({ sendMessage }) {
   const categorize = (item) => {
     const n = (item.name || '').toLowerCase()
     const eff = item.effects || {}
+    const dbCat = (item.category || '').toLowerCase()
+    if (dbCat === 'weapons' || dbCat === 'armor' || dbCat === 'shields') return 'kampfausruestung'
+    if (dbCat === 'trank') return 'heilmittel'
+    if (dbCat === 'heilkraut') return 'kraeuter'
+    if (dbCat === 'alchemie') return /leuchtstab/.test(n) ? 'licht' : 'wurfstoffe'
+    if (dbCat === 'munition') return 'munition'
+    if (dbCat === 'werkzeug') return 'werkzeug'
+    if (dbCat === 'licht') return 'licht'
+    if (dbCat === 'proviant') return 'proviant'
+    if (dbCat === 'schatz') return 'besonderes'
+    if (dbCat === 'gift') return 'wurfstoffe'
     // Combat gear → shown in Ausrüstung tab, not here
     if (item.type === 'weapon' || item.type === 'armor' || item.type === 'helm' || item.type === 'shield') return 'kampfausruestung'
     if (/schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|armbrust|ruestung|hemd|harnisch|panzer|schild|buckler|helm/i.test(n)) return 'kampfausruestung'

@@ -108,6 +108,7 @@ class CharacterListResponse(BaseModel):
     total_ap: int
     available_ap: int
     portrait_url: Optional[str] = None
+    locked_session_id: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -277,15 +278,19 @@ ARCHETYPE_TEMPLATES: dict[str, dict] = {
 
 @router.get("", response_model=list[CharacterListResponse])
 async def list_characters(
+    unlocked_only: bool = False,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List current user's characters."""
-    result = await db.execute(
+    query = (
         select(Character)
         .where(Character.user_id == current_user.id)
         .order_by(Character.created_at.desc())
     )
+    if unlocked_only:
+        query = query.where(Character.locked_session_id.is_(None))
+    result = await db.execute(query)
     return result.scalars().all()
 
 

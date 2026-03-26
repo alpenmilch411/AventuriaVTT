@@ -40,6 +40,7 @@ from models.databank import (  # noqa: E402
     CombatTechniqueTemplate,
     RulesSnippet,
 )
+from models.wiki import WikiPage  # noqa: E402
 from models.user import User  # noqa: E402
 from models.character import Character  # noqa: E402
 from models.campaign import Campaign, CampaignPlayer, Group, GroupMember  # noqa: E402
@@ -143,6 +144,38 @@ def _upsert_batch(session: Session, model: type, records: List[dict]) -> int:
             session.add(model(**row))
         count += 1
 
+    return count
+
+
+def _seed_wiki_pages(session: Session) -> int:
+    """Seed wiki pages from wiki_pages.json, upserting by slug."""
+    filepath = SEED_DIR / "wiki_pages.json"
+    if not filepath.exists():
+        log.warning("wiki_pages.json not found, skipping wiki seed")
+        return 0
+
+    records = _load_json(filepath)
+    valid_cols = _model_columns(WikiPage)
+    count = 0
+    for rec in records:
+        slug = rec.get("slug")
+        if not slug:
+            continue
+
+        row_data = {k: v for k, v in rec.items() if k in valid_cols}
+
+        existing = session.query(WikiPage).filter_by(slug=slug).first()
+        if existing:
+            for k, v in row_data.items():
+                if k not in ("id", "slug"):
+                    setattr(existing, k, v)
+        else:
+            if "id" not in row_data:
+                row_data["id"] = str(uuid4())
+            session.add(WikiPage(**row_data))
+        count += 1
+
+    log.info("  Upserted %d wiki pages", count)
     return count
 
 
@@ -514,6 +547,11 @@ def seed(database_url: Optional[str] = None) -> Dict[str, int]:
         # Seed combat techniques (from DSA Regel-Wiki)
         log.info("Seeding combat techniques...")
         _seed_combat_techniques(session)
+
+        # Seed wiki pages
+        log.info("Seeding wiki pages...")
+        wiki_count = _seed_wiki_pages(session)
+        results["wiki_pages.json"] = wiki_count
 
         # Create test accounts
         log.info("Creating test accounts...")

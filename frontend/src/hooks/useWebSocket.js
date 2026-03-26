@@ -418,10 +418,41 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
           const purse = Array.isArray(rawInv) ? {} : (rawInv.purse || {})
           const newItems = myDistributions.map(d => ({
             name: d.item_name, quantity: d.quantity || 1, weight: d.weight || 0, equipped: false,
+            ...(d.category ? { category: d.category } : {}),
           }))
           useCharacterStore.getState().setMyCharacter({
             ...char,
             basis_inventory: { items: [...currentItems, ...newItems], purse },
+          })
+        }
+      }
+      // Currency distribution
+      const myMoney = (payload.money_distributions || []).find(d => d.player_id === myId)
+      if (myMoney) {
+        const char = useCharacterStore.getState().myCharacter
+        if (char) {
+          const rawInv = char.basis_inventory || {}
+          const currentItems = Array.isArray(rawInv) ? rawInv : (rawInv.items || [])
+          const purse = Array.isArray(rawInv) ? {} : { ...(rawInv.purse || {}) }
+          for (const key of ['dukaten', 'silber', 'heller', 'kreuzer']) {
+            purse[key] = (purse[key] || 0) + (myMoney[key] || 0)
+          }
+          useCharacterStore.getState().setMyCharacter({
+            ...char,
+            basis_inventory: { items: currentItems, purse },
+          })
+        }
+        const moneyParts = ['dukaten', 'silber', 'heller', 'kreuzer']
+          .filter(k => myMoney[k] > 0)
+          .map(k => `${myMoney[k]} ${k.charAt(0).toUpperCase() + k.slice(1)}`)
+        if (moneyParts.length > 0) {
+          useSessionStore.getState().addNotification({
+            id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+            type: 'loot_received',
+            from: 'Spielleiter',
+            text: `Du erhaeltst: ${moneyParts.join(', ')}`,
+            payload: myMoney,
+            timestamp: msg.timestamp,
           })
         }
       }

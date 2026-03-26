@@ -4,11 +4,14 @@ These tables hold the static game-data templates (creatures, weapons, armor,
 items, spells, liturgies, special abilities, talents, and rules snippets).
 Primary keys are human-readable string IDs so seed data can be referenced
 deterministically.
+
+User-contributed entries set is_custom=True with created_by_user_id/username.
+System-seeded entries have is_custom=False, created_by_user_id=NULL.
 """
 
 from typing import Optional
 
-from sqlalchemy import String, Text, Integer, Float, Boolean
+from sqlalchemy import String, Text, Integer, Float, Boolean, ForeignKey
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -46,6 +49,13 @@ class CreatureTemplate(Base):
     guaranteed_loot: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     challenge_rating: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
     def __repr__(self) -> str:
         return f"<CreatureTemplate {self.id!r}>"
 
@@ -77,6 +87,13 @@ class WeaponTemplate(Base):
     availability: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
     def __repr__(self) -> str:
         return f"<WeaponTemplate {self.id!r}>"
 
@@ -99,6 +116,13 @@ class ArmorTemplate(Base):
     properties: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
     def __repr__(self) -> str:
         return f"<ArmorTemplate {self.id!r}>"
 
@@ -119,6 +143,13 @@ class ShieldTemplate(Base):
     price: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     size: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
 
     def __repr__(self) -> str:
         return f"<ShieldTemplate {self.id!r}>"
@@ -147,6 +178,13 @@ class ItemTemplate(Base):
     charges: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
     def __repr__(self) -> str:
         return f"<ItemTemplate {self.id!r}>"
 
@@ -173,6 +211,13 @@ class SpellTemplate(Base):
     damage: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     condition_inflicted: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     buff_effect: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
 
     def __repr__(self) -> str:
         return f"<SpellTemplate {self.id!r}>"
@@ -201,6 +246,13 @@ class LiturgyTemplate(Base):
     condition_inflicted: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     buff_effect: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
     def __repr__(self) -> str:
         return f"<LiturgyTemplate {self.id!r}>"
 
@@ -226,6 +278,13 @@ class SpecialAbilityTemplate(Base):
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     rules_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
     def __repr__(self) -> str:
         return f"<SpecialAbilityTemplate {self.id!r}>"
 
@@ -244,6 +303,13 @@ class TalentTemplate(Base):
     applications: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     encumbrance: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
 
     def __repr__(self) -> str:
         return f"<TalentTemplate {self.id!r}>"

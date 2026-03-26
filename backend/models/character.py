@@ -65,12 +65,20 @@ class Character(Base):
         comment="Active conditions with levels [{name, level}]",
     )
 
+    locked_session_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("game_sessions.id", ondelete="SET NULL"),
+        nullable=True, index=True,
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
     death_record: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 
     # -- relationships --
+    locked_session: Mapped[Optional["GameSession"]] = relationship(  # noqa: F821
+        "GameSession", foreign_keys=[locked_session_id]
+    )
     owner: Mapped["User"] = relationship(  # noqa: F821
         "User", back_populates="characters"
     )

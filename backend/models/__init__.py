@@ -20,6 +20,8 @@ from models.campaign import (
 # Live session & combat
 from models.session_state import (
     GameSession,
+    SessionPlayer,
+    SessionStatistics,
     CombatState,
     SessionLog,
     APAward,
@@ -31,6 +33,9 @@ from models.inventory import (
     InventoryItem,
     GroupInventory,
 )
+
+# Wiki
+from models.wiki import WikiPage
 
 # Databank / reference templates
 from models.databank import (
@@ -61,6 +66,8 @@ __all__ = [
     "TimelineEvent",
     # session
     "GameSession",
+    "SessionPlayer",
+    "SessionStatistics",
     "CombatState",
     "SessionLog",
     "APAward",
@@ -68,6 +75,8 @@ __all__ = [
     # inventory
     "InventoryItem",
     "GroupInventory",
+    # wiki
+    "WikiPage",
     # databank
     "CreatureTemplate",
     "WeaponTemplate",

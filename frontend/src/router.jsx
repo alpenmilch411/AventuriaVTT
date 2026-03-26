@@ -3,6 +3,7 @@ import LoginPage from './views/auth/LoginPage'
 import RegisterPage from './views/auth/RegisterPage'
 import Dashboard from './views/auth/Dashboard'
 import CharacterDetail from './views/auth/CharacterDetail'
+import CompletionView from './views/auth/CompletionView'
 import GMCockpit from './views/gm/GMCockpit'
 import PlayerDashboard from './views/player/PlayerDashboard'
 
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
   {
     path: '/character/:characterId',
     element: <CharacterDetail />,
+  },
+  {
+    path: '/session/:sessionId/complete',
+    element: <CompletionView />,
   },
   {
     path: '/gm/:sessionCode',

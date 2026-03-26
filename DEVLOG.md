@@ -4,6 +4,54 @@
 
 ---
 
+## Session 10 — Databank UX overhaul: structured forms, inline expand, tooltips (2026-03-26)
+**Type:** Claude Code — multi-part session covering DB entry creation, category fixes, and DB viewer UX
+
+### What changed
+
+**Dashboard & Sessions tab redesign**
+The `Dashboard.jsx` was completely redesigned. Sessions are now managed through a dedicated `SessionsTab` component with separate tables for managed and joined sessions. New `CreateSessionModal` and `JoinSessionModal` components handle those flows. Added `SessionPlayerList`, `JoinedSessionsTable`, `ManagedSessionsTable`, `LeaveSessionDialog` as standalone components. A new `dashboardStore.js` handles all Dashboard state/API calls, `datenbankStore.js` handles the DB tab, and `wikiStore.js` handles the wiki tab.
+
+**Databank entry creation — structured forms**
+`CreateEntryModal.jsx` was rewritten from scratch (was a generic textarea form). Now has category-specific field definitions via `getFieldDefs()`:
+- Weapons: `combat_technique` as select (14 options), `damage` as structured dice input (count+die+flat → "1W6+4"), AT/PA modifiers, `properties` multiselect, conditional `reload_time` when ranged
+- Armor/Shields: RS/BE with number inputs
+- Items: `category` as select (14 options), `effects` via an EffectsBuilder component (22 named effects like heal_lep, cure_poison, kk_bonus, fire_damage), conditional fields for stackable/usable
+- Spells/Liturgies: 3-attribute probe picker, tradition multiselect, asp_cost/kap_cost/casting_time/duration/target now **required**
+- Creatures: `combat_values` as a 10-field grid (LeP/INI/GS/AW/RS/SK/ZK/SchiP/AsP/KaP), `attributes` as 8 sliders, `special_rules` as tags
+- Tränke UX: selecting `trank`/`alchemie`/`gift`/`heilkraut` auto-sets usable/consumable/stackable/charges/use_action_cost
+- Shared exports: `serializeFormData`, `FormField`, `parseDice`, `formatDice`, `EFFECT_DEFS`, `CATEGORY_LABELS`, `getFieldDefs`
+
+**EditEntryModal.jsx** updated to parse stored values back to form-internal types (dice strings → objects, effects → EffectsBuilder state, tags → comma-string, JSON → formatted).
+
+**InventoryPanel category propagation fix**
+`categorize()` in `InventoryPanel.jsx` now checks `item.category` (the DB field) before falling back to name patterns. DB weapons (`category: 'weapons'`) now correctly appear in Kampfausrüstung instead of Besondere Gegenstände.
+
+**LootPanel cleanup**
+Removed the free-text item input (name + qty fields + addCustomItem function). Items can only come from the DB — the free-text path was vestigial.
+
+**Tooltip.jsx — DSA5 glossary component**
+New `src/components/Tooltip.jsx` with:
+- `TOOLTIPS` object: 32 DSA5 abbreviations (AT, PA, FK, TP, SP, LeP, AsP, KaP, RS, BE, GS, INI, AW, SK, ZK, SchiP, MR, QS, FW, AP, KR, RW, SF, all 8 attributes) — each with `full`, `desc`, `formula`, `applied`
+- `Tooltip` component: portal-based, positions above trigger via getBoundingClientRect, escapes scroll containers
+- `TipAbbr`: underlined abbreviation span with hover tooltip
+- `TipIcon`: small "?" circle for form field labels
+
+**DatenbankTab UX — compact entries + inline expand + attribute colors**
+- **Compact list cards**: icons `w-4→w-3.5`, names `text-sm→text-xs`, padding `px-4 py-3→px-3 py-2`, chip text `text-xs→text-[10px]`, list spacing `space-y-2→space-y-1.5`
+- **Inline expand**: entries now have a rotating chevron. Clicking expands in-place — full detail rendered inline. Data is fetched from API on first expand and cached locally per category. Replaced the old full-page detail navigation entirely.
+- **Attribute colors**: creature attribute chips in expanded view now use app-consistent icons+colors — Flame/red=MU, Brain/blue=KL, Eye/violet=IN, Crown/pink=CH, Hand/emerald=FF, Wind/cyan=GE, HeartPulse/orange=KO, Hammer/amber=KK (matches CharacterSheet.jsx/VitalsBar.jsx)
+- **StatChip tooltips**: all stat chip labels (AT, PA, RS, etc.) are now wrapped in `<Tooltip>` — hovering shows full DSA5 explanation from the glossary
+
+**SPEC — new audit tasks added**
+- Exhaustive compatibility audit task covering all 9 DB categories through every app flow (combat, probes, inventory, battle setup)
+- Abbreviation lookup / glossary panel task (data source: `Tooltip.jsx` TOOLTIPS object)
+
+### Files touched
+`frontend/src/views/auth/Dashboard.jsx`, `frontend/src/views/auth/DatenbankTab.jsx` (new), `frontend/src/views/auth/CreateEntryModal.jsx` (new), `frontend/src/views/auth/EditEntryModal.jsx` (new), `frontend/src/views/auth/WikiTab.jsx` (new), `frontend/src/views/auth/SessionsTab.jsx` (new), `frontend/src/views/auth/CreateSessionModal.jsx` (new), `frontend/src/views/auth/JoinSessionModal.jsx` (new), `frontend/src/views/auth/SessionPlayerList.jsx` (new), `frontend/src/views/auth/JoinedSessionsTable.jsx` (new), `frontend/src/views/auth/ManagedSessionsTable.jsx` (new), `frontend/src/views/auth/LeaveSessionDialog.jsx` (new), `frontend/src/components/Tooltip.jsx` (new), `frontend/src/stores/datenbankStore.js` (new), `frontend/src/stores/wikiStore.js` (new), `frontend/src/stores/dashboardStore.js` (new), `frontend/src/views/gm/LootPanel.jsx`, `frontend/src/views/player/InventoryPanel.jsx`, `frontend/src/router.jsx`, `backend/api/databank.py`, `backend/models/databank.py`, `backend/ws/handlers.py`, `SPEC.md`, `DEVLOG.md`
+
+---
+
 ## End-of-day Summary — Sessions 6–9k (2026-03-26)
 **Type:** Claude Code — full day of audit, architecture, battle system, and GM UX
 

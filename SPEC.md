@@ -4180,6 +4180,15 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Fixed seed data — wrong magic abilities removed from warrior characters
 
 **Still open:**
+- [ ] **[AUDIT] Databank entry compatibility check** — Exhaustively verify that user-created DB entries (all 9 categories) flow correctly through every app function that consumes them. Specifically:
+  - **Weapons**: Does adding a custom weapon to a character's inventory correctly populate ArmoryTab? Does `useCombatValues.js` pick it up for AT/PA/FK derivation? Does TurnFlow's weapon selector show it? Does the combat log format TP correctly from the new `dice` field format?
+  - **Armor/Shields**: Does RS/BE from custom armor apply in `useCombatValues.js`? Does ArmoryTab equip/unequip work? Is BE included in condition penalty calculations?
+  - **Items/Tränke**: Does `effects.heal_lep` from EffectsBuilder (now dice object → serialized string) parse correctly in `itemEffects.js`? Does the usable-item flow in InventoryPanel call the right WS handler? Does the item show in the correct InventoryPanel category (`item.category` field propagated)?
+  - **Spells/Liturgies**: Does custom spell appear in ProbeSetupPopup? Is `probe` array used correctly for skill check? Is `asp_cost`/`kap_cost` deducted on cast? Does `tradition` filter (if any) work?
+  - **Talents**: Does custom talent appear in TalentList and ProbeSetupPopup? Is `probe` array wired to the 3-attribute check?
+  - **Special Abilities**: Does `applicable_techniques` filter restrict maneuver availability in TurnFlow? Do AT/PA modifiers from SAs apply in `useCombatValues.js`?
+  - **Creatures**: Does `combat_values` (now structured grid) correctly populate HP/RS/GS/INI in BattleSetup and combat tracking? Do `attacks` JSON entries appear in GM's creature action panel?
+  - **Category sync**: InventoryPanel shows categories like "Besondere Gegenstände" (`besonderes`) that have no direct DB `category` value — only reachable via name patterns or `schatz`. Audit the full mapping between DB `item_templates.category` values and InventoryPanel display categories to ensure no items fall into the wrong bucket or disappear.
 - [ ] Combat victory screen + AP award + loot prompt
 - [ ] Creature databank quick-add to battle setup
 - [ ] Creature stat editing mid-combat
@@ -4192,6 +4201,7 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [ ] Weather system
 - [ ] Ranged reload tracking
 - [ ] Protokoll entry fix ("Singen — 0 bestanden" malformed group probe)
+- [ ] **[UX] Abbreviation lookup / glossary panel** — Add a searchable DSA5 abbreviation reference accessible from anywhere in the app (e.g., a "?" button in the toolbar or a `/glossar` route). Should cover all combat KPIs (AT, PA, FK, AW, INI, TP, SP, RS, BE, GS, SchiP), vitals (LeP, AsP, KaP), attributes (MU/KL/IN/CH/FF/GE/KO/KK), and system terms (KR, QS, FW, SF, AP, RW). The `TOOLTIPS` object in `src/components/Tooltip.jsx` already has all 32 entries with full/desc/formula/applied fields — the panel can be driven from this data source.
 
 **Removed (cut from scope):**
 - ~~GM scene view right panel~~ — scenes/maps removed from scope
@@ -4233,6 +4243,31 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 
 - [x] ~~QuickActions.jsx~~ — entire file deleted (dead code, replaced by individual panels)
 - [x] ~~Soundboard~~ — cut from scope
+
+### Dashboard Tabs (Post-Login) — PLANNED
+
+The dashboard has 4 tabs. **Sessions** is being implemented now. The remaining 3 tabs need brainstorming and implementation:
+
+**Characters Tab (Charaktere)**
+- [ ] Character management outside of sessions (create, edit, delete)
+- [ ] Character import (Optolith JSON, DSA Ultimate JSON formats)
+- [ ] Character export
+- [ ] View character history across completed sessions
+- [ ] Character portrait/avatar management
+- [ ] Level-up / AP spending between sessions
+
+**Database Tab (Datenbank)**
+- [ ] Browse reference data: creatures, weapons, armor, shields, items, spells, liturgies, special abilities, talents
+- [ ] Search and filter
+- [ ] GM can create custom entries (homebrew)
+- [ ] Links to databank-seed data
+
+**Wiki Tab**
+- [ ] Combined DSA5 rules reference and app manual
+- [ ] Explains how the app works (session flow, combat system, dice input, etc.)
+- [ ] Clearly states limitations of the implementation vs full DSA5 rules
+- [ ] Searchable
+- [ ] Could be markdown-based or structured pages
 
 ---
 
