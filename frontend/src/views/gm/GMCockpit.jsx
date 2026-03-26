@@ -296,19 +296,19 @@ export default function GMCockpit() {
                       </div>
                       <span className={clsx('text-[9px] font-mono w-10 text-right', isCritical ? 'text-red-400 font-bold' : 'text-dsa-parchment-dark')}>{lep}/{lepMax}</span>
                     </div>
-                    {/* AsP bar (thinner, only for casters) */}
+                    {/* AsP bar (same size, only for casters) */}
                     {aspMax > 0 && (
                       <div className="flex items-center gap-1.5">
-                        <div className="flex-1 h-1.5 bg-dsa-bg-card rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden">
                           <div className="h-full rounded-full bg-blue-500 transition-all duration-500" style={{ width: `${aspMax > 0 ? Math.max(0, asp / aspMax * 100) : 0}%` }} />
                         </div>
                         <span className="text-[8px] font-mono text-blue-400/70 w-10 text-right">{asp}/{aspMax}</span>
                       </div>
                     )}
-                    {/* KaP bar (thinner, only for blessed) */}
+                    {/* KaP bar (same size, only for blessed) */}
                     {kapMax > 0 && (
                       <div className="flex items-center gap-1.5">
-                        <div className="flex-1 h-1.5 bg-dsa-bg-card rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden">
                           <div className="h-full rounded-full bg-purple-500 transition-all duration-500" style={{ width: `${kapMax > 0 ? Math.max(0, kap / kapMax * 100) : 0}%` }} />
                         </div>
                         <span className="text-[8px] font-mono text-purple-400/70 w-10 text-right">{kap}/{kapMax}</span>
