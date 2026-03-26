@@ -235,8 +235,8 @@ function VitalsBar({
             {/* All 4 energy bars — same style */}
             {[
               { icon: Heart, color: 'green', activeColor: lepPct > 0.5 ? 'bg-green-500' : lepPct > 0.25 ? 'bg-amber-500' : 'bg-red-500', iconCls: lepPct <= 0.25 ? 'text-red-400 animate-pulse' : 'text-green-400', cur: lep, max: lepMax, active: true, label: 'Lebenspunkte', pulse: lepPct <= 0.25 },
-              { icon: Sparkles, color: 'blue', activeColor: 'bg-blue-500', iconCls: 'text-blue-400', cur: asp, max: aspMax, active: showAsp, label: 'Astralpunkte' },
-              { icon: Sun, color: 'purple', activeColor: 'bg-purple-500', iconCls: 'text-purple-400', cur: kap, max: kapMax, active: showKap, label: 'Karmapunkte' },
+              ...(showAsp ? [{ icon: Sparkles, color: 'blue', activeColor: 'bg-blue-500', iconCls: 'text-blue-400', cur: asp, max: aspMax, active: true, label: 'Astralpunkte' }] : []),
+              ...(showKap ? [{ icon: Sun, color: 'purple', activeColor: 'bg-purple-500', iconCls: 'text-purple-400', cur: kap, max: kapMax, active: true, label: 'Karmapunkte' }] : []),
             ].map(({ icon: BarIcon, color, activeColor, iconCls, cur, max, active, label, pulse }) => (
               <TipLabel key={label} label={
                 <div className="flex items-center gap-1">
