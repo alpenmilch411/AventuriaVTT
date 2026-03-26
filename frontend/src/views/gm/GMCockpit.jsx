@@ -241,7 +241,7 @@ export default function GMCockpit() {
       <div className="flex-1 flex overflow-hidden">
 
         {/* ── LEFT: Players + Quick Actions ── */}
-        <div className="w-72 flex-shrink-0 border-r border-dsa-bg-medium bg-dsa-bg overflow-y-auto flex flex-col">
+        <div className="w-72 flex-shrink-0 border-r border-dsa-bg-medium bg-dsa-bg-light overflow-y-auto flex flex-col">
           {/* Player List with multi-select */}
           <div className="p-3 space-y-1">
             <div className="flex items-center justify-between mb-1">
