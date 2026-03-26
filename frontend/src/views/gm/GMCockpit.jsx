@@ -276,7 +276,7 @@ export default function GMCockpit() {
                   className={clsx(
                     'w-full text-left rounded-sm px-2.5 py-2 border transition cursor-pointer',
                     !isOnline && 'opacity-70',
-                    selected ? 'bg-dsa-bg-card border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg-card border-dsa-bg-medium hover:border-dsa-gold/30'
+                    selected ? 'bg-dsa-bg border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg border-dsa-bg-medium hover:border-dsa-gold/30'
                   )}
                 >
                   {/* Row 1: Checkbox + Name + Online */}
@@ -1308,7 +1308,7 @@ function NPCPanel({ creatureList, onSelect }) {
           const isPool = poolIds.has(c.id)
           return (
             <button key={c.id} onClick={() => onSelect(c)}
-              className="w-full text-left px-2 py-1.5 rounded-sm bg-dsa-bg-card border border-dsa-bg-medium hover:border-dsa-gold/30 transition group">
+              className="w-full text-left px-2 py-1.5 rounded-sm bg-dsa-bg border border-dsa-bg-medium hover:border-dsa-gold/30 transition group">
               <div className="flex items-center gap-1.5">
                 <span className="text-sm">{getCreatureIcon(c.name, c.category)}</span>
                 <div className="flex-1 min-w-0">

@@ -12,7 +12,7 @@ export default {
           bg: '#1a1612',
           'bg-light': '#2a2420',
           'bg-medium': '#352f28',
-          'bg-card': '#3a3330',
+          'bg-card': '#211d19',
           gold: '#c9a84c',
           'gold-light': '#e0c76a',
           'gold-dark': '#a88a30',
