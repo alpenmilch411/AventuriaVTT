@@ -364,18 +364,15 @@ export default function GMCockpit() {
                 <button
                   key={a.id}
                   onClick={() => {
-                    const needsSelection = ['condition', 'probe', 'health']
-                    if (needsSelection.includes(a.id) && selectedPlayerIds.size === 0) return
-                    if (selectedPlayerIds.size === 0) { selectAllPlayers() }
+                    // Auto-select all connected players if none selected
+                    if (selectedPlayerIds.size === 0) selectAllPlayers()
                     setQuickAction(quickAction === a.id ? null : a.id)
                   }}
                   className={clsx(
                     'flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-sm transition text-[9px] font-medium',
-                    ['condition', 'probe', 'health'].includes(a.id) && selectedPlayerIds.size === 0
-                      ? 'text-dsa-parchment-dark/20 cursor-not-allowed'
-                      : quickAction === a.id ? `${a.color} bg-dsa-bg-medium` : 'text-dsa-parchment-dark hover:text-dsa-parchment'
+                    quickAction === a.id ? `${a.color} bg-dsa-bg-medium` : 'text-dsa-parchment-dark hover:text-dsa-parchment'
                   )}
-                  title={['condition', 'probe', 'health'].includes(a.id) && selectedPlayerIds.size === 0 ? `${a.label} — zuerst Spieler auswählen` : a.label}
+                  title={a.label}
                 >
                   <a.icon className="w-4 h-4" />
                   {a.label}
