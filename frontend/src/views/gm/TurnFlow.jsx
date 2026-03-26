@@ -145,6 +145,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
   const isPlayerTurn = !combatant.isNPC
   const isTargetPlayer = selectedTarget && !selectedTarget.isNPC
   const autoSentRef = useRef({}) // track which auto-sends we've done
+  const spellCostDeductedRef = useRef(false) // track if spell cost was deducted
   const lastDiceResult = useCombatStore((s) => s.lastDiceResult)
 
   // Clean up stale dice results on unmount
@@ -544,6 +545,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
                   setSpellRolls(['', '', ''])
                   setSpellResult(null)
                   setSelectedTarget(null)
+                  spellCostDeductedRef.current = false
                   addBattleLogEntry(battleId, { type: 'system', text: `${combatant.name} bereitet ${isLit ? 'eine Liturgie' : 'einen Zauber'} vor.` })
                   sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${combatant.name} bereitet ${isLit ? 'eine Liturgie' : 'einen Zauber'} vor.` } })
                   setStep('spell_select')
@@ -1028,6 +1030,593 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
         )}
 
         <button onClick={onComplete} className="text-[9px] text-dsa-parchment-dark hover:text-dsa-parchment mt-2">Abbrechen</button>
+      </div>
+    )
+  }
+
+  // ── Step: SPELL SELECT ──
+  if (step === 'spell_select') {
+    const charData = useCharacterStore.getState().allCharacters.find(c => c.id === combatant.characterId)
+      || useCharacterStore.getState().myCharacter
+    const spellList = isLiturgy ? (charData?.liturgies || {}) : (charData?.spells || {})
+    const templateMap = isLiturgy ? liturgyTemplates : spellTemplates
+    const costLabel = isLiturgy ? 'KaP' : 'AsP'
+    const colorClass = isLiturgy ? 'text-purple-400' : 'text-blue-400'
+    const bgClass = isLiturgy ? 'bg-purple-950/50' : 'bg-blue-950/50'
+    const IconComp = isLiturgy ? Sun : Sparkles
+    const currentEnergy = isLiturgy
+      ? (combatant.kap ?? charData?.current_vitals?.kap ?? 0)
+      : (combatant.asp ?? charData?.current_vitals?.asp ?? 0)
+    const entries = Object.entries(spellList)
+
+    const ATTR_NAMES_SHORT = {
+      MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
+      FF: 'Fingerfert.', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Koerperkraft',
+    }
+    const ATTR_TEXT_COLORS_LOCAL = {
+      MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
+      FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
+    }
+
+    return (
+      <div className="space-y-2">
+        <StepHeader title={isLiturgy ? 'Liturgie wählen' : 'Zauber wählen'} step="1/4" onBack={() => setStep('action')} />
+        <p className="text-[9px] text-dsa-parchment-dark">
+          Welch{isLiturgy ? 'e Liturgie' : 'en Zauber'} wirkt {combatant.name}?
+          {currentEnergy > 0 && <span className={colorClass}> ({currentEnergy} {costLabel} verfügbar)</span>}
+        </p>
+        {!spellTemplatesLoaded && entries.length > 0 && (
+          <div className="text-[10px] text-dsa-parchment-dark animate-pulse">Lade Datenbank...</div>
+        )}
+        {entries.length === 0 ? (
+          <div className="text-center py-6">
+            <IconComp className={`w-6 h-6 ${colorClass} mx-auto mb-2 opacity-30`} />
+            <p className="text-xs text-dsa-parchment-dark">
+              {isLiturgy ? 'Keine Liturgien bekannt' : 'Keine Zauber bekannt'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-1 max-h-[50vh] overflow-y-auto">
+            {entries.sort(([,a], [,b]) => b - a).map(([name, fw]) => {
+              const tmpl = templateMap[name] || null
+              const cost = tmpl?.cost || 0
+              const canAfford = cost <= 0 || currentEnergy >= cost
+              const probe = tmpl?.probe || []
+              const attrs = combatant.attributes || charData?.attributes || {}
+
+              return (
+                <button
+                  key={name}
+                  onClick={() => {
+                    if (!canAfford) return
+                    setSelectedSpell({ name, fw, probe, cost, template: tmpl })
+                    setStep('spell_target')
+                  }}
+                  disabled={!canAfford}
+                  className={clsx(
+                    'w-full text-left px-3 py-2 rounded-sm border transition-colors',
+                    canAfford
+                      ? `bg-dsa-bg border-dsa-bg-medium hover:border-${isLiturgy ? 'purple' : 'blue'}-800/40`
+                      : 'bg-dsa-bg-medium/50 border-dsa-bg-medium opacity-50 cursor-not-allowed'
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <IconComp className={`w-3.5 h-3.5 ${colorClass} flex-shrink-0`} />
+                        <span className="text-xs text-dsa-parchment font-medium uppercase">{name.replace(/_/g, ' ')}</span>
+                        {!canAfford && <span className="text-[8px] text-red-400">Nicht genug {costLabel}</span>}
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5 ml-5">
+                        {probe.length > 0 && (
+                          <span className="text-[9px] text-dsa-parchment-dark">
+                            {probe.map((a, i) => (
+                              <span key={i}>
+                                {i > 0 && '/'}
+                                <span className={ATTR_TEXT_COLORS_LOCAL[a]}>{a}</span>
+                                <span className="text-dsa-parchment-dark/60 font-mono">({attrs[a] || '?'})</span>
+                              </span>
+                            ))}
+                          </span>
+                        )}
+                        {tmpl && (
+                          <span className="text-[9px] text-dsa-parchment-dark">
+                            · {cost} {costLabel} · {tmpl.time}
+                            {tmpl.range && tmpl.range !== '?' && <span> · {tmpl.range}</span>}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-center flex-shrink-0 ml-2">
+                      <div className={`text-sm font-bold font-mono ${colorClass}`}>{fw}</div>
+                      <div className="text-[8px] text-dsa-parchment-dark">FW</div>
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        )}
+        <button onClick={onComplete} className="text-[9px] text-dsa-parchment-dark hover:text-dsa-parchment mt-2">Abbrechen</button>
+      </div>
+    )
+  }
+
+  // ── Step: SPELL TARGET ──
+  if (step === 'spell_target') {
+    const tmpl = selectedSpell?.template
+    const selfTarget = tmpl?.target && /selbst|self/i.test(tmpl.target)
+    const zoneTarget = tmpl?.target && /zone|fläche|area/i.test(tmpl.target)
+    const colorClass = isLiturgy ? 'text-purple-400' : 'text-blue-400'
+    const allTargets = allCombatants.filter(c => c.id !== combatant.id && (c.lep ?? c.lepMax ?? 0) > 0)
+
+    // Auto-skip target for self/zone spells
+    if (selfTarget || zoneTarget) {
+      // Render a skip UI
+      return (
+        <div className="space-y-2">
+          <StepHeader title="Ziel" step="2/4" onBack={() => { setSelectedSpell(null); setStep('spell_select') }} />
+          <div className="bg-dsa-bg rounded border border-dsa-bg-medium p-3 text-center">
+            <p className="text-xs text-dsa-parchment mb-2">
+              {selfTarget
+                ? `"${selectedSpell.name.replace(/_/g, ' ')}" wirkt auf den Zaubernden selbst.`
+                : `"${selectedSpell.name.replace(/_/g, ' ')}" wirkt als Flächenzauber.`}
+            </p>
+            <button
+              onClick={() => setStep('spell_modifier')}
+              className="btn-primary text-xs"
+            >
+              Weiter zum Modifikator
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-2">
+        <StepHeader title="Ziel wählen" step="2/4" onBack={() => { setSelectedSpell(null); setStep('spell_select') }} />
+        <p className="text-[9px] text-dsa-parchment-dark">
+          Auf wen wirkt {combatant.name} "{selectedSpell?.name?.replace(/_/g, ' ')}"?
+          {isLiturgy ? ' Liturgien' : ' Zauber'} können auf Verbündete und Feinde wirken.
+        </p>
+        <button
+          onClick={() => { setSelectedTarget(null); setStep('spell_modifier') }}
+          className="w-full text-left px-3 py-2 bg-dsa-bg rounded-sm border border-dsa-bg-medium hover:border-dsa-gold/20 transition-colors"
+        >
+          <span className="text-xs text-dsa-parchment font-medium">Ohne Ziel / Selbst</span>
+          <span className="text-[9px] text-dsa-parchment-dark ml-2">Zauber ohne spezifisches Ziel</span>
+        </button>
+        <div className="space-y-1 max-h-[40vh] overflow-y-auto">
+          {allTargets.map(target => (
+            <button
+              key={target.id}
+              onClick={() => { setSelectedTarget(target); setStep('spell_modifier') }}
+              className="w-full flex items-center gap-2 px-2 py-2 bg-dsa-bg rounded-sm border border-dsa-bg-medium hover:border-dsa-gold/20 transition-colors text-left"
+            >
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${target.isNPC ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
+                {(target.name || '?')[0]}
+              </span>
+              <div className="flex-1">
+                <div className="text-xs text-dsa-parchment">{target.name}</div>
+                <div className="text-[8px] text-dsa-parchment-dark">
+                  LeP {target.lep ?? target.lepMax ?? 0}/{target.lepMax}
+                  {target.isNPC ? ' · NSC' : ' · Spieler'}
+                </div>
+              </div>
+            </button>
+          ))}
+          {allTargets.length === 0 && <p className="text-[10px] text-dsa-parchment-dark text-center">Keine Ziele verfügbar.</p>}
+        </div>
+      </div>
+    )
+  }
+
+  // ── Step: SPELL MODIFIER ──
+  if (step === 'spell_modifier') {
+    const charData = useCharacterStore.getState().allCharacters.find(c => c.id === combatant.characterId)
+      || useCharacterStore.getState().myCharacter
+    const attrs = combatant.attributes || charData?.attributes || {}
+    const probeAttrs = selectedSpell?.probe || []
+    const colorClass = isLiturgy ? 'text-purple-400' : 'text-blue-400'
+    const borderClass = isLiturgy ? 'border-purple-800/30' : 'border-blue-800/30'
+    const IconComp = isLiturgy ? Sun : Sparkles
+    const costLabel = isLiturgy ? 'KaP' : 'AsP'
+
+    const ATTR_TEXT_COLORS_LOCAL = {
+      MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
+      FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
+    }
+    const ATTR_NAMES_LOCAL = {
+      MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
+      FF: 'Fingerfert.', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Koerperkraft',
+    }
+
+    return (
+      <div className="space-y-3">
+        <StepHeader title="Modifikator festlegen" step="3/4" onBack={() => setStep('spell_target')} />
+
+        {/* Spell summary */}
+        <div className={`bg-dsa-bg rounded border ${borderClass} p-3`}>
+          <div className="flex items-center gap-2 mb-2">
+            <IconComp className={`w-4 h-4 ${colorClass}`} />
+            <span className={`text-sm font-bold uppercase ${colorClass}`}>{selectedSpell?.name?.replace(/_/g, ' ')}</span>
+            <span className="text-[9px] text-dsa-parchment-dark">FW {selectedSpell?.fw}</span>
+          </div>
+          {selectedTarget && (
+            <p className="text-[10px] text-dsa-parchment-dark mb-1">Ziel: <span className="text-dsa-parchment">{selectedTarget.name}</span></p>
+          )}
+          <p className="text-[10px] text-dsa-parchment-dark">Kosten: <span className={colorClass}>{selectedSpell?.cost || '?'} {costLabel}</span></p>
+        </div>
+
+        {/* Probe attributes with modified values */}
+        {probeAttrs.length > 0 && (
+          <div className="flex justify-center gap-4">
+            {probeAttrs.map((attr, i) => {
+              const baseVal = attrs[attr] || 10
+              const modifiedVal = baseVal + spellModifier
+              return (
+                <div key={i} className="text-center">
+                  <div className={`text-xs font-medium ${ATTR_TEXT_COLORS_LOCAL[attr]}`}>{ATTR_NAMES_LOCAL[attr]}</div>
+                  <div className="text-[9px] text-dsa-parchment-dark">{attr}</div>
+                  <div className="text-lg font-mono font-bold text-dsa-gold">{modifiedVal}</div>
+                  {spellModifier !== 0 && (
+                    <div className="text-[8px] text-dsa-parchment-dark">
+                      ({baseVal} {spellModifier > 0 ? '+' : ''}{spellModifier})
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Modifier input */}
+        <div className="bg-dsa-bg rounded border border-dsa-bg-medium p-3 text-center">
+          <label className="text-[10px] text-dsa-parchment-dark block mb-1">
+            Erleichterung/Erschwernis (positiv = leichter, negativ = schwerer)
+          </label>
+          <input
+            type="number"
+            value={spellModifier}
+            onChange={(e) => setSpellModifier(parseInt(e.target.value) || 0)}
+            className="w-20 h-10 bg-dsa-bg-light border-2 border-dsa-gold/30 rounded text-center text-lg font-mono text-dsa-gold mx-auto focus:outline-none focus:border-dsa-gold focus:ring-2 focus:ring-dsa-gold/20"
+            autoFocus
+          />
+          <div className="flex justify-center gap-2 mt-2">
+            {[-6, -3, -1, 0, 1, 3, 6].map(v => (
+              <button
+                key={v}
+                onClick={() => setSpellModifier(v)}
+                className={clsx(
+                  'px-2 py-1 text-[9px] font-mono rounded-sm border transition',
+                  spellModifier === v
+                    ? 'bg-dsa-gold/20 border-dsa-gold/30 text-dsa-gold'
+                    : 'bg-dsa-bg border-dsa-bg-medium text-dsa-parchment-dark hover:text-dsa-parchment'
+                )}
+              >
+                {v > 0 ? `+${v}` : v}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            setSpellRolls(['', '', ''])
+            setSpellResult(null)
+            setStep('spell_roll')
+          }}
+          disabled={probeAttrs.length === 0}
+          className="btn-primary text-xs w-full disabled:opacity-30"
+        >
+          Würfeln
+        </button>
+      </div>
+    )
+  }
+
+  // ── Step: SPELL ROLL ──
+  if (step === 'spell_roll') {
+    const charData = useCharacterStore.getState().allCharacters.find(c => c.id === combatant.characterId)
+      || useCharacterStore.getState().myCharacter
+    const attrs = combatant.attributes || charData?.attributes || {}
+    const probeAttrs = selectedSpell?.probe || []
+    const targets = probeAttrs.map(a => (attrs[a] || 10) + spellModifier)
+    const colorClass = isLiturgy ? 'text-purple-400' : 'text-blue-400'
+    const IconComp = isLiturgy ? Sun : Sparkles
+
+    const ATTR_TEXT_COLORS_LOCAL = {
+      MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
+      FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
+    }
+    const ATTR_NAMES_LOCAL = {
+      MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
+      FF: 'Fingerfert.', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Koerperkraft',
+    }
+
+    const allFilled = spellRolls.length === 3 && spellRolls.every(d => d && parseInt(d) >= 1 && parseInt(d) <= 20)
+
+    // Live calculation
+    let fpUsed = 0
+    let details = []
+    if (allFilled) {
+      const rolls = spellRolls.map(Number)
+      details = rolls.map((roll, i) => {
+        const target = targets[i]
+        const over = Math.max(0, roll - target)
+        fpUsed += over
+        return { attr: probeAttrs[i], target, roll, over, ok: roll <= target }
+      })
+    }
+    const fpRemaining = (selectedSpell?.fw || 0) - fpUsed
+    const success = allFilled && fpRemaining >= 0
+    const qs = success ? Math.max(1, Math.ceil(Math.max(0, fpRemaining) / 3)) : 0
+
+    // Check criticals
+    const rollsNum = allFilled ? spellRolls.map(Number) : []
+    const ones = rollsNum.filter(r => r === 1).length
+    const twenties = rollsNum.filter(r => r === 20).length
+    const critical = ones >= 2
+    const patzer = twenties >= 2
+
+    // For player turns, send dice request
+    if (isPlayerTurn && !autoSentRef.current.spellProbe) {
+      autoSentRef.current.spellProbe = true
+      sendMessage?.({
+        type: 'dice_request',
+        payload: {
+          target_user_id: combatant.userId || combatant.characterId || combatant.id,
+          type: 'spell_probe',
+          label: `${isLiturgy ? 'Liturgie' : 'Zauber'} "${selectedSpell?.name?.replace(/_/g, ' ')}" — Würfle 3W20`,
+          dice: '3W20',
+          probe: probeAttrs,
+          fw: selectedSpell?.fw,
+          difficulty: spellModifier,
+        },
+      })
+    }
+
+    // Waiting for player
+    if (isPlayerTurn && !spellResult) {
+      return (
+        <div className="space-y-3">
+          <StepHeader title={`${selectedSpell?.name?.replace(/_/g, ' ')} — Probe`} step="4/4" onBack={() => setStep('spell_modifier')} />
+          <div className="text-center py-4">
+            <IconComp className={`w-8 h-8 ${colorClass} mx-auto mb-2`} />
+            <p className="text-sm text-dsa-parchment mb-1">{combatant.name} würfelt die {isLiturgy ? 'Liturgie' : 'Zauber'}-Probe</p>
+            <p className="text-[9px] text-dsa-parchment-dark mb-2">
+              Probe: {probeAttrs.join('/')} · FW {selectedSpell?.fw}{spellModifier !== 0 ? ` · Mod ${spellModifier > 0 ? '+' : ''}${spellModifier}` : ''}
+            </p>
+            <div className={`px-6 py-3 ${isLiturgy ? 'bg-purple-900/20 text-purple-400 border-purple-800/20' : 'bg-blue-900/20 text-blue-400 border-blue-800/20'} border rounded text-sm flex items-center justify-center gap-2 animate-pulse`}>
+              Warte auf Würfelwurf des Spielers...
+            </div>
+            <button
+              onClick={() => {
+                // Fall back to GM entering rolls manually
+                autoSentRef.current.spellProbe = false
+              }}
+              className="mt-3 text-[9px] text-dsa-parchment-dark hover:text-dsa-parchment transition"
+            >
+              Spieler antwortet nicht — SL würfelt selbst
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    // NPC turn (or GM entering manually)
+    return (
+      <div className="space-y-3">
+        <StepHeader title={`${selectedSpell?.name?.replace(/_/g, ' ')} — Probe`} step="4/4" onBack={() => setStep('spell_modifier')} />
+        <div className="bg-dsa-bg rounded border border-dsa-bg-medium p-3">
+          <p className="text-[9px] text-dsa-parchment-dark mb-1 text-center">
+            {isPlayerTurn ? `${combatant.name} (Spieler)` : `${combatant.name} (SL würfelt)`}
+          </p>
+          <p className="text-xs text-dsa-parchment mb-1 text-center">
+            Würfle <span className={`font-bold ${colorClass}`}>3W20</span> — einen pro Eigenschaft
+          </p>
+          <p className="text-[9px] text-dsa-parchment-dark mb-3 text-center">
+            FW <span className={`font-mono font-bold ${colorClass}`}>{selectedSpell?.fw}</span>
+            {spellModifier !== 0 && <span className={spellModifier > 0 ? ' text-green-400' : ' text-red-400'}> (Mod {spellModifier > 0 ? '+' : ''}{spellModifier})</span>}
+          </p>
+
+          {/* 3 dice inputs */}
+          <div className="flex justify-center gap-4">
+            {probeAttrs.map((attr, i) => {
+              const baseVal = attrs[attr] || 10
+              const targetVal = targets[i]
+              const roll = spellRolls[i] ? parseInt(spellRolls[i], 10) : null
+              const isOk = roll !== null && roll <= targetVal
+              const deficit = roll !== null && roll > targetVal ? roll - targetVal : 0
+
+              return (
+                <div key={i} className="text-center space-y-1">
+                  <div className={`text-xs font-medium ${ATTR_TEXT_COLORS_LOCAL[attr]}`}>{ATTR_NAMES_LOCAL[attr]}</div>
+                  <div className="text-[9px] text-dsa-parchment-dark">
+                    Ziel: <span className="font-mono text-dsa-gold">{targetVal}</span>
+                  </div>
+                  <input
+                    type="number" min="1" max="20"
+                    value={spellRolls[i]}
+                    onChange={(e) => { const n = [...spellRolls]; n[i] = e.target.value; setSpellRolls(n) }}
+                    className={clsx(
+                      'w-16 h-16 rounded text-center text-3xl font-mono focus:outline-none focus:ring-4 transition-all',
+                      roll === null ? 'bg-dsa-bg-light border-2 border-dsa-bg-medium text-dsa-parchment focus:border-dsa-gold focus:ring-dsa-gold/20' :
+                      isOk ? 'bg-green-950/30 border-2 border-green-700 text-green-400 focus:ring-green-400/20' :
+                      'bg-red-950/30 border-2 border-red-700 text-red-400 focus:ring-red-400/20'
+                    )}
+                    placeholder="—"
+                    autoFocus={i === 0}
+                  />
+                  {roll !== null && (
+                    <div className={clsx('text-xs font-bold', isOk ? 'text-green-400' : 'text-red-400')}>
+                      {isOk ? 'Geschafft' : `−${deficit} FP`}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Live result */}
+          {allFilled && (
+            <div className={clsx(
+              'text-center py-3 rounded mt-3',
+              critical ? 'bg-green-900/30 border border-green-700/40' :
+              patzer ? 'bg-red-900/30 border border-red-700/40' :
+              success ? 'bg-green-900/20 border border-green-800/30' : 'bg-red-900/20 border border-red-800/30'
+            )}>
+              <p className={clsx('text-sm font-bold', critical ? 'text-green-400' : patzer ? 'text-red-400' : success ? 'text-green-400' : 'text-red-400')}>
+                {critical ? 'Kritischer Erfolg!' : patzer ? 'Patzer!' : success ? `Gelungen! QS ${qs}` : 'Misslungen!'}
+              </p>
+              <p className="text-xs text-dsa-parchment-dark mt-1">
+                {fpUsed > 0 ? `${fpUsed} von ${selectedSpell?.fw} FP verbraucht` : 'Keine FP verbraucht'}
+                {success && fpRemaining > 0 ? ` — ${fpRemaining} übrig` : ''}
+                {!success ? ` — ${Math.abs(fpRemaining)} zu wenig` : ''}
+              </p>
+              {critical && <p className="text-[9px] text-green-400/60 mt-1">Zwei oder mehr Einsen — der Effekt ist besonders stark!</p>}
+              {patzer && <p className="text-[9px] text-red-400/60 mt-1">Zwei oder mehr Zwanziger — die Magie geht fehl!</p>}
+            </div>
+          )}
+
+          <button
+            onClick={() => {
+              if (!allFilled) return
+              const rolls = spellRolls.map(Number)
+              setSpellResult({ success, qs, fpRemaining, rolls, details, critical, patzer })
+              const resultText = critical ? 'KRITISCHER ERFOLG!' : patzer ? 'PATZER!' : success ? `Gelungen! QS ${qs}` : 'Misslungen!'
+              addBattleLogEntry(battleId, { type: success ? 'system' : 'miss', text: `${combatant.name} ${isLiturgy ? 'Liturgie' : 'Zauber'} "${selectedSpell.name.replace(/_/g, ' ')}": [${rolls.join(', ')}] vs ${probeAttrs.join('/')} (${targets.join('/')}) — ${resultText} (FP: ${fpRemaining}/${selectedSpell.fw})` })
+              sendMessage?.({ type: 'combat_log_entry', payload: { type: success ? 'system' : 'miss', text: `${combatant.name} ${isLiturgy ? 'Liturgie' : 'Zauber'} "${selectedSpell.name.replace(/_/g, ' ')}": ${resultText}` } })
+              setStep('spell_result')
+            }}
+            disabled={!allFilled}
+            className="btn-primary text-xs w-full mt-3 disabled:opacity-30"
+          >
+            <Check className="w-3.5 h-3.5 inline mr-1" /> Ergebnis bestätigen
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Step: SPELL RESULT ──
+  if (step === 'spell_result') {
+    const colorClass = isLiturgy ? 'text-purple-400' : 'text-blue-400'
+    const costLabel = isLiturgy ? 'KaP' : 'AsP'
+    const IconComp = isLiturgy ? Sun : Sparkles
+    const result = spellResult
+    const tmpl = selectedSpell?.template
+
+    // Check if spell does damage
+    const hasDamage = tmpl?.damage || tmpl?.effect_per_qs?.damage
+
+    // Deduct cost on first render of success result
+    if (result?.success && !spellCostDeductedRef.current) {
+      spellCostDeductedRef.current = true
+      const cost = parseInt(selectedSpell?.cost) || 0
+      if (cost > 0) {
+        const costField = isLiturgy ? 'kap_delta' : 'asp_delta'
+        sendMessage?.({ type: 'vitals_update', payload: {
+          character_id: combatant.characterId || combatant.id,
+          vitals: { [costField]: -cost }
+        }})
+        addBattleLogEntry(battleId, { type: 'system', text: `${combatant.name}: -${cost} ${costLabel}` })
+      }
+    }
+
+    return (
+      <div className="space-y-3">
+        <StepHeader title={`${selectedSpell?.name?.replace(/_/g, ' ')} — Ergebnis`} step="Ergebnis" />
+
+        {/* Result banner */}
+        <div className={clsx(
+          'rounded-sm border p-4 text-center',
+          result?.critical ? 'bg-green-900/30 border-green-700/40' :
+          result?.patzer ? 'bg-red-900/30 border-red-700/40' :
+          result?.success ? 'bg-green-900/20 border-green-800/30' : 'bg-red-900/20 border-red-800/30'
+        )}>
+          <IconComp className={clsx('w-8 h-8 mx-auto mb-2', result?.success ? colorClass : 'text-red-400')} />
+          <p className={clsx('text-xl font-bold', result?.critical ? 'text-green-400' : result?.patzer ? 'text-red-400' : result?.success ? 'text-green-400' : 'text-red-400')}>
+            {result?.critical ? 'Kritischer Erfolg!' : result?.patzer ? 'Patzer!' : result?.success ? `Gelungen! QS ${result.qs}` : 'Misslungen!'}
+          </p>
+          <p className="text-sm text-dsa-parchment mt-1">{selectedSpell?.name?.replace(/_/g, ' ')}</p>
+          {selectedTarget && <p className="text-[10px] text-dsa-parchment-dark">Ziel: {selectedTarget.name}</p>}
+        </div>
+
+        {/* Roll details */}
+        {result?.details && (
+          <div className="bg-dsa-bg-card/50 rounded border border-dsa-bg-medium p-2">
+            <div className="flex justify-center gap-3">
+              {result.details.map((d, i) => (
+                <div key={i} className="text-center">
+                  <div className={`text-[10px] ${d.ok ? 'text-green-400' : 'text-red-400'}`}>{d.attr}</div>
+                  <div className="text-xs text-dsa-parchment-dark">Ziel {d.target}</div>
+                  <div className={clsx('text-lg font-mono font-bold', d.ok ? 'text-green-400' : 'text-red-400')}>{d.roll}</div>
+                  {d.over > 0 && <div className="text-[9px] text-red-400">−{d.over} FP</div>}
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-1 text-[9px] text-dsa-parchment-dark">
+              FP: {result.fpRemaining}/{selectedSpell?.fw}
+              {result.success && <span className={` ml-1 ${colorClass}`}>· QS {result.qs}</span>}
+            </div>
+          </div>
+        )}
+
+        {/* Cost deduction info */}
+        {result?.success && (selectedSpell?.cost > 0) && (
+          <div className={clsx('rounded-sm border px-3 py-2 text-xs', isLiturgy ? 'bg-purple-900/10 border-purple-800/20 text-purple-300' : 'bg-blue-900/10 border-blue-800/20 text-blue-300')}>
+            −{selectedSpell.cost} {costLabel} abgezogen
+          </div>
+        )}
+
+        {/* Spell description / effect note */}
+        {tmpl?.desc && (
+          <div className="bg-dsa-bg-card/50 rounded border border-dsa-bg-medium p-2">
+            <p className="text-[10px] text-dsa-parchment/70 leading-relaxed">{tmpl.desc}</p>
+          </div>
+        )}
+
+        {/* Damage hint */}
+        {result?.success && hasDamage && (
+          <div className="bg-red-900/10 border border-red-800/20 rounded-sm px-3 py-2">
+            <p className="text-xs text-red-400">
+              Schaden: <span className="font-mono font-bold">{tmpl.damage || tmpl.effect_per_qs?.damage}</span>
+              {result.qs && tmpl.effect_per_qs?.damage && <span className="text-dsa-parchment-dark"> (QS {result.qs} beachten)</span>}
+            </p>
+            <p className="text-[9px] text-dsa-parchment-dark mt-0.5">Schaden manuell anwenden oder Zustandseffekte im Zustands-Tab eintragen.</p>
+          </div>
+        )}
+
+        {/* Patzer warning */}
+        {result?.patzer && (
+          <div className="bg-red-900/20 border border-red-800/30 rounded-sm px-3 py-2">
+            <p className="text-xs text-red-400 font-bold">Magischer Patzer!</p>
+            <p className="text-[9px] text-dsa-parchment-dark">
+              Der SL bestimmt den Patzer-Effekt. Mögliche Folgen: unkontrollierter Effekt, doppelte AsP-Kosten,
+              Zustandsstufen, oder schlimmeres.
+            </p>
+          </div>
+        )}
+
+        {/* Critical success note */}
+        {result?.critical && (
+          <div className="bg-green-900/20 border border-green-800/30 rounded-sm px-3 py-2">
+            <p className="text-xs text-green-400 font-bold">Kritischer Erfolg!</p>
+            <p className="text-[9px] text-dsa-parchment-dark">
+              Der Zauber gelingt besonders gut. Die {costLabel}-Kosten halbieren sich (auf Minimum 1).
+              Der SL kann zusätzliche positive Effekte bestimmen.
+            </p>
+          </div>
+        )}
+
+        <button
+          onClick={onComplete}
+          className="btn-primary text-xs w-full"
+        >
+          Nächster Zug
+        </button>
       </div>
     )
   }
