@@ -4,6 +4,21 @@
 
 ---
 
+## Summary — Sessions 6–9d (2026-03-26)
+**Type:** Claude Code — full audit, cleanup, architecture, and battle polish in one day
+
+This was a major quality push. The codebase went from ~31K lines with 25 known bugs and ~40% dead code to ~17K clean lines with production-grade sync, correct DSA5 rules, and a phone-friendly battle system. Here's what happened across all sub-sessions:
+
+- **25 bugs fixed** (DSA5 rules, security, error handling, state management)
+- **~14,000 lines of dead code removed** (maps, AI, importers, unused engine/views/components, konva)
+- **Architecture hardened** (session snapshots, React.memo, character locks, state versioning, dead letter queue, message dedup, lazy-load)
+- **Battle system polished** (creature HP hidden, phone layout, correct maneuver values, ranged distance, SchiP validation, Verwirrt FK penalty)
+- **Cut features cleaned out** (soundboard, spotlight, table view mode, session resume)
+- **GMCockpit refactored** into 3 sub-hooks (useGMSession, useGMPopups, useGMDatabank)
+- **17 items remain** for v1 — biggest gaps are spell casting in combat and victory/AP screen
+
+---
+
 ## Session 9d — Remove cut features: soundboard, spotlight, table view mode
 **Date:** 2026-03-26
 

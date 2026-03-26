@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.5.0
+**Version:** 1.6.0
 **Last updated:** 2026-03-26
-**Status:** Core features complete — audited, optimized, restart-resilient, deploying to Render
+**Status:** Audited, optimized, battle system polished — 17 items remaining for v1
 
 ---
 
@@ -88,16 +88,25 @@ Three pillars:
   - **Reactive store subscriptions** — components use `useStore((s) => s.field)` selectors, never `getState()` in render paths
 - **What works end-to-end**:
   - Full combat workflow: initiative → action → target → maneuver → attack → defense → damage → conditions → off-hand (dual-wield)
+  - Ranged attacks with distance brackets (nah/mittel/weit/extrem) applying correct FK penalties
+  - Creature HP hidden from players — only names and turn order visible, matching DSA5 rules
+  - SchiP validation for multiple reactions — additional defenses blocked when no fate points remain
   - Item usage: potions (heal/restore/buff), poisons (apply to weapon → trigger on hit), herbs (Heilkunde probe), combat throwables (AoE damage/stun/smoke), condition items (drinks → Berauscht)
   - GM quick actions: Probe (talent probes with consequences), Leben (vitals popup), Zustand (conditions popup), all with live preview and confirmation
   - Probe workflow: GM setup → player rolls 3W20 → consequence dice → results with auto-apply damage/heal
   - Real-time sync: vitals, conditions, inventory, buffs, combat state, session log — all live without refresh
-  - Dynamic value computation: all AT/PA/FK/AW/INI/GS/RS/BE derived from KTW + weapon mods - BE - condition modifiers
-  - SF-gated combat maneuvers: 13 maneuvers (5 basis + 8 SF-gated) with full modifier chains
+  - Session state snapshots — survives server restarts, auto-restored on reconnect
+  - State versioning + gap detection — clients auto-request full sync when messages are missed
+  - Dead letter queue — messages queued while disconnected, replayed on reconnect
+  - Message deduplication — prevents double-processing on flaky connections
+  - Dynamic value computation: all AT/PA/FK/AW/INI/GS/RS/BE derived from KTW + weapon mods - BE - condition modifiers (memoized)
+  - SF-gated combat maneuvers: 13 maneuvers (5 basis + 8 SF-gated) with correct DSA5 modifier values
   - Trade/transfer system between players with GM approval
-  - Rich tooltips showing full value derivation for every stat
   - Session Protokoll: Bloomberg-terminal style log with type labels, deduplication, auto-scroll + "Aktuell" jump button
-  - Quest tracking with per-player objectives and session end AP distribution
+  - Phone-responsive combat layout (stacks vertically on small screens)
+  - 12 key components wrapped in React.memo for optimized rendering
+  - Quest tracking with per-player objectives
+  - Combat condition rules: Handlungsunfähig at level IV or sum ≥ 8, magical/physical stacking, Berauscht KL/IN penalties
 
 ---
 
