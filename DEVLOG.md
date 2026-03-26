@@ -4,6 +4,23 @@
 
 ---
 
+## Session 9h — Rich interactive player detail view matching player-side depth
+**Date:** 2026-03-26
+
+### What changed
+- **Consistent icons and colors across GM and player views** — fixed 5 mismatches where combat values used different icons or colors than the player view. Ausweichen now uses Wind (not Footprints), Fernkampf uses emerald green (not plain green), Initiative uses Timer (not Zap), Geschwindigkeit uses Footprints (not Gauge), Rüstungsschutz uses ShieldAlert in gold (not Shield in grey).
+- **Clicking an attribute shows how it's calculated** — each of the 8 attributes now shows gross condition modifiers in the corners (+X green, -X red). Clicking opens a tooltip with the full German description, base value, each condition's effect on it, the effective value, and what other stats it influences (e.g., Konstitution shows Wundschwelle formula, Körperkraft shows Schadensbonus).
+- **Clicking a combat value shows its derivation** — AT, PA, AW, FK, INI, GS, RS, BE all show click-to-expand tooltips with line-by-line breakdown: Kampftechnikwert + weapon modifier - Behinderung - conditions + Sonderfertigkeit bonuses = final value.
+- **Conditions show full DSA5 detail** — each condition card shows the emoji icon, level in Roman numerals, category color (red for physical, violet for mental, amber for combat), current level description, summary, and active stat modifier badges. Clicking expands to show all level descriptions, source, and removal instructions.
+- **Sonderfertigkeiten grouped with explanations** — organized by category (Kampf, Magie, Karma, Allgemein). Each shows a short description. Clicking opens a detail popup with stat modifiers, rules text, prerequisites, applicable combat techniques, and combinability — data loaded from the databank API on first use.
+- **Advantages and disadvantages** with green/red indicators and explanation text.
+- Fixed the infinite re-render loop caused by the combat store subscriber creating new empty array references.
+
+### Files touched
+`frontend/src/views/gm/PlayerOverview.jsx`, `frontend/src/stores/combatStore.js`
+
+---
+
 ## Session 9g — Redesigned player cards and detail view for GMs
 **Date:** 2026-03-26
 
