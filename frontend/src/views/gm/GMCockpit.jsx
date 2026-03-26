@@ -4,7 +4,8 @@ import {
   Wifi, WifiOff, Users, Swords, Dice5, Heart, Shield,
   Bell, Pause, Play, X, Send, Plus, Minus, AlertTriangle,
   Package, ChevronDown, ChevronUp, Search, Trash2, Check, Skull, Star,
-  Minimize2, Maximize2, MessageSquare, Gift, Moon, StickyNote, Timer, Coins, Scroll
+  Minimize2, Maximize2, MessageSquare, Gift, Moon, StickyNote, Timer, Coins, Scroll,
+  Sparkles, Sun
 } from 'lucide-react'
 import useWebSocket from '../../hooks/useWebSocket'
 import { getConditions } from '../../utils/safeData'
@@ -267,6 +268,7 @@ export default function GMCockpit() {
               const isOnline = !!p.connected
               const lepPct = lepMax > 0 ? lep / lepMax : 1
               const isCritical = lepPct < 0.25
+              const isHurt = lepPct < 0.75
               const conds = getConditions(p)
               return (
                 <div
@@ -275,11 +277,11 @@ export default function GMCockpit() {
                   className={clsx(
                     'w-full text-left rounded-sm px-2.5 py-2 border transition cursor-pointer',
                     !isOnline && 'opacity-40',
-                    selected ? 'bg-dsa-bg border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg border-dsa-bg-medium hover:border-dsa-bg-card'
+                    selected ? 'bg-dsa-bg border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg border-dsa-bg-medium hover:border-dsa-gold/10'
                   )}
                 >
-                  {/* Row 1: Checkbox (stops propagation) + Name + Online dot */}
-                  <div className="flex items-center gap-2 mb-1">
+                  {/* Row 1: Checkbox + Name + Online */}
+                  <div className="flex items-center gap-2 mb-1.5">
                     <div
                       onClick={(e) => { e.stopPropagation(); togglePlayer(p.id) }}
                       className={clsx('w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 transition cursor-pointer hover:border-dsa-gold',
@@ -287,45 +289,59 @@ export default function GMCockpit() {
                     >
                       {selected && <Check className="w-2.5 h-2.5 text-dsa-bg" />}
                     </div>
-                    <span className="text-xs font-semibold text-dsa-parchment truncate flex-1">{charName}</span>
-                    <span className="text-[8px] text-dsa-parchment-dark/60 truncate">{p.username || ''}</span>
-                    <span className={clsx('w-1.5 h-1.5 rounded-full flex-shrink-0', isOnline ? 'bg-green-400 animate-pulse' : 'bg-dsa-parchment-dark/30')} />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-semibold text-dsa-parchment truncate block">{charName}</span>
+                      {p.username && <span className="text-[8px] text-dsa-parchment-dark/50 truncate block">{p.username}</span>}
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <span className={clsx('w-1.5 h-1.5 rounded-full', isOnline ? 'bg-green-400 animate-pulse' : 'bg-dsa-parchment-dark/30')} />
+                    </div>
                   </div>
-                  {/* Row 2: LeP bar */}
-                  <div className="ml-5.5 pl-0.5 space-y-0.5">
+
+                  {/* Vitals with icons */}
+                  <div className="space-y-1 ml-5.5 pl-0.5">
+                    {/* Lebensenergie */}
                     <div className="flex items-center gap-1.5">
-                      <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden">
-                        <div className={clsx('h-full rounded-full transition-all duration-500',
-                          lepPct <= 0.25 ? 'bg-red-500' : lepPct <= 0.5 ? 'bg-yellow-500' : 'bg-green-600'
+                      <Heart className={clsx('w-3 h-3 flex-shrink-0', isCritical ? 'text-red-500' : isHurt ? 'text-yellow-500' : 'text-dsa-blood')} />
+                      <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden border border-dsa-bg-medium/30">
+                        <div className={clsx('h-full rounded-full transition-all duration-700',
+                          lepPct <= 0.25 ? 'bg-gradient-to-r from-red-600 to-red-500' : lepPct <= 0.5 ? 'bg-gradient-to-r from-yellow-600 to-yellow-500' : 'bg-gradient-to-r from-green-600 to-green-500'
                         )} style={{ width: `${Math.max(0, lepPct * 100)}%` }} />
                       </div>
-                      <span className={clsx('text-[9px] font-mono w-10 text-right', isCritical ? 'text-red-400 font-bold' : 'text-dsa-parchment-dark')}>{lep}/{lepMax}</span>
+                      <span className={clsx('text-[9px] font-mono w-11 text-right', isCritical ? 'text-red-400 font-bold' : 'text-dsa-parchment-dark')}>{lep}/{lepMax}</span>
                     </div>
-                    {/* AsP bar (same size, only for casters) */}
+                    {/* Astralenergie */}
                     {aspMax > 0 && (
                       <div className="flex items-center gap-1.5">
-                        <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden">
-                          <div className="h-full rounded-full bg-blue-500 transition-all duration-500" style={{ width: `${aspMax > 0 ? Math.max(0, asp / aspMax * 100) : 0}%` }} />
+                        <Sparkles className="w-3 h-3 flex-shrink-0 text-dsa-mana" />
+                        <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden border border-dsa-bg-medium/30">
+                          <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-700" style={{ width: `${aspMax > 0 ? Math.max(0, asp / aspMax * 100) : 0}%` }} />
                         </div>
-                        <span className="text-[8px] font-mono text-blue-400/70 w-10 text-right">{asp}/{aspMax}</span>
+                        <span className="text-[9px] font-mono text-dsa-mana/70 w-11 text-right">{asp}/{aspMax}</span>
                       </div>
                     )}
-                    {/* KaP bar (same size, only for blessed) */}
+                    {/* Karmaenergie */}
                     {kapMax > 0 && (
                       <div className="flex items-center gap-1.5">
-                        <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden">
-                          <div className="h-full rounded-full bg-purple-500 transition-all duration-500" style={{ width: `${kapMax > 0 ? Math.max(0, kap / kapMax * 100) : 0}%` }} />
+                        <Sun className="w-3 h-3 flex-shrink-0 text-dsa-karma" />
+                        <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden border border-dsa-bg-medium/30">
+                          <div className="h-full rounded-full bg-gradient-to-r from-purple-400 to-purple-600 transition-all duration-700" style={{ width: `${kapMax > 0 ? Math.max(0, kap / kapMax * 100) : 0}%` }} />
                         </div>
-                        <span className="text-[8px] font-mono text-purple-400/70 w-10 text-right">{kap}/{kapMax}</span>
+                        <span className="text-[9px] font-mono text-dsa-karma/70 w-11 text-right">{kap}/{kapMax}</span>
                       </div>
                     )}
-                    {/* Conditions */}
+                    {/* Zustände */}
                     {conds.length > 0 && (
-                      <div className="flex flex-wrap gap-0.5">
+                      <div className="flex flex-wrap gap-0.5 pt-0.5">
                         {conds.map((c, i) => {
                           const name = typeof c === 'string' ? c : c.name
                           const level = typeof c === 'string' ? 1 : (c.level || 1)
-                          return <span key={i} className="text-[7px] px-1 py-0.5 rounded bg-yellow-900/40 text-yellow-400 border border-yellow-800/30">{name}{level > 1 ? ` ${level}` : ''}</span>
+                          return (
+                            <span key={i} className="text-[7px] px-1.5 py-0.5 rounded-sm bg-amber-900/30 text-amber-400 border border-amber-800/20 flex items-center gap-0.5">
+                              <AlertTriangle className="w-2 h-2" />
+                              {name}{level > 1 ? ` Stufe ${level}` : ''}
+                            </span>
+                          )
                         })}
                       </div>
                     )}

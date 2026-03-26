@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { User, MessageSquare, Heart, Sparkles, Star, Shield, Swords, Footprints, Plus, Minus, Send } from 'lucide-react'
+import { User, MessageSquare, Heart, Sparkles, Sun, Shield, Swords, Footprints, Plus, Minus, Send, Star, Flame, Brain, Eye, Crown, Hand, Wind, HeartPulse, Hammer, AlertTriangle, Crosshair, Gauge, Zap } from 'lucide-react'
 import useSessionStore from '../../stores/sessionStore'
 import useCharacterStore from '../../stores/characterStore'
 import { getConditions, getVitalsFrom, getMaxVitals } from '../../utils/safeData'
@@ -192,7 +192,27 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
   const equippedWeapons = items.filter(i => i.equipped && (i.category === 'weapon' || i.category === 'waffe' || i.at_mod !== undefined))
   const equippedArmor = items.filter(i => i.equipped && (i.category === 'armor' || i.category === 'rüstung' || i.rs !== undefined))
 
-  const ATTR_ORDER = ['MU', 'KL', 'IN', 'CH', 'FF', 'GE', 'KO', 'KK']
+  const ATTRS = [
+    { key: 'MU', label: 'Mut', icon: Flame, color: 'text-red-400' },
+    { key: 'KL', label: 'Klugheit', icon: Brain, color: 'text-blue-400' },
+    { key: 'IN', label: 'Intuition', icon: Eye, color: 'text-violet-400' },
+    { key: 'CH', label: 'Charisma', icon: Crown, color: 'text-pink-400' },
+    { key: 'FF', label: 'Fingerfertigkeit', icon: Hand, color: 'text-emerald-400' },
+    { key: 'GE', label: 'Gewandtheit', icon: Wind, color: 'text-cyan-400' },
+    { key: 'KO', label: 'Konstitution', icon: HeartPulse, color: 'text-orange-400' },
+    { key: 'KK', label: 'Körperkraft', icon: Hammer, color: 'text-amber-400' },
+  ]
+
+  const COMBAT_STATS = [
+    { key: 'AT', label: 'Attacke', icon: Swords, color: 'text-red-400' },
+    { key: 'PA', label: 'Parade', icon: Shield, color: 'text-blue-400' },
+    { key: 'AW', label: 'Ausweichen', icon: Footprints, color: 'text-cyan-400' },
+    { key: 'FK', label: 'Fernkampf', icon: Crosshair, color: 'text-green-400' },
+    { key: 'INI', label: 'Initiative', icon: Zap, color: 'text-yellow-400', val: dv.INI_basis },
+    { key: 'GS', label: 'Geschwindigkeit', icon: Gauge, color: 'text-teal-400', val: dv.GS },
+    { key: 'RS', label: 'Rüstungsschutz', icon: Shield, color: 'text-slate-400' },
+    { key: 'BE', label: 'Behinderung', icon: AlertTriangle, color: 'text-orange-400' },
+  ]
 
   return (
     <div className="space-y-4">
@@ -207,29 +227,35 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
         </div>
       </div>
 
-      {/* ── Vitals ── */}
+      {/* ── Energien ── */}
       <div className="bg-dsa-bg rounded p-3 space-y-2">
+        <h3 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1">Energien</h3>
         <div className="flex items-center gap-2">
           <Heart className="w-4 h-4 text-dsa-blood flex-shrink-0" />
+          <span className="text-[9px] text-dsa-parchment-dark w-16">Lebensenergie</span>
           <ProgressBar current={v.lep} max={mv.lepMax} preset="health" size="sm" showValues={false} className="flex-1" />
           <span className="text-xs font-mono text-dsa-parchment w-14 text-right">{v.lep}/{mv.lepMax}</span>
         </div>
         {mv.aspMax > 0 && (
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-dsa-mana flex-shrink-0" />
+            <span className="text-[9px] text-dsa-parchment-dark w-16">Astralenergie</span>
             <ProgressBar current={v.asp} max={mv.aspMax} preset="mana" size="sm" showValues={false} className="flex-1" />
             <span className="text-xs font-mono text-dsa-parchment w-14 text-right">{v.asp}/{mv.aspMax}</span>
           </div>
         )}
         {mv.kapMax > 0 && (
           <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 text-dsa-karma flex-shrink-0" />
+            <Sun className="w-4 h-4 text-dsa-karma flex-shrink-0" />
+            <span className="text-[9px] text-dsa-parchment-dark w-16">Karmaenergie</span>
             <ProgressBar current={v.kap} max={mv.kapMax} preset="karma" size="sm" showValues={false} className="flex-1" />
             <span className="text-xs font-mono text-dsa-parchment w-14 text-right">{v.kap}/{mv.kapMax}</span>
           </div>
         )}
-        <div className="text-[10px] text-dsa-parchment-dark">
-          Schicksalspunkte: {v.schip}/{mv.schipMax} · AP: {char.total_ap ?? '-'} ({char.available_ap ?? 0} frei)
+        <div className="flex items-center gap-2">
+          <Star className="w-4 h-4 text-dsa-gold flex-shrink-0" />
+          <span className="text-[9px] text-dsa-parchment-dark">Schicksalspunkte: {v.schip}/{mv.schipMax}</span>
+          <span className="text-[9px] text-dsa-parchment-dark ml-auto">Abenteuerpunkte: {char.total_ap ?? '-'} ({char.available_ap ?? 0} frei)</span>
         </div>
       </div>
 
@@ -254,30 +280,32 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
         </button>
       </div>
 
-      {/* ── Attributes (2 rows of 4) ── */}
+      {/* ── Eigenschaften ── */}
       <div>
-        <h3 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1">Eigenschaften</h3>
-        <div className="grid grid-cols-8 gap-1">
-          {ATTR_ORDER.map(key => (
-            <div key={key} className="text-center">
-              <div className="text-[8px] text-dsa-parchment-dark">{key}</div>
-              <div className="text-sm font-bold text-dsa-parchment">{attrs[key] ?? '-'}</div>
+        <h3 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1.5">Eigenschaften</h3>
+        <div className="grid grid-cols-4 gap-1.5">
+          {ATTRS.map(({ key, label, icon: Icon, color }) => (
+            <div key={key} className="flex items-center gap-1.5 bg-dsa-bg rounded px-2 py-1.5">
+              <Icon className={clsx('w-3.5 h-3.5 flex-shrink-0', color)} />
+              <div className="min-w-0">
+                <div className="text-[8px] text-dsa-parchment-dark truncate">{label}</div>
+                <div className="text-sm font-bold text-dsa-parchment leading-none">{attrs[key] ?? '-'}</div>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── Combat values (single row) ── */}
+      {/* ── Kampfwerte ── */}
       <div>
-        <h3 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1">Kampfwerte</h3>
-        <div className="grid grid-cols-8 gap-1">
-          {['AT', 'PA', 'AW', 'FK', 'INI', 'GS', 'RS', 'BE'].map(key => (
-            <div key={key} className="text-center">
-              <div className="text-[8px] text-dsa-parchment-dark">{key}</div>
-              <div className="text-sm font-bold text-dsa-parchment">
-                {key === 'INI' ? (dv.INI_basis ?? cv.INI ?? '-')
-                  : key === 'GS' ? (dv.GS ?? cv.GS ?? '-')
-                  : (cv[key] ?? dv[key] ?? '-')}
+        <h3 className="text-[10px] font-semibold text-dsa-gold uppercase tracking-wider mb-1.5">Kampfwerte</h3>
+        <div className="grid grid-cols-4 gap-1.5">
+          {COMBAT_STATS.map(({ key, label, icon: Icon, color, val }) => (
+            <div key={key} className="flex items-center gap-1.5 bg-dsa-bg rounded px-2 py-1.5">
+              <Icon className={clsx('w-3.5 h-3.5 flex-shrink-0', color)} />
+              <div className="min-w-0">
+                <div className="text-[8px] text-dsa-parchment-dark truncate">{label}</div>
+                <div className="text-sm font-bold text-dsa-parchment leading-none">{val ?? cv[key] ?? dv[key] ?? '-'}</div>
               </div>
             </div>
           ))}
