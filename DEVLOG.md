@@ -26,8 +26,36 @@
 - Advantages/disadvantages: inconsistent shape (list vs. dict) — standardize to list of strings
 - No Alembic — migrations handled via startup Python functions in database.py
 
-### Wave 2 — Implementation (in progress)
-*Files listed after completion*
+### Wave 2 — Implementation
+
+**Backend (backend-builder):**
+- Added `SpeciesTemplate`, `CultureTemplate`, `ProfessionTemplate` ORM models to `models/databank.py`
+- Created seed files: `databank-seed/species.json` (6 species with base_attributes, gs_base, magic_capable, sk/zk_modifier, auto_advantages), `databank-seed/cultures.json` (8 cultures with compatible_species, skill_bonuses, languages), `databank-seed/professions.json` (11 professions with combat_techniques, skills, special_abilities, spells, liturgies)
+- Added species/cultures/professions to `TYPE_MODEL_MAP` in `api/databank.py` — they automatically inherit all existing databank endpoints (list, search, get-by-id, CRUD)
+- Added to `SEED_MAP` in `databank/seed.py`; seeder runs cleanly (481 total rows)
+- Added `creation_finalized` (bool) + `creation_ap_spent` (int) to `models/character.py` with startup migration in `database.py`
+- Note: Optolith data repo (`elyukai/optolith-data`) is private (licensed content) — seed data is DSA5 Grundregelwerk values, **needs review against physical rulebook before production use**
+
+**Character Creator (character-creator):**
+- `CharacterCreator.jsx` (1406 lines) — 10-step wizard: Erfahrungsgrad → Name → Spezies (+7 free points) → Kultur → Profession → Vor/Nachteile → Attribute verfeinern → Talente/Kampftechniken → Abgeleitete Werte → Zusammenfassung
+- Loads species/cultures/professions from `GET /api/databank/{type}` — no frontend hardcoding
+- Live AP counter in header throughout all steps
+- Enforces GRADE_LIMITS, Nachteilsdeckelung (80 AP cap), KT minimum 6, magic-capability gating for Magierprofessionen
+- Derived values computed client-side for live preview (LeP, AsP, KaP, GS, INI, AW, WS, SB, SK, ZK, SchiP)
+- Submits to `POST /api/characters`
+
+**Character Manager (character-manager):**
+- `CharakterTab.jsx` (676 lines) — character card grid, status badges (active/retired/dead), AP chip, portrait placeholder, action buttons
+- Import modal: file drop → `POST /api/characters/import`
+- Quick template modal: 5 archetype cards + Erfahrungsgrad selector → `POST /api/characters/quick-template`
+- Export: fetch + browser download trigger
+- `SteigerungModal.jsx` (465 lines) — between-session AP spend; wraps SteigerungTab logic as modal using `character` prop + `onSaved` callback; pure REST (`POST /api/characters/{id}/level-up`), no WebSocket
+- `Dashboard.jsx` updated: `PlaceholderTab` for "characters" replaced with `<CharakterTab />`
+
+Build: ✓ clean (10.34s)
+
+### Files created/modified
+`frontend/src/views/auth/CharakterTab.jsx` (new), `frontend/src/views/auth/CharacterCreator.jsx` (new), `frontend/src/views/auth/SteigerungModal.jsx` (new), `frontend/src/views/auth/Dashboard.jsx` (updated), `backend/models/databank.py` (updated), `backend/models/character.py` (updated), `backend/api/databank.py` (updated), `backend/databank/seed.py` (updated), `backend/database.py` (updated), `databank-seed/species.json` (new), `databank-seed/cultures.json` (new), `databank-seed/professions.json` (new), `SPEC.md` v1.9.0, `DEVLOG.md`
 
 ---
 

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "culture_mittelreich_stadt",
+    "name": "Mittelreich (Stadtmensch)",
+    "ap_cost": 27,
+    "compatible_species": ["Mensch", "Halbelf"],
+    "skill_bonuses": {"Gassenwissen": 2, "Feilschen": 2, "Überreden": 1, "Rechnen": 1, "Menschenkenntnis": 1},
+    "languages": [{"name": "Garethi", "level": 4}],
+    "scripts": [{"name": "Kusliker Zeichen", "level": 2}],
+    "description": "Stadtbewohner des Mittelreichs leben in den Zentren aventurischer Zivilisation. Sie sind gebildet, geschäftstüchtig und kennen die Regeln der städtischen Gesellschaft."
+  },
+  {
+    "id": "culture_mittelreich_land",
+    "name": "Mittelreich (Landbevölkerung)",
+    "ap_cost": 19,
+    "compatible_species": ["Mensch", "Halbelf"],
+    "skill_bonuses": {"Pflanzenkunde": 2, "Tierkunde": 2, "Orientierung": 1, "Wildnisleben": 1},
+    "languages": [{"name": "Garethi", "level": 4}],
+    "scripts": [],
+    "description": "Die Landbevölkerung des Mittelreichs lebt von Ackerbau und Viehzucht. Sie sind hart arbeitende, bodenständige Leute mit engem Zusammenhalt."
+  },
+  {
+    "id": "culture_andergast_nostria",
+    "name": "Andergast und Nostria",
+    "ap_cost": 22,
+    "compatible_species": ["Mensch", "Halbelf"],
+    "skill_bonuses": {"Wildnisleben": 2, "Holzbearbeitung": 2, "Kraftakt": 1, "Orientierung": 1},
+    "languages": [{"name": "Garethi", "level": 4}],
+    "scripts": [],
+    "description": "Die Bewohner der Streitenden Königreiche sind raue, unabhängige Waldmenschen, die seit Jahrhunderten gegeneinander und gegen die Wildnis kämpfen."
+  },
+  {
+    "id": "culture_almada",
+    "name": "Almada",
+    "ap_cost": 24,
+    "compatible_species": ["Mensch", "Halbelf"],
+    "skill_bonuses": {"Etikette": 2, "Betören": 1, "Überreden": 1, "Tanzen": 1, "Menschenkenntnis": 1},
+    "languages": [{"name": "Garethi", "level": 4}],
+    "scripts": [{"name": "Kusliker Zeichen", "level": 2}],
+    "description": "Almadaner sind für ihre Leidenschaft, ihren Stolz und ihre Hingabe an die Künste bekannt. Ehre und Familie stehen an oberster Stelle."
+  },
+  {
+    "id": "culture_elfisch",
+    "name": "Elfische Kulturen",
+    "ap_cost": 29,
+    "compatible_species": ["Elf"],
+    "skill_bonuses": {"Sinnesschärfe": 2, "Pflanzenkunde": 2, "Musizieren": 2, "Singen": 1, "Wildnisleben": 1},
+    "languages": [{"name": "Isdira", "level": 4}],
+    "scripts": [],
+    "description": "Die elfischen Kulturen leben im Einklang mit der Natur. Ob Au-, Wald- oder Firnelfen — sie alle teilen eine tiefe Verbindung zur Welt um sie herum."
+  },
+  {
+    "id": "culture_zwergenreich",
+    "name": "Zwergenreich",
+    "ap_cost": 26,
+    "compatible_species": ["Zwerg"],
+    "skill_bonuses": {"Steinbearbeitung": 2, "Mechanik": 2, "Zechen": 2, "Kraftakt": 1, "Bergbau": 1},
+    "languages": [{"name": "Rogolan", "level": 4}, {"name": "Garethi", "level": 3}],
+    "scripts": [{"name": "Rogolan-Runen", "level": 2}],
+    "description": "Die Zwergenvölker leben in gewaltigen unterirdischen Hallen und Stollen. Sie sind legendäre Schmiede, Bergleute und Krieger."
+  },
+  {
+    "id": "culture_ork",
+    "name": "Ork-Kulturen",
+    "ap_cost": 17,
+    "compatible_species": ["Ork"],
+    "skill_bonuses": {"Einschüchtern": 2, "Kraftakt": 2, "Wildnisleben": 1, "Orientierung": 1},
+    "languages": [{"name": "Oloarkh", "level": 4}],
+    "scripts": [],
+    "description": "Die Ork-Kulturen der Orkländer und des Ehernen Schwerts sind kriegerisch und stammesorientiert. Stärke und Mut gelten als höchste Tugenden."
+  },
+  {
+    "id": "culture_goblin",
+    "name": "Goblin-Kulturen",
+    "ap_cost": 12,
+    "compatible_species": ["Goblin"],
+    "skill_bonuses": {"Taschendiebstahl": 2, "Verbergen": 2, "Sinnesschärfe": 1, "Gassenwissen": 1},
+    "languages": [{"name": "Goblinisch", "level": 4}],
+    "scripts": [],
+    "description": "Goblin-Kulturen sind vielfältig: von Stammesgemeinschaften in den Wäldern bis zu stadtgoblins, die in den Gassen menschlicher Städte leben."
+  }
+]

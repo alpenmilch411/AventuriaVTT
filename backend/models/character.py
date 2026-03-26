@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String, DateTime, Text, ForeignKey, Integer, Index, func
+from sqlalchemy import String, DateTime, Text, ForeignKey, Integer, Boolean, Index, func
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -69,6 +69,9 @@ class Character(Base):
         String(36), ForeignKey("game_sessions.id", ondelete="SET NULL"),
         nullable=True, index=True,
     )
+
+    creation_finalized: Mapped[bool] = mapped_column(Boolean, default=False)
+    creation_ap_spent: Mapped[int] = mapped_column(Integer, default=0)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False

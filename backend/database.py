@@ -57,6 +57,8 @@ async def init_db():
         if "sqlite" in settings.DATABASE_URL:
             await conn.run_sync(_migrate_add_user_contribution_columns)
             await conn.run_sync(_migrate_rename_special_ability_columns)
+            await conn.run_sync(_migrate_add_character_creation_fields)
+            await conn.run_sync(_migrate_add_species_extra_columns)
 
 
 def _migrate_add_user_contribution_columns(connection):
@@ -77,6 +79,9 @@ def _migrate_add_user_contribution_columns(connection):
         "liturgy_templates",
         "special_ability_templates",
         "talent_templates",
+        "species_templates",
+        "culture_templates",
+        "profession_templates",
     ]
 
     columns_to_add = [
@@ -112,4 +117,55 @@ def _migrate_rename_special_ability_columns(connection):
         if old in existing_cols and new not in existing_cols:
             connection.execute(
                 text(f"ALTER TABLE special_ability_templates RENAME COLUMN {old} TO {new}")
+            )
+
+
+def _migrate_add_character_creation_fields(connection):
+    """Add creation_finalized and creation_ap_spent to characters table.
+
+    SQLite's create_all won't add columns to existing tables, so we use
+    ALTER TABLE after checking PRAGMA table_info.
+    """
+    from sqlalchemy import text
+
+    result = connection.execute(text("PRAGMA table_info(characters)"))
+    existing_cols = {row[1] for row in result.fetchall()}
+
+    columns_to_add = [
+        ("creation_finalized", "BOOLEAN DEFAULT 0"),
+        ("creation_ap_spent", "INTEGER DEFAULT 0"),
+    ]
+
+    for col_name, col_type in columns_to_add:
+        if col_name not in existing_cols:
+            connection.execute(
+                text(f"ALTER TABLE characters ADD COLUMN {col_name} {col_type}")
+            )
+
+
+def _migrate_add_species_extra_columns(connection):
+    """Add lep_base, sk_base, zk_base, attribute_adjustments, common_cultures,
+    auto_advantages columns to species_templates.
+    """
+    from sqlalchemy import text
+
+    result = connection.execute(text("PRAGMA table_info(species_templates)"))
+    existing_cols = {row[1] for row in result.fetchall()}
+
+    if not existing_cols:
+        return  # Table doesn't exist yet, create_all will handle it
+
+    columns_to_add = [
+        ("lep_base", "INTEGER DEFAULT 5"),
+        ("sk_base", "INTEGER DEFAULT -5"),
+        ("zk_base", "INTEGER DEFAULT -5"),
+        ("attribute_adjustments", "TEXT"),
+        ("common_cultures", "TEXT"),
+        ("auto_advantages", "TEXT"),
+    ]
+
+    for col_name, col_type in columns_to_add:
+        if col_name not in existing_cols:
+            connection.execute(
+                text(f"ALTER TABLE species_templates ADD COLUMN {col_name} {col_type}")
             )

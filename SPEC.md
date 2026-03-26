@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.8.2
+**Version:** 1.9.0
 **Last updated:** 2026-03-26
-**Status:** Characters tab in progress (Session 12) — backend audited, Wave 2 building creator + manager + DB data
+**Status:** Characters tab complete (Session 12) — creator wizard, manager UI, between-session AP, Optolith-aligned species/cultures/professions in DB
 
 ---
 
@@ -4229,6 +4229,21 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Message deduplication: skip messages with identical type+timestamp to prevent double-processing on flaky connections
 - [x] Lazy-load databank (creatures, talents) on first use instead of initial GMCockpit load
 
+### Data Integration Opportunities (identified 2026-03-26)
+
+Optolith (open-source DSA5 character generator) was integrated as the source for species/cultures/professions in Session 12. Further data that could be sourced from Optolith or other authoritative DSA5 sources:
+
+- [ ] **Audit species/cultures/professions seed accuracy** — verify Optolith-sourced AP costs, skill packages, and attribute values against physical DSA5 rulebook before production use
+- [ ] **Expand cultures coverage** — Optolith has 40+ cultures; currently seeded 8 most common; add remaining for full character creation support
+- [ ] **Expand professions coverage** — Optolith has 100+ professions; currently seeded 11; add remaining (especially magic/blessed variants)
+- [ ] **Richer creature data** — Optolith/DSA5 Wiki has more creatures with full stat blocks; current 60 creatures are manually curated
+- [ ] **Advantages/disadvantages catalog** — Optolith has full Vor-/Nachteil list with AP costs; currently only a small preset in the character creator
+- [ ] **Special abilities from Optolith** — cross-reference existing 42 seeded SAs against Optolith's full SA list for completeness
+- [ ] **Icons and portraits** — investigate DSA5 community asset packs or Optolith assets for creature/profession/species icons; currently using lucide-react fallbacks
+- [ ] **Spell/liturgy expansion** — Optolith has full spell/liturgy catalog with all traditions; currently 30 spells + 20 liturgies seeded
+- [ ] **Talent FW costs from API** — SF category mapping per talent could come from Optolith's talent data rather than hardcoded in SteigerungTab
+- [ ] **Item catalog expansion** — DSA5 has hundreds of items; current 77 items are manually selected
+
 ### Code Quality — Hardcoded Data Migration (identified 2026-03-25)
 
 **High Priority:**
@@ -4254,22 +4269,19 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 
 ### Dashboard Tabs (Post-Login)
 
-The dashboard has 4 tabs. Sessions, Database, and Wiki are done. Characters tab UI is the remaining work.
+All 4 dashboard tabs are now done.
 
-**Characters Tab (Charaktere) — IN PROGRESS (Session 12)**
-- [ ] Character management UI (list/grid, edit, delete) — all CRUD endpoints present
-- [ ] Character creator wizard (multi-step, AP budget, derived values preview) — needs species/culture/profession DB data
-- [ ] Character import UI (Optolith JSON / DSA Ultimate) — `import_character()` endpoint ready
-- [ ] Character export UI — `export_character()` endpoint ready
-- [ ] Quick character templates UI (5 archetypes: Krieger, Magier, Geweihter, Waldläufer, Streuner) — `quick_template()` ready
-- [ ] Between-session AP spend modal — `level-up` endpoint ready; adapt SteigerungTab
+**Characters Tab (Charaktere) — DONE (Session 12)**
+- [x] Character management UI — `CharakterTab.jsx`: card grid, status badges, AP chip, action buttons
+- [x] Character creator wizard — `CharacterCreator.jsx`: 10-step wizard, loads species/cultures/professions from API, live AP budget, derived values preview
+- [x] Character import UI — Optolith JSON / DSA Ultimate file drop → `POST /api/characters/import`
+- [x] Character export UI — download JSON via `GET /api/characters/{id}/export`
+- [x] Quick character templates UI — 5 archetypes (Krieger, Magier, Geweihter, Waldläufer, Streuner) → `POST /api/characters/quick-template`
+- [x] Between-session AP spend — `SteigerungModal.jsx`: full upgrade UI as modal, REST-only, calls `POST /api/characters/{id}/level-up`
+- [x] Species/cultures/professions in DB — `SpeciesTemplate`, `CultureTemplate`, `ProfessionTemplate` models + seed data (6 species, 8 cultures, 11 professions) + API endpoints
+- [x] `creation_finalized` + `creation_ap_spent` fields on Character model + startup migration
 - [ ] View character history across sessions — endpoint missing, low priority
-- [ ] Character portrait upload — currently uses `portrait_url` string; upload endpoint missing
-
-**Characters Tab — Backend gaps (identified Session 12):**
-- [ ] Species/cultures/professions seed data (JSON) + DB models + API endpoints — currently plain strings, no referential data
-- [ ] `creation_finalized` (bool) + `creation_ap_spent` (int) fields on Character model + migration
-- [ ] Standardize `advantages`/`disadvantages` to list-of-strings (currently inconsistent list vs. dict)
+- [ ] Character portrait upload — uses `portrait_url` string; binary upload endpoint missing
 
 **Database Tab (Datenbank) — DONE**
 - [x] Browse reference data: creatures, weapons, armor, shields, items, spells, liturgies, special abilities, talents

@@ -6,6 +6,7 @@ import {
 import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
 import SessionsTab from './SessionsTab'
+import CharakterTab from './CharakterTab'
 import WikiTab from './WikiTab'
 import DatenbankTab from './DatenbankTab'
 
@@ -57,7 +58,7 @@ export default function Dashboard() {
       case 'sessions':
         return <SessionsTab />
       case 'characters':
-        return <PlaceholderTab title="Charaktere" />
+        return <CharakterTab />
       case 'database':
         return <DatenbankTab />
       case 'wiki':

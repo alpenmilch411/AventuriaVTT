@@ -39,6 +39,9 @@ from models.databank import (  # noqa: E402
     TalentTemplate,
     CombatTechniqueTemplate,
     RulesSnippet,
+    SpeciesTemplate,
+    CultureTemplate,
+    ProfessionTemplate,
 )
 from models.wiki import WikiPage  # noqa: E402
 from models.user import User  # noqa: E402
@@ -103,6 +106,18 @@ SEED_MAP: Dict[str, Tuple[type, List[str]]] = {
     "rules_reference.json": (
         RulesSnippet,
         ["keywords", "table_data"],
+    ),
+    "species.json": (
+        SpeciesTemplate,
+        ["base_attributes", "attribute_adjustments", "common_cultures", "auto_advantages", "special_rules"],
+    ),
+    "cultures.json": (
+        CultureTemplate,
+        ["compatible_species", "skill_bonuses", "languages", "scripts"],
+    ),
+    "professions.json": (
+        ProfessionTemplate,
+        ["compatible_species", "combat_techniques", "skills", "special_abilities", "spells", "liturgies"],
     ),
 }
 
@@ -524,6 +539,19 @@ def seed(database_url: Optional[str] = None) -> Dict[str, int]:
 
     # Ensure tables exist
     Base.metadata.create_all(engine, checkfirst=True)
+
+    # Run lightweight migrations for existing tables
+    if "sqlite" in url:
+        from database import (
+            _migrate_add_user_contribution_columns,
+            _migrate_add_character_creation_fields,
+            _migrate_add_species_extra_columns,
+        )
+        with engine.connect() as conn:
+            _migrate_add_user_contribution_columns(conn)
+            _migrate_add_character_creation_fields(conn)
+            _migrate_add_species_extra_columns(conn)
+            conn.commit()
 
     results: Dict[str, int] = {}
 

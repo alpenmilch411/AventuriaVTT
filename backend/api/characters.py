@@ -39,8 +39,8 @@ class CharacterCreate(BaseModel):
     spells: Optional[dict] = None
     liturgies: Optional[dict] = None
     special_abilities: Optional[list] = None
-    advantages: Optional[dict] = None
-    disadvantages: Optional[dict] = None
+    advantages: Optional[Any] = None
+    disadvantages: Optional[Any] = None
     basis_inventory: Optional[dict] = None
 
 
