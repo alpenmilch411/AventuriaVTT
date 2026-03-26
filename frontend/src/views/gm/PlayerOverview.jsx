@@ -326,9 +326,10 @@ function DetailStatCell({ label, val, icon: Icon, iconCls, conditions, statKey, 
       <button
         ref={ref}
         onClick={(e) => { e.stopPropagation(); setShow(!show) }}
-        className="flex flex-col items-center w-full py-1.5 border rounded-sm border-dsa-bg-medium bg-dsa-bg-card relative cursor-help hover:border-dsa-gold/30 transition-colors"
+        className="flex flex-col items-center w-full py-1.5 border rounded-sm border-dsa-bg-medium bg-dsa-bg relative cursor-help hover:border-dsa-gold/30 transition-colors"
       >
-        {cg.neg < 0 && <span className="absolute top-0.5 right-0.5 text-[7px] font-mono font-bold text-red-400 leading-none">{cg.neg}</span>}
+        {cg.neg < 0 && cg.neg > -100 && <span className="absolute top-0.5 right-0.5 text-[7px] font-mono font-bold text-red-400 leading-none">{cg.neg}</span>}
+        {cg.neg <= -100 && <span className="absolute top-0.5 right-0.5 text-[7px] font-mono font-bold text-red-400 leading-none">X</span>}
         {cg.pos > 0 && <span className="absolute top-0.5 left-0.5 text-[7px] font-mono font-bold text-green-400 leading-none">+{cg.pos}</span>}
         {Icon && <Icon className={clsx('w-3 h-3', iconCls || 'text-dsa-parchment-dark/40')} />}
         <span className={clsx('text-base font-mono font-bold leading-tight', iconCls || 'text-dsa-parchment')}>{val ?? '-'}</span>
@@ -710,7 +711,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
           </DetailStatCell>
 
           {/* GS */}
-          <DetailStatCell label="Geschw." val={combatGS ?? 0} icon={Footprints} iconCls="text-teal-400" conditions={conditions} statKey="GS">
+          <DetailStatCell label="Geschwind." val={combatGS ?? 0} icon={Footprints} iconCls="text-teal-400" conditions={conditions} statKey="GS">
             <TipBlock title="Geschwindigkeit" desc="Schritt (Meter) pro Kampfrunde." lines={[
               { label: 'Basiswert (Spezies)', val: dv.GS ?? '?' },
               ...(be > 0 ? [{ label: 'Behinderung (Rüstung)', val: -be }] : []),
@@ -719,7 +720,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
           </DetailStatCell>
 
           {/* RS */}
-          <DetailStatCell label="RS" val={rs} icon={ShieldAlert} iconCls="text-dsa-gold" conditions={conditions} statKey="RS">
+          <DetailStatCell label="Rüstung" val={rs} icon={ShieldAlert} iconCls="text-dsa-gold" conditions={conditions} statKey="RS">
             <TipBlock title="Rüstungsschutz" desc="Schadensreduktion durch angelegte Rüstung." lines={
               equippedArmor.length > 0
                 ? equippedArmor.map(a => ({ label: a.name, val: a.rs || 0 }))
@@ -728,7 +729,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
           </DetailStatCell>
 
           {/* BE */}
-          <DetailStatCell label="BE" val={be} icon={Gauge} iconCls="text-amber-400" conditions={conditions} statKey="BE">
+          <DetailStatCell label="Behind." val={be} icon={Gauge} iconCls="text-amber-400" conditions={conditions} statKey="BE">
             <TipBlock title="Behinderung" desc="Abzug durch Rüstungsgewicht auf AT, PA, AW, INI, GS." lines={[
               { label: 'Summe Rüstungs-BE', val: rawBE },
               ...sfLines('BE'),
