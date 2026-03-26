@@ -4,6 +4,20 @@
 
 ---
 
+## Session 9g — Redesigned player cards and detail view for GMs
+**Date:** 2026-03-26
+
+### What changed
+- **Player cards are clean and scannable** — each card shows just what the GM needs at a glance: character name, player username, online status, health bar (with color coding for danger), plus astral/karma bars for casters. Conditions appear as small badges. No clutter.
+- **Clicking a player opens a full character reference** — the detail panel now shows everything a GM needs to make rulings: all 8 attributes in a single row, all combat values (AT/PA/AW/FK/INI/GS/RS/BE), equipped weapons with damage and modifiers, equipped armor with RS/BE, active conditions, and Sonderfertigkeiten.
+- **Quick actions built into the detail view** — the GM can heal or damage a player directly from the detail panel (type a number, hit Enter or click +/-), and send whisper messages without opening a separate dialog.
+- Non-caster characters don't show empty AsP/KaP bars (only visible when the character actually has astral or karma points).
+
+### Files touched
+`frontend/src/views/gm/PlayerOverview.jsx`
+
+---
+
 ## Session 9f — Player list shows all session members with online/offline status
 **Date:** 2026-03-26
 
