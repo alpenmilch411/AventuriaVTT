@@ -49,7 +49,7 @@ export default function PlayerDashboard() {
   const dismissNotification = useSessionStore((s) => s.dismissNotification)
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getVitals = useCharacterStore((s) => s.getVitals)
-  const combatActive = useCombatStore((s) => s.combatActive)
+  const combatActive = useCombatStore((s) => Object.keys(s.battles).length > 0)
   const pendingDiceRequest = useCombatStore((s) => s.pendingDiceRequest)
   const pendingDefense = useCombatStore((s) => s.pendingDefense)
 

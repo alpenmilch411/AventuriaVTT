@@ -262,11 +262,12 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       if (type === 'conditions_update' || type === 'condition_change') {
         const cid = payload.character_id
         if (cid) {
-          // Read the freshly-updated conditions from characterStore (already applied above)
-          const allChars = charState.allCharacters
-          const myChar = charState.myCharacter
+          // Re-read from store AFTER handleCharacterMessage has applied the update
+          const freshCharState = useCharacterStore.getState()
+          const allChars = freshCharState.allCharacters
+          const myChar = freshCharState.myCharacter
           const charMatch = allChars.find(c => c.id === cid) || (myChar?.id === cid ? myChar : null)
-          const conditions = charMatch?.conditions || []
+          const conditions = charMatch?.conditions || payload.conditions || []
 
           // Sync to combatStore combatants (condition icons on HP bars)
           const battles = combatState.battles

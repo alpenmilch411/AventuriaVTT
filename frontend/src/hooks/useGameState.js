@@ -12,17 +12,20 @@ export default function useGameState() {
   const players = useSessionStore((s) => s.players)
   const sessionCode = useSessionStore((s) => s.sessionCode)
 
-  const combatActive = useCombatStore((s) => s.combatActive)
-  const currentRound = useCombatStore((s) => s.currentRound)
-  const initiativeOrder = useCombatStore((s) => s.initiativeOrder)
-  const currentTurnIndex = useCombatStore((s) => s.currentTurnIndex)
+  // Computed from battles — no legacy fields, no subscriber
+  const battles = useCombatStore((s) => s.battles)
+  const activeBattleId = useCombatStore((s) => s.activeBattleId)
+  const activeBattle = battles[activeBattleId]
+  const combatActive = Object.keys(battles).length > 0
+  const currentRound = activeBattle?.round || 0
+  const initiativeOrder = activeBattle?.initiativeOrder || []
+  const currentTurnIndex = activeBattle?.currentTurnIndex || 0
   const isMyTurn = useCombatStore((s) => s.isMyTurn)
   const pendingDiceRequest = useCombatStore((s) => s.pendingDiceRequest)
   const pendingDefense = useCombatStore((s) => s.pendingDefense)
 
   const myCharacter = useCharacterStore((s) => s.myCharacter)
-  const vitals = useCharacterStore((s) => s.getVitals)
-  const conditions = useCharacterStore((s) => s.getConditions)
+  const myConditions = myCharacter?.conditions || []
 
   const worldClock = useCampaignStore((s) => s.worldClock)
   const weather = useCampaignStore((s) => s.weather)
@@ -40,32 +43,11 @@ export default function useGameState() {
   }, [combatActive, initiativeOrder, currentTurnIndex])
 
   return {
-    // Session
-    phase,
-    isGM,
-    isHalted,
-    isAttentionMode,
-    players,
-    sessionCode,
-
-    // Combat
-    combatActive,
-    currentRound,
-    initiativeOrder,
-    currentTurnIndex,
-    currentCombatant,
-    isMyTurn: isMyTurn(),
-    pendingDiceRequest,
-    pendingDefense,
-    pendingAction,
-
-    // Character
-    myCharacter,
-    vitals: vitals(),
-    conditions: conditions(),
-
-    // World
-    worldClock,
-    weather,
+    phase, isGM, isHalted, isAttentionMode, players, sessionCode,
+    combatActive, currentRound, initiativeOrder, currentTurnIndex,
+    currentCombatant, isMyTurn: isMyTurn(),
+    pendingDiceRequest, pendingDefense, pendingAction,
+    myCharacter, conditions: myConditions,
+    worldClock, weather,
   }
 }

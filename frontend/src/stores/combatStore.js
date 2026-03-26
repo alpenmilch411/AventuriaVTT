@@ -1,5 +1,9 @@
 import { create } from 'zustand'
 
+// Stable empty references — avoids infinite re-render loops from subscriber
+const EMPTY_ORDER = []
+const EMPTY_LOG = []
+
 /**
  * Multi-battle combat store.
  *
@@ -9,11 +13,7 @@ import { create } from 'zustand'
 const useCombatStore = create((set, get) => ({
   battles: {},        // { battleId: BattleState }
   activeBattleId: null,
-  combatActive: false,     // Legacy compat — updated whenever battles change
-  currentRound: 0,         // Legacy compat
-  initiativeOrder: [],     // Legacy compat
-  currentTurnIndex: 0,     // Legacy compat
-  combatLog: [],
+  combatLog: EMPTY_LOG,
   combatResult: null,       // { result: 'victory'|'defeat', summary, fallen, survivors, rounds } — shown after combat ends
   pendingDiceRequest: null,
   pendingDefense: null,
@@ -350,36 +350,14 @@ const useCombatStore = create((set, get) => ({
   },
 
   reset: () => set({
-    battles: {}, activeBattleId: null, combatActive: false,
-    currentRound: 0, initiativeOrder: [], currentTurnIndex: 0,
-    combatLog: [], combatResult: null, pendingDiceRequest: null,
+    battles: {}, activeBattleId: null,
+    combatLog: EMPTY_LOG, combatResult: null, pendingDiceRequest: null,
     pendingDefense: null, myCharacterId: null,
   }),
 }))
 
-// Stable empty array to avoid creating new references in subscriber
-const EMPTY_ORDER = []
-
-// Auto-sync legacy fields whenever battles change
-useCombatStore.subscribe((state, prevState) => {
-  if (state.battles !== prevState.battles || state.activeBattleId !== prevState.activeBattleId) {
-    const battle = state.battles[state.activeBattleId]
-    const newCombatActive = Object.keys(state.battles).length > 0
-    const newRound = battle?.round || 0
-    const newOrder = battle?.initiativeOrder || EMPTY_ORDER
-    const newIdx = battle?.currentTurnIndex || 0
-
-    // Only set if actually changed to avoid infinite loop
-    if (state.combatActive !== newCombatActive || state.currentRound !== newRound ||
-        state.initiativeOrder !== newOrder || state.currentTurnIndex !== newIdx) {
-      useCombatStore.setState({
-        combatActive: newCombatActive,
-        currentRound: newRound,
-        initiativeOrder: newOrder,
-        currentTurnIndex: newIdx,
-      })
-    }
-  }
-})
+// NOTE: No subscriber that calls setState — this was the root cause of infinite loops.
+// Legacy fields (combatActive, currentRound, initiativeOrder, currentTurnIndex) are
+// replaced by computed selectors that derive from battles on read, not on write.
 
 export default useCombatStore

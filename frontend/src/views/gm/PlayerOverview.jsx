@@ -328,8 +328,7 @@ function DetailStatCell({ label, val, icon: Icon, iconCls, conditions, statKey, 
         onClick={(e) => { e.stopPropagation(); setShow(!show) }}
         className="flex flex-col items-center w-full py-1.5 border rounded-sm border-dsa-bg-medium bg-dsa-bg-card relative cursor-help hover:border-dsa-gold/30 transition-colors"
       >
-        {cg.neg < 0 && cg.neg > -100 && <span className="absolute top-0.5 right-0.5 text-[7px] font-mono font-bold text-red-400 leading-none">{cg.neg}</span>}
-        {cg.neg <= -100 && <span className="absolute top-0.5 right-0.5 text-[7px] font-mono font-bold text-red-400 leading-none">X</span>}
+        {cg.neg < 0 && <span className="absolute top-0.5 right-0.5 text-[7px] font-mono font-bold text-red-400 leading-none">{cg.neg}</span>}
         {cg.pos > 0 && <span className="absolute top-0.5 left-0.5 text-[7px] font-mono font-bold text-green-400 leading-none">+{cg.pos}</span>}
         {Icon && <Icon className={clsx('w-3 h-3', iconCls || 'text-dsa-parchment-dark/40')} />}
         <span className={clsx('text-base font-mono font-bold leading-tight', iconCls || 'text-dsa-parchment')}>{val ?? '-'}</span>

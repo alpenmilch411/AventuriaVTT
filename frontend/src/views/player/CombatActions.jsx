@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+const EMPTY_ORDER = [] // stable reference for selector
 import {
   Swords, Shield, Skull, Clock, AlertTriangle, ChevronRight,
   Star, Move, SkipForward
@@ -22,14 +23,14 @@ const DEFENSE_OPTIONS = [
 ]
 
 function CombatActions({ sendMessage }) {
-  const combatActive = useCombatStore((s) => s.combatActive)
+  const combatActive = useCombatStore((s) => Object.keys(s.battles).length > 0)
   const combatResult = useCombatStore((s) => s.combatResult)
   const isMyTurn = useCombatStore((s) => s.isMyTurn)
   const turnsUntilMine = useCombatStore((s) => s.turnsUntilMine)
   const activeBattleId = useCombatStore((s) => s.activeBattleId)
-  const initiativeOrder = useCombatStore((s) => s.initiativeOrder)
-  const currentTurnIndex = useCombatStore((s) => s.currentTurnIndex)
-  const currentRound = useCombatStore((s) => s.currentRound)
+  const initiativeOrder = useCombatStore((s) => s.battles[s.activeBattleId]?.initiativeOrder || EMPTY_ORDER)
+  const currentTurnIndex = useCombatStore((s) => s.battles[s.activeBattleId]?.currentTurnIndex || 0)
+  const currentRound = useCombatStore((s) => s.battles[s.activeBattleId]?.round || 0)
   const pendingDefense = useCombatStore((s) => s.pendingDefense)
   const clearPendingDefense = useCombatStore((s) => s.clearPendingDefense)
 

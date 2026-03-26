@@ -699,33 +699,14 @@ export default function GMCockpit() {
         />
       )}
 
-      {/* Player Detail Modal */}
+      {/* Player Detail Modal — reads live data from stores */}
       {detailPlayer && (
-        <Modal
-          isOpen={!!detailPlayer}
+        <LivePlayerDetailModal
+          playerId={detailPlayer.id}
           onClose={() => setDetailPlayer(null)}
-          title={detailPlayer.character?.name || detailPlayer.username || 'Spieler'}
-          size="lg"
-        >
-          <PlayerDetailView
-            player={{
-              ...detailPlayer,
-              vitals: (() => {
-                const cv = detailPlayer.current_vitals || {}
-                const dv = detailPlayer.character?.derived_values || {}
-                return { lep: cv.lep ?? dv.LeP_max ?? 0, asp: cv.asp ?? dv.AsP_max ?? 0, kap: cv.kap ?? dv.KaP_max ?? 0, schip: cv.schip ?? dv.Schip ?? 0 }
-              })(),
-              maxVitals: (() => {
-                const dv = detailPlayer.character?.derived_values || {}
-                return { lepMax: dv.LeP_max ?? 0, aspMax: dv.AsP_max ?? 0, kapMax: dv.KaP_max ?? 0, schipMax: dv.Schip ?? 3 }
-              })(),
-              conditions: getConditions(detailPlayer),
-            }}
-            sendMessage={sendMessage}
-            gmControls={gmControls}
-            onClose={() => setDetailPlayer(null)}
-          />
-        </Modal>
+          sendMessage={sendMessage}
+          gmControls={gmControls}
+        />
       )}
 
 
@@ -808,6 +789,40 @@ export default function GMCockpit() {
         <CampaignManager campaignId={campaign.id} onClose={() => setShowCampaignManager(false)} />
       )}
     </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LivePlayerDetailModal — reads live data from stores so it updates in real-time
+// ═══════════════════════════════════════════════════════════════
+
+function LivePlayerDetailModal({ playerId, onClose, sendMessage, gmControls }) {
+  const players = useSessionStore((s) => s.players)
+  const allCharacters = useCharacterStore((s) => s.allCharacters)
+  const player = players.find(p => p.id === playerId)
+  if (!player) return null
+
+  const char = allCharacters.find(c => c.id === player.characterId) || player.character || {}
+  const vitals = (() => {
+    const cv = player.current_vitals || char.current_vitals || {}
+    const dv = char.derived_values || {}
+    return { lep: cv.lep ?? dv.LeP_max ?? 0, asp: cv.asp ?? dv.AsP_max ?? 0, kap: cv.kap ?? dv.KaP_max ?? 0, schip: cv.schip ?? dv.Schip ?? 0 }
+  })()
+  const maxVitals = (() => {
+    const dv = char.derived_values || {}
+    return { lepMax: dv.LeP_max ?? 0, aspMax: dv.AsP_max ?? 0, kapMax: dv.KaP_max ?? 0, schipMax: dv.Schip ?? 3 }
+  })()
+  const conditions = getConditions({ ...player, ...char })
+
+  return (
+    <Modal isOpen onClose={onClose} title={char.name || player.username || 'Spieler'} size="lg">
+      <PlayerDetailView
+        player={{ ...player, character: char, vitals, maxVitals, conditions }}
+        sendMessage={sendMessage}
+        gmControls={gmControls}
+        onClose={onClose}
+      />
+    </Modal>
   )
 }
 

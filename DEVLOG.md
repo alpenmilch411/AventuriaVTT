@@ -4,6 +4,24 @@
 
 ---
 
+## Session 9i — Structural fix for infinite re-render loops (root cause eliminated)
+**Date:** 2026-03-26
+
+### What changed
+- **Eliminated the root cause of the app crashing with "Maximum update depth exceeded"** — the combat store had a subscriber that called setState() on the same store it was listening to. In Zustand, this creates an immediate feedback loop: store changes → subscriber fires → setState → store changes → subscriber fires again. This was the underlying bug that kept coming back despite multiple fix attempts.
+- **Replaced automatic field syncing with computed selectors** — instead of a background subscriber that copies values from the battles object into flat fields (which caused the loop), components now derive combatActive, currentRound, initiativeOrder, and currentTurnIndex directly from the battles data when they read it. No background mutations, no feedback loops.
+- **Fixed selector instability in combat values hook** — the conditions selector was calling a function that created a new array reference every time, causing useMemo to constantly invalidate. Now reads conditions directly from the character object, maintaining stable references.
+- **Fixed stale condition data in GM player cards** — when the GM changed conditions, the player cards didn't update because the code read from a cached store snapshot instead of the fresh state.
+- **Fixed getConditionModifierGross returning -999** — the gross modifier display (corner numbers on stat cells) was showing -999 when conditions summed to Handlungsunfähig. Now always shows the real modifier sum.
+
+### Architecture rule established
+**Never call setState() inside a Zustand .subscribe() callback on the same store.** Use computed selectors (derive on read) instead of sync subscribers (copy on write). This eliminates an entire class of infinite loop bugs.
+
+### Files touched
+`frontend/src/stores/combatStore.js`, `frontend/src/hooks/useCombatValues.js`, `frontend/src/hooks/useGameState.js`, `frontend/src/hooks/useWebSocket.js`, `frontend/src/views/player/PlayerDashboard.jsx`, `frontend/src/views/player/CombatActions.jsx`, `frontend/src/views/gm/CombatTracker.jsx`, `frontend/src/views/gm/GMCockpit.jsx`, `frontend/src/views/gm/PlayerOverview.jsx`, `frontend/src/engine/conditionsEngine.js`
+
+---
+
 ## Session 9h — Rich interactive player detail view matching player-side depth
 **Date:** 2026-03-26
 

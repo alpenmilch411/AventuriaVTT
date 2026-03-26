@@ -3,6 +3,7 @@
  * Used by VitalsBar (header), ArmoryTab, CombatActions, and CharacterSheet.
  * Single source of truth for AT, PA, FK, AW, INI, GS, RS, BE, WS, SB.
  */
+const EMPTY_CONDITIONS = [] // stable reference to avoid re-render loops
 import useCharacterStore from '../stores/characterStore'
 import useAuthStore from '../stores/authStore'
 import { getConditionModifier } from '../engine/conditionsEngine'
@@ -26,7 +27,8 @@ export default function useCombatValues() {
       .catch(err => console.error('Failed to fetch combat techniques:', err))
   }, [token])
 
-  const conditions = useCharacterStore((s) => s.getConditions?.() || [])
+  const conditions = useCharacterStore((s) => s.myCharacter?.conditions || EMPTY_CONDITIONS)
+
 
   return useMemo(() => {
     if (!myCharacter) return null

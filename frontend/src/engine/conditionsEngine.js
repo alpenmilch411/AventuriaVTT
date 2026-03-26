@@ -240,14 +240,12 @@ export function getConditionModifier(conditions, stat) {
  */
 export function getConditionModifierGross(conditions, stat) {
   if (!conditions || conditions.length === 0) return { pos: 0, neg: 0 }
-  let pos = 0, neg = 0, totalLevel = 0
+  let pos = 0, neg = 0
   for (const cond of conditions) {
     const def = CONDITIONS[cond.name]
     if (!def) continue
     const level = cond.level || 1
-    totalLevel += level
-    if (def.effect === 'incapacitated') return { pos: 0, neg: -999 }
-    if (level >= 4 && def.levels === 4) return { pos: 0, neg: -999 }
+    // Always compute real modifiers (don't short-circuit with -999)
     let val = 0
     if (def.perLevel && def.perLevel[stat]) val += def.perLevel[stat] * level
     if (def.level2Extra && def.level2Extra[stat] && level >= 2) val += def.level2Extra[stat]
@@ -255,8 +253,6 @@ export function getConditionModifierGross(conditions, stat) {
     if (val > 0) pos += val
     if (val < 0) neg += val
   }
-  // DSA5: sum of all condition levels >= 8 also causes Handlungsunfähig
-  if (totalLevel >= 8) return { pos: 0, neg: -999 }
   return { pos, neg }
 }
 

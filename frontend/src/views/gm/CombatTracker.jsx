@@ -15,12 +15,13 @@ import { getCreatureIcon } from '../../utils/icons'
 import clsx from 'clsx'
 
 function CombatTracker({ sendMessage, gmControls, onMinimize }) {
-  const combatActive = useCombatStore((s) => s.combatActive)
   const activeBattleId = useCombatStore((s) => s.activeBattleId)
   const battles = useCombatStore((s) => s.battles)
-  const currentRound = useCombatStore((s) => s.currentRound)
-  const initiativeOrder = useCombatStore((s) => s.initiativeOrder)
-  const currentTurnIndex = useCombatStore((s) => s.currentTurnIndex)
+  const activeBattle = battles[activeBattleId]
+  const combatActive = Object.keys(battles).length > 0
+  const currentRound = activeBattle?.round || 0
+  const initiativeOrder = activeBattle?.initiativeOrder || []
+  const currentTurnIndex = activeBattle?.currentTurnIndex || 0
   const reorderInitiative = useCombatStore((s) => s.reorderInitiative)
   const pendingPlayerAction = useCombatStore((s) => s.pendingPlayerAction)
   const clearPendingPlayerAction = useCombatStore((s) => s.clearPendingPlayerAction)
