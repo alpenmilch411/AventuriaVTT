@@ -176,10 +176,7 @@ def _ensure_state(session_code: str) -> dict[str, Any]:
             "weather": None,
             "halted": False,
             "attention": False,
-            "spotlight": None,         # user_id or None
-            "table_view_mode": "map",  # "map" | "combat" | "handout" | "journal"
             "connected_users": [],
-            "last_sound": None,
             "quests": [],
             "lore_entries": [],
             "pending_requests": {},    # request_id -> request data
@@ -499,18 +496,13 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.HANDOUT_PUSH: _handle_handout_push,
         EventType.TIME_ADVANCE: _handle_time_advance,
         EventType.WEATHER_CHANGE: _handle_weather_change,
-        EventType.SOUND_PLAY: _handle_sound_play,
         EventType.ATTENTION: _handle_attention,
         EventType.ATTENTION_RELEASE: _handle_attention_release,
         EventType.AP_AWARD: _handle_ap_award,
         EventType.QUEST_UPDATE: _handle_quest_update,
         EventType.LORE_REVEAL: _handle_lore_reveal,
-        EventType.SPOTLIGHT: _handle_spotlight,
-        EventType.SPOTLIGHT_RELEASE: _handle_spotlight_release,
-        EventType.TABLE_VIEW_MODE: _handle_table_view_mode,
         EventType.SESSION_START: _handle_session_start,
         EventType.SESSION_PAUSE: _handle_session_pause,
-        EventType.SESSION_RESUME: _handle_session_resume,
         EventType.SESSION_END: _handle_session_end,
     }
 
@@ -1138,20 +1130,6 @@ async def _handle_weather_change(session_code: str, user_id: str, payload: dict,
     await manager.broadcast_to_room(session_code, msg)
 
 
-async def _handle_sound_play(session_code: str, user_id: str, payload: dict, state: dict):
-    """Play a sound or ambient track on all clients."""
-    sound = {
-        "sound_id": payload.get("sound_id"),
-        "url": payload.get("url"),
-        "name": payload.get("name", ""),
-        "loop": payload.get("loop", False),
-        "volume": payload.get("volume", 1.0),
-        "action": payload.get("action", "play"),  # "play" | "stop" | "pause"
-    }
-    state["last_sound"] = sound
-    msg = _msg(EventType.SOUND_PLAY, sound, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
-
 
 async def _handle_attention(session_code: str, user_id: str, payload: dict, state: dict):
     """Enter attention mode — all players should look at the GM screen."""
@@ -1224,33 +1202,6 @@ async def _handle_lore_reveal(session_code: str, user_id: str, payload: dict, st
     await manager.broadcast_to_room(session_code, msg, target=target)
 
 
-async def _handle_spotlight(session_code: str, user_id: str, payload: dict, state: dict):
-    """Put a player in the spotlight (e.g. for roleplay moments)."""
-    target_user = payload.get("target_user")
-    state["spotlight"] = target_user
-    msg = _msg(EventType.SPOTLIGHT, {
-        "target_user": target_user,
-        "reason": payload.get("reason", ""),
-    }, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
-
-
-async def _handle_spotlight_release(session_code: str, user_id: str, payload: dict, state: dict):
-    """Release the spotlight."""
-    state["spotlight"] = None
-    msg = _msg(EventType.SPOTLIGHT_RELEASE, {}, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
-
-
-async def _handle_table_view_mode(session_code: str, user_id: str, payload: dict, state: dict):
-    """Switch what the table-top screen displays."""
-    mode = payload.get("mode", "map")
-    state["table_view_mode"] = mode
-    msg = _msg(EventType.TABLE_VIEW_MODE, {"mode": mode}, from_user=user_id)
-    # Send to table views and GM
-    await manager.broadcast_to_room(session_code, msg, target="gm_table")
-    # Also inform players so they know what's on screen
-    await manager.broadcast_to_room(session_code, msg, target="players")
 
 
 # ===================================================================
@@ -1275,14 +1226,6 @@ async def _handle_session_pause(session_code: str, user_id: str, payload: dict, 
     msg = _msg(EventType.SESSION_PAUSE, {"reason": payload.get("reason", "")}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     logger.info("Session %s paused", session_code)
-
-
-async def _handle_session_resume(session_code: str, user_id: str, payload: dict, state: dict):
-    """Resume a paused session."""
-    state["status"] = "active"
-    msg = _msg(EventType.SESSION_RESUME, {}, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
-    logger.info("Session %s resumed", session_code)
 
 
 async def _handle_session_end(session_code: str, user_id: str, payload: dict, state: dict):
@@ -2013,8 +1956,6 @@ def get_full_sync(session_code: str) -> dict:
         "weather": state["weather"],
         "halted": state["halted"],
         "attention": state["attention"],
-        "spotlight": state["spotlight"],
-        "table_view_mode": state["table_view_mode"],
         "connected_users": state["connected_users"],
         "quests": state["quests"],
         "lore_entries": state["lore_entries"],

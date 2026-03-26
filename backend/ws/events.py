@@ -31,8 +31,6 @@ class EventType(str, Enum):
     AP_AWARD = "ap_award"
     QUEST_UPDATE = "quest_update"
     LORE_REVEAL = "lore_reveal"
-    SPOTLIGHT = "spotlight"
-    SPOTLIGHT_RELEASE = "spotlight_release"
     # Trade / Transfer
     TRADE_PROPOSE = "trade_propose"
     TRADE_ACCEPT = "trade_accept"

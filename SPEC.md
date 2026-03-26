@@ -4157,21 +4157,24 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 - [x] Player route now requires authentication
 
 **Still open:**
-- [ ] GM scene view right panel: rework with collapsible sections, fix all non-functional buttons
 - [ ] Player pending requests: show open requests with withdraw option
 - [ ] Battle/probe overlay on table view so all players see what's happening
-- [ ] WebSocket real-time scene switching: GM activates scene → all player views update instantly
-- [ ] Map token spawn: spawned tokens should appear immediately without page reload
 - [ ] Creature stat editing: GM can modify creature stats on the fly during combat
-- [ ] Multi-GM / Co-GM mode
 - [ ] Mobile responsive header (compact on small screens)
 - [ ] Character import/export (Optolith JSON format)
 - [ ] Character level-up UI (spend AP to raise attributes/talents/techniques)
 - [ ] Opposed probes UI
-- [ ] Spotlight system frontend
 - [ ] In-game time tracking frontend
 - [ ] Weather system frontend
 - [ ] Ranged weapon reload tracking (Schnellladen SF)
+
+**Removed (cut from scope):**
+- ~~GM scene view right panel~~ — scenes/maps removed from scope
+- ~~WebSocket real-time scene switching~~ — scenes removed from scope
+- ~~Map token spawn~~ — maps removed from scope
+- ~~Soundboard~~ — cut, not core to gameplay
+- ~~Multi-GM / Co-GM mode~~ — cut for v1
+- ~~Spotlight system~~ — cut for v1
 
 ### Architecture & Stability (identified 2026-03-25)
 
@@ -4203,9 +4206,8 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 
 ### Non-Functional UI Elements (identified 2026-03-25)
 
-- [ ] QuickActions.jsx: Regelsuche modal — "Coming Soon" placeholder, search field does nothing
-- [ ] QuickActions.jsx: Spawn modal — just shows instructions, no actual spawn UI
-- [ ] QuickActions.jsx: Soundboard modal — just shows instructions, no sound controls
+- [x] ~~QuickActions.jsx~~ — entire file deleted (dead code, replaced by individual panels)
+- [x] ~~Soundboard~~ — cut from scope
 
 ---
 

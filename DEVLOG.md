@@ -4,6 +4,18 @@
 
 ---
 
+## Session 9d — Remove cut features: soundboard, spotlight, table view mode
+**Date:** 2026-03-26
+
+### What changed
+- **Removed code for features that were cut from scope** — the soundboard, spotlight system, table view mode switching, and session resume were built early on but never connected to any UI. Their backend handlers, event types, and session state fields have been cleaned out to reduce code complexity.
+- Updated the roadmap to clearly mark these as "removed" so they don't keep appearing as open tasks.
+
+### Files touched
+`backend/ws/handlers.py`, `backend/ws/events.py`, `SPEC.md`
+
+---
+
 ## Session 9c — Multiple reactions now require Schicksalspunkte
 **Date:** 2026-03-26
 
