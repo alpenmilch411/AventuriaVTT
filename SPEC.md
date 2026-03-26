@@ -4233,9 +4233,10 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 
 Optolith (open-source DSA5 character generator) was integrated as the source for species/cultures/professions in Session 12. Further data that could be sourced from Optolith or other authoritative DSA5 sources:
 
+- [ ] **Fill culture/profession AP costs + skill packages** — `elyukai/optolith-data` (private, licensed) has the full mechanical data; currently all culture AP costs and profession skill packages are 0/empty, meaning the character creator wizard cannot deduct AP for culture/profession selection. Options: (1) enter values manually from the physical rulebook, (2) contact Ulisses Spiele / elyukai for data access, (3) scrape DSA5 Wiki as a fallback source
 - [ ] **Audit species/cultures/professions seed accuracy** — verify Optolith-sourced AP costs, skill packages, and attribute values against physical DSA5 rulebook before production use
-- [ ] **Expand cultures coverage** — Optolith has 40+ cultures; currently seeded 8 most common; add remaining for full character creation support
-- [ ] **Expand professions coverage** — Optolith has 100+ professions; currently seeded 11; add remaining (especially magic/blessed variants)
+- [ ] **Expand cultures coverage** — 33 cultures seeded (GRW + Aventurischer Almanach); Optolith has more from supplements
+- [ ] **Expand professions coverage** — 46 professions seeded (GRW + Wege der Götter); many supplement professions still missing
 - [ ] **Richer creature data** — Optolith/DSA5 Wiki has more creatures with full stat blocks; current 60 creatures are manually curated
 - [ ] **Advantages/disadvantages catalog** — Optolith has full Vor-/Nachteil list with AP costs; currently only a small preset in the character creator
 - [ ] **Special abilities from Optolith** — cross-reference existing 42 seeded SAs against Optolith's full SA list for completeness
