@@ -258,36 +258,62 @@ export default function GMCockpit() {
               const lepMax = dv.LeP_max ?? 30
               const asp = cv.asp ?? p.currentAsP ?? dv.AsP_max ?? 0
               const aspMax = dv.AsP_max ?? 0
+              const kap = cv.kap ?? p.currentKaP ?? dv.KaP_max ?? 0
+              const kapMax = dv.KaP_max ?? 0
               const charName = p.character?.name || p.username
               const selected = selectedPlayerIds.has(p.id)
-              const buffs = activeBuffs.filter(b => b.characterId === p.characterId && b.expiresAt > Date.now())
+              const isOnline = !!p.connected
+              const lepPct = lepMax > 0 ? lep / lepMax : 1
+              const isCritical = lepPct < 0.25
+              const conds = getConditions(p)
               return (
                 <button
                   key={p.id}
                   onClick={() => togglePlayer(p.id)}
                   className={clsx(
-                    'w-full text-left bg-dsa-bg rounded p-2.5 border transition',
-                    !p.connected && 'opacity-40',
-                    selected ? 'border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'border-dsa-bg-medium hover:border-dsa-bg-card'
+                    'w-full text-left rounded-sm px-2.5 py-2 border transition',
+                    !isOnline && 'opacity-40',
+                    selected ? 'bg-dsa-bg border-dsa-gold/50 ring-1 ring-dsa-gold/20' : 'bg-dsa-bg border-dsa-bg-medium hover:border-dsa-bg-card'
                   )}
                 >
+                  {/* Row 1: Checkbox + Name + Online dot */}
                   <div className="flex items-center gap-2 mb-1">
                     <div className={clsx('w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 transition',
                       selected ? 'bg-dsa-gold border-dsa-gold' : 'border-dsa-bg-medium')}>
                       {selected && <Check className="w-2.5 h-2.5 text-dsa-bg" />}
                     </div>
                     <span className="text-xs font-semibold text-dsa-parchment truncate flex-1">{charName}</span>
-                    <span className={clsx('w-1.5 h-1.5 rounded-full flex-shrink-0', p.connected ? 'bg-green-400' : 'bg-red-400')} />
+                    <span className="text-[8px] text-dsa-parchment-dark/60 truncate">{p.username || ''}</span>
+                    <span className={clsx('w-1.5 h-1.5 rounded-full flex-shrink-0', isOnline ? 'bg-green-400 animate-pulse' : 'bg-dsa-parchment-dark/30')} />
                   </div>
-                  <div className="ml-5.5 pl-0.5">
-                    <ProgressBar value={lep} max={lepMax} variant="health" size="sm" />
-                    <div className="text-[9px] text-dsa-parchment-dark font-mono mt-0.5">LeP {lep}/{lepMax}{aspMax > 0 ? ` · AsP ${asp}/${aspMax}` : ''}</div>
-                    {getConditions(p).length > 0 && (
-                      <div className="flex flex-wrap gap-0.5 mt-1">
-                        {getConditions(p).map((c, i) => <Badge key={i} variant="danger" size="sm">{typeof c === 'string' ? c : c.name}</Badge>)}
+                  {/* Row 2: LeP bar */}
+                  <div className="ml-5.5 pl-0.5 space-y-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex-1 h-2 bg-dsa-bg-card rounded-full overflow-hidden">
+                        <div className={clsx('h-full rounded-full transition-all duration-500',
+                          lepPct <= 0.25 ? 'bg-red-500' : lepPct <= 0.5 ? 'bg-yellow-500' : 'bg-green-600'
+                        )} style={{ width: `${Math.max(0, lepPct * 100)}%` }} />
+                      </div>
+                      <span className={clsx('text-[9px] font-mono w-10 text-right', isCritical ? 'text-red-400 font-bold' : 'text-dsa-parchment-dark')}>{lep}/{lepMax}</span>
+                    </div>
+                    {/* AsP/KaP inline text (only if character has them) */}
+                    {(aspMax > 0 || kapMax > 0) && (
+                      <div className="text-[8px] text-dsa-parchment-dark/70 font-mono">
+                        {aspMax > 0 && <span className="text-blue-400/70">AsP {asp}/{aspMax}</span>}
+                        {aspMax > 0 && kapMax > 0 && ' · '}
+                        {kapMax > 0 && <span className="text-purple-400/70">KaP {kap}/{kapMax}</span>}
                       </div>
                     )}
-                    {buffs.length > 0 && <div className="mt-1"><ActiveBuffs characterId={p.characterId} compact /></div>}
+                    {/* Conditions */}
+                    {conds.length > 0 && (
+                      <div className="flex flex-wrap gap-0.5">
+                        {conds.map((c, i) => {
+                          const name = typeof c === 'string' ? c : c.name
+                          const level = typeof c === 'string' ? 1 : (c.level || 1)
+                          return <span key={i} className="text-[7px] px-1 py-0.5 rounded bg-yellow-900/40 text-yellow-400 border border-yellow-800/30">{name}{level > 1 ? ` ${level}` : ''}</span>
+                        })}
+                      </div>
+                    )}
                   </div>
                 </button>
               )

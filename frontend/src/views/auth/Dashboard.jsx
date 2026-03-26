@@ -58,16 +58,19 @@ export default function Dashboard() {
     setLoading(false)
   }, [token])
 
+  const userId = user?.id
+
   useEffect(() => {
     if (!token) {
       navigate('/')
       return
     }
-    if (!user) {
+    if (!userId) {
       fetchMe()
+      return
     }
     fetchData()
-  }, [token, navigate, fetchMe, user, fetchData])
+  }, [token, userId, navigate, fetchMe, fetchData])
 
   const handleJoinSession = () => {
     const code = sessionCode.trim().toUpperCase()
