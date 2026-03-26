@@ -4284,7 +4284,16 @@ All 4 dashboard tabs are now done.
 - [x] Derived values recomputed on level-up — `_recompute_derived()` helper called after attribute changes (fixed Session 12 audit)
 - [ ] `creation_finalized` / `creation_ap_spent` dead code — fields exist but never set; finalize endpoint missing
 - [ ] Optolith import missing fields — combat_techniques, derived_values, inventory not extracted from Optolith JSON
-- [ ] Culture/profession seed data incomplete — all 33 cultures and 46 professions have empty skill_bonuses/combat_techniques/skills packages (AP costs present; packages need manual entry or Optolith local install)
+- [ ] Culture/profession seed data incomplete — all 33 cultures and 46 professions have empty skill_bonuses/combat_techniques/skills packages; profession selection is currently cosmetic only
+- [ ] Languages/Scripts step missing — DSA5 step 10: languages/scripts are SF purchasable with AP; culture provides free Muttersprache; wizard shows languages but doesn't let players buy more
+- [ ] Special abilities purchase step missing — DSA5 step 10: no SF purchase UI in wizard
+- [ ] Spells/Liturgies customization missing — magic/blessed characters need spell selection/upgrade step; profession.spells/liturgies currently always empty
+- [ ] Tradition selection missing — magic users need a magical tradition (e.g. Gildenmagie); blessed need karmic tradition
+- [ ] 80 AP cap missing on advantages — wizard only caps Nachteile at 80 AP; Vorteile should also cap at 80 AP
+- [ ] Vor-/Nachteile hardcoded — only 10+10 presets; DSA5 has ~60+ advantages and ~60+ disadvantages; should load from databank
+- [ ] No starting equipment/capital — characters start with no items; should calculate starting money from social status/profession
+- [ ] AT/PA split not calculated — melee combat techniques need attack/parry value distribution (DSA5 step 9)
+- [ ] Gender-aware profession names unused — seed data has `name_f` (feminine forms) but wizard always shows masculine name
 - [ ] View character history across sessions — endpoint missing, low priority
 - [ ] Character portrait upload — uses `portrait_url` string; binary upload endpoint missing
 

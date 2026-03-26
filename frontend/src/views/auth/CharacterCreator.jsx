@@ -277,10 +277,14 @@ export default function CharacterCreator({ onClose, onCreated }) {
   const gradeData = grade ? ERFAHRUNGSGRADE[grade] : null
   const freeAttrPoints = species?.free_attribute_points ?? 7
 
-  // Base attributes = species base + free points
+  // Base attributes = species base + species attribute_adjustments + free points
   const baseAttributes = useMemo(() => {
     const specBase = species?.base_attributes || {}
     const base = ATTR_KEYS.reduce((o, k) => ({ ...o, [k]: specBase[k] ?? 8 }), {})
+    // Species racial attribute adjustments (e.g. Elf: IN+1/GE+1, Zwerg: KO+1/KK+1)
+    for (const [k, v] of Object.entries(species?.attribute_adjustments || {})) {
+      if (ATTR_KEYS.includes(k)) base[k] = (base[k] || 8) + v
+    }
     for (const [k, v] of Object.entries(speciesFreePoints)) {
       base[k] = (base[k] || 8) + v
     }
@@ -381,8 +385,12 @@ export default function CharacterCreator({ onClose, onCreated }) {
   // ── Derived values ──
   const derivedValues = useMemo(() => {
     const a = finalAttributes
+    const lepBase = species?.lep_base || 0
     return {
-      LeP_max:   a.KO * 2,
+      LeP_max:     lepBase + a.KO * 2,
+      lep_base:    lepBase,         // persisted so server-side recompute stays accurate
+      SK_modifier: species?.sk_modifier || 0,
+      ZK_modifier: species?.zk_modifier || 0,
       AsP_max:   isMagic ? Math.ceil((a.MU + a.IN + a.CH) / 2) : 0,
       KaP_max:   isBlessed ? Math.ceil((a.MU + a.KL + a.IN) / 2) : 0,
       GS:        species?.gs_base || 8,
@@ -453,7 +461,11 @@ export default function CharacterCreator({ onClose, onCreated }) {
     }
 
     // Build advantages/disadvantages as dicts
+    // Species auto-advantages are free (0 AP) and always present
     const advantages = {}
+    for (const adv of (species?.auto_advantages || [])) {
+      advantages[adv] = { ap: 0, auto: true }
+    }
     for (const v of vorteile) advantages[v.name] = { ap: v.ap }
     const disadvantages = {}
     for (const n of nachteile) disadvantages[n.name] = { ap: n.ap }

@@ -35,7 +35,8 @@ def _recompute_derived(attributes: dict, spells: dict, liturgies: dict, existing
     kk = a.get("KK", 8)
 
     result = dict(existing or {})
-    result["LeP_max"] = ko * 2
+    lep_base = result.get("lep_base", 0)
+    result["LeP_max"] = lep_base + ko * 2
     result["INI_basis"] = (mu + ge) // 2
     result["AW"] = ge // 2
     result["WS"] = math.ceil(ko / 2)

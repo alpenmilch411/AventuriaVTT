@@ -66,10 +66,18 @@ Three-agent audit team (backend-audit, frontend-audit, dsa-researcher) ran full 
 - `POST /api/characters/{id}/level-up` updated attributes but left `derived_values` stale
 - Fixed: added `_recompute_derived()` helper in `characters.py` using DSA5 formulas (LeP=KO×2, AsP=⌈(MU+IN+CH)/2⌉ if magic, etc.); called after applying attribute changes
 
+**Rules correctness bugs fixed (dsa-researcher identified):**
+- `CharacterCreator.jsx:385` — LeP formula was `KO * 2`; corrected to `species.lep_base + KO * 2` (Mensch=5+KO*2, Zwerg=8+KO*2, Elf=2+KO*2)
+- `CharacterCreator.jsx:282` — Species `attribute_adjustments` were ignored (Elf IN+1/GE+1, Zwerg KO+1/KK+1); now applied to `baseAttributes` before free point distribution
+- `CharacterCreator.jsx:456` — Species `auto_advantages` (e.g. Elf: Zweistimmiger Gesang, Flink I) were not included in payload; now merged into `advantages` dict at 0 AP with `auto: true`
+- Backend `_recompute_derived` — updated to use stored `lep_base` from `derived_values` for consistent LeP on level-up
+- Frontend `derivedValues` — now stores `lep_base`, `SK_modifier`, `ZK_modifier` so server-side recompute stays species-accurate
+
 **Bugs identified, not yet fixed (TODOs added to SPEC):**
 - Optolith import missing: combat_techniques, derived_values, inventory extraction
 - `creation_finalized` / `creation_ap_spent` fields dead (never set, no finalize endpoint)
 - Culture/profession seed packages empty (all 33 cultures + 46 professions have skill_bonuses={}, combat_techniques={})
+- DSA5 official 15-step creation has 8 more steps beyond our 10 wizard steps: Languages/Scripts SF, Special Abilities purchase, Spells/Liturgies customization, Tradition selection, 80 AP Vorteile cap, Starting equipment, AT/PA split, gender-aware profession names
 
 **Audit finding — CharacterCreator.jsx quality:**
 - All 10 steps complete, AP budget correct including Nachteilsdeckelung (80 AP cap), derived values match useCombatValues.js exactly, submit payload includes all 11 derived values + attributes + talents + KT + advantages/disadvantages, per-step validation enforced
