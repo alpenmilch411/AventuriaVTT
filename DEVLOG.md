@@ -4,6 +4,21 @@
 
 ---
 
+## Session 9e — Player list shows only connected users with proper detail
+**Date:** 2026-03-26
+
+### What changed
+- **GM player list only shows connected players** — previously all campaign players were listed regardless of whether they were actually online. Now only players with an active WebSocket connection appear, so the GM always knows exactly who's at the table.
+- **Online indicator actually works** — the green dot was broken because the connection state from the server wasn't being read during reconnects. Now when the GM's browser reconnects, it immediately gets the correct list of who's online.
+- **Richer player cards** — each card now shows colored health/astral/karma bars with numbers, active conditions as badges, and species/profession. The GM can see at a glance who's hurt, who's low on spell points, and who has conditions.
+- **Clicking a player shows full details** — the detail popup now includes all 8 attributes, all combat values (AT/PA/AW/FK/INI/GS/RS/BE), Schicksalspunkte, active conditions with levels, available AP, and up to 12 Sonderfertigkeiten. The GM has everything they need to make rulings without flipping through character sheets.
+- Removed the inline probe dialog from the player list (probes are better handled through the dedicated probe launcher).
+
+### Files touched
+`frontend/src/views/gm/PlayerOverview.jsx`, `frontend/src/hooks/useWebSocket.js`
+
+---
+
 ## Summary — Sessions 6–9d (2026-03-26)
 **Type:** Claude Code — full audit, cleanup, architecture, and battle polish in one day
 

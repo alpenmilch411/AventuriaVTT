@@ -725,6 +725,14 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     else if (type === 'sync_full') {
       // Reset version tracking to server's current version
       if (payload.state_version) lastStateVersion.current = payload.state_version
+      // Update connected status from server's authoritative list
+      if (payload.connected_users) {
+        const connIds = payload.connected_users
+        const curPlayers = useSessionStore.getState().players
+        if (curPlayers.length > 0) {
+          useSessionStore.getState().setPlayers(curPlayers.map(p => ({ ...p, connected: connIds.includes(p.id) })))
+        }
+      }
       // Restore all state from server
       if (payload.halted !== undefined) useSessionStore.getState().setHalted(payload.halted)
       if (payload.attention !== undefined) useSessionStore.getState().setAttentionMode(payload.attention)
