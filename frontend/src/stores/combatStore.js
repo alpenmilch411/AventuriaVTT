@@ -357,13 +357,16 @@ const useCombatStore = create((set, get) => ({
   }),
 }))
 
+// Stable empty array to avoid creating new references in subscriber
+const EMPTY_ORDER = []
+
 // Auto-sync legacy fields whenever battles change
 useCombatStore.subscribe((state, prevState) => {
   if (state.battles !== prevState.battles || state.activeBattleId !== prevState.activeBattleId) {
     const battle = state.battles[state.activeBattleId]
     const newCombatActive = Object.keys(state.battles).length > 0
     const newRound = battle?.round || 0
-    const newOrder = battle?.initiativeOrder || []
+    const newOrder = battle?.initiativeOrder || EMPTY_ORDER
     const newIdx = battle?.currentTurnIndex || 0
 
     // Only set if actually changed to avoid infinite loop
