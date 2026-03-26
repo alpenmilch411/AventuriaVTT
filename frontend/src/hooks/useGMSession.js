@@ -16,15 +16,19 @@ export default function useGMSession(sessionCode) {
   const token = useAuthStore((s) => s.token)
   const fetchMe = useAuthStore((s) => s.fetchMe)
   const setSession = useSessionStore((s) => s.setSession)
-  const setCampaignData = useCampaignStore((s) => s.setCampaignData)
-
   const [isAuthorizedGM, setIsAuthorizedGM] = useState(null) // null=loading, true/false
 
+  const userId = user?.id
+
   // Ensure user is fetched if we have a token but no user
-  useEffect(() => { if (!user && token) fetchMe() }, [user, token])
+  useEffect(() => { if (!userId && token) fetchMe() }, [userId, token, fetchMe])
 
   // Set up session and load data when dependencies change
-  useEffect(() => { setSession({ sessionCode, isGM: true }); loadData() }, [sessionCode, token, user])
+  useEffect(() => {
+    if (!userId || !token) return
+    setSession({ sessionCode, isGM: true })
+    loadData()
+  }, [sessionCode, token, userId])
 
   // Reset all stores on unmount
   useEffect(() => {
@@ -38,8 +42,10 @@ export default function useGMSession(sessionCode) {
   }, [])
 
   const loadData = async () => {
-    if (!token || !user) return
-    const headers = { Authorization: `Bearer ${token}` }
+    const currentToken = useAuthStore.getState().token
+    const currentUser = useAuthStore.getState().user
+    if (!currentToken || !currentUser) return
+    const headers = { Authorization: `Bearer ${currentToken}` }
     try {
       const sessRes = await fetch(`/api/sessions/by-code/${sessionCode}`, { headers })
       let campaignId = null
@@ -57,7 +63,7 @@ export default function useGMSession(sessionCode) {
         const campCheck = await fetch(`/api/campaigns/${campaignId}`, { headers })
         if (campCheck.ok) {
           const campData = await campCheck.json()
-          if (campData.gm_user_id !== user.id) { setIsAuthorizedGM(false); return }
+          if (campData.gm_user_id !== currentUser.id) { setIsAuthorizedGM(false); return }
           setIsAuthorizedGM(true)
         }
       }
@@ -72,7 +78,7 @@ export default function useGMSession(sessionCode) {
       const playersData = playersRes.ok ? await playersRes.json() : []
 
       if (campaignData) {
-        setCampaignData({ campaign: campaignData, scenes: [], npcs: [], quests: [], loreBook: [] })
+        useCampaignStore.getState().setCampaignData({ campaign: campaignData, scenes: [], npcs: [], quests: [], loreBook: [] })
       }
       if (Array.isArray(playersData) && playersData.length > 0) {
         const cv = (p) => p.current_vitals || {}

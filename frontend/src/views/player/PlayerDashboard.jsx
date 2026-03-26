@@ -59,17 +59,20 @@ export default function PlayerDashboard() {
 
   const { isOffline, OfflineBanner } = useOffline()
 
-  useEffect(() => { if (!user && token) fetchMe() }, [user, token])
+  const userId = user?.id
+
+  useEffect(() => { if (!userId && token) fetchMe() }, [userId, token, fetchMe])
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!token && !user) navigate('/')
-  }, [token, user])
+    if (!token && !userId) navigate('/')
+  }, [token, userId, navigate])
 
   useEffect(() => {
+    if (!userId || !token) return
     setSession({ sessionCode, isGM: false })
-    if (token && user) loadCharacter()
-  }, [sessionCode, token, user])
+    loadCharacter()
+  }, [sessionCode, token, userId])
 
   useEffect(() => {
     return () => {
