@@ -239,6 +239,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
 
   // Step 3: Species + free points
   const [species, setSpecies] = useState(null)
+  const [speciesVariant, setSpeciesVariant] = useState(null) // selected species variant (if any)
   const [speciesFreePoints, setSpeciesFreePoints] = useState({}) // {attr: delta}
 
   // Step 4: Culture
@@ -246,6 +247,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
 
   // Step 5: Profession
   const [profession, setProfession] = useState(null)
+  const [professionVariant, setProfessionVariant] = useState(null) // selected profession variant (if any)
 
   // Step 6: Vor-/Nachteile
   const [vorteile, setVorteile] = useState([])
@@ -354,7 +356,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     return result
   }, [baseAttributes, attrUpgrades])
 
-  // Base skills (from culture skill_bonuses + profession skills)
+  // Base skills (from culture skill_bonuses + profession skills + profession variant adjustments)
   const baseSkills = useMemo(() => {
     const skills = {}
     if (culture?.skill_bonuses) {
@@ -367,8 +369,14 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
         skills[k] = (skills[k] || 0) + v
       }
     }
+    // Apply profession variant skill adjustments
+    if (professionVariant?.skills) {
+      for (const [k, v] of Object.entries(professionVariant.skills)) {
+        skills[k] = (skills[k] || 0) + v
+      }
+    }
     return skills
-  }, [culture, profession])
+  }, [culture, profession, professionVariant])
 
   // Base KT (from profession, min 6)
   const baseKT = useMemo(() => {
@@ -433,7 +441,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     const total = gradeData.ap
     const speciesAP = species?.ap_cost || 0
     const cultureAP = culture?.ap_cost || 0
-    const professionAP = profession?.ap_cost || 0
+    const professionAP = (profession?.ap_cost || 0) + (professionVariant?.ap_cost || 0)
     const freeAP = total - speciesAP - cultureAP - professionAP
 
     // Attr spend
@@ -476,7 +484,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     const remaining = freeAP - attrSpend - skillSpend - ktSpend - vorteileAP + nachteileRefund - saSpend
 
     return { total, speciesAP, cultureAP, professionAP, freeAP, attrSpend, skillSpend, ktSpend, vorteileAP, vorteileAPRaw, nachteileRefund, saSpend, remaining }
-  }, [gradeData, species, culture, profession, attrUpgrades, baseAttributes, talentUpgrades, baseSkills, ktUpgrades, baseKT, vorteile, nachteile, purchasedSAs, talentSFMap, ktData])
+  }, [gradeData, species, culture, profession, professionVariant, attrUpgrades, baseAttributes, talentUpgrades, baseSkills, ktUpgrades, baseKT, vorteile, nachteile, purchasedSAs, talentSFMap, ktData])
 
   // ── Derived values ──
   const derivedValues = useMemo(() => {
@@ -530,14 +538,22 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
   useEffect(() => {
     if (skipResetRef.current) return
     setSpeciesFreePoints({})
+    setSpeciesVariant(null)
     setCulture(null)
     setProfession(null)
+    setProfessionVariant(null)
   }, [species])
 
   useEffect(() => {
     if (skipResetRef.current) return
     setProfession(null)
+    setProfessionVariant(null)
   }, [culture])
+
+  // Reset profession variant when profession changes
+  useEffect(() => {
+    setProfessionVariant(null)
+  }, [profession])
 
   // Auto-populate spells/liturgies when profession changes
   useEffect(() => {
@@ -590,8 +606,10 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     const payload = {
       name: name.trim(),
       species: species?.name || null,
+      species_variant: speciesVariant?.name || null,
       culture: culture?.name || null,
       profession: profession?.name || null,
+      profession_variant: professionVariant?.name || null,
       experience_grade: grade,
       total_ap: apBudget.total,
       available_ap: apBudget.remaining,
@@ -665,9 +683,9 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     switch (step) {
       case 0: return <StepGrade grade={grade} setGrade={setGrade} />
       case 1: return <StepName name={name} setName={setName} nickname={nickname} setNickname={setNickname} background={background} setBackground={setBackground} />
-      case 2: return <StepSpecies species={species} setSpecies={setSpecies} speciesFreePoints={speciesFreePoints} setSpeciesFreePoints={setSpeciesFreePoints} speciesFreeUsed={speciesFreeUsed} freeAttrPoints={freeAttrPoints} gradeData={gradeData} speciesAll={speciesAll} loading={apiLoading.species} error={apiError.species} onRetry={loadSpecies} />
+      case 2: return <StepSpecies species={species} setSpecies={setSpecies} speciesVariant={speciesVariant} setSpeciesVariant={setSpeciesVariant} speciesFreePoints={speciesFreePoints} setSpeciesFreePoints={setSpeciesFreePoints} speciesFreeUsed={speciesFreeUsed} freeAttrPoints={freeAttrPoints} gradeData={gradeData} speciesAll={speciesAll} loading={apiLoading.species} error={apiError.species} onRetry={loadSpecies} />
       case 3: return <StepCulture culture={culture} setCulture={setCulture} cultures={filteredCultures} loading={apiLoading.cultures} error={apiError.cultures} onRetry={loadCultures} />
-      case 4: return <StepProfession profession={profession} setProfession={setProfession} professions={filteredProfessions} gradeData={gradeData} loading={apiLoading.professions} error={apiError.professions} onRetry={loadProfessions} />
+      case 4: return <StepProfession profession={profession} setProfession={setProfession} professionVariant={professionVariant} setProfessionVariant={setProfessionVariant} professions={filteredProfessions} gradeData={gradeData} loading={apiLoading.professions} error={apiError.professions} onRetry={loadProfessions} />
       case 5: return <StepVorNachteile vorteile={vorteile} setVorteile={setVorteile} nachteile={nachteile} setNachteile={setNachteile} apBudget={apBudget} species={species} advantagesAll={advantagesAll} disadvantagesAll={disadvantagesAll} loadingAdv={apiLoading.advantages} loadingDis={apiLoading.disadvantages} errorAdv={apiError.advantages} errorDis={apiError.disadvantages} onRetryAdv={loadAdvantages} onRetryDis={loadDisadvantages} />
       case 6: return <StepAttributes baseAttributes={baseAttributes} attrUpgrades={attrUpgrades} setAttrUpgrades={setAttrUpgrades} gradeData={gradeData} apBudget={apBudget} derivedValues={derivedValues} />
       case 7: return <StepTalentsKT baseSkills={baseSkills} talentUpgrades={talentUpgrades} setTalentUpgrades={setTalentUpgrades} baseKT={baseKT} ktUpgrades={ktUpgrades} setKtUpgrades={setKtUpgrades} atPaSplits={atPaSplits} setAtPaSplits={setAtPaSplits} gradeData={gradeData} apBudget={apBudget} isMagic={isMagic} isBlessed={isBlessed} professionSpells={profession?.spells} professionLiturgies={profession?.liturgies} selectedSpells={selectedSpells} setSelectedSpells={setSelectedSpells} selectedLiturgies={selectedLiturgies} setSelectedLiturgies={setSelectedLiturgies} professionSAs={profession?.special_abilities} purchasedSAs={purchasedSAs} setPurchasedSAs={setPurchasedSAs} specialAbilitiesAll={specialAbilitiesAll} loadingSAs={apiLoading.specialAbilities} errorSAs={apiError.specialAbilities} onRetrySAs={loadSpecialAbilities} talentCategories={talentCategories} ktData={ktData} />
@@ -893,7 +911,7 @@ function StepName({ name, setName, nickname, setNickname, background, setBackgro
 }
 
 // ── Step 3: Species (from API) ──
-function StepSpecies({ species, setSpecies, speciesFreePoints, setSpeciesFreePoints, speciesFreeUsed, freeAttrPoints, gradeData, speciesAll, loading, error, onRetry }) {
+function StepSpecies({ species, setSpecies, speciesVariant, setSpeciesVariant, speciesFreePoints, setSpeciesFreePoints, speciesFreeUsed, freeAttrPoints, gradeData, speciesAll, loading, error, onRetry }) {
   if (error) return <LoadError message={error} onRetry={onRetry} />
   if (loading && speciesAll.length === 0) {
     return (
@@ -951,6 +969,50 @@ function StepSpecies({ species, setSpecies, speciesFreePoints, setSpeciesFreePoi
           )
         })}
       </div>
+
+      {/* Species Variant picker */}
+      {species && Array.isArray(species.variants) && species.variants.length > 0 && (
+        <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded p-4 space-y-3">
+          <div>
+            <h3 className="text-sm font-display font-semibold text-dsa-parchment">Variante wählen</h3>
+            <p className="text-[10px] text-dsa-parchment-dark">Optional: Wähle eine Untervariante deiner Spezies.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              onClick={() => setSpeciesVariant(null)}
+              className={clsx(
+                'text-left p-3 rounded border transition-all text-xs',
+                !speciesVariant
+                  ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
+                  : 'border-dsa-bg-medium bg-dsa-bg hover:border-dsa-gold/40'
+              )}
+            >
+              <span className="font-semibold text-dsa-parchment">Keine Variante</span>
+              <p className="text-[10px] text-dsa-parchment-dark mt-0.5">Standard-{species.name}</p>
+            </button>
+            {species.variants.map(v => (
+              <button
+                key={v.id || v.name}
+                onClick={() => setSpeciesVariant(v)}
+                className={clsx(
+                  'text-left p-3 rounded border transition-all text-xs',
+                  speciesVariant?.id === v.id
+                    ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
+                    : 'border-dsa-bg-medium bg-dsa-bg hover:border-dsa-gold/40'
+                )}
+              >
+                <span className="font-semibold text-dsa-parchment">{v.name}</span>
+                {v.common_advantages && (
+                  <p className="text-[10px] text-green-400/70 mt-0.5">Übliche Vorteile: {v.common_advantages}</p>
+                )}
+                {v.common_disadvantages && (
+                  <p className="text-[10px] text-red-400/70">Übliche Nachteile: {v.common_disadvantages}</p>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Free point allocation */}
       {species && (
@@ -1066,7 +1128,7 @@ function StepCulture({ culture, setCulture, cultures, loading, error, onRetry })
 }
 
 // ── Step 5: Profession (from API) ──
-function StepProfession({ profession, setProfession, professions, gradeData, loading, error, onRetry }) {
+function StepProfession({ profession, setProfession, professionVariant, setProfessionVariant, professions, gradeData, loading, error, onRetry }) {
   if (error) return <LoadError message={error} onRetry={onRetry} />
   if (loading && professions.length === 0) {
     return (
@@ -1131,10 +1193,64 @@ function StepProfession({ profession, setProfession, professions, gradeData, loa
                     </p>
                   )}
                   {p.description && <p className="text-dsa-parchment-dark/50 italic line-clamp-2">{p.description}</p>}
+                  {Array.isArray(p.variants) && p.variants.length > 0 && (
+                    <p className="text-dsa-gold/60 text-[9px]">{p.variants.length} Variante(n) verfügbar</p>
+                  )}
                 </div>
               </button>
             )
           })}
+        </div>
+      )}
+
+      {/* Profession Variant picker */}
+      {profession && Array.isArray(profession.variants) && profession.variants.length > 0 && (
+        <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded p-4 space-y-3">
+          <div>
+            <h3 className="text-sm font-display font-semibold text-dsa-parchment">Professionsvariante wählen</h3>
+            <p className="text-[10px] text-dsa-parchment-dark">Optional: Wähle eine Spezialisierung der Profession. Dies kann die AP-Kosten und Talentwerte ändern.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              onClick={() => setProfessionVariant(null)}
+              className={clsx(
+                'text-left p-3 rounded border transition-all text-xs',
+                !professionVariant
+                  ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
+                  : 'border-dsa-bg-medium bg-dsa-bg hover:border-dsa-gold/40'
+              )}
+            >
+              <span className="font-semibold text-dsa-parchment">Keine Variante</span>
+              <p className="text-[10px] text-dsa-parchment-dark mt-0.5">Standard-{profession.name}</p>
+            </button>
+            {profession.variants.map(v => (
+              <button
+                key={v.id || v.name}
+                onClick={() => setProfessionVariant(v)}
+                className={clsx(
+                  'text-left p-3 rounded border transition-all text-xs',
+                  professionVariant?.id === v.id
+                    ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
+                    : 'border-dsa-bg-medium bg-dsa-bg hover:border-dsa-gold/40'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-dsa-parchment">{v.name}</span>
+                  {v.ap_cost !== 0 && v.ap_cost != null && (
+                    <span className={clsx('font-mono text-[10px]', v.ap_cost > 0 ? 'text-red-400' : 'text-green-400')}>
+                      {v.ap_cost > 0 ? '+' : ''}{v.ap_cost} AP
+                    </span>
+                  )}
+                </div>
+                {v.skills && Object.keys(v.skills).length > 0 && (
+                  <p className="text-[10px] text-dsa-parchment-dark mt-0.5">
+                    Talentänderungen: {Object.entries(v.skills).map(([k, val]) => `${k} ${val > 0 ? '+' : ''}${val}`).join(', ')}
+                  </p>
+                )}
+                {v.note && <p className="text-[10px] text-dsa-parchment-dark/60 italic mt-0.5">{v.note}</p>}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

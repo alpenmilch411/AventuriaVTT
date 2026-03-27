@@ -68,6 +68,18 @@ function getPreviewText(category, entry) {
       if (entry.kap_cost) parts.push(`${entry.kap_cost} KaP`)
       return parts.join(' · ')
     }
+    case 'cantrips': {
+      const parts = []
+      if (entry.range) parts.push(entry.range)
+      if (entry.duration) parts.push(entry.duration)
+      return parts.join(' · ')
+    }
+    case 'blessings': {
+      const parts = []
+      if (entry.range) parts.push(entry.range)
+      if (entry.duration) parts.push(entry.duration)
+      return parts.join(' · ')
+    }
     case 'special_abilities': {
       const parts = []
       if (entry.category) parts.push(entry.category)

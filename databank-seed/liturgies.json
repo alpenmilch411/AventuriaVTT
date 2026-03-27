@@ -21,7 +21,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Lichtregulation",
+        "effect": "Der Geweihte kann das Licht innerhalb der Wirkungsdauer nach Belieben heller oder dunkler werden lassen (bis zu einem Maximum der erzielten QS).",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Lichtkegel",
+        "effect": "Das Licht strömt in Form eines Kegels von 45 Grad vom Geweihten aus. In diesem Kegel wirkt die QS um 1 höher (bis zu einem Maximum von 6). Die restliche Umgebung wird mit einer um 1 niedrigeren als der erzielten QS beleuchtet (bis zu einem Minimum von 1).",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "bann_der_furcht",
@@ -45,7 +65,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Die Liturgie wirkt gegen bis zu 4 Ziele gleichzeitig. Jedes Ziel nach dem ersten kostet zusätzlich 4 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "bann_des_lichts",
@@ -70,7 +110,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längeres Intervall",
+        "effect": "Das Intervall beträgt 15 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS x 5 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "blendstrahl",
@@ -94,7 +154,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 2 KR.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 16 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig treffen. Jedes Ziel nach dem ersten kostet zusätzlich 4 KaP.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "ehrenhaftigkeit",
@@ -118,7 +198,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 16 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 10 Minuten.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann die Liturgie auf bis zu 4 Ziele gleichzeitig wirken. Jedes Ziel nach dem ersten kostet zusätzlich 4 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "entzifferung",
@@ -143,7 +243,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 15 Minuten, sodass der Held 25 Foliantenseiten pro QS entziffern kann.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig unterstützen. Jedes Ziel nach dem ersten kostet zusätzlich 2 KaP.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "ermutigung",
@@ -169,7 +289,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Schnellsteigerung",
+        "effect": "Die Liturgiedauer beträgt 1 Aktion, die Wirkungsdauer wird dafür auf QS KR reduziert.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig ermutigen. Jedes Ziel nach dem ersten kostet zusätzlich 4 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "fall_ins_nichts",
@@ -193,7 +333,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Minuten.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Klippensturz",
+        "effect": "Für jede QS kann der Geweihte 5 Schritt Fallschaden ignorieren.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "friedvolle_aura",
@@ -224,7 +384,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 KR.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Liturgie kann aufrechterhalten werden mit Aktivierungskosten von 16 KaP und 8 KaP pro 5 Minuten.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden. Bei diesen ist die AT des Gegners jedoch nur um QS/2 erschwert und auch nur, wenn die Ziele der Liturgie sich ebenfalls friedfertig verhalten, solange die Liturgie wirkt.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "giftbann",
@@ -248,7 +428,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Tadelloser Entgifter",
+        "effect": "Für jeweils 4 zusätzliche KaP kann die QS bei einer gelungenen Probe um 1 erhöht werden (bis zu einem Maximum von 6).",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig entgiften. Jedes Ziel nach dem ersten kostet zusätzlich Giftstufe x 2 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "goettlicher_fingerzeig",
@@ -272,7 +472,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Weiter entfernter Gegenstand",
+        "effect": "Der Gegenstand darf bis zu QS x 2 Schritt vom Geweihten entfernt sein.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Magischer Fingerzeig",
+        "effect": "Der Gegenstand darf auch durch magisches Wirken verborgen sein, aber die QS von Göttlicher Fingerzeig muss die QS der Magie übersteigen.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Karmaler Fingerzeig",
+        "effect": "Der Gegenstand darf auch durch karmales Wirken verborgen sein, aber die QS von Göttlicher Fingerzeig muss die QS der Liturgie übersteigen.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "goettliches_zeichen",
@@ -296,7 +516,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 16 Schritt.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS x 25 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Mächtiges Zeichen",
+        "effect": "Die Erleichterung beträgt 2.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "heilsegen",
@@ -320,7 +560,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 8 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig heilen. Jedes Ziel nach dem ersten kostet zusätzlich mindestens 4 KaP (oder die Kosten der zurückgegebenen LeP, je nachdem, was teurer ist).",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "kleiner_bann_wider_untote",
@@ -344,7 +604,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verteilter Schaden 1",
+        "effect": "Der Geweihte wählt 2 Ziele in Reichweite aus. Der Schaden kann beliebig auf beide Ziele verteilt werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Verteilter Schaden 2",
+        "effect": "Der Geweihte wählt 3 Ziele in Reichweite aus. Der Schaden kann beliebig auf alle Ziele verteilt werden. Voraussetzung: Liturgieerweiterung *Verteilter Schaden 1*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig treffen. Die KaP-Kosten der Liturgie verdoppeln sich.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "kleiner_bannstrahl",
@@ -368,7 +648,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verteilter Schaden 1",
+        "effect": "Der Geweihte wählt 2 Ziele in Reichweite aus. Der Schaden kann beliebig auf beide Ziele verteilt werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Verteilter Schaden 2",
+        "effect": "Der Geweihte wählt 3 Ziele in Reichweite aus. Der Schaden kann beliebig auf alle Ziele verteilt werden. Voraussetzung: Liturgieerweiterung *Verteilter Schaden 1*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig treffen. Die KaP-Kosten der Liturgie verdoppeln sich.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "krankheitsbann",
@@ -392,7 +692,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Tadelloser Krankheitsheiler",
+        "effect": "Für jeweils 4 zusätzliche KaP kann die QS bei einer gelungenen Probe um 1 erhöht werden (bis zu einem Maximum von 6).",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig heilen. Jedes Ziel nach dem ersten kostet zusätzlich Krankheitsstufe x 2 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "lautlos",
@@ -417,7 +737,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verstecken",
+        "effect": "Auch das Anwendungsgebiet sich Verstecken ist enthalten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "magieschutz",
@@ -442,7 +782,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden. Der Bonus beträgt hierbei QS/2 auf SK und ZK.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Schutz der Gefährten",
+        "effect": "Der Geweihte kann beliebig viele Ziele gleichzeitig schützen. Die KaP-Kosten müssen für jedes Ziel extra getragen werden. Der Bonus beträgt hierbei QS/2 auf SK und ZK.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "magiesicht",
@@ -468,7 +828,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zwei Gegenstände",
+        "effect": "Der Geweihte kann die Liturgie auf bis zu zwei Gegenstände gleichzeitig wirken.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Kegelsicht",
+        "effect": "Die Liturgie wirkt für 1 KR lang innerhalb des Sichtfelds des Geweihten bis maximal 8 Schritt Entfernung auf alle in diesem Feld befindlichen Objekte und Wesen. Das Sichtfeld des Geweihten ist nicht veränderlich, erlaubt ist also nur der Blick in eine Richtung. Da der Geweihte sich dabei nicht auf eine spezielle Sache konzentrieren kann, werden die erreichten QS vor dem Konsultieren der Tabelle halbiert. Diese Art der karmalen Wahrnehmung zählt als ungerichtete karmale Wahrnehmung.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Rundumsicht",
+        "effect": "Für 1 KR erhält der Geweihte eine Rundumsicht, die 8 Schritt weit reicht. Er kann sich auf der Stelle drehen, aber sich nicht anderweitig bewegen. Bei Gelingen der Liturgie erhält er automatisch nur 1 QS, kann aber damit alle Gegenstände in Blickreichweite erfassen. Diese Art der karmalen Wahrnehmung zählt als ungerichtete karmale Wahrnehmung.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "mondsicht",
@@ -493,7 +873,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längeres Intervall",
+        "effect": "Pro 1 KaP kann die Liturgie 1 Stunde aufrechterhalten werden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "mondsilberzunge",
@@ -517,7 +917,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS x 10 Minuten. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "objektsegen",
@@ -541,7 +961,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Starker Objektsegen",
+        "effect": "Durch den Geweihten gesegnete Materialien weisen eine besonders starke Wirkung gegen Dämonen auf. Sie erzeugen bei der Berührung durch Dämonen am Ende einer KR 1 SP zusätzlich (siehe **Regelwerk** Seite **316**). Dies gilt nur für die Berührung.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS x 10 Stunden. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "ort_der_ruhe",
@@ -567,7 +1007,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 Stunden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Stärkere Stille 1",
+        "effect": "Auch laute Geräusche werden gedämpft (nicht aber Zauber, Liturgien und Schreie), allerdings ist die Probe auf *Sinnesschärfe* dafür nur um QS/2 erschwert. Der Geweihte kann sich selbst weiterhin gut hören.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Stärkere Stille 2",
+        "effect": "Auch laute Geräusche werden gedämpft (nicht aber Zauber und Liturgien). Der Geweihte kann sich selbst weiterhin gut hören. Voraussetzung: Liturgieerweiterung *Stärkere Stille 1*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "pflanzenwuchs",
@@ -591,7 +1051,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Schnellerer Wuchs",
+        "effect": "Die Pflanze wächst um 50 % schneller.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Beet",
+        "effect": "Für 16 KaP kann ein kleines Beet angelegt werden, welches für 12 Pflanzen ausreicht.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Feld",
+        "effect": "Für 32 KaP kann ein kleines Feld angelegt werden, welches für 12 x 12 Pflanzen ausreicht. Voraussetzung: Liturgieerweiterung *Beet*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "rabenruf",
@@ -615,7 +1095,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mehr Raben",
+        "effect": "Es können bis zu QS kleine Gegenstände transportiert werden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS x 5 Meilen.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Größere Transportreichweite",
+        "effect": "Die Transportreichweite beträgt QS x 5 Meilen.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "schlaf",
@@ -639,7 +1139,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Liturgiedauer modifizierbar",
+        "effect": "Die Liturgiedauer ist doch modifizierbar.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 Minuten.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Verteilte Wirkung",
+        "effect": "Die Zustandsstufen können auf mehrere Ziele verteilt werden, die vor dem Wirken der Liturgie benannt werden müssen. Kann der Geweihte z. B. 3 Stufen *Betäubung* verursachen, darf er auf drei Ziele 1 Stufe verteilen oder einem Ziel 2 Stufen und einem anderen 1 Stufe aufbürden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "schlangenstab",
@@ -663,7 +1183,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verwirrungsgift",
+        "effect": "Das Gift der Stabschlange wird ersetzt durch ein Gift, das statt *Schmerz* *Verwirrung* verursacht. Außerdem steigt die AT auf 14, während die Giftstufe auf 4 sinkt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Kräftige Schlange",
+        "effect": "Die Stabschlange verfügt über 20 LeP.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Schnelle Schlange",
+        "effect": "Die Stabschlange verfügt über INI 15 und VW 5.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "schlangenzunge",
@@ -687,7 +1227,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 10 Minuten.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Mehr Schlangen",
+        "effect": "Die Liturgie wirkt auf alle Schlangen innerhalb Hör- und Sichtweite des Geweihten.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "schmerzresistenz",
@@ -713,7 +1273,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 KR.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Schmerzimmunität",
+        "effect": "Auch *Schmerz* der Stufe IV kann ignoriert werden.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "schutz_der_wehrlosen",
@@ -737,7 +1317,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Vier Ziele",
+        "effect": "Die Liturgie kann gegen bis zu 4 Ziele gleichzeitig gewirkt werden. Jedes Ziel nach dem ersten kostet zusätzlich 4 KaP.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Zielkategorie Wesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Wesen. Voraussetzung: Liturgieerweiterung *Zielkategorie Lebewesen*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "sternenglanz",
@@ -761,7 +1361,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS Stunden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS Tage.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Bessere Preise",
+        "effect": "Das Objekt erzielt einen um QS x 20 % höheren Preis.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "wahrheit",
@@ -786,7 +1406,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 Minuten.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Andere Fragesteller",
+        "effect": "Der Geweihte kann beliebige Kulturschaffende benennen, denen das Ziel der Liturgie ebenso wahrheitsgemäß antworten muss.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "wieselflink",
@@ -810,7 +1450,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Schnellsteigerung",
+        "effect": "Die Liturgiedauer beträgt nur 1 Aktion, die Wirkungsdauer wird dafür auf QS x 3 KR reduziert.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 Minuten.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "wundersame_verstaendigung",
@@ -835,7 +1495,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zeichensprache",
+        "effect": "Die Liturgie wirkt auch bei Zeichensprachen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Tadelloser Übersetzer",
+        "effect": "Für jeweils 4 zusätzliche KaP kann die QS bei einer gelungenen Probe um 1 erhöht werden (bis zu einem Maximum von 6).",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "ackersegen",
@@ -859,7 +1539,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größerer Acker",
+        "effect": "Die gesegnete Fläche kann bis zu QS x 2.000 Quadratschritt groß sein.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Noch größerer Acker",
+        "effect": "Die gesegnete Fläche kann bis zu QS x 5.000 Quadratschritt groß sein. Voraussetzung: Liturgieerweiterung *Größerer Acker*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Wachstumszyklen",
+        "effect": "Pro 8 KaP zusätzlich wirkt die Zeremonie einen weiteren Wachstumszyklus.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "exorzismus",
@@ -883,7 +1583,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Spezialisierter Exorzismus",
+        "effect": "Eine Untergruppe von Wesen der Gegengottheit, die beim Aktivieren dieser Liturgieerweiterung ausgewählt werden muss, weist eine um 1 schlechtere SK gegen den Exorzismus auf. Dies können beispielsweise Zantim bei Rondrageweihten oder Gotongis bei Praiosgeweihten sein.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Geister-Exorzismus",
+        "effect": "Geister weisen eine um 1 schlechtere SK gegen den Exorzismus auf.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Dämonen-Exorzismus",
+        "effect": "Alle Dämonen mit bis zu 5 Hörnern weisen eine um 1 schlechtere SK gegen den Exorzismus auf. Voraussetzung: Liturgieerweiterung *Spezialisierter Exorzismus*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "geweihter_panzer",
@@ -910,7 +1630,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 30 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Starke Weihe",
+        "effect": "Dämonen erleiden 1W3+1 SP bei der Berührung des geweihten Panzers.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "loewengestalt",
@@ -934,7 +1674,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Der Geweihte kann in Tiergestalt sprechen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "nebelleib",
@@ -959,7 +1719,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 30 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Mitverwandelte Kleidung",
+        "effect": "Auch die Kleidung des Geweihten wird mitverwandelt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Starker Nebel",
+        "effect": "Nur bei starkem Gegenwind muss eine *Willenskraft*-Probe abgelegt werden. Die GS des Geweihten als Nebel beträgt 8.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "objektweihe",
@@ -983,7 +1763,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Schwächere Weihe",
+        "effect": "Das Objekt ist nicht permanent geweiht, sondern nur QS Tage. Es fallen keine permanenten KaP-Kosten an. Die Zeremoniedauer beträgt nur 30 Minuten.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Mehr Gewicht",
+        "effect": "Das Objekt kann bis (4+QS) x 3 Stein wiegen.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Der Geweihte kann beliebig viele Ziele gleichzeitig weihen. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP und 2 permanente KaP.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "angriffslust",
@@ -1007,7 +1807,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Reichweite beträgt 16 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 10 KR.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Geweihte kann QS Ziele auswählen.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "angriffswelle",
@@ -1032,7 +1852,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Harte Welle",
+        "effect": "Die Erschwernis der Probe auf *Körperbeherrschung* beträgt QS.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Tosende Welle",
+        "effect": "Die Welle verursacht zusätzlich 1W3+1 SP.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Maximal können 12 Ziele von der Wirkung der Welle betroffen sein.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "auge_des_jaegers",
@@ -1056,7 +1896,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Spezielles Lebewesen",
+        "effect": "Der Geweihte kann eine spezielle Art von Lebewesen benennen und mittels der Liturgie suchen (z. B. Hunde, Menschen, Pferde).",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Durch Feuer und Erz",
+        "effect": "Die Liturgie wirkt auch durch Feuer und Erz bis zu einer maximalen Dicke von 1 Schritt hindurch.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klare Sicht",
+        "effect": "Sichtbehinderung aufgrund von fallendem Schnee, Regen oder Nebel wird um 1 Stufe gesenkt.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "bann_der_goettlichen_gaben",
@@ -1080,7 +1940,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Liturgiedauer modifizierbar",
+        "effect": "Die Liturgiedauer ist doch modifizierbar.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 30 Minuten.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "bann_wider_untote",
@@ -1104,7 +1984,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verteilter Schaden 1",
+        "effect": "Der Geweihte wählt 2 Ziele in Reichweite aus. Der Schaden kann beliebig auf beide Ziele verteilt werden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Verteilter Schaden 2",
+        "effect": "Der Geweihte wählt 3 Ziele in Reichweite aus. Der Schaden kann beliebig zwischen den Zielen verteilt werden. Voraussetzung: Liturgieerweiterung *Verteilter Schaden 1*.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig treffen. Die KaP-Kosten der Liturgie verdoppeln sich.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "bannstrahl",
@@ -1128,7 +2028,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verteilter Schaden 1",
+        "effect": "Der Geweihte wählt 2 Ziele in Reichweite aus. Der Schaden kann beliebig auf beide Ziele verteilt werden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Verteilter Schaden 2",
+        "effect": "Der Geweihte wählt 3 Ziele in Reichweite aus. Der Schaden kann beliebig zwischen den Zielen verteilt werden. Voraussetzung: Liturgieerweiterung *Verteilter Schaden 1*.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig treffen. Die KaP-Kosten der Liturgie verdoppeln sich.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "befreiung_des_geistes",
@@ -1152,7 +2072,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "begnadeter_reiter",
@@ -1176,7 +2116,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt 4 Stunden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt 8 Stunden. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "besaenftigung",
@@ -1200,7 +2160,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 16 Schritt.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig beruhigen. Das zweite Ziel kostet zusätzlich 2 KaP.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "bescheidenheit",
@@ -1224,7 +2204,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Tage.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Starke Prinzipientreue 1",
+        "effect": "Das Ziel erhält *Prinzipientreue II (Traviakirche)*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Starke Prinzipientreue 2",
+        "effect": "Das Ziel erhält *Prinzipientreue III (Traviakirche)*. Voraussetzung: Liturgieerweiterung *Starke Prinzipientreue I*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "beschwoerung_der_gemeinen_diener_des_rattenkindes",
@@ -1248,7 +2248,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mehr Dienste",
+        "effect": "Der Geweihte kann QS +2 Dienste von dem Wesen verlangen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längerer Dienst",
+        "effect": "Das Wesen verliert erst am Ende einer Woche (statt am Ende eines Tages) automatisch einen Dienst.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mächtiges Wesen",
+        "effect": "Dem Wesen können zweimal die gleichen Verbesserungen beim Beschwören gegeben werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "blendung",
@@ -1272,7 +2292,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 30 Minuten.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 8 Schritt.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Liturgiedauer modifizierbar",
+        "effect": "Die Liturgiedauer darf doch modifiziert werden.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "blick_des_heilers",
@@ -1296,7 +2336,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Liturgie ist aufrechterhaltend, die Aktivierung kostet 4 KaP und 2 KaP pro Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Genaue Erkenntnis",
+        "effect": "Der Geweihte erhält eine genauere Erkenntnis der Art der Verletzung, z. B. des LeP-Standes, der Gift- oder Krankheitsstufe usw.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "blitzschlag",
@@ -1320,7 +2380,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verwirrender Blitz",
+        "effect": "Das Ziel des Blitzschlags erhält automatisch 1 Stufe *Verwirrung*.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Betäubender Blitz",
+        "effect": "Das Ziel des Blitzschlags erhält automatisch 1 Stufe *Betäubung*.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Brandblitz",
+        "effect": "Das Ziel erhält den Status *Brennend* auf großer Fläche.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "blutiger_zorn",
@@ -1344,7 +2424,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Wählbare Ziele",
+        "effect": "Der Geweihte kann die Ziele auswählen, die vom Ziel der Liturgie angegriffen werden sollen, und jene, die verschont werden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Wildes Wüten",
+        "effect": "Das Ziel erhält +1 AT.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 2 KR.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "blutzoll",
@@ -1368,7 +2468,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 KR.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten dürfen doch modifiziert werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "bodenweihe",
@@ -1392,7 +2512,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS x 30 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt 8 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS Stunden. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "daemonenwall",
@@ -1416,7 +2556,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Schutzhaut",
+        "effect": "Die Schildstärke beträgt KaP + (QS x 4), aber nur der Geweihte selbst ist von der Schutzwirkung betroffen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Großer Radius",
+        "effect": "Der Radius beträgt 5 Schritt. Es entstehen zusätzliche Kosten in Höhe von 4 KaP, die jedoch nicht die Schildstärke erhöhen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Schildstärke beträgt nur QS x 2. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "delphinruf",
@@ -1440,7 +2600,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 32 Schritt.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Zwei Delphine",
+        "effect": "Es erscheinen zwei Delphine, von denen jeder eine Person retten kann.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Vier Delphine",
+        "effect": "Es erscheinen vier Delphine, von denen jeder eine Person retten kann. Voraussetzung: Liturgieerweiterung *Zwei Delphine*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "des_einen_bezaubernder_sphaerenklang",
@@ -1464,7 +2644,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 10 Minuten.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Geringer Widerstand",
+        "effect": "Die *Willenskraft*-Probe darf nur noch alle 10 Minuten abgelegt werden.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Lange und starke Hörigkeit",
+        "effect": "Die Wirkungsdauer beträgt QS Stunden und pro Stunde ist nur eine *Willenskraft*-Probe erlaubt. Voraussetzung: Liturgieerweiterungen *Längere Wirkungsdauer* und *Geringer Widerstand*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "ehrlicher_vertrag",
@@ -1488,7 +2688,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 1 Tag.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Guter Handel",
+        "effect": "Die Erleichterung von QS/2 umfasst auch das Talent *Handel*, solange es um die aktuellen Vertragsverhandlungen geht.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgiewirkung kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "entfesselung",
@@ -1512,7 +2732,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Kosten modifizierbar",
+        "effect": "Kosten sind doch modifizierbar.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Versteinerung aufheben",
+        "effect": "Auch der Status Versteinert (siehe **Aventurisches Götterwirken** Seite **235**) kann aufgehoben werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "erdbeben",
@@ -1536,7 +2776,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 10 KR.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Reichweitenausdehnung",
+        "effect": "Die Liturgiemodifikation Reichweite erhöhen ist nicht erschwert.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Größerer Schaden",
+        "effect": "Feste Konstruktionen erleiden QS x 10 Strukturpunkte Schaden.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "ernuechterung",
@@ -1560,7 +2820,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Beseitigung von Verwirrung",
+        "effect": "Neben *Betäubung* kann auch *Verwirrung*, die durch Rauschmittel verursacht wurde, abgebaut werden. Die QS/2 Stufen müssen hierbei zwischen den Zuständen aufgeteilt werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Beseitigung von Schmerz",
+        "effect": "Neben *Betäubung* kann auch *Schmerz*, der durch Rauschmittel verursacht wurde, abgebaut werden. Die QS/2 Stufen müssen hierbei zwischen den Zuständen aufgeteilt werden.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "erzene_opfergabe",
@@ -1584,7 +2864,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Stein und Metall",
+        "effect": "Auch Gegenstände, die gleichzeitig aus Stein und Metall bestehen (beispielsweise Schmuck), können zurückgegeben werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größeres Gewicht",
+        "effect": "Der Geweihte kann bis zu QS Stein an Material zurückgeben.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Rückruf",
+        "effect": "Das Material kann, nachdem es dem Fels zurückgegeben wurde, jederzeit wieder aus dem Fels geholt werden, solange Ingerimm keine Einwände hat. Dabei wird der Gegenstand nicht beschädigt, der Geweihte muss aber die Stelle berühren, an der er die Opfergabe dem Fels übergeben hat.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "feuerwall",
@@ -1608,7 +2908,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 10 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Intensive Flammen",
+        "effect": "Es muss nicht gewürfelt werden, ob Opfer der Flammenwand den Status *Brennend* erleidet, sondern sie erleiden diesen beim Durchquerungsversuch automatisch. Es entstehen zusätzliche Kosten in Höhe von 2 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "friedfertigkeit",
@@ -1633,7 +2953,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt 8 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Anderes Intervall",
+        "effect": "Das Intervall bei der Aufrechterhaltung beträgt 4 KR (statt 2 KR).",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "friedvoller_rausch",
@@ -1657,7 +2997,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verteilte Wirkung",
+        "effect": "Die Zustandsstufen können auf mehrere Ziele verteilt werden, die vor dem Wirken der Liturgie benannt werden müssen. Werden z. B. insgesamt 3 Stufen *Betäubung* verursacht, darf die Geweihte drei Zielen je 1 Stufe zuweisen oder sie entscheidet sich, einem Ziel 2 Stufen und einem anderen 1 Stufe aufzubürden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 10 KR.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "froststurm",
@@ -1681,7 +3041,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt 20 Schritt.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Extreme Kälte",
+        "effect": "Der Froststurm verursacht QS/2+1 Kältestufen.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 32 Schritt.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "gebieter_der_flammen",
@@ -1705,7 +3085,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 16 Schritt. Der Geweihte kann innerhalb dieser Reichweite das Zentrum des Radius der Liturgie auswählen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Große Brandherde",
+        "effect": "Die Liturgie wirkt auch auf Brandherde, die so groß sind wie ein durchschnittliches, zweistöckiges Haus. Das Löschen dauert nach Meisterentscheid zwischen 2 und 20 KR.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "geisterblick",
@@ -1729,7 +3129,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS x 5 Schritt.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Auch du siehst tote Menschen!",
+        "effect": "Solange der Geweihte einen anderen Kulturschaffenden berührt, können beide anwesende Geister sehen.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "gesegneter_rausch",
@@ -1753,7 +3173,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Menge 1",
+        "effect": "QS Grundeinheiten eines Rauschmittels sind von der Wirkung betroffen.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 2 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Größere Menge 2",
+        "effect": "QS x 2 Grundeinheiten eines Rauschmittels sind von der Wirkung betroffen. Voraussetzung: Liturgieerweiterung *Größere Menge 1*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "getreidewachstum",
@@ -1777,7 +3217,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Widerstandsfähig gegen Schädlinge",
+        "effect": "Das Getreide wird resistent gegen Schädlinge.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Wachstum auf kargem Boden",
+        "effect": "Das Getreide kann auf kargem Boden wachsen.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Hoher Ertrag",
+        "effect": "Der Ertrag erhöht sich um QS x 10 %.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "goldene_hand",
@@ -1801,7 +3261,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Höherer Wert 1",
+        "effect": "Der Wert des Gegenstandes entspricht 100 Dukaten.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Höherer Wert 2",
+        "effect": "Der Wert des Gegenstandes entspricht 250 Dukaten. Voraussetzung: Liturgieerweiterung *Höherer Wert 1*.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Höherer Wert 3",
+        "effect": "Der Wert des Gegenstandes entspricht 1.000 Dukaten. Voraussetzung: Liturgieerweiterung *Höherer Wert 2*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "goldene_ruestung",
@@ -1825,7 +3305,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Liturgiedauer modifizierbar",
+        "effect": "Die Liturgiedauer darf doch modifiziert werden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Harte Schale",
+        "effect": "Der Geweihte kann sich auch einen RS von 4 verleihen. Die Kosten dafür betragen 32 KaP (nicht modifizierbar, selbst wenn Liturgieerweiterung *Liturgiedauer modifizierbar* vorhanden ist).",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden. Die Kosten steigen dabei um eine Kategorie (von 4 auf 8, von 8 auf 16 usw.).",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "goettliche_klinge",
@@ -1851,7 +3351,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 KR.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Höhere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Der Geweihte kann beliebig viele Ziele gleichzeitig weihen. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "goettliche_verstaendigung",
@@ -1875,7 +3395,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Heimattempel",
+        "effect": "Die Botschaft wird an den heimatlichen Tempelvorsteher (oder in Abwesenheit: an dessen Stellvertreter) gesendet. Die Reichweite wird dabei automatisch auf unbegrenzt erhöht, solange sich der Geweihte noch auf demselben Kontinent befindet.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt QS x 10 Meilen.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Persönlicher Bekannter",
+        "effect": "Die Botschaft kann an einen, dem Geweihten persönlich bekannten, anderen Geweihten der eigenen Tradition gesendet werden. Die Reichweite wird dabei automatisch auf unbegrenzt erhöht, solange sich der Geweihte noch auf demselben Kontinent befindet. Voraussetzung: Liturgieerweiterung *Heimattempel*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "heiliger_befehl",
@@ -1899,7 +3439,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 8 Schritt.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 Minuten.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Der Geweihte kann beliebig vielen Zielen gleichzeitig befehlen. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "heiliges_liebesspiel",
@@ -1923,7 +3483,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS x 2 Stunden. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "heilsame_quelle",
@@ -1947,7 +3527,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mächtige Heilsame Quelle",
+        "effect": "Der Trinkende erhält QS+3 LeP zurück.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Erfrischende Heilquelle",
+        "effect": "Pro volle 3 zurückerhaltene LeP baut der Trinkende auch eine Stufe *Betäubung* ab.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Zwei Trinkende",
+        "effect": "Zwei Personen können von der Quelle profitieren.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "heldenkraft",
@@ -1972,7 +3572,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 10 KR.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Der Geweihte kann beliebig viele Ziele gleichzeitig segnen. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "helfende_hand",
@@ -1996,7 +3616,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Gemeinsam sind wir stark",
+        "effect": "Die Erleichterung gilt auch bei Gruppenvergleichsproben.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Viele starke Hände 1",
+        "effect": "Möglich sind bis zu QS Erleichterungen, die auf maximal 6 Personen verteilt werden (bis zu einem Maximum von 2 Erleichterungen pro Person).",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Viele starke Hände 2",
+        "effect": "Möglich sind bis zu QS Erleichterungen, die auf maximal 6 Personen verteilt werden (bis zu einem Maximum von 3 Erleichterungen pro Person). Voraussetzung: Liturgieerweiterung *Viele starke Hände 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "herbeirufung_der_heerscharen_des_rattenkindes_ratten",
@@ -2020,7 +3660,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Angriffslust",
+        "effect": "Die Ratten erhalten +1 AT.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Rattenplage",
+        "effect": "Pro volle 10 Ratten, die ein Opfer angreifen, erleidet dieses eine Erschwernis von 1 auf alle Körpertalente, AT, Verteidigungen und FK, wenn die Ratten sich in Angriffsdistanz befinden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Rattenüberschwemmung",
+        "effect": "Wenn sich mindestens 10 Ratten in Angriffsdistanz befinden und der Held eine Handlung ausführt, um sich zu bewegen, muss ihm eine Probe auf *Körperbeherrschung (Kampfmanöver)* gelingen, sonst erleidet er den Status Liegend. Erschwert ist die Probe um Anzahl der Ratten/20, also erst ab 10 Ratten um 1. Voraussetzung: Liturgieerweiterung *Rattenplage*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "herbeirufung_der_heerscharen_des_rattenkindes_schakale",
@@ -2044,7 +3704,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Angriffslust",
+        "effect": "Die Schakale erhalten +1 AT.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Meute",
+        "effect": "Schakale, die gemeinsam einen Gegner angreifen, erhalten pro Schakal in der Überzahl +1 AT (bis zu einem Maximum von +4 AT).",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Raserei",
+        "effect": "Schakale werden durch Verletzungen in den Status *Raserei* (siehe **Aventurisches Götterwirken** Seite **235**) versetzt. Sobald sie 5 LeP verloren haben, gelten für sie folgende Modifikatoren: +2 TP, immun gegen Schmerz. Dieser Status hält an, bis der Gegner getötet wurde, längstens jedoch eine halbe Stunde.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "herbeirufung_der_heerscharen_des_rattenkindes_vampirfledermaeuse",
@@ -2068,7 +3748,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Angriffslust",
+        "effect": "Die Vampirfledermäuse erhalten +1 AT.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Fledermausschwarm",
+        "effect": "Pro vollen 10 Vampirfledermäusen rings um den Geweihten des Namenlosen erhöht sich die Stufe der Sichtbehinderung um 1, bis zu einem Maximum von 4.\n\nUm eine höhere Stufe als 1 zu erreichen, muss der Geweihte die Liturgie mehrmals wirken.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Loyal bis in den Tod",
+        "effect": "Die Vampirfledermäuse werfen sich in die Geschosse eines Fernkampfangriffs, der auf den Namenlosen-Geweihten gerichtet ist. Ein gelungener Fernkampfangriff trifft zuerst die Vampirfledermäuse. Sollten die LeP einer Vampirfledermaus auf 0 sinken, stürzt sich sofort eine neue Fledermaus in die Flugbahn, sodass überzählige SP von ihren LeP abgezogen werden. Voraussetzung: Liturgieerweiterung *Fledermausschwarm*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "herbeirufung_der_heerscharen_des_rattenkindes_wolfsspinnen",
@@ -2092,7 +3792,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Angriffslust",
+        "effect": "Die Spinnen erhalten +1 AT.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Starkes Gift",
+        "effect": "Die Giftstufe des Wolfsspinnengifts beträgt 6 statt 4.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Spinnenpanik",
+        "effect": "Pro vollen 10 Spinnen, die sich in Sichtweite befinden, erhalten alle Kulturschaffenden, außer dem Geweihten, eine Stufe des Nachteils Angst vor *Spinnen*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "herr_der_flammen",
@@ -2116,7 +3836,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Auch Gegenstände",
+        "effect": "Am Leib getragene Kleidung und Gegenstände werden ebenfalls geschützt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Weniger Feuerschaden",
+        "effect": "TP durch Feuerschaden werden halbiert und dann aufgerundet. Danach wird der RS abgezogen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "hilfreiche_seele",
@@ -2140,7 +3880,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Tage.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Starke Prinzipientreue 1",
+        "effect": "Das Ziel erhält *Prinzipientreue II (Ifirnkirche)*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Starke Prinzipientreue 2",
+        "effect": "Das Ziel erhält *Prinzipientreue III (Ifirnkirche)*. Voraussetzung: Liturgieerweiterung *Starke Prinzipientreue 1*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "innere_ruhe",
@@ -2164,7 +3924,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 10 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Der Geweihte kann beliebig viele Ziele gleichzeitig stärken. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "klarer_geist",
@@ -2188,7 +3968,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Besonders klarer Geist",
+        "effect": "Die Liturgie hebt QS/2+1 Stufen *Verwirrung* auf. Dies kostet 4 KaP zusätzlich.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "kleine_windhose",
@@ -2212,7 +4012,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Erschwertes Ausweichen",
+        "effect": "Die Probe auf Ausweichen ist um 1 erschwert.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Höherer Schaden",
+        "effect": "Die kleine Windhose richtet 1W6+QS TP an.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 32 Schritt.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "lebensschutz",
@@ -2236,7 +4056,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Erholsame Rettung",
+        "effect": "Das Ziel erwacht mit 1W6+4 LeP, statt nur 1 LeP.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "liturgieschild",
@@ -2260,7 +4100,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Stärkerer Schild",
+        "effect": "Die Schildstärke steigt um QS.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Großer Radius",
+        "effect": "Der Radius der Kuppel beträgt 5 Schritt. Es entstehen zusätzliche Kosten in Höhe von 4 KaP.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Schildstärke beträgt jedoch nur KaP+(QS x 2). Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "maechtiger_angriff",
@@ -2284,7 +4144,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Drei Attacken",
+        "effect": "Bis zu drei Attacken können gestapelt werden. Die KaP-Kosten steigen auf 12.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Sechs Attacken",
+        "effect": "Bis zu sechs Attacken können gestapelt werden. Die KaP-Kosten steigen auf 16. Voraussetzung: Liturgieerweiterung *Drei Attacken*.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Neun Attacken",
+        "effect": "Bis zu neun Attacken können gestapelt werden. Die KaP-Kosten steigen auf 20. Voraussetzung: Liturgieerweiterung *Sechs Attacken*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "magiebann",
@@ -2308,7 +4188,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Höhere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Liturgiedauer modifizierbar",
+        "effect": "Die Liturgiedauer ist doch modifizierbar.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Andere Effekte",
+        "effect": "Auch andere magische Effekte sind betroffen, etwa magische Handlungen.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "magiespiegel",
@@ -2333,7 +4233,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Zielkategorie Wesen",
+        "effect": "Die Liturgie umfasst auch die Zielkategorie Wesen.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Liturgiekosten sind doch modifizierbar.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "maske",
@@ -2357,7 +4277,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 2 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Liturgie ist aufrechterhaltend, was 4 KaP für die Aktivierung sowie 2 KaP pro angefangener Stunde kostet.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "mit_dummheit_schlagen",
@@ -2381,7 +4321,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Dumm und verwirrt",
+        "effect": "Das Ziel erleidet zusätzlich 1 Stufe *Verwirrung*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 8 Stunden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "motivation",
@@ -2405,7 +4365,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 8 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Die Geweihte kann beliebig viele Ziele gleichzeitig motivieren. Jedes Ziel nach dem ersten kostet zusätzlich 2 KaP.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "namenlose_kaelte",
@@ -2429,7 +4409,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 2 Stunden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Nicht verfroren",
+        "effect": "Der Geweihte ist selbst immun gegen die heraufbeschworene Kälte.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Stationäre Kälte",
+        "effect": "Der Geweihte kann in einer Entfernung von bis zu 16 Schritt eine stationäre Zone der Kälte errichten, die dort bis zum Ende der Wirkungsdauer bestehen bleibt.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "namenlose_raserei",
@@ -2453,7 +4453,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Wüterich 1",
+        "effect": "Die Boni auf AT und TP steigen zusätzlich um 1.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Vier Ziele",
+        "effect": "Die Liturgie kann gegen bis zu 4 Ziele gleichzeitig eingesetzt werden. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Wüterich 2",
+        "effect": "Die Boni auf AT und TP steigen zusätzlich um 1 (zusammen mit *Wüterich 1* also um 2). Voraussetzung: Liturgieerweiterung *Wüterich 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "namenlose_zweifel",
@@ -2477,7 +4497,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Leicht zu beeinflussen",
+        "effect": "Der FW der Willenskraft des Opfers sinkt um QS gegen Einflüsterungen des Namenlosen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Vier Ziele",
+        "effect": "Die Liturgie kann gegen bis zu 4 Ziele gleichzeitig gewirkt werden. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Wochen.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "namenloses_vergessen",
@@ -2501,7 +4541,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Leichtgläubig",
+        "effect": "Dem Opfer kommt nach Ablauf der Wirkungsdauer nichts seltsam vor. Es hat nicht das Gefühl, beherrscht worden zu sein.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 8 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig beeinflussen. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "obsession",
@@ -2525,7 +4585,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 2 Stunden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig mit der Obsession belegen. Jedes Ziel nach dem ersten kostet zusätzlich 4 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "offenlegung_des_geistes",
@@ -2549,7 +4629,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Heimlicher Gedankenforscher",
+        "effect": "Die *Sinnesschärfe*-Probe ist um QS x 2 erschwert.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "opfergang",
@@ -2573,7 +4673,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verteidigungswall",
+        "effect": "Das Ziel der Liturgie bekommt +1 auf Verteidigung.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Zäh",
+        "effect": "Das Ziel kann bis zu einer negativen Lebensenergie von KO x 2 kämpfen, bevor es endgültig stirbt.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Guter Kampf",
+        "effect": "Dem Ziel unterlaufen im Kampf keine Patzer mehr. Patzer werden wie einfach misslungene Proben behandelt.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "pech_und_schwefel",
@@ -2597,7 +4717,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Intensiver Strahl",
+        "effect": "Es muss nicht gewürfelt werden, ob das Ziel *Furcht* erleidet. Dies geschieht bei einem Treffer stattdessen automatisch. Es entstehen zusätzliche Kosten in Höhe von 2 KaP.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Windender Strahl",
+        "effect": "Das Ziel kann kaum noch ausweichen. Das Ausweichen ist um weitere 2 erschwert. Es entstehen zusätzliche Kosten in Höhe von 2 KaP.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig treffen. Die KaP-Kosten der Liturgie verdoppeln sich.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "rattenschwarm",
@@ -2621,7 +4761,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Liturgiekosten sind doch modifizierbar.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Mehr Ratten",
+        "effect": "Die Anzahl der Ratten erhöht sich um 10.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Nur eine letzte Ratte",
+        "effect": "Solange mindestens eine Ratte überlebt, kann der Geweihte aus dieser seinen Körper wiederherstellen.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "ruf_der_heimat",
@@ -2645,7 +4805,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Entfernung bestimmen",
+        "effect": "Der Geweihte kann die genaue Entfernung zu seinem Heimattempel bestimmen.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Tempel der eigenen Kirche",
+        "effect": "Der Geweihte kann einen beliebigen ihm bekannten Tempel seiner Tradition erspüren. Er muss den Tempel nicht schon einmal aufgesucht haben, allerdings darf dieser nicht verborgen oder geheim sein.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Erreichbarkeit feststellen",
+        "effect": "Der Geweihte kann die genaue Erreichbarkeit seines Heimattempels erspüren. Er weiß beispielsweise, dass er Umwege gehen muss, falls ihm der direkte Weg versperrt ist (also wird er sich in Richtung einer Brücke aufmachen, wenn ein Fluss ihn vom direkten Weg abschneidet).",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "schleichende_faeulnis",
@@ -2669,7 +4849,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 8 Schritt.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 2 Tage.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Der Geweihte kann beliebig viele Ziele gleichzeitig verfluchen. Jedes Ziel nach dem ersten kostet zusätzlich 16 KaP.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "schutzsegen",
@@ -2693,7 +4893,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Wider Daimonide",
+        "effect": "Auch Daimonide jeglicher Art können gewählt werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Liturgiedauer modifizierbar",
+        "effect": "Die Liturgiedauer ist doch modifizierbar.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Änderung des Intervalls",
+        "effect": "Das Intervall beträgt 10 KR.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "schwindende_zauberkraft",
@@ -2717,7 +4937,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Starker Zauberschwund 1",
+        "effect": "Zauber sind innerhalb der Zone um 2 erschwert, zudem verlieren Zauberer pro KR 2 AsP.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Starker Zauberschwund 2",
+        "effect": "Zauber sind innerhalb der Zone um 3 erschwert, zudem verlieren Zauberer pro KR 3 AsP. Voraussetzung: Liturgieerweiterung *Starker Zauberschwund 1*.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt 16 Schritt.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "seelenschatten",
@@ -2741,7 +4981,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Liturgie wirkt 13 Stunden und kostet 16 KaP.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Schwer zu durchschauen",
+        "effect": "Die Proben, um den Namenlosen-Geweihten zu durchschauen, sind um QS x 2 erschwert.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "seevogelsprache",
@@ -2765,7 +5025,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 10 Minuten.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Mehr Vögel",
+        "effect": "Alle Seevögel innerhalb Hör- und Sehreichweite des Geweihten sind betroffen.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "sicherer_weg",
@@ -2789,7 +5069,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Stärkere Sicherheit",
+        "effect": "Die Proben sind um QS/2+1 erleichtert.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längeres Intervall 1",
+        "effect": "Das Intervall beträgt 1 Stunde.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längeres Intervall 2",
+        "effect": "Das Intervall beträgt 2 Stunden. Voraussetzung: Liturgieerweiterung *Längeres Intervall 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "sturmruf",
@@ -2814,7 +5114,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS x 10 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 64 Schritt.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "tiere_beruhigen",
@@ -2839,7 +5159,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 Minuten.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Erhöhte Reichweite",
+        "effect": "Die Reichweite beträgt 16 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS x 10 Minuten. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "tierleid_lindern",
@@ -2863,7 +5203,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Mehrere Ziele",
+        "effect": "Der Geweihte kann beliebig viele Tiere gleichzeitig heilen. Jedes Ziel nach dem ersten kostet zusätzlich 4 KaP.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Starke Linderung",
+        "effect": "Statt QS/2 können QS Stufen geheilt werden.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "tiersprache",
@@ -2887,7 +5247,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Mehr Wildtiere",
+        "effect": "Alle Wildtiere innerhalb Hör- und Sichtweite des Geweihten sind betroffen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "treuer_begleiter",
@@ -2911,7 +5291,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Größere Tiere",
+        "effect": "Der Geweihte kann auch Tiere der Größenkategorie klein zu seinem Begleiter machen.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Tage.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "unterwasseratmung",
@@ -2936,7 +5336,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Liturgie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Liturgie festgelegt werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Lebewesen übertragen werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig von der Wirkung profitieren lassen. Die KaP-Kosten sind für jedes Ziel einzeln zu bezahlen.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "versteinerung",
@@ -2960,7 +5380,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 8 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 KR.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Schnelle Versteinerung",
+        "effect": "Pro KR erhält das Ziel 2 Stufen *Paralyse*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "wasserlauf",
@@ -2985,7 +5425,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 10 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Mitnahme",
+        "effect": "Die Geweihte kann jemanden mitnehmen, allerdings muss eine ständige Berührung während der Wirkung der Liturgie aufrechterhalten werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Lebewesen übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "windhose",
@@ -3009,7 +5469,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Erschwertes Ausweichen",
+        "effect": "Die Probe auf Ausweichen ist zusätzlich um 1 erschwert.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Höherer Schaden",
+        "effect": "Die Windhose richtet 2W6+(QS x 2) TP an.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 32 Schritt.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "windruf",
@@ -3033,7 +5513,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt 1 Stunde.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt 2 Stunden. Voraussetzung: Liturgieerweiterung Längere *Wirkungsdauer 1*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Größere Reichweite",
+        "effect": "Die Winde entstehen in bis zu 64 Schritt Entfernung vom Geweihten.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "zaehe_haut",
@@ -3057,7 +5557,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 KR.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Harte Schale",
+        "effect": "Der Geweihte kann auch einen natürlichen RS von 2 erhalten. Die Kosten dafür betragen 8 KaP (nicht modifizierbar).",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "aechtung_exkommunikation",
@@ -3081,7 +5601,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Geweihten-Exkommunikation 1",
+        "effect": "Auch Geweihte sind von der Zeremonie betroffen. Sie können nach der Exkommunikation kein Karma mehr regenerieren.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Für immer exkommuniziert",
+        "effect": "Die Exkommunikation kann nicht durch eine Buße wieder aufgehoben werden (siehe **Aventurisches Götterwirken** Seite **72**). Sie ist permanent und kostet den Geweihten zusätzlich 2 permanente KaP (also insgesamt 4 pKaP). Voraussetzung: Liturgieerweiterung *Geweihten-Exkommunikation 1*.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Geweihten-Exkommunikation 2",
+        "effect": "Geweihte sind von der Zeremonie betroffen und verlieren ihren Vorteil Geweihter, die Sonderfertigkeit der Tradition, karmale Sonderfertigkeiten, karmale Vor- und Nachteile sowie ihre Liturgien. Sie erhalten aber alle dafür ausgegebenen AP zurück. Die Exkommunikation ist permanent und kostet den Geweihten zusätzlich 4 permanente KaP (also insgesamt 6 pKaP). Voraussetzung: Liturgieerweiterung Für immer exkommuniziert.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "aufnahme_initiation",
@@ -3105,7 +5645,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig initiieren. Das zweite Ziel kostet 2 KaP extra.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Vier Ziele",
+        "effect": "Der Geweihte kann bis zu 4 Ziele gleichzeitig initiieren. Jedes weitere Ziel kostet 2 KaP extra. Voraussetzung: Liturgieerweiterung *Zwei Ziele*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Acht Ziele",
+        "effect": "Der Geweihte kann bis zu 8 Ziele gleichzeitig initiieren. Jedes weitere Ziel kostet 2 KaP extra. Voraussetzung: Liturgieerweiterung *Vier Ziele*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "ausbrennen_purgation",
@@ -3134,7 +5694,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig der Zeremonie unterziehen. Das zweite Ziel kostet 16 KaP und es müssen insgesamt 8 permanente KaP ausgegeben werden.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar, die permanenten Kosten bleiben gleich.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "bannfluch_anathema",
@@ -3158,7 +5738,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Geweihten-Anathema",
+        "effect": "Geweihte sind von der Zeremonie betroffen und verlieren ihren Vorteil Geweihter, die Sonderfertigkeit der Tradition, karmale Sonderfertigkeiten, karmale Vor- und Nachteile sowie ihre Liturgien. Sie erhalten aber alle dafür ausgegebenen AP zurück. Das Anathema ist permanent und kostet den Geweihten 18 permanente KaP.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite ist unbegrenzt.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Nicht-Initiaten",
+        "effect": "Der Geweihte kann den Bannfluch auch über Kulturschaffende sprechen, die keine Initiaten des gleichen Pantheons wie der Geweihte sind.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "berauschender_wein",
@@ -3182,7 +5782,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Andere Alkoholika",
+        "effect": "Wasser kann auch in andere Alkoholsorten verwandelt werden, allerdings keine hochprozentigen Alkoholika, sondern vor allem Bier und Met.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Mehr Wein!",
+        "effect": "Es können bis zu QS x 2 Liter Wasser in Alkohol verwandelt werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Noch meeehr Wein!",
+        "effect": "Es können bis zu QS x 4 Liter Wasser in Alkohol verwandelt werden. Voraussetzung: Liturgieerweiterung *Mehr Wein!*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "beschwoerung_der_hohen_diener_des_rattenkindes",
@@ -3206,7 +5826,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mehr Dienste",
+        "effect": "Der Geweihte kann QS +2 Dienste von dem Wesen verlangen.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Längerer Dienst",
+        "effect": "Das Wesen verliert erst am Ende einer Woche (statt am Ende eines Tages) automatisch einen Dienst.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Mächtiges Wesen",
+        "effect": "Dem Wesen können zweimal die gleichen Verbesserungen beim Beschwören gegeben werden.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "beschwoerung_der_machtvollen_diener_des_rattenkindes",
@@ -3230,7 +5870,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mehr Dienste",
+        "effect": "Der Geweihte kann QS +2 Dienste von dem Wesen verlangen.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Längerer Dienst",
+        "effect": "Das Wesen verliert erst am Ende einer Woche (statt am Ende eines Tages) automatisch einen Dienst.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Mächtiges Wesen",
+        "effect": "Dem Wesen können zweimal die gleichen Verbesserungen beim Beschwören gegeben werden.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "bild_fuer_die_ewigkeit",
@@ -3256,7 +5916,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Zeremoniedauer modifizierbar",
+        "effect": "Die Zeremoniedauer ist doch modifizierbar.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Alle Sinneseindrücke",
+        "effect": "Mit der Zeremonie lassen sich alle Sinneseindrücke in das Gedächtnis brennen.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "blick_in_die_flammen",
@@ -3280,7 +5960,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Visionen",
+        "effect": "Der Geweihte sieht in den Flammen unzusammenhängende Visionen, was rund um das Entzünden und Löschen der Flammen geschehen ist. Diese sind allerdings undeutlich.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Erkenntnis",
+        "effect": "Der Geweihte erkennt die genaue Ursache des Feuers, beispielsweise Brandstiftung, Ingerimms Wirken oder einen Unfall. Voraussetzung: Liturgieerweiterung *Visionen*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Klarheit",
+        "effect": "Der Geweihte kann zusätzliche Aussagen über die Hitze des Feuers treffen, wie schnell es sich ausgebreitet hat und ob Brandmittel eingesetzt wurden. Voraussetzung: Liturgieerweiterung *Erkenntnis*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "delphingestalt",
@@ -3304,7 +6004,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Der Geweihte kann in Tiergestalt sprechen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "eidechsengestalt",
@@ -3328,7 +6048,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Die Geweihte kann in Tiergestalt sprechen.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "eisbaergestalt",
@@ -3352,7 +6092,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Der Geweihte kann in Tiergestalt sprechen.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "erinnern",
@@ -3378,7 +6138,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Weit zurückliegende Erinnerung",
+        "effect": "Die Erinnerung darf bis zu QS Wochen zurückliegen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Gelöschte Erinnerungen reaktivieren",
+        "effect": "Auch gelöschte Erinnerungen können wieder ins Gedächtnis gerufen werden, aber nur, wenn die QS der Zeremonie die QS der Unterdrückungsursache übersteigen.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "fest_der_freude",
@@ -3402,7 +6182,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS x 10 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Später Beginn",
+        "effect": "Die Zeremonie kann auch während des Festes gewirkt werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 24 Stunden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "frostschutz",
@@ -3427,7 +6227,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Zeremonie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Zeremonie festgelegt werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Zeremonie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "fruchtbarkeit",
@@ -3452,7 +6272,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Hohe Wahrscheinlichkeit",
+        "effect": "Die Wahrscheinlichkeit steigt statt um 30 % nun um 60 %.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Einzelne Person",
+        "effect": "Die Zeremonie kann auch nur auf eine Person angewendet werden, die dann besonders fruchtbar ist.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Tage.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "fuchsgestalt",
@@ -3476,7 +6316,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Die Geweihte kann in Tiergestalt sprechen.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "gaensegestalt",
@@ -3500,7 +6360,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Der Geweihte kann in Tiergestalt sprechen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "geschwinder_schritt",
@@ -3524,7 +6404,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Geänderte Zielkategorie 1",
+        "effect": "Als Ziel der Zeremonie dürfen auch Lebewesen der Größenkategorie winzig, klein und mittel gewählt werden. Voraussetzung: Liturgieerweiterung *Reichweite Berührung*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Geänderte Zielkategorie 2",
+        "effect": "Als Ziel der Zeremonie dürfen auch Lebewesen der Größenkategorie groß gewählt werden. Voraussetzung: Liturgieerweiterung Geänderte *Zielkategorie 1*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "goettliche_erkenntnis",
@@ -3548,7 +6448,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mehr Proben 1",
+        "effect": "Der Geweihte bekommt eine Begabung für die nächsten zwei Proben auf ein Wissenstalent innerhalb der Wirkungsdauer.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 30 Minuten.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mehr Proben 2",
+        "effect": "Der Geweihte bekommt eine Begabung für die nächsten drei Proben auf ein Wissenstalent innerhalb der Wirkungsdauer. Voraussetzung: Liturgieerweiterung *Mehr Proben 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "greifenruf",
@@ -3572,7 +6492,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zeremoniedauer modifizierbar",
+        "effect": "Die Zeremoniedauer ist doch modifizierbar.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Stunden.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Karmaspende",
+        "effect": "Der Greif nutzt auch sein eigenes Karma, um den Geweihten zu unterstützen.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "guter_fang",
@@ -3596,7 +6536,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Leichteres Fischen",
+        "effect": "Die Erleichterung bei der *Fischen & Angeln*-Probe beträgt (QS/2)+1.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Mehr Rationen 1",
+        "effect": "Die ermittelten Tagesrationen werden verdoppelt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mehr Rationen 2",
+        "effect": "Die ermittelten Tagesrationen werden verdreifacht. Voraussetzung: Liturgieerweiterung *Mehr Rationen 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "haeutung",
@@ -3620,7 +6580,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Andere Augen, anderes Haar",
+        "effect": "Die Augen- und Haarfarbe ändern sich bei der Häutung nach dem Willen der Geweihten.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Größer und kleiner",
+        "effect": "Die Größe der Geweihten kann pro Häutung um bis zu 1 Finger willentlich nach oben oder unten geändert werden.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Eigene Wahl",
+        "effect": "Details des Aussehens können von der Geweihten willentlich bestimmt werden. Regeltechnische Vor- und Nachteile lassen sich jedoch auch mit der Erweiterung nicht beeinflussen.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "heiliger_schwur",
@@ -3644,7 +6624,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Starker Schwur 1",
+        "effect": "Die *Willenskraft*-Probe ist um (QS/2)+1 erschwert.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Starker Schwur 2",
+        "effect": "Die *Willenskraft*-Probe ist um (QS/2)+2 erschwert. Voraussetzung: Liturgieerweiterung *Starker Schwur 1*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Starker Schwur 3",
+        "effect": "Die *Willenskraft*-Probe ist um (QS/2)+3 erschwert. Voraussetzung: Liturgieerweiterung *Starker Schwur 2*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "herr_der_meere",
@@ -3668,7 +6668,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Wasserfahrzeuge 1",
+        "effect": "Das Wasserfahrzeug kann bis zu 30 Schritt lang sein und bis zu 60 Personen Platz bieten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größere Wasserfahrzeuge 2",
+        "effect": "Das Wasserfahrzeug kann bis zu 40 Schritt lang sein und bis zu 120 Personen Platz bieten. Voraussetzung: Liturgieerweiterung *Größere Wasserfahrzeuge 1*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Mehrere Ziele",
+        "effect": "Die Zeremonie wirkt auf mehrere Wasserfahrzeuge, jedes Ziel nach dem ersten kostet zusätzlich 16 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "hilfe_in_der_not",
@@ -3692,7 +6712,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Genaue Entfernung",
+        "effect": "Die Geweihte kann auf eine Meile genau sagen, wie weit die notleidende Person entfernt ist.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Genaue Erreichbarkeit",
+        "effect": "Die Geweihte kann genauere Angaben zur Erreichbarkeit machen und z. B. spüren, ob ein Fluss oder ein Berg im Weg ist. Somit kann sie auch Umwege einkalkulieren.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "inspiration",
@@ -3717,7 +6757,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt 8 Stunden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt 16 Stunden. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "jagdglueck",
@@ -3741,7 +6801,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mehr Proben 1",
+        "effect": "Das Ziel bekommt eine Begabung für die nächsten zwei Proben auf *Tierkunde* bei der Jagd innerhalb der Wirkungsdauer.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Mehr Proben 2",
+        "effect": "Das Ziel bekommt eine Begabung für die nächsten drei Proben auf *Tierkunde* bei der Jagd innerhalb der Wirkungsdauer. Voraussetzung: Liturgieerweiterung *Mehr Proben 1*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "jugendlichkeit",
@@ -3767,7 +6847,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Zeremonie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Jahre. Die KaP-Kosten steigen auf 64.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "kleine_moralstaerkung",
@@ -3792,7 +6892,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 Tage.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Gute Moral",
+        "effect": "Bis zu drei *Willenskraft* *(Bedrohungen standhalten* oder *Einschüchtern widerstehen*)-Proben können neu gewürfelt werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Gute Selbstbeherrschung",
+        "effect": "Zusätzlich können auch Proben auf das Talent *Selbstbeherrschung* im Rahmen der Wirkung der Zeremonie neu gewürfelt werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "laeuterung_des_erzes",
@@ -3816,7 +6936,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS x 5 Schritt.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Edelmetallrausch",
+        "effect": "Die Zeremonie wirkt auf alle Edelmetalle gleichzeitig.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Edelsteinrausch",
+        "effect": "Die Zeremonie wirkt auf alle Edelsteine gleichzeitig.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "liturgieabsorption",
@@ -3840,7 +6980,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 32 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 13 Tage.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Permanente Wirkung aufheben",
+        "effect": "Permanente Wirkungen können aufgehoben werden. Der Geweihte entscheidet sich vor Beginn der Zeremonie, ob er dies möchte. Die permanenten Kosten entsprechen denen, die für die Liturgie/Zeremonie ausgegeben wurden.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "makelloser_leib",
@@ -3865,7 +7025,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS x 5 Stunden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS Tage.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "metallerhitzung",
@@ -3889,7 +7069,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Menge 1",
+        "effect": "Maximal lassen sich bis zu 5 Stein erhitzen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 Stunden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Größere Menge 2",
+        "effect": "Maximal lassen sich bis zu 25 Stein erhitzen. Voraussetzung: Liturgieerweiterung *Größere Menge 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "moralstaerkung",
@@ -3913,7 +7113,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Wirkungsdauer beträgt QS x 5 Tage.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Eins mit dem Schiff",
+        "effect": "Bei Proben auf *Boote & Schiffe* bekommen alle Ziele +1 FP.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Gute Selbstbeherrschung",
+        "effect": "Auch das Talent *Selbstbeherrschung* bekommt eine entsprechende Begabung.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "nahrungsreinigung",
@@ -3937,7 +7157,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Menge 1",
+        "effect": "Die gereinigte Menge reicht für 12 Personen.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Größere Menge 2",
+        "effect": "Die gereinigte Menge reicht für 50 Personen. Voraussetzung: Liturgieerweiterung *Größere Menge 1*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Größere Menge 3",
+        "effect": "Die gereinigte Menge reicht für 100 Personen. Voraussetzung: Liturgieerweiterung *Größere Menge 2*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "nebelschwaden",
@@ -3961,7 +7201,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 64 Schritt, der Nebel verharrt an der Stelle.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Formbarer Nebel",
+        "effect": "Der Nebel ist formbar und kann beliebige Gestalt annehmen.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "ortsweihe_sanctum",
@@ -3985,7 +7245,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Große Gebäude/Orte 1",
+        "effect": "Ein großes Terrain kann geweiht werden. Darunter fallen viele Stadttempel. Die KaP-Kosten belaufen sich auf 128 KaP, davon 32 permanent.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Große Gebäude/Orte 2",
+        "effect": "Ein riesiges Terrain kann geweiht werden. Darunter fällt beispielsweise das Gebrochene Rad, der Haupttempel der Puniner Boronkirche. Die KaP-Kosten belaufen sich auf 256 KaP, davon 64 permanent. Voraussetzung: Liturgieerweiterung *Große Gebäude/Orte 1*.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Große Gebäude/Orte 3",
+        "effect": "Ein gigantisches Terrain oder Tempelanlagen können geweiht werden. Darunter fällt z. B. die Stadt des Lichts in Gareth. Die KaP-Kosten belaufen sich auf 512 KaP, davon 128 permanent. Voraussetzung: Liturgieerweiterung *Große Gebäude/Orte 2*.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "panthergestalt",
@@ -4009,7 +7289,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Die Geweihte kann in Tiergestalt sprechen.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "paradiesvogelgestalt",
@@ -4033,7 +7333,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Der Geweihte kann in Tiergestalt sprechen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "pferdegestalt",
@@ -4057,7 +7377,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Die Geweihte kann in Tiergestalt sprechen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "priesterweihe_ordination",
@@ -4081,7 +7421,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig ordinieren. Das zweite Ziel kostet 16 KaP und es müssen insgesamt 24 permanente KaP ausgegeben werden.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar, die permanenten Kosten bleiben gleich.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "rabengestalt",
@@ -4105,7 +7465,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Der Geweihte kann in Tiergestalt sprechen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "reisesegen",
@@ -4131,7 +7511,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mehr Proben 1",
+        "effect": "Das Ziel bekommt eine Begabung für die nächsten zwei Proben auf ein Naturtalent innerhalb der Wirkungsdauer.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Tage.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Mehr Proben 2",
+        "effect": "Das Ziel bekommt eine Begabung für die nächsten drei Proben auf ein Naturtalent innerhalb der Wirkungsdauer. Voraussetzung: Liturgieerweiterung *Mehr Proben 1*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "saettigung",
@@ -4156,7 +7556,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 24 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Mehr Mäuler werden satt",
+        "effect": "Pro 0,5 Stein werden QS+1 Personen satt.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Riesige Mengen",
+        "effect": "Bis zu 10 Stein an Nahrung können von der Zeremonie betroffen sein.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "schlangengestalt",
@@ -4180,7 +7600,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Der Geweihte kann in Tiergestalt sprechen.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "schwanengestalt",
@@ -4204,7 +7644,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Die Geweihte kann in Tiergestalt sprechen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "seelenbannung",
@@ -4228,7 +7688,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 4
+      },
+      {
+        "level": 2,
+        "name": "Kürzere Zeremoniedauer",
+        "effect": "Die Zeremoniedauer beträgt 8 Stunden.",
+        "cost": 8
+      },
+      {
+        "level": 3,
+        "name": "Massenopferung",
+        "effect": "Die Geweihte kann bis zu 13 Ziele gleichzeitig opfern. Jedes Ziel nach dem ersten reduziert die KaP-Kosten um 2.",
+        "cost": 12
+      }
+    ]
   },
   {
     "id": "seelenpruefung",
@@ -4252,7 +7732,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Schwurbrecher-Aura",
+        "effect": "Der Geweihte kann erkennen, ob der Makel des Schwurbrechers (siehe **Aventurisches Götterwirken** Seite **71**) auf seinem Gegenüber liegt.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Frevler-Aura",
+        "effect": "Der Geweihte kann erkennen, ob der Makel des Frevlers (siehe **Aventurisches Götterwirken** Seite **71**) auf seinem Gegenüber liegt. Voraussetzung: Liturgieerweiterung *Schwurbrecher-Aura*.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Verdammten-Aura",
+        "effect": "Der Geweihte kann erkennen, ob der Makel des Verdammten (siehe **Aventurisches Götterwirken** Seite **72**) auf seinem Gegenüber liegt. Voraussetzung: Liturgieerweiterung *Frevler-Aura*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "segnung_des_heims",
@@ -4276,7 +7776,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 Tage.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS Wochen. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 3",
+        "effect": "Die Wirkungsdauer beträgt QS Monate. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 2*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "sicherer_tritt",
@@ -4300,7 +7820,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Erleichterung",
+        "effect": "Es können (QS/2)+1 Erschwernisse ignoriert werden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Keine Aufrechterhaltung",
+        "effect": "Die Zeremonie gilt nicht als aufrechterhaltend. Die Wirkungsdauer und damit die KaP-Kosten müssen beim Wirken der Zeremonie festgelegt werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "speisung",
@@ -4324,7 +7864,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Mehr Personen",
+        "effect": "Die Zeremonie erstreckt sich auf QS+3 Personen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 2 Tage.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "staub_und_schimmel",
@@ -4348,7 +7908,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 16 Schritt.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Zielkategorie magische Objekte",
+        "effect": "Die Zielkategorie umfasst auch magische Objekte. Sind permanente AsP darin gebunden, muss der Geweihte ebenso viele permanente KaP opfern.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Zielkategorie karmale Objekte",
+        "effect": "Die Zielkategorie umfasst auch karmale Objekte. Sind permanente KaP darin gebunden, muss der Geweihte ebenso viele permanente KaP opfern.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "storchengestalt",
@@ -4372,7 +7952,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Der Geweihte kann in Tiergestalt sprechen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "tempelweihe_konsekration",
@@ -4396,7 +7996,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Große Gebäude 1",
+        "effect": "Große Tempel können geweiht werden. Darunter fallen viele Stadttempel. Die KaP-Kosten belaufen sich auf 64 KaP, davon 16 permanent.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Große Gebäude 2",
+        "effect": "Riesige Tempel können geweiht werden. Darunter fällt beispielsweise das Gebrochene Rad, der Haupttempel der Puniner Boronkirche. Die KaP-Kosten belaufen sich auf 128 KaP, davon 32 permanent. Voraussetzung: Liturgieerweiterung *Große Gebäude 1*.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Große Gebäude 3",
+        "effect": "Gigantische Tempel oder Tempelanlagen können geweiht werden. Darunter fällt z. B. die Stadt des Lichts in Gareth. Die KaP-Kosten belaufen sich auf 256 KaP, davon 64 permanent. Voraussetzung: Liturgieerweiterung *Große Gebäude 2*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "traumbild",
@@ -4420,7 +8040,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Tiefer Einblick",
+        "effect": "Der Geweihte erhält Einblick in die Persönlichkeit des Ziels und kann alle Persönlichkeitsschwächen und Schlechten Eigenschaften identifizieren.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Noch tieferer Einblick",
+        "effect": "Der Geweihte erkennt Ziele und Motivationen des Träumers. Bei *Menschenkenntnis*, *Bekehren&Überzeugen*, *Überreden* und *Heilkunde Seele* bekommt der Geweihte gegenüber dem Träumer eine Erleichterung von 1 für 1 Tag. Voraussetzung: Liturgieerweiterung *Tiefer Einblick*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Sprechender Traumgänger",
+        "effect": "Der Geweihte kann im Traum zum Ziel sprechen. Voraussetzung: Liturgieerweiterung *Noch tieferer Einblick*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "unbeschwerte_wanderung",
@@ -4444,7 +8084,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Mehr Gewicht",
+        "effect": "Das Ziel kann QS x 2 Stein zusätzlich tragen (statt nur QS Stein).",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Zeremonie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "verblassende_erinnerung",
@@ -4470,7 +8130,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Jahre.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Seelenheilung",
+        "effect": "Die *Heilkunde Seele*-Probe ist zusätzlich um 2 erleichtert.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "vergessen",
@@ -4494,7 +8174,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS Wochen. Die Kosten steigen auf 16 KaP.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS Monate. Die Kosten steigen auf 32 KaP. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 3",
+        "effect": "Die Wirkungsdauer beträgt QS Jahre. Die Kosten steigen auf 64 KaP. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 2*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "waffenfluch",
@@ -4518,7 +8218,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verwirrter Geweihter",
+        "effect": "Erleidet ein Geweihter SP durch die verfluchte Waffe, bekommt er zusätzlich 1 Stufe *Verwirrung*.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Verängstigter Geweihter",
+        "effect": "Erleidet ein Geweihter SP durch die verfluchte Waffe, bekommt er zusätzlich 1 Stufe *Furcht*.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Tage.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "wegweiser",
@@ -4542,7 +8262,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größerer Radius",
+        "effect": "Der Radius beträgt QS x 30 Meilen.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Genaue Entfernung",
+        "effect": "Der Geweihte kann auf eine Meile genau sagen, wie weit die Unterkunft entfernt ist.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Genaue Erreichbarkeit",
+        "effect": "Der Geweihte kann genauere Angaben zur Erreichbarkeit machen und z. B. spüren, ob ein Fluss oder ein Berg im Weg ist. Somit kann er auch Umwege einkalkulieren.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "weihe_des_heims",
@@ -4568,7 +8308,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Gebäude 1",
+        "effect": "Größere Gebäude können geweiht werden. Darunter fallen viele Stadtvillen oder mehrstöckige Gebäude. Die KaP-Kosten belaufen sich auf 16 KaP.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Größere Gebäude 2",
+        "effect": "Riesige Gebäude können geweiht werden. Darunter fallen beispielsweise kleinere Burgen. Die KaP-Kosten belaufen sich auf 32 KaP. Voraussetzung: Liturgieerweiterung *Größere Gebäude 1*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Größere Gebäude 3",
+        "effect": "Gigantische Gebäude können geweiht werden. Darunter fallen beispielsweise Schlösser und Festungen. Die KaP-Kosten belaufen sich auf 64 KaP. Voraussetzung: Liturgieerweiterung *Größere Gebäude 2*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "wiederherstellung",
@@ -4593,7 +8353,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Bessere Reparatur",
+        "effect": "Die Zeremonie gibt QS x 30 Strukturpunkte wieder zurück.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Waffen- und Rüstungsreparatur",
+        "effect": "Auch Waffen und Rüstungen können wiederhergestellt werden. Um Rüstungen wiederherzustellen, benötigt der Geweihte so viele QS, wie die Rüstung Rüstungsschutz besitzt. Bei Waffen der Kampftechniken Dolche und Raufen muss 1 QS erzielt werden, bei anderen Waffen mindestens 2 QS. Zweihandwaffen können nur mit mindestens 3 QS wiederhergestellt werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Perfekte Reparatur",
+        "effect": "Die Zeremonie gibt QS x 50 Strukturpunkte wieder zurück. Außerdem wird bei Waffen und Rüstungen eine QS weniger benötigt. Voraussetzung: Liturgieerweiterung *Bessere Reparatur und Waffen- und Rüstungsreparatur*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "winterschlaf",
@@ -4619,7 +8399,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Zielkategorie Lebewesen",
+        "effect": "Die Zeremonie umfasst auch die Zielkategorie Lebewesen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer 1",
+        "effect": "Die Wirkungsdauer beträgt QS Wochen, die Zeremonie kostet dafür 16 KaP (Kosten sind nicht modifizierbar).",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer 2",
+        "effect": "Die Wirkungsdauer beträgt QS Monate, die Zeremonie kostet dafür 32 KaP (Kosten sind nicht modifizierbar). Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer 1*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "zuflucht",
@@ -4645,7 +8445,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Begleiter erlaubt",
+        "effect": "Auch tierische Begleiter wie Esel, Pferde und Vertrautentiere werden durch die Zuflucht geschützt. Die Kosten betragen bei ihnen 2/4/8/16 KaP für die Größenkategorie winzig/klein/mittel/groß.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 24 Stunden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "zwergwalgestalt",
@@ -4669,7 +8489,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Aufrechterhaltend",
+        "effect": "Die Zeremonie ist aufrechterhaltend mit Aktivierungskosten von 8 KaP und 4 KaP pro 3 Stunden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Sprachfähigkeit",
+        "effect": "Die Geweihte kann in Tiergestalt sprechen.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Klerikales Tier",
+        "effect": "Liturgien können gewirkt werden, notwendige Gesten entfallen dabei. Für KaP gilt dann: wie Geweihter. Voraussetzung: Liturgieerweiterung *Sprachfähigkeit*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "blick_auf_den_meeresgrund",
@@ -4693,7 +8533,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": null
   },
   {
     "id": "botschaft_aus_der_tiefe",
@@ -4717,7 +8558,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": null
   },
   {
     "id": "ertrinken",
@@ -4741,7 +8583,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": null
   },
   {
     "id": "furchtresistenz",
@@ -4765,7 +8608,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": null
   },
   {
     "id": "numinorus_fesseln",
@@ -4789,7 +8633,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": null
   },
   {
     "id": "quallenhaut",
@@ -4813,7 +8658,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": null
   },
   {
     "id": "quallenruf",
@@ -4837,7 +8683,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": null
   },
   {
     "id": "schiffsgespuer",
@@ -4861,7 +8708,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": null
   },
   {
     "id": "unsichtbare_flut",
@@ -4885,7 +8733,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": null
   },
   {
     "id": "leitende_stroemung",
@@ -4909,7 +8758,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": null
   },
   {
     "id": "numinorus_fluch",
@@ -4933,7 +8783,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": null
   },
   {
     "id": "schattenrochengestalt",
@@ -4957,7 +8808,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": null
   },
   {
     "id": "seemonsterruf",
@@ -4981,7 +8833,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "D"
+    "improvement_cost": "D",
+    "enhancements": null
   },
   {
     "id": "empfaengnisverhuetung",
@@ -5005,7 +8858,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer I",
+        "effect": "Die Wirkungsdauer beträgt QS Stunden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Mehrere Ziele",
+        "effect": "Die Geweihte kann mehrere Ziele gleichzeitig segnen. Jedes Ziel nach dem ersten kostet zusätzlich 4 KaP.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer II",
+        "effect": "Die Wirkungsdauer beträgt QS Tage. Voraussetzung: Liturgieerweiterung *Längere Wirkungsdauer I*.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "entstelltes_antlitz",
@@ -5029,7 +8902,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Lirtugieerweiterung I",
+        "effect": "Das Ziel bekommt die *Persönlichkeitsschwäche Selbstzweifel*, die immer dann eine I Erschwernis von 1 einbringt, wenn es davon ausgeht, dass das eigene Aussehen Nachteile mit sich bringt.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 6 Stunden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele gleichzeitig verunstalten. Das zweite Ziel kostet zusätzlich 4 KaP.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "erregender_rausch",
@@ -5054,7 +8947,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt 30 Minuten.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf freiwillige Ziele übertragen werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Betörender Rausch",
+        "effect": "Proben auf *Betören (Anbändeln)* sind für den Anwender um QS/2 erleichtert.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "erregung_kontrollieren",
@@ -5079,7 +8992,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Starke Erregung",
+        "effect": "Die Liturgie verursacht bis zu 3 Stufen *Erregung*.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Mehrere Ziele",
+        "effect": "Die Geweihte kann mehrere Ziele gleichzeitig erregen. Jedes Ziel nach dem ersten kostet zusätzlich 8 KaP.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Heilige Ekstase",
+        "effect": "Erreicht das Ziel durch die Liturgie *Erregungsstufe IV*, wird die *Erregung* auf 0 reduziert und das Ziel bekommt 2 Stufen *Entrückung*. Als wohlgefällige Talente gelten die Talente der *Tradition (Rahjakirche)* oder *Tradition (Levthankult)*, je nachdem, wer die Liturgie gewirkt hat (siehe Seite **162**). Das Ziel kann während der Wirkungsdauer keine weiteren Stufen *Entrückung* erhalten.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "fesselndes_band",
@@ -5103,7 +9036,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Einengendes Band",
+        "effect": "Statt dem Status *Fixiert* kann sich der Priester dazu entscheiden, dass das Ziel den Status *Eingeengt* erhält.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Kosten modifizierbar",
+        "effect": "Die Kosten sind doch modifizierbar.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 2 KR",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "gespiegelte_gefuehle",
@@ -5127,7 +9080,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Gefühlsübertragung",
+        "effect": "Die Liturgie wirkt nicht nur auf den Geweihten, sondern auch auf den anderen freiwilligen Teilnehmer des Liebesspiels. Dieser spürt dann die Gefühle des Geweihten und erhält die gleichen Vorteile der Liturgie ihm gegenüber.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Gefühle aus der Ferne",
+        "effect": "Nach dem Ende der Liturgiedauer kann sich der Geweihte entfernen und spürte die Gefühle des anderen Teilnehmers, während dieser einen gewöhnlichen Beischlafs oder ein Liebesspiel vollführt, auch weiterhin. Diese Verbindung hält 24 Stunden an. Voraussetzung: Liturgieerweiterung *Gefühlsübertragung*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Gefühlsbund",
+        "effect": "Der Geweihte kann ein Band zwischen mehreren Teilnehmern eines Liebesspiels weben. Der Geweihte kann sich hierbei auch auslassen und die Liturgie nur auf andere wirken. Die Ziele spüren dann die Gefühle der anderen Ziele und erhalten die gleichen Vorteile der Liturgie allen Teilnehmern gegenüber. Ab dem dritten Ziel kostet jeder weitere Teilnehmer nach den ersten beiden den Geweihten zusätzlich 4 KaP.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "gigantische_geilheit",
@@ -5151,7 +9124,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Noch geiler",
+        "effect": "Statt 2 Stufen erhält der Geweihte 3 Stufen *Erregung* und kann diese verteilen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Geilheitsfokussierung",
+        "effect": "Der Geweihte kann Teilnehmern 1 Stufe *Erregung* nehmen und sich selbst gutschreiben. Dies funktioniert auch, wenn die Teilnehmer gerade Erregungsstufe IV erreicht haben, aber jedem Teilnehmer kann der Geweihte nur 1 Stufe nehmen.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden. Dadurch kann auch ein anderer Teilnehmer die Erregung weitergeben.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "hand_der_lust",
@@ -5176,7 +9169,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Ausgeglichenheit",
+        "effect": "Nach dem ekstatischen Höhepunkt sind Proben auf *Willenskraft* bei Schlechten Eigenschaften für 6 Stunden um QS/2 erleichtert.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Kontrolle des Triebs",
+        "effect": "Wann immer die Geweihte innerhalb der nächsten 6 Stunden 1 weitere Stufe *Erregung* nach ihrem ekstatischen Höhepunkt erhalten soll, kann sie sich entscheiden, ob sie die Stufe bekommt oder nicht. Erhält sie jedoch mehrere Stufen des Zustands auf einen Schlag, schützt die Erweiterung nicht und die Geweihte bekommt die *Erregung* vollumfänglich zu spüren.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Zügelloses Verlangen",
+        "effect": "Die Geweihte ist in der Lage, binnen der nächsten 6 Stunden während des Liebesspiels einmalig 2 Stufen *Erregung* bei einem anderen Teilnehmer zu verursachen. Dies ist eine Verführungshandlung.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "hastiger_hoehepunkt",
@@ -5200,7 +9213,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Schnelle Freude",
+        "effect": "Der Priester und die Teilnehmer können QS/2+1 Durchgänge überspringen.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Keine Grenzen des Rauschs",
+        "effect": "Erregungsschranken können vom Geweihten ignoriert werden. Jeder weitere Teilnehmer, die die Schranken ignorieren soll, kostet zusätzlich 8 KaP.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "krankheitsvorbeugung",
@@ -5224,7 +9257,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer betrögt QS x 2 Stunden.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Behandlung von Geschlechtskrankheiten",
+        "effect": "Sollte mindestens so viele QS erzielt werden, wie die Stufe der Krankheit beträgt, wird diese augenblicklich geheilt.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "verstecktes_begehren",
@@ -5248,7 +9301,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Einsichten I",
+        "effect": "Der Priester erhält bei Proben auf *Bekehren & Überzeugen (Einzelgespräch)* und *Betören (Anbändeln)* eine Erleichterung von 1 gegenüber dem Ziel.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Einsichten II",
+        "effect": "Der Priester erhält bei Proben auf *Überreden* eine Erleichterung von 1 gegenüber dem Ziel. Voraussetzung: *Liturgieerweiterung Einsichten I*.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "einfluesterung",
@@ -5272,7 +9345,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Überzeugungsarbeit I",
+        "effect": "Die Erleichterung von QS/2 gilt auch für Proben auf *Bekehren & Überzeugen (Einzelgespräch* oder *öffentlich Rede)*, sofern sie dazu dienen, sich von Bedenken loszusagen und den eigenen Trieben nachzugehen.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Überzeugungsarbeit II",
+        "effect": "Die Erleichterung von QS/2 gilt auch für Proben auf *Betören (Anbändeln oder Liebeskünste)*, sofern sie dazu dienen, sich von Bedenken loszusagen und den eigenen Trieben nachzugehen. Voraussetzung: *Liturgieerweiterung; Überzeugungsarbeit I*.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Reichweite Berührung",
+        "effect": "Als Reichweite gilt Berührung. Die Liturgie kann nur auf Kulturschaffende übertragen werden.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "geschlechterwechsel",
@@ -5296,7 +9389,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 3 Stunden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Einsichten ins andere Geschlecht",
+        "effect": "Proben auf *Betören (Liebeskünste)* beim Liebesspiel gegenüber Personen des Geschlechts, in welches der Held durch die Zeremonie verwandelt wurde, sind um 1 erleichtert, solange die Wirkungsdauer anhält.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Wechselndes Geschlecht",
+        "effect": "Während der Wirkungsdauer kann der Held beliebig zwischen den Geschlechtern wechseln. Dies erfordert jeweils 8 Aktionen und ist jeweils ein anstrengender Vorgang. Der Geschlechtswechselnde erleidet dadurch 1 Stufe *Verwirrung*.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "heiliger_hoehepunkt",
@@ -5320,7 +9433,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Partnerorgasmus",
+        "effect": "Nicht nur das Ziel, auch die übrigen Teilnehmer des Liebesspiels erreichen ihren ekstatischen Höhepunkt und erhalten eine Belohnung, selbst wenn sie nicht Erregungsstufe IV erlangen. Allerdings muss zumindest das Ziel der Zeremonie wie gewohnt den ekstatischen Höhepunkt erreicht haben. Die Belohnung der übrigen Teilnehmer muss ein oder mehr Belohnungsgrade niedriger sein, als die höchste Belohnung des Ziels.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Mehrere Ziele",
+        "effect": "Die Geweihte kann beliebig viele Ziele durch die Liturgie auswählen. Jedes Ziel nach dem ersten kostet zusätzlich 16 KaP.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Göttlicher Sinnesrausch",
+        "effect": "Das Ziel kann bei 12 Durchgängen und dem ekstatischen Höhepunkt die Belohnung *Göttlicher Sinnesrausch* wählen (siehe Seite **106**).",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "koerper_der_radscha_uschtammar",
@@ -5344,7 +9477,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS Stunden.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Mehr Penisse, mehr Brüste und noch mehr Vaginas",
+        "effect": "Das Ziel kann noch weitere Geschlechtsmerkmale pro Kategorie Penis, Vagina und Brust erhalten. Die weiteren Geschlechtsmerkmale müssen nicht der gleichen Kategorie entsprechen, wie beim ersten zusätzlichen Geschlechtsmerkmal. Allerdings kostet jedes weitere 8 zusätzliche KaP. Maximal können bis zu 2 zusätzliche Penisse, 2 zusätzliche Vaginas und 4 zusätzliche Brüste entstehen.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Vier Arme",
+        "effect": "Die Zeremonie bewirkt, dass dem Ziel zwei zusätzliche Arme wachsen. Die beiden Arme können einen weiteren Teilnehmer erregen, wenn sie für die Sexpraktiken Faustverkehr, Fingerspiele und Reiben & Streicheln eingesetzt werden. Sollten die Arme für etwas anderes als das Liebesspiel eingesetzt werden, endet die Wirkung augenblicklich.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "liebesschlaf",
@@ -5368,7 +9521,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verausgabung",
+        "effect": "Der Geweihte kann QS x 2 LeP verschenken",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Mehrere Ziele",
+        "effect": "Die Zeremonie kann auf mehrere Ziele gewirkt werden.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Totale Erschöpfung",
+        "effect": "Der Geweihte kann zusätzlich bis zu QS/2 Punkte KO und 1 Punkt KK von sich auf den anderen Teilnehmer übertragen. Diese Eigenschaftspunkte verliert der Geweihte während der Regenerationsphase und sie werden dem Teilnehmer gutgeschrieben. Die Übertragung endet 6 Stunden nach dem Aufwachen der beiden Liebenden und die Punkte wechseln wieder zum Geweihten.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "liebestaetowierung",
@@ -5392,7 +9565,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "A"
+    "improvement_cost": "A",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Längere Wirkungsdauer",
+        "effect": "Die Wirkungsdauer beträgt QS x 2 Jahre.",
+        "cost": 1
+      },
+      {
+        "level": 2,
+        "name": "Andere Tätowieren",
+        "effect": "Die Geweihte kann auch eine andere Person als eine Person mit der *Tradition (Rahjakirche)* tätowieren.",
+        "cost": 2
+      },
+      {
+        "level": 3,
+        "name": "Machtvolle Tätowierung",
+        "effect": "Einmal am Tag kann die Trägerin der Tätowierung eine CH-Teilprobe auf *Betören* neuwürfeln und das bessere Ergebnis zählt.",
+        "cost": 3
+      }
+    ]
   },
   {
     "id": "lusttrank",
@@ -5416,7 +9609,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Verzückung",
+        "effect": "Das Ziel erhält 2 Stufen *Erregung* statt 1 Stufe.",
+        "cost": 2
+      },
+      {
+        "level": 2,
+        "name": "Willensschwäche",
+        "effect": "Die Probe auf *Willenskraft (Betören wiederstehen)* wird um QS erschwert.",
+        "cost": 4
+      },
+      {
+        "level": 3,
+        "name": "Zwei Ziele",
+        "effect": "Der Geweihte kann bis zu 2 Ziele durch den Lusttrank erregen. Das zweite Ziel ist der Kulturschaffende, der als zweites von dem Lusttrank trinkt. Das zweite Ziel kostet zusätzlich 4 KaP.",
+        "cost": 6
+      }
+    ]
   },
   {
     "id": "daemonenpakt_brechen",
@@ -5440,7 +9653,27 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": [
+      {
+        "level": 1,
+        "name": "Größere Reichweite",
+        "effect": "Die Reichweite beträgt 4 Schritt.",
+        "cost": 3
+      },
+      {
+        "level": 2,
+        "name": "Große Reue",
+        "effect": "War der Paktierer ein Minderpaktierer und unterzog er sich dem Ritual freiwillig, verschwindet das Mal des Frevlers.",
+        "cost": 6
+      },
+      {
+        "level": 3,
+        "name": "Verkürzte Zeremoniedauer",
+        "effect": "Die Zeremonie weist eine Zeremoniedauer von 30 Minuten auf, allerdings ist die Probe zusätzlich um 5 erschwert.",
+        "cost": 9
+      }
+    ]
   },
   {
     "id": "steinhaut",
@@ -5464,7 +9697,8 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "C"
+    "improvement_cost": "C",
+    "enhancements": null
   },
   {
     "id": "schaffenskraft",
@@ -5488,6 +9722,7 @@
     "damage": null,
     "condition_inflicted": null,
     "buff_effect": null,
-    "improvement_cost": "B"
+    "improvement_cost": "B",
+    "enhancements": null
   }
 ]

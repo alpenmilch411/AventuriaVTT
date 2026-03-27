@@ -596,6 +596,57 @@ async def level_up(
             cost = leveling.calculate_upgrade_cost(0, factor)
             char_data["liturgies"][upgrade_id] = 0
 
+        elif upgrade_type == "learn_spell_enhancement":
+            # Learn a spell enhancement (Zaubererweiterung)
+            # upgrade format: {type, spell_id, enhancement_level, ap_cost (optional fallback)}
+            spell_id = upgrade.get("spell_id", upgrade_id)
+            enh_level = upgrade.get("enhancement_level", 1)
+            from models.databank import SpellTemplate
+            spell_result = await db.execute(
+                select(SpellTemplate).where(SpellTemplate.id == spell_id)
+            )
+            spell_tmpl = spell_result.scalar_one_or_none()
+            if spell_tmpl and spell_tmpl.enhancements:
+                # Find the enhancement by level
+                enh = next((e for e in spell_tmpl.enhancements if e.get("level") == enh_level), None)
+                if enh and "cost" in enh:
+                    cost = enh["cost"]
+                else:
+                    cost = upgrade.get("ap_cost", 0)
+                    warnings.append(f"Enhancement level {enh_level} cost not found for spell '{spell_id}' — using provided cost")
+            else:
+                cost = upgrade.get("ap_cost", 0)
+                warnings.append(f"Spell '{spell_id}' enhancements not found — using provided cost")
+            # Store learned enhancement
+            learned_enhancements = char_data.setdefault("spell_enhancements", {})
+            spell_enh_list = learned_enhancements.setdefault(spell_id, [])
+            if enh_level not in spell_enh_list:
+                spell_enh_list.append(enh_level)
+
+        elif upgrade_type == "learn_liturgy_enhancement":
+            # Learn a liturgy enhancement (Liturgieerweiterung)
+            liturgy_id = upgrade.get("liturgy_id", upgrade_id)
+            enh_level = upgrade.get("enhancement_level", 1)
+            from models.databank import LiturgyTemplate
+            lit_result = await db.execute(
+                select(LiturgyTemplate).where(LiturgyTemplate.id == liturgy_id)
+            )
+            lit_tmpl = lit_result.scalar_one_or_none()
+            if lit_tmpl and lit_tmpl.enhancements:
+                enh = next((e for e in lit_tmpl.enhancements if e.get("level") == enh_level), None)
+                if enh and "cost" in enh:
+                    cost = enh["cost"]
+                else:
+                    cost = upgrade.get("ap_cost", 0)
+                    warnings.append(f"Enhancement level {enh_level} cost not found for liturgy '{liturgy_id}' — using provided cost")
+            else:
+                cost = upgrade.get("ap_cost", 0)
+                warnings.append(f"Liturgy '{liturgy_id}' enhancements not found — using provided cost")
+            learned_enhancements = char_data.setdefault("liturgy_enhancements", {})
+            lit_enh_list = learned_enhancements.setdefault(liturgy_id, [])
+            if enh_level not in lit_enh_list:
+                lit_enh_list.append(enh_level)
+
         elif upgrade_type == "special_ability":
             # Look up SA template from DB for authoritative ap_cost
             from models.databank import SpecialAbilityTemplate

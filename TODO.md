@@ -85,14 +85,19 @@
 - [x] Remove all hardcoded values — activation costs validated by backend, tradition detection dynamic, SA categories derived from data
 - [x] DB now at 3,529 databank rows (was 602 at session start, **5.9x increase**)
 
-### Phase 4: Enrichment (future)
-- [ ] Add Cantrips table (97 Zaubertricks) + Blessings table (12 Segnungen) — new entity types
-- [ ] Add Spell Enhancements (330 entries, 3 levels each = 1,629 upgrade options) — needs new model or JSON field
-- [ ] Add Liturgy Enhancements (213 entries) — needs new model or JSON field
-- [ ] Add Profession Variants (297 sub-specializations) — needs variant system on ProfessionTemplate
+### Phase 4: Enrichment — DONE (2026-03-27)
+- [x] Cantrips table (97 Zaubertricks) + Blessings table (12 Segnungen) — new CantripTemplate + BlessingTemplate models, API endpoints, SpellBook display, DatenbankTab categories, DataBrowser support
+- [x] Spell Enhancements (330 spells × 3 levels = 990 upgrades) — JSON field on SpellTemplate, SpellBook shows per-spell, SteigerungTab lets players purchase, backend validates AP cost
+- [x] Liturgy Enhancements (211 liturgies × 3 levels = 633 upgrades) — same pattern on LiturgyTemplate
+- [x] Spell Property (Merkmal) — property column on SpellTemplate, PropertyBadge component, filter bar in SpellBook, badge in DatenbankDetail
+- [x] Profession Variants (56 professions with variants) — variants JSON on ProfessionTemplate, variant picker in CharacterCreator Step 5, detail display in DatenbankTab
+- [x] Race Variants (Menschen 7 + Elfen 3) — variants JSON on SpeciesTemplate, variant picker in CharacterCreator Step 2, detail display in DatenbankTab
+- [x] DB now at 3,638 databank rows
+
+### Phase 5: Remaining Enrichment (future)
 - [ ] Add culture metadata: common/uncommon advantages/disadvantages (wizard guidance), commonNames (name generator), areaKnowledge
-- [ ] Add spell `property` (Merkmal) column for filtering (Heilung, Illusion, Telekinese, etc.)
-- [ ] Add Curses (24), Elven Magical Songs (18), and other exotic entity types
+- [ ] Add Curses (24), Elven Magical Songs (18), Magical Dances (26), Magical Melodies (24), and other tradition-specific entity types
+- [ ] Add Conditions/States from Optolith to supplement conditionsEngine (Animosität, Berauscht, Trance, etc.)
 - [ ] Icons and portraits for creatures/professions/species
 
 ## Removed from Scope

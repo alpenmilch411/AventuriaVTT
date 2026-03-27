@@ -18,8 +18,8 @@ Usage:
 
 Available categories:
     species, cultures, professions, advantages, disadvantages,
-    spells, liturgies, special_abilities, talents, combat_techniques,
-    weapons, armor, shields, items
+    spells, liturgies, cantrips, blessings, special_abilities,
+    talents, combat_techniques, weapons, armor, shields, items
 
 Notes:
     - Idempotent: safe to re-run, overwrites output files each time.
@@ -160,6 +160,16 @@ class OptolithData:
     def books_de(self): return self._get("books_de", self.de / "Books.yaml")
     @property
     def race_variants_de(self): return self._get("rv_de", self.de / "RaceVariants.yaml")
+    @property
+    def cantrips_de(self): return self._get("cantrips_de", self.de / "Cantrips.yaml")
+    @property
+    def blessings_de(self): return self._get("blessings_de", self.de / "Blessings.yaml")
+    @property
+    def spell_enhancements_de(self): return self._get("se_de", self.de / "SpellEnhancements.yaml")
+    @property
+    def liturgy_enhancements_de(self): return self._get("le_de", self.de / "LiturgicalChantEnhancements.yaml")
+    @property
+    def profession_variants_de(self): return self._get("pv_de", self.de / "ProfessionVariants.yaml")
 
     # univ structured files
     @property
@@ -186,6 +196,16 @@ class OptolithData:
     def equipment_univ(self): return self._get("equip_univ", self.univ / "Equipment.yaml")
     @property
     def race_variants_univ(self): return self._get("rv_univ", self.univ / "RaceVariants.yaml")
+    @property
+    def cantrips_univ(self): return self._get("cantrips_univ", self.univ / "Cantrips.yaml")
+    @property
+    def blessings_univ(self): return self._get("blessings_univ", self.univ / "Blessings.yaml")
+    @property
+    def spell_enhancements_univ(self): return self._get("se_univ", self.univ / "SpellEnhancements.yaml")
+    @property
+    def liturgy_enhancements_univ(self): return self._get("le_univ", self.univ / "LiturgicalChantEnhancements.yaml")
+    @property
+    def profession_variants_univ(self): return self._get("pv_univ", self.univ / "ProfessionVariants.yaml")
 
     # Lookup dicts
     def _lookup(self, cache_key: str, items: list[dict]) -> dict[str, dict]:
@@ -298,6 +318,14 @@ class OptolithData:
         return self._cache[key]
 
     @property
+    def property_name_map(self) -> dict[int, str]:
+        """1 -> 'Antimagie', 2 -> 'Dämonisch', etc."""
+        key = "property_name_map"
+        if key not in self._cache:
+            self._cache[key] = {p["id"]: p["name"] for p in self.properties_de}
+        return self._cache[key]
+
+    @property
     def equip_group_map(self) -> dict[int, str]:
         """1 -> 'Nahkampfwaffen', etc."""
         key = "equip_group_map"
@@ -365,8 +393,13 @@ class OptolithData:
 # ---------------------------------------------------------------------------
 
 def convert_species(data: OptolithData) -> list[dict]:
-    """Convert Optolith Races → species_templates seed format."""
+    """Convert Optolith Races → species_templates seed format.
+
+    Includes race variants (Speziesvarianten).
+    """
     de_lookup = _build_lookup(data.races_de)
+    rv_de_lookup = _build_lookup(data.race_variants_de)
+    rv_univ_lookup = _build_lookup(data.race_variants_univ)
     records = []
 
     for race in data.races_univ:
@@ -400,6 +433,25 @@ def convert_species(data: OptolithData) -> list[dict]:
         # Common cultures from RaceVariants
         common_cultures = data.race_common_cultures.get(oid, [])
 
+        # Race variants
+        variants = None
+        variant_ids = race.get("variants", [])
+        if variant_ids:
+            variants = []
+            for vid in variant_ids:
+                rv_de = rv_de_lookup.get(vid, {})
+                rv_univ = rv_univ_lookup.get(vid, {})
+                vname = rv_de.get("name", vid)
+                variant = {
+                    "id": vid,
+                    "name": vname,
+                }
+                if rv_de.get("commonAdvantages"):
+                    variant["common_advantages"] = rv_de["commonAdvantages"]
+                if rv_de.get("commonDisadvantages"):
+                    variant["common_disadvantages"] = rv_de["commonDisadvantages"]
+                variants.append(variant)
+
         record = {
             "id": f"species_{_slugify(name)}",
             "name": name,
@@ -420,6 +472,7 @@ def convert_species(data: OptolithData) -> list[dict]:
             "common_cultures": common_cultures,
             "auto_advantages": auto_advs,
             "special_rules": [],
+            "variants": variants,
             "description": de.get("attributeAdjustments", ""),
             "sk_modifier": race.get("spi", -5),
             "zk_modifier": race.get("tou", -5),
@@ -468,8 +521,13 @@ def convert_cultures(data: OptolithData) -> list[dict]:
 
 
 def convert_professions(data: OptolithData) -> list[dict]:
-    """Convert Optolith Professions → profession_templates seed format."""
+    """Convert Optolith Professions → profession_templates seed format.
+
+    Includes profession variants (Professionsvarianten).
+    """
     de_lookup = _build_lookup(data.professions_de)
+    pv_de_lookup = _build_lookup(data.profession_variants_de)
+    pv_univ_lookup = _build_lookup(data.profession_variants_univ)
     records = []
 
     # Group mapping: 1 = mundane, 2 = magic, 3 = blessed
@@ -528,6 +586,39 @@ def convert_professions(data: OptolithData) -> list[dict]:
                 lit_name = data.liturgy_name_map.get(lid, lid)
                 liturgies[lit_name] = lit_entry.get("value", 0)
 
+        # Profession variants
+        variants = None
+        variant_ids = prof.get("variants", [])
+        if variant_ids:
+            variants = []
+            for vid in variant_ids:
+                pv_de = pv_de_lookup.get(vid, {})
+                pv_univ = pv_univ_lookup.get(vid, {})
+                vname_data = pv_de.get("name", vid)
+                if isinstance(vname_data, dict):
+                    vname = vname_data.get("m", str(vname_data))
+                    vname_f = vname_data.get("f")
+                else:
+                    vname = str(vname_data)
+                    vname_f = None
+                variant = {
+                    "id": vid,
+                    "name": vname,
+                    "ap_cost": pv_univ.get("cost", 0),
+                }
+                if vname_f:
+                    variant["name_f"] = vname_f
+                # Skill modifications
+                pv_skills = {}
+                for s in pv_univ.get("skills", []):
+                    sname = data.skill_name_map.get(s["id"], s["id"])
+                    pv_skills[sname] = s["value"]
+                if pv_skills:
+                    variant["skills"] = pv_skills
+                if pv_de.get("concludingText"):
+                    variant["note"] = pv_de["concludingText"]
+                variants.append(variant)
+
         record = {
             "id": f"profession_{_slugify(name)}",
             "name": name,
@@ -543,6 +634,7 @@ def convert_professions(data: OptolithData) -> list[dict]:
             "source_book": data.source_book_for(de) or "Regelwerk",
             "description": de.get("suggestedAdvantages", ""),
             "compatible_species": [],
+            "variants": variants,
         }
         if name_f:
             record["name_f"] = name_f
@@ -638,8 +730,20 @@ def convert_disadvantages(data: OptolithData) -> list[dict]:
 
 
 def convert_spells(data: OptolithData) -> list[dict]:
-    """Convert Optolith Spells → spell_templates seed format."""
+    """Convert Optolith Spells → spell_templates seed format.
+
+    Includes enhancements (Zaubererweiterungen) and property (Merkmal).
+    """
     de_lookup = _build_lookup(data.spells_de)
+
+    # Build spell enhancement lookup: SPELL_89 -> [{level, name, effect, cost}, ...]
+    se_de_lookup: dict[str, dict] = {}
+    for se in data.spell_enhancements_de:
+        se_de_lookup[se["target"]] = se
+    se_univ_lookup: dict[str, dict] = {}
+    for se in data.spell_enhancements_univ:
+        se_univ_lookup[se["target"]] = se
+
     records = []
 
     for spell in data.spells_univ:
@@ -663,6 +767,30 @@ def convert_spells(data: OptolithData) -> list[dict]:
         # checkMod from univ (some spells have built-in modifiers)
         check_mod = spell.get("checkMod") or 0
 
+        # Property (Merkmal) — numeric ID → name
+        prop_id = spell.get("property")
+        prop_name = data.property_name_map.get(prop_id) if prop_id else None
+
+        # Enhancements (Zaubererweiterungen)
+        enhancements = None
+        se_de = se_de_lookup.get(oid)
+        se_univ = se_univ_lookup.get(oid)
+        if se_de:
+            enhancements = []
+            for lvl_key in ["level1", "level2", "level3"]:
+                lvl_de = se_de.get(lvl_key)
+                lvl_univ = (se_univ or {}).get(lvl_key)
+                if lvl_de:
+                    enh = {
+                        "level": int(lvl_key[-1]),
+                        "name": lvl_de.get("name", ""),
+                        "effect": (lvl_de.get("effect", "") or "").strip(),
+                    }
+                    # AP cost from univ
+                    if lvl_univ and "cost" in lvl_univ:
+                        enh["cost"] = lvl_univ["cost"]
+                    enhancements.append(enh)
+
         record = {
             "id": _slugify(name),
             "name": name,
@@ -680,6 +808,8 @@ def convert_spells(data: OptolithData) -> list[dict]:
             "condition_inflicted": None,
             "buff_effect": None,
             "improvement_cost": spell.get("ic"),
+            "property": prop_name,
+            "enhancements": enhancements,
         }
         records.append(record)
 
@@ -687,8 +817,20 @@ def convert_spells(data: OptolithData) -> list[dict]:
 
 
 def convert_liturgies(data: OptolithData) -> list[dict]:
-    """Convert Optolith LiturgicalChants → liturgy_templates seed format."""
+    """Convert Optolith LiturgicalChants → liturgy_templates seed format.
+
+    Includes enhancements (Liturgieerweiterungen).
+    """
     de_lookup = _build_lookup(data.liturgies_de)
+
+    # Build liturgy enhancement lookup: LITURGY_41 -> {level1, level2, level3}
+    le_de_lookup: dict[str, dict] = {}
+    for le in data.liturgy_enhancements_de:
+        le_de_lookup[le["target"]] = le
+    le_univ_lookup: dict[str, dict] = {}
+    for le in data.liturgy_enhancements_univ:
+        le_univ_lookup[le["target"]] = le
+
     records = []
 
     for liturgy in data.liturgies_univ:
@@ -709,6 +851,25 @@ def convert_liturgies(data: OptolithData) -> list[dict]:
 
         check_mod = liturgy.get("checkMod") or 0
 
+        # Enhancements (Liturgieerweiterungen)
+        enhancements = None
+        le_de = le_de_lookup.get(oid)
+        le_univ = le_univ_lookup.get(oid)
+        if le_de:
+            enhancements = []
+            for lvl_key in ["level1", "level2", "level3"]:
+                lvl_de = le_de.get(lvl_key)
+                lvl_univ = (le_univ or {}).get(lvl_key)
+                if lvl_de:
+                    enh = {
+                        "level": int(lvl_key[-1]),
+                        "name": lvl_de.get("name", ""),
+                        "effect": (lvl_de.get("effect", "") or "").strip(),
+                    }
+                    if lvl_univ and "cost" in lvl_univ:
+                        enh["cost"] = lvl_univ["cost"]
+                    enhancements.append(enh)
+
         record = {
             "id": _slugify(name),
             "name": name,
@@ -726,6 +887,7 @@ def convert_liturgies(data: OptolithData) -> list[dict]:
             "condition_inflicted": None,
             "buff_effect": None,
             "improvement_cost": liturgy.get("ic"),
+            "enhancements": enhancements,
         }
         records.append(record)
 
@@ -1101,6 +1263,68 @@ def convert_items(data: OptolithData) -> list[dict]:
     return records
 
 
+def convert_cantrips(data: OptolithData) -> list[dict]:
+    """Convert Optolith Cantrips → cantrip_templates seed format."""
+    de_lookup = _build_lookup(data.cantrips_de)
+    records = []
+
+    for cantrip in data.cantrips_univ:
+        oid = cantrip["id"]  # e.g. CANTRIP_1
+        de = de_lookup.get(oid, {})
+        name = de.get("name", oid)
+
+        # Traditions
+        traditions = []
+        for trad_id in cantrip.get("traditions", []):
+            trad_name = data.spell_tradition_map.get(trad_id, str(trad_id))
+            traditions.append(trad_name)
+
+        record = {
+            "id": _slugify(name),
+            "name": name,
+            "tradition": traditions,
+            "effect": (de.get("effect", "") or "").strip(),
+            "range": de.get("range", ""),
+            "duration": de.get("duration", ""),
+            "target": de.get("target", ""),
+            "source_book": data.source_book_for(de),
+        }
+        records.append(record)
+
+    return records
+
+
+def convert_blessings(data: OptolithData) -> list[dict]:
+    """Convert Optolith Blessings → blessing_templates seed format."""
+    de_lookup = _build_lookup(data.blessings_de)
+    records = []
+
+    for blessing in data.blessings_univ:
+        oid = blessing["id"]  # e.g. BLESSING_1
+        de = de_lookup.get(oid, {})
+        name = de.get("name", oid)
+
+        # Traditions (blessed traditions)
+        traditions = []
+        for trad_id in blessing.get("traditions", []):
+            trad_name = data.liturgy_tradition_map.get(trad_id, str(trad_id))
+            traditions.append(trad_name)
+
+        record = {
+            "id": _slugify(name),
+            "name": name,
+            "tradition": traditions,
+            "effect": (de.get("effect", "") or "").strip(),
+            "range": de.get("range", ""),
+            "duration": de.get("duration", ""),
+            "target": de.get("target", ""),
+            "source_book": data.source_book_for(de),
+        }
+        records.append(record)
+
+    return records
+
+
 # ---------------------------------------------------------------------------
 # Main converter orchestration
 # ---------------------------------------------------------------------------
@@ -1113,6 +1337,8 @@ CONVERTERS = {
     "disadvantages": ("disadvantages.json", convert_disadvantages),
     "spells": ("spells.json", convert_spells),
     "liturgies": ("liturgies.json", convert_liturgies),
+    "cantrips": ("cantrips.json", convert_cantrips),
+    "blessings": ("blessings.json", convert_blessings),
     "special_abilities": ("special_abilities.json", convert_special_abilities),
     "talents": ("talents.json", convert_talents),
     "combat_techniques": ("combat_techniques.json", convert_combat_techniques),

@@ -44,6 +44,8 @@ from models.databank import (  # noqa: E402
     ProfessionTemplate,
     AdvantageTemplate,
     DisadvantageTemplate,
+    CantripTemplate,
+    BlessingTemplate,
 )
 from models.wiki import WikiPage  # noqa: E402
 from models.user import User  # noqa: E402
@@ -91,11 +93,19 @@ SEED_MAP: Dict[str, Tuple[type, List[str]]] = {
     ),
     "spells.json": (
         SpellTemplate,
-        ["tradition", "probe", "effect_per_qs", "condition_inflicted", "buff_effect"],
+        ["tradition", "probe", "effect_per_qs", "condition_inflicted", "buff_effect", "enhancements"],
     ),
     "liturgies.json": (
         LiturgyTemplate,
-        ["tradition", "probe", "effect_per_qs", "condition_inflicted", "buff_effect"],
+        ["tradition", "probe", "effect_per_qs", "condition_inflicted", "buff_effect", "enhancements"],
+    ),
+    "cantrips.json": (
+        CantripTemplate,
+        ["tradition"],
+    ),
+    "blessings.json": (
+        BlessingTemplate,
+        ["tradition"],
     ),
     "special_abilities.json": (
         SpecialAbilityTemplate,
@@ -111,7 +121,7 @@ SEED_MAP: Dict[str, Tuple[type, List[str]]] = {
     ),
     "species.json": (
         SpeciesTemplate,
-        ["base_attributes", "attribute_adjustments", "common_cultures", "auto_advantages", "special_rules"],
+        ["base_attributes", "attribute_adjustments", "common_cultures", "auto_advantages", "special_rules", "variants"],
     ),
     "cultures.json": (
         CultureTemplate,
@@ -119,7 +129,7 @@ SEED_MAP: Dict[str, Tuple[type, List[str]]] = {
     ),
     "professions.json": (
         ProfessionTemplate,
-        ["compatible_species", "combat_techniques", "skills", "special_abilities", "spells", "liturgies", "starting_equipment", "starting_money"],
+        ["compatible_species", "combat_techniques", "skills", "special_abilities", "spells", "liturgies", "starting_equipment", "starting_money", "variants"],
     ),
     "advantages.json": (
         AdvantageTemplate,
@@ -159,6 +169,8 @@ REQUIRED_FIELDS: Dict[str, List[str]] = {
     "professions": ["id", "name"],
     "advantages": ["id", "name", "ap_cost"],
     "disadvantages": ["id", "name", "ap_cost"],
+    "cantrips": ["id", "name"],
+    "blessings": ["id", "name"],
 }
 
 # Map JSON filenames to validation entity types
@@ -179,6 +191,8 @@ _FILE_TO_ENTITY: Dict[str, str] = {
     "professions.json": "professions",
     "advantages.json": "advantages",
     "disadvantages.json": "disadvantages",
+    "cantrips.json": "cantrips",
+    "blessings.json": "blessings",
 }
 
 

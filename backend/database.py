@@ -64,6 +64,8 @@ async def init_db():
             await conn.run_sync(_migrate_add_profession_equipment_columns)
             await conn.run_sync(_migrate_create_advantage_disadvantage_tables)
             await conn.run_sync(_migrate_add_improvement_cost_columns)
+            await conn.run_sync(_migrate_create_cantrip_blessing_tables)
+            await conn.run_sync(_migrate_add_enhancements_property_variants)
 
 
 def _migrate_add_user_contribution_columns(connection):
@@ -275,6 +277,69 @@ def _migrate_create_advantage_disadvantage_tables(connection):
                 is_custom BOOLEAN DEFAULT 0
             )
         """))
+
+
+def _migrate_create_cantrip_blessing_tables(connection):
+    """Create cantrip_templates and blessing_templates tables if they don't exist."""
+    from sqlalchemy import text, inspect as sa_inspect
+
+    inspector = sa_inspect(connection)
+    existing_tables = inspector.get_table_names()
+
+    if "cantrip_templates" not in existing_tables:
+        connection.execute(text("""
+            CREATE TABLE cantrip_templates (
+                id VARCHAR(64) PRIMARY KEY,
+                name VARCHAR(128) NOT NULL,
+                tradition TEXT,
+                effect TEXT,
+                range VARCHAR(64),
+                duration VARCHAR(64),
+                target VARCHAR(64),
+                source_book VARCHAR(64),
+                created_by_user_id VARCHAR(36),
+                created_by_username VARCHAR(128),
+                is_custom BOOLEAN DEFAULT 0
+            )
+        """))
+
+    if "blessing_templates" not in existing_tables:
+        connection.execute(text("""
+            CREATE TABLE blessing_templates (
+                id VARCHAR(64) PRIMARY KEY,
+                name VARCHAR(128) NOT NULL,
+                tradition TEXT,
+                effect TEXT,
+                range VARCHAR(64),
+                duration VARCHAR(64),
+                target VARCHAR(64),
+                source_book VARCHAR(64),
+                created_by_user_id VARCHAR(36),
+                created_by_username VARCHAR(128),
+                is_custom BOOLEAN DEFAULT 0
+            )
+        """))
+
+
+def _migrate_add_enhancements_property_variants(connection):
+    """Add enhancements/property to spells, enhancements to liturgies, variants to professions/species."""
+    from sqlalchemy import text
+
+    migrations = [
+        ("spell_templates", "enhancements", "TEXT"),
+        ("spell_templates", "property", "VARCHAR(64)"),
+        ("liturgy_templates", "enhancements", "TEXT"),
+        ("profession_templates", "variants", "TEXT"),
+        ("species_templates", "variants", "TEXT"),
+    ]
+
+    for table, col_name, col_type in migrations:
+        result = connection.execute(text(f"PRAGMA table_info({table})"))
+        existing_cols = {row[1] for row in result.fetchall()}
+        if col_name not in existing_cols:
+            connection.execute(
+                text(f"ALTER TABLE {table} ADD COLUMN {col_name} {col_type}")
+            )
 
 
 def _migrate_add_improvement_cost_columns(connection):

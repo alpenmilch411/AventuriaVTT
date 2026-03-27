@@ -1,8 +1,7 @@
 [
   {
-    "id": "species_mensch",
-    "name": "Mensch",
-    "name_en": "human",
+    "id": "species_menschen",
+    "name": "Menschen",
     "optolith_id": "R_1",
     "ap_cost": 0,
     "lep_base": 5,
@@ -19,20 +18,27 @@
       "KO": 8,
       "KK": 8
     },
-    "attribute_adjustments": [],
+    "attribute_adjustments": [
+      {
+        "choice": true,
+        "value": 1,
+        "options": [
+          "MU",
+          "KL",
+          "IN",
+          "CH",
+          "FF",
+          "GE",
+          "KO",
+          "KK"
+        ]
+      }
+    ],
     "free_attribute_points": 7,
     "magic_capable": true,
     "blessed_capable": true,
     "common_cultures": [
       "C_1",
-      "C_2",
-      "C_3",
-      "C_4",
-      "C_5",
-      "C_6",
-      "C_7",
-      "C_8",
-      "C_9",
       "C_10",
       "C_11",
       "C_12",
@@ -41,18 +47,66 @@
       "C_15",
       "C_16",
       "C_17",
-      "C_18"
+      "C_18",
+      "C_2",
+      "C_26",
+      "C_3",
+      "C_4",
+      "C_5",
+      "C_6",
+      "C_7",
+      "C_8",
+      "C_9"
     ],
     "auto_advantages": [],
     "special_rules": [],
-    "description": "Menschen sind die verbreitetste Spezies Aventuriens. Vielseitig und anpassungsfähig, können sie jede Profession ergreifen.",
+    "variants": [
+      {
+        "id": "RV_1",
+        "name": "Mittelländer"
+      },
+      {
+        "id": "RV_2",
+        "name": "Nivesen",
+        "common_advantages": "Entfernungssinn, Kälteresistenz",
+        "common_disadvantages": "Hitzeempfindlich"
+      },
+      {
+        "id": "RV_3",
+        "name": "Norbarden"
+      },
+      {
+        "id": "RV_4",
+        "name": "Thorwaler",
+        "common_advantages": "Hohe Zähigkeit, Zäher Hund",
+        "common_disadvantages": "Blutrausch, Niedrige Seelenkraft"
+      },
+      {
+        "id": "RV_5",
+        "name": "Tulamiden",
+        "common_advantages": "Hitzeresistenz",
+        "common_disadvantages": "Kälteempfindlich"
+      },
+      {
+        "id": "RV_6",
+        "name": "Waldmenschen",
+        "common_advantages": "Angenehmer Geruch, Hitzeresistenz, Immunität gegen Wurara, Immunität gegen Flinken Difar und Brabaker Schweiß",
+        "common_disadvantages": "Kälteempfindlich"
+      },
+      {
+        "id": "RV_7",
+        "name": "Utulus",
+        "common_advantages": "Angenehmer Geruch, Hitzeresistenz, Immunität gegen Wurara, Immunität gegen Flinken Difar und Brabaker Schweiß",
+        "common_disadvantages": "Kälteempfindlich"
+      }
+    ],
+    "description": "eine beliebige Eigenschaft nach Wahl +1",
     "sk_modifier": -5,
     "zk_modifier": -5
   },
   {
-    "id": "species_elf",
-    "name": "Elf",
-    "name_en": "elf",
+    "id": "species_elfen",
+    "name": "Elfen",
     "optolith_id": "R_2",
     "ap_cost": 18,
     "lep_base": 2,
@@ -77,34 +131,50 @@
       {
         "attr": "GE",
         "value": 1
+      },
+      {
+        "choice": true,
+        "value": -2,
+        "options": [
+          "KL",
+          "KK"
+        ]
       }
     ],
     "free_attribute_points": 7,
     "magic_capable": true,
-    "blessed_capable": false,
+    "blessed_capable": true,
     "common_cultures": [
       "C_19",
       "C_20",
-      "C_21",
-      "C_28"
+      "C_21"
     ],
     "auto_advantages": [
-      "Zweistimmiger Gesang",
-      "Flink I"
+      "Zauberer",
+      "Zweistimmiger Gesang"
     ],
-    "special_rules": [
-      "zweistimmiger_gesang",
-      "entrückung",
-      "unfähigkeit_zechen"
+    "special_rules": [],
+    "variants": [
+      {
+        "id": "RV_8",
+        "name": "Auelfen"
+      },
+      {
+        "id": "RV_9",
+        "name": "Firnelfen"
+      },
+      {
+        "id": "RV_10",
+        "name": "Waldelfen"
+      }
     ],
-    "description": "Elfen sind naturverbundene, langlebige Wesen mit angeborener Magiebegabung. Sie besitzen automatisch die Vorteile Zweistimmiger Gesang und Flink I.",
+    "description": "IN und GE +1; KL oder KK -2",
     "sk_modifier": -4,
     "zk_modifier": -6
   },
   {
-    "id": "species_halbelf",
-    "name": "Halbelf",
-    "name_en": "half-elf",
+    "id": "species_halbelfen",
+    "name": "Halbelfen",
     "optolith_id": "R_3",
     "ap_cost": 0,
     "lep_base": 5,
@@ -121,43 +191,49 @@
       "KO": 8,
       "KK": 8
     },
-    "attribute_adjustments": [],
+    "attribute_adjustments": [
+      {
+        "choice": true,
+        "value": 1,
+        "options": [
+          "MU",
+          "KL",
+          "IN",
+          "CH",
+          "FF",
+          "GE",
+          "KO",
+          "KK"
+        ]
+      }
+    ],
     "free_attribute_points": 7,
     "magic_capable": true,
     "blessed_capable": true,
     "common_cultures": [
       "C_1",
-      "C_2",
-      "C_3",
-      "C_4",
-      "C_5",
-      "C_6",
-      "C_7",
-      "C_8",
-      "C_9",
       "C_10",
-      "C_11",
       "C_12",
       "C_13",
-      "C_14",
-      "C_15",
       "C_16",
       "C_17",
-      "C_18",
       "C_19",
       "C_20",
-      "C_21"
+      "C_21",
+      "C_3",
+      "C_5",
+      "C_8"
     ],
     "auto_advantages": [],
     "special_rules": [],
-    "description": "Halbelfen entstammen der Verbindung von Menschen und Elfen. Sie können menschliche und elfische Kulturen wählen.",
+    "variants": null,
+    "description": "eine beliebige Eigenschaft nach Wahl +1",
     "sk_modifier": -4,
     "zk_modifier": -6
   },
   {
-    "id": "species_zwerg",
-    "name": "Zwerg",
-    "name_en": "dwarf",
+    "id": "species_zwerge",
+    "name": "Zwerge",
     "optolith_id": "R_4",
     "ap_cost": 61,
     "lep_base": 8,
@@ -182,28 +258,29 @@
       {
         "attr": "KK",
         "value": 1
+      },
+      {
+        "choice": true,
+        "value": -2,
+        "options": [
+          "CH",
+          "GE"
+        ]
       }
     ],
     "free_attribute_points": 7,
-    "magic_capable": false,
+    "magic_capable": true,
     "blessed_capable": true,
     "common_cultures": [
       "C_22",
       "C_23",
       "C_24",
-      "C_25",
-      "C_33"
+      "C_25"
     ],
-    "auto_advantages": [
-      "Dunkelsicht I",
-      "Zähigkeit"
-    ],
-    "special_rules": [
-      "dunkelsicht",
-      "zähigkeit",
-      "giftresistenz"
-    ],
-    "description": "Zwerge sind zähe, stämmige Wesen mit einer Vorliebe für unterirdische Hallen. Sie erhalten automatisch Dunkelsicht I und Zähigkeit.",
+    "auto_advantages": [],
+    "special_rules": [],
+    "variants": null,
+    "description": "KO und KK +1; CH oder GE -2",
     "sk_modifier": -4,
     "zk_modifier": -4
   }

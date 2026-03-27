@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { TrendingUp, Brain, Swords, Sparkles, Sun, ChevronDown, ChevronUp, Check, X, HelpCircle, Star, AlertTriangle, Search, BookOpen, Plus, Shield } from 'lucide-react'
+import { TrendingUp, Brain, Swords, Sparkles, Sun, ChevronDown, ChevronUp, Check, X, HelpCircle, Star, AlertTriangle, Search, BookOpen, Plus, Shield, Zap } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useAuthStore from '../../stores/authStore'
 import { SF_TABLES, EXPERIENCE_GRADES as GRADE_LIMITS, TALENT_SF, getUpgradeCost, getAttrCost, getActivationCost } from '../../engine/advancementCosts'
@@ -200,6 +200,8 @@ export default function SteigerungTab() {
   const [saSearch, setSaSearch] = useState('')
   const [saFilterGroup, setSaFilterGroup] = useState('alle')
   const [showSaBrowser, setShowSaBrowser] = useState(false)
+  const [showSpellEnhBrowser, setShowSpellEnhBrowser] = useState(false)
+  const [showLitEnhBrowser, setShowLitEnhBrowser] = useState(false)
 
   // Load databank templates (with auto-pagination for large collections)
   useEffect(() => {
@@ -321,6 +323,30 @@ export default function SteigerungTab() {
     return items
   }, [purchasableSAs, saFilterGroup, saSearch])
 
+  // Spell/liturgy enhancements from character data
+  const spellEnhancements = myCharacter.spell_enhancements || myCharacter.char_data?.spell_enhancements || {}
+  const liturgyEnhancements = myCharacter.liturgy_enhancements || myCharacter.char_data?.liturgy_enhancements || {}
+
+  // Known spells that have enhancements available
+  const spellsWithEnhancements = useMemo(() => {
+    if (!spellTemplates.length) return []
+    const normName = (n) => n.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä':'ae','ö':'oe','ü':'ue','ß':'ss' }[m]||m))
+    return spellTemplates.filter(s => {
+      if (!Array.isArray(s.enhancements) || s.enhancements.length === 0) return false
+      return Object.keys(spells).some(k => normName(k) === normName(s.name) || k.toLowerCase() === s.name.toLowerCase())
+    })
+  }, [spellTemplates, spells])
+
+  // Known liturgies that have enhancements available
+  const liturgiesWithEnhancements = useMemo(() => {
+    if (!liturgyTemplates.length) return []
+    const normName = (n) => n.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä':'ae','ö':'oe','ü':'ue','ß':'ss' }[m]||m))
+    return liturgyTemplates.filter(l => {
+      if (!Array.isArray(l.enhancements) || l.enhancements.length === 0) return false
+      return Object.keys(liturgies).some(k => normName(k) === normName(l.name) || k.toLowerCase() === l.name.toLowerCase())
+    })
+  }, [liturgyTemplates, liturgies])
+
   // ── Execute upgrade via API ──
   const doUpgrade = async () => {
     if (!confirm) return
@@ -335,6 +361,7 @@ export default function SteigerungTab() {
             id: confirm.id,
             ...(confirm.sf ? { steigerungsfaktor: confirm.sf } : {}),
             ...(confirm.apCost != null ? { ap_cost: confirm.apCost } : {}),
+            ...(confirm.enhLevel != null ? { enhancement_level: confirm.enhLevel } : {}),
           }],
         }),
       })
@@ -395,6 +422,21 @@ export default function SteigerungTab() {
       type: 'special_ability',
       id: sa.name,
       apCost: cost,
+    })
+  }
+
+  const requestEnhancement = (template, enhancement, enhType) => {
+    const cost = enhancement.cost || 0
+    const typeLabel = enhType === 'learn_spell_enhancement' ? 'Zaubererweiterung' : 'Liturgieerweiterung'
+    const roman = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V' }
+    setConfirm({
+      title: `${template.name} — Erweiterung ${roman[enhancement.level] || enhancement.level}`,
+      desc: `${typeLabel} „${enhancement.name}" (Stufe ${roman[enhancement.level] || enhancement.level}) für „${template.name}" erwerben. Effekt: ${enhancement.effect || 'Kein Effekt angegeben.'}`,
+      cost,
+      type: enhType,
+      id: template.id || template.name,
+      apCost: cost,
+      enhLevel: enhancement.level,
     })
   }
 
@@ -653,6 +695,130 @@ export default function SteigerungTab() {
               />
             )
           })}
+        </Section>
+      )}
+
+      {/* ── 5b. Zaubererweiterungen erwerben ── */}
+      {spellsWithEnhancements.length > 0 && (
+        <Section title="Zaubererweiterung erwerben" icon={Zap} color="text-blue-400" count={`${spellsWithEnhancements.length} Zauber`}>
+          <div className="text-[10px] text-dsa-parchment-dark px-2 pb-1">
+            Erweiterungen verbessern deine bekannten Zauber mit zusätzlichen Effekten.
+            Jede Erweiterung hat eine Stufe (I, II, III) und eigene AP-Kosten.
+          </div>
+          <div className="px-2">
+            <button
+              onClick={() => setShowSpellEnhBrowser(!showSpellEnhBrowser)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold border rounded-sm transition bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30"
+            >
+              <Plus className="w-3 h-3" />
+              {showSpellEnhBrowser ? 'Erweiterungen schließen' : 'Erweiterungen anzeigen'}
+            </button>
+          </div>
+          {showSpellEnhBrowser && (
+            <div className="px-2 pt-1 space-y-2">
+              {spellsWithEnhancements.map(s => {
+                const purchased = spellEnhancements[s.id] || spellEnhancements[s.name] || []
+                const unpurchased = (s.enhancements || []).filter(e => !purchased.includes(e.level))
+                if (unpurchased.length === 0) return null
+                return (
+                  <div key={s.id} className="bg-dsa-bg-card/50 border border-dsa-bg-medium rounded-sm p-2 space-y-1">
+                    <div className="text-xs font-medium text-blue-400">{s.name}</div>
+                    {unpurchased.map(enh => {
+                      const cost = enh.cost || 0
+                      const affordable = cost <= availableAP
+                      const roman = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V' }
+                      return (
+                        <div key={enh.level} className="flex items-center gap-2 pl-2 py-1 hover:bg-dsa-bg-card/50 rounded-sm transition">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[10px] font-mono font-bold text-dsa-parchment-dark">{roman[enh.level] || enh.level}</span>
+                              <span className="text-[11px] text-dsa-parchment">{enh.name}</span>
+                            </div>
+                            <p className="text-[9px] text-dsa-parchment-dark/50 truncate">{enh.effect}</p>
+                          </div>
+                          <button
+                            onClick={() => requestEnhancement(s, enh, 'learn_spell_enhancement')}
+                            disabled={!affordable}
+                            className={clsx(
+                              'flex items-center gap-1 px-2 py-1 rounded-sm text-[10px] font-bold border transition min-w-[72px] justify-center flex-shrink-0',
+                              affordable
+                                ? 'bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30'
+                                : 'bg-dsa-bg-card border-dsa-bg-medium text-dsa-parchment-dark/40 cursor-not-allowed'
+                            )}
+                          >
+                            <Zap className="w-3 h-3" />
+                            {cost} AP
+                          </button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </Section>
+      )}
+
+      {/* ── 5c. Liturgieerweiterungen erwerben ── */}
+      {liturgiesWithEnhancements.length > 0 && (
+        <Section title="Liturgieerweiterung erwerben" icon={Zap} color="text-yellow-400" count={`${liturgiesWithEnhancements.length} Liturgien`}>
+          <div className="text-[10px] text-dsa-parchment-dark px-2 pb-1">
+            Erweiterungen verbessern deine bekannten Liturgien mit zusätzlichen Effekten.
+            Jede Erweiterung hat eine Stufe (I, II, III) und eigene AP-Kosten.
+          </div>
+          <div className="px-2">
+            <button
+              onClick={() => setShowLitEnhBrowser(!showLitEnhBrowser)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold border rounded-sm transition bg-yellow-900/20 border-yellow-800/30 text-yellow-300 hover:bg-yellow-900/30"
+            >
+              <Plus className="w-3 h-3" />
+              {showLitEnhBrowser ? 'Erweiterungen schließen' : 'Erweiterungen anzeigen'}
+            </button>
+          </div>
+          {showLitEnhBrowser && (
+            <div className="px-2 pt-1 space-y-2">
+              {liturgiesWithEnhancements.map(l => {
+                const purchased = liturgyEnhancements[l.id] || liturgyEnhancements[l.name] || []
+                const unpurchased = (l.enhancements || []).filter(e => !purchased.includes(e.level))
+                if (unpurchased.length === 0) return null
+                return (
+                  <div key={l.id} className="bg-dsa-bg-card/50 border border-dsa-bg-medium rounded-sm p-2 space-y-1">
+                    <div className="text-xs font-medium text-yellow-400">{l.name}</div>
+                    {unpurchased.map(enh => {
+                      const cost = enh.cost || 0
+                      const affordable = cost <= availableAP
+                      const roman = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V' }
+                      return (
+                        <div key={enh.level} className="flex items-center gap-2 pl-2 py-1 hover:bg-dsa-bg-card/50 rounded-sm transition">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[10px] font-mono font-bold text-dsa-parchment-dark">{roman[enh.level] || enh.level}</span>
+                              <span className="text-[11px] text-dsa-parchment">{enh.name}</span>
+                            </div>
+                            <p className="text-[9px] text-dsa-parchment-dark/50 truncate">{enh.effect}</p>
+                          </div>
+                          <button
+                            onClick={() => requestEnhancement(l, enh, 'learn_liturgy_enhancement')}
+                            disabled={!affordable}
+                            className={clsx(
+                              'flex items-center gap-1 px-2 py-1 rounded-sm text-[10px] font-bold border transition min-w-[72px] justify-center flex-shrink-0',
+                              affordable
+                                ? 'bg-yellow-900/20 border-yellow-800/30 text-yellow-300 hover:bg-yellow-900/30'
+                                : 'bg-dsa-bg-card border-dsa-bg-medium text-dsa-parchment-dark/40 cursor-not-allowed'
+                            )}
+                          >
+                            <Zap className="w-3 h-3" />
+                            {cost} AP
+                          </button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </Section>
       )}
 
@@ -923,7 +1089,7 @@ export default function SteigerungTab() {
           available={availableAP}
           onConfirm={doUpgrade}
           onCancel={() => setConfirm(null)}
-          confirmLabel={confirm.type.startsWith('learn_') ? 'Lernen' : confirm.type === 'special_ability' ? 'Erwerben' : 'Steigern'}
+          confirmLabel={confirm.type.includes('enhancement') ? 'Erwerben' : confirm.type.startsWith('learn_') ? 'Lernen' : confirm.type === 'special_ability' ? 'Erwerben' : 'Steigern'}
         />
       )}
     </div>

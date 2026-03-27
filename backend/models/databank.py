@@ -51,6 +51,8 @@ class SpeciesTemplate(Base):
     auto_advantages: Mapped[Optional[list]] = mapped_column(JSON, nullable=True,
         comment="Automatically granted advantages")
     special_rules: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    variants: Mapped[Optional[list]] = mapped_column(JSON, nullable=True,
+        comment="Species/race variants (Speziesvarianten)")
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # User-contribution fields
@@ -122,6 +124,8 @@ class ProfessionTemplate(Base):
         comment="List of {template_id, quantity, equipped?} dicts")
     starting_money: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True,
         comment="{dukaten, silber, heller, kreuzer}")
+    variants: Mapped[Optional[list]] = mapped_column(JSON, nullable=True,
+        comment="Profession variants (Professionsvarianten)")
 
     # User-contribution fields
     created_by_user_id: Mapped[Optional[str]] = mapped_column(
@@ -338,6 +342,12 @@ class SpellTemplate(Base):
     created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
     is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
 
+    enhancements: Mapped[Optional[list]] = mapped_column(JSON, nullable=True,
+        comment="Spell enhancements (Zaubererweiterungen) — list of {level, name, effect, cost}")
+    property: Mapped[Optional[str]] = mapped_column(
+        String(64), nullable=True, comment="Spell property (Merkmal), e.g. Heilung, Illusion"
+    )
+
     def __repr__(self) -> str:
         return f"<SpellTemplate {self.id!r}>"
 
@@ -374,6 +384,9 @@ class LiturgyTemplate(Base):
     )
     created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
     is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
+    enhancements: Mapped[Optional[list]] = mapped_column(JSON, nullable=True,
+        comment="Liturgy enhancements (Liturgieerweiterungen) — list of {level, name, effect, cost}")
 
     def __repr__(self) -> str:
         return f"<LiturgyTemplate {self.id!r}>"
@@ -543,3 +556,57 @@ class RulesSnippet(Base):
 
     def __repr__(self) -> str:
         return f"<RulesSnippet {self.id!r}>"
+
+
+# ---------------------------------------------------------------------------
+# CantripTemplate
+# ---------------------------------------------------------------------------
+
+class CantripTemplate(Base):
+    __tablename__ = "cantrip_templates"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    tradition: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    effect: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    range: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    duration: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    target: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    source_book: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
+    def __repr__(self) -> str:
+        return f"<CantripTemplate {self.id!r}>"
+
+
+# ---------------------------------------------------------------------------
+# BlessingTemplate
+# ---------------------------------------------------------------------------
+
+class BlessingTemplate(Base):
+    __tablename__ = "blessing_templates"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    tradition: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    effect: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    range: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    duration: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    target: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    source_book: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
+    def __repr__(self) -> str:
+        return f"<BlessingTemplate {self.id!r}>"

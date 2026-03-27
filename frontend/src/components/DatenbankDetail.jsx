@@ -7,6 +7,7 @@ import {
   Skull, Swords, Shield, ShieldHalf, Package, Sparkles, Star, Zap, BookOpen,
   Heart, Wind, Eye, X, Coins, Pencil, Trash2, Loader2,
   Brain, Hand, HeartPulse, Hammer, Crown, Target, Flame, Clock,
+  Wand2, Sun,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { Tooltip, TipAbbr } from './Tooltip'
@@ -92,6 +93,28 @@ export const CATEGORIES = [
     iconColor: 'text-dsa-karma/60',
     tagBg: 'bg-dsa-karma/15 text-dsa-karma-light border border-dsa-karma/20',
     activeStyle: 'bg-dsa-karma/10 text-dsa-karma-light border-l-4 border-l-dsa-karma font-medium',
+  },
+  {
+    id: 'cantrips',
+    label: 'Zaubertricks',
+    icon: Wand2,
+    titleColor: 'text-dsa-mana-light',
+    borderAccent: 'border-l-4 border-l-dsa-mana',
+    heroBg: 'from-dsa-mana/10 via-dsa-mana/4 to-transparent',
+    iconColor: 'text-dsa-mana/50',
+    tagBg: 'bg-dsa-mana/10 text-dsa-mana-light border border-dsa-mana/15',
+    activeStyle: 'bg-dsa-mana/8 text-dsa-mana-light border-l-4 border-l-dsa-mana font-medium',
+  },
+  {
+    id: 'blessings',
+    label: 'Segnungen',
+    icon: Sun,
+    titleColor: 'text-dsa-karma-light',
+    borderAccent: 'border-l-4 border-l-dsa-karma',
+    heroBg: 'from-dsa-karma/10 via-dsa-karma/4 to-transparent',
+    iconColor: 'text-dsa-karma/50',
+    tagBg: 'bg-dsa-karma/10 text-dsa-karma-light border border-dsa-karma/15',
+    activeStyle: 'bg-dsa-karma/8 text-dsa-karma-light border-l-4 border-l-dsa-karma font-medium',
   },
   {
     id: 'special_abilities',
@@ -617,6 +640,59 @@ function ItemDetail({ data }) {
   )
 }
 
+// ---------------------------------------------------------------------------
+// Shared enhancements section — used by SpellDetail and LiturgyDetail
+// ---------------------------------------------------------------------------
+
+const ROMAN = ['I', 'II', 'III']
+const LEVEL_COLORS = [
+  'bg-dsa-bg-medium/60 border-dsa-bg-medium text-dsa-parchment-dark',
+  'bg-dsa-gold/10 border-dsa-gold/25 text-dsa-gold',
+  'bg-dsa-gold/20 border-dsa-gold/35 text-dsa-gold-light',
+]
+
+function EnhancementsSection({ enhancements, borderClass = 'border-l-dsa-mana/40' }) {
+  if (!enhancements || enhancements.length === 0) return null
+  const sorted = [...enhancements].sort((a, b) => (a.level || 0) - (b.level || 0))
+  return (
+    <DetailSection title="Erweiterungen" icon={Sparkles}>
+      <div className="space-y-2">
+        {sorted.map((enh, i) => {
+          const lvl = (enh.level || 1) - 1
+          return (
+            <div key={i} className={clsx('border-l-2 pl-3 py-1.5', borderClass)}>
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className={clsx(
+                  'inline-flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold border',
+                  LEVEL_COLORS[lvl] || LEVEL_COLORS[0]
+                )}>
+                  {ROMAN[lvl] || enh.level}
+                </span>
+                <span className="text-sm font-medium text-dsa-parchment">{enh.name}</span>
+                {enh.cost != null && (
+                  <span className="text-[10px] text-dsa-parchment-dark ml-auto shrink-0">{enh.cost} AP</span>
+                )}
+              </div>
+              {enh.effect && (
+                <p className="text-xs text-dsa-parchment-dark/80 leading-relaxed">{enh.effect}</p>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </DetailSection>
+  )
+}
+
+function PropertyBadge({ property }) {
+  if (!property) return null
+  return (
+    <span className="inline-flex items-center text-xs bg-dsa-mana/10 text-dsa-mana-light border border-dsa-mana/20 px-2 py-0.5 rounded">
+      {property}
+    </span>
+  )
+}
+
 function SpellDetail({ data }) {
   const probe = Array.isArray(data.probe) ? data.probe : (data.probe ? data.probe.split('/') : [])
   return (
@@ -669,9 +745,10 @@ function SpellDetail({ data }) {
         </div>
       </DetailSection>
 
-      {data.tradition && (
+      {(data.tradition || data.property) && (
         <div className="mb-4 flex flex-wrap gap-1.5">
-          {(Array.isArray(data.tradition) ? data.tradition : [data.tradition]).map((t, i) => (
+          {data.property && <PropertyBadge property={data.property} />}
+          {(Array.isArray(data.tradition) ? data.tradition : data.tradition ? [data.tradition] : []).map((t, i) => (
             <span key={i} className="text-xs bg-dsa-mana/10 text-dsa-mana-light border border-dsa-mana/20 px-2 py-0.5 rounded">
               {t}
             </span>
@@ -684,6 +761,8 @@ function SpellDetail({ data }) {
           {data.description}
         </p>
       )}
+
+      <EnhancementsSection enhancements={data.enhancements} borderClass="border-l-dsa-mana/40" />
     </>
   )
 }
@@ -754,6 +833,8 @@ function LiturgyDetail({ data }) {
           {data.description}
         </p>
       )}
+
+      <EnhancementsSection enhancements={data.enhancements} borderClass="border-l-dsa-karma/40" />
     </>
   )
 }
@@ -888,6 +969,74 @@ function TalentDetail({ data }) {
   )
 }
 
+function CantripDetail({ data }) {
+  return (
+    <>
+      <div className="flex items-center gap-4 mb-5 p-4 bg-dsa-mana/8 border border-dsa-mana/20 rounded-xl">
+        <Wand2 className="w-6 h-6 text-dsa-mana-light/60 shrink-0" />
+        <div className="flex-1">
+          <div className="text-[10px] text-dsa-parchment-dark uppercase tracking-wide mb-1">Zaubertrick</div>
+          <div className="flex flex-wrap gap-1.5">
+            {(Array.isArray(data.tradition) ? data.tradition : data.tradition ? [data.tradition] : []).map((t, i) => (
+              <span key={i} className="text-xs bg-dsa-mana/10 text-dsa-mana-light border border-dsa-mana/20 px-2 py-0.5 rounded">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <DetailSection title="Wirkung">
+        <div className="space-y-0">
+          <InfoRow label="Reichweite" value={data.range} />
+          <InfoRow label="Wirkungsdauer" value={data.duration} />
+          <InfoRow label="Ziel" value={data.target} />
+        </div>
+      </DetailSection>
+
+      {data.effect && (
+        <p className="text-sm text-dsa-parchment-dark leading-relaxed italic border-l-2 border-dsa-mana/30 pl-3">
+          {data.effect}
+        </p>
+      )}
+    </>
+  )
+}
+
+function BlessingDetail({ data }) {
+  return (
+    <>
+      <div className="flex items-center gap-4 mb-5 p-4 bg-dsa-karma/8 border border-dsa-karma/20 rounded-xl">
+        <Sun className="w-6 h-6 text-dsa-karma-light/60 shrink-0" />
+        <div className="flex-1">
+          <div className="text-[10px] text-dsa-parchment-dark uppercase tracking-wide mb-1">Segnung</div>
+          <div className="flex flex-wrap gap-1.5">
+            {(Array.isArray(data.tradition) ? data.tradition : data.tradition ? [data.tradition] : []).map((t, i) => (
+              <span key={i} className="text-xs bg-dsa-karma/10 text-dsa-karma-light border border-dsa-karma/20 px-2 py-0.5 rounded">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <DetailSection title="Wirkung">
+        <div className="space-y-0">
+          <InfoRow label="Reichweite" value={data.range} />
+          <InfoRow label="Wirkungsdauer" value={data.duration} />
+          <InfoRow label="Ziel" value={data.target} />
+        </div>
+      </DetailSection>
+
+      {data.effect && (
+        <p className="text-sm text-dsa-parchment-dark leading-relaxed italic border-l-2 border-dsa-karma/30 pl-3">
+          {data.effect}
+        </p>
+      )}
+    </>
+  )
+}
+
 const DETAIL_RENDERERS = {
   creatures: CreatureDetail,
   weapons: WeaponDetail,
@@ -896,6 +1045,8 @@ const DETAIL_RENDERERS = {
   items: ItemDetail,
   spells: SpellDetail,
   liturgies: LiturgyDetail,
+  cantrips: CantripDetail,
+  blessings: BlessingDetail,
   special_abilities: SpecialAbilityDetail,
   talents: TalentDetail,
 }

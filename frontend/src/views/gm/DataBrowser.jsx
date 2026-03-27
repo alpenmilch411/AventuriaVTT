@@ -13,6 +13,8 @@ const ENDPOINTS = {
   talents:           { url: '/api/databank/talents',           categoryField: 'category',  nameField: 'name', label: 'Talent',            category: 'talents' },
   spells:            { url: '/api/databank/spells',            categoryField: 'tradition', nameField: 'name', label: 'Zauber',             category: 'spells' },
   liturgies:         { url: '/api/databank/liturgies',         categoryField: 'tradition', nameField: 'name', label: 'Liturgie',           category: 'liturgies' },
+  cantrips:          { url: '/api/databank/cantrips',          categoryField: 'tradition', nameField: 'name', label: 'Zaubertrick',        category: 'cantrips' },
+  blessings:         { url: '/api/databank/blessings',         categoryField: 'tradition', nameField: 'name', label: 'Segnung',            category: 'blessings' },
   combat_techniques: { url: '/api/databank/combat_techniques', categoryField: 'category',  nameField: 'name', label: 'Kampftechnik',       category: 'talents' },
   special_abilities: { url: '/api/databank/special_abilities', categoryField: 'category',  nameField: 'name', label: 'Sonderfertigkeit',   category: 'special_abilities' },
   items:             { url: '/api/databank/items',             categoryField: 'category',  nameField: 'name', label: 'Gegenstand',         category: 'items' },

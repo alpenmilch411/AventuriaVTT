@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 2.0.0
+**Version:** 2.1.0
 **Last updated:** 2026-03-27
-**Status:** Optolith data integration complete (Session 14) — 3,529 entities from authoritative DSA5 source, learn-new-spell/liturgy, SA purchase, all hardcoded game data replaced with DB lookups
+**Status:** Full Optolith integration (Session 14) — 3,638 entities, cantrips, blessings, spell/liturgy enhancements, profession/species variants, Merkmal filtering, all game data from DB
 
 ---
 

@@ -35,6 +35,45 @@
     "source_book": "Regelwerk",
     "description": "Gutaussehend, Soziale Anpassungsfähigkeit, Wohlklang",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_1",
+        "name": "Geschichtenerzähler",
+        "ap_cost": -6,
+        "name_f": "Geschichtenerzählerin",
+        "skills": {
+          "Singen": -7,
+          "Gassenwissen": 3,
+          "Sagen & Legenden": 2,
+          "Holzbearbeitung": -3,
+          "Musizieren": -7
+        }
+      },
+      {
+        "id": "PV_2",
+        "name": "Haimamud",
+        "ap_cost": -6,
+        "name_f": "Haimamud",
+        "skills": {
+          "Singen": -7,
+          "Gassenwissen": 3,
+          "Sagen & Legenden": 2,
+          "Holzbearbeitung": -3,
+          "Musizieren": -7
+        },
+        "note": "Haimamudim müssen als Kultur Aranier, Mhanadistani oder Novadis wählen."
+      },
+      {
+        "id": "PV_3",
+        "name": "Skalde",
+        "ap_cost": 12,
+        "name_f": "Skaldin",
+        "skills": {
+          "Sagen & Legenden": 3
+        },
+        "note": "Skalden müssen als Kultur Thorwaler wählen."
+      }
+    ],
     "name_f": "Bardin"
   },
   {
@@ -75,6 +114,50 @@
     "source_book": "Regelwerk",
     "description": "Hohe Lebenskraft, Hohe Zähigkeit, Verbesserte Regeneration (Lebensenergie)",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_4",
+        "name": "Aufseher",
+        "ap_cost": -12,
+        "name_f": "Aufseherin",
+        "skills": {
+          "Einschüchtern": 3,
+          "Fährtensuchen": 2,
+          "Fahrzeuge": -4
+        }
+      },
+      {
+        "id": "PV_5",
+        "name": "Kerkermeister",
+        "ap_cost": -6,
+        "name_f": "Kerkermeisterin",
+        "skills": {
+          "Bekehren & Überzeugen": 2,
+          "Einschüchtern": 3,
+          "Fesseln": 3
+        }
+      },
+      {
+        "id": "PV_6",
+        "name": "Schließer",
+        "ap_cost": -6,
+        "name_f": "Schließerin",
+        "skills": {
+          "Bekehren & Überzeugen": 2,
+          "Einschüchtern": 3,
+          "Fesseln": 3
+        }
+      },
+      {
+        "id": "PV_7",
+        "name": "Zöllner",
+        "ap_cost": 12,
+        "name_f": "Zöllnerin",
+        "skills": {
+          "Menschenkenntnis": 4
+        }
+      }
+    ],
     "name_f": "Gardistin"
   },
   {
@@ -117,6 +200,61 @@
     "source_book": "Regelwerk",
     "description": "Begabung in Körpertalenten, Entfernungssinn, Gutaussehend, Schlangenmensch, Wohlklang",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_8",
+        "name": "Akrobat",
+        "ap_cost": 13,
+        "name_f": "Akrobatin",
+        "skills": {
+          "Klettern": 3,
+          "Körperbeherrschung": 1
+        }
+      },
+      {
+        "id": "PV_9",
+        "name": "Dompteur",
+        "ap_cost": 11,
+        "name_f": "Dompteurin",
+        "skills": {
+          "Menschenkenntnis": -2,
+          "Tierkunde": 5
+        }
+      },
+      {
+        "id": "PV_10",
+        "name": "Messerwerfer",
+        "ap_cost": 0,
+        "name_f": "Messerwerferin",
+        "skills": {
+          "Gaukeleien": -2,
+          "Verkleiden": -3
+        }
+      },
+      {
+        "id": "PV_11",
+        "name": "Possenreißer",
+        "ap_cost": -6,
+        "name_f": "Possenreißerin",
+        "skills": {
+          "Körperbeherrschung": -4,
+          "Überreden": 2,
+          "Verkleiden": 2
+        }
+      },
+      {
+        "id": "PV_12",
+        "name": "Wahrsager",
+        "ap_cost": -14,
+        "name_f": "Wahrsagerin",
+        "skills": {
+          "Körperbeherrschung": -7,
+          "Menschenkenntnis": 2,
+          "Überreden": 2,
+          "Sternkunde": 4
+        }
+      }
+    ],
     "name_f": "Gauklerin"
   },
   {
@@ -149,6 +287,27 @@
     "source_book": "Regelwerk",
     "description": "Beidhändig, Gutaussehend, Hohe Lebenskraft, Hohe Zähigkeit, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_13",
+        "name": "Grubenkämpfer",
+        "ap_cost": -25,
+        "name_f": "Grubenkämpferin"
+      },
+      {
+        "id": "PV_14",
+        "name": "Schaukämpfer",
+        "ap_cost": -5,
+        "name_f": "Schaukämpferin",
+        "skills": {
+          "Gaukeleien": 3,
+          "Selbstbeherrschung": -3,
+          "Zechen": 1,
+          "Überreden": 4,
+          "Orientierung": 3
+        }
+      }
+    ],
     "name_f": "Gladiatorin"
   },
   {
@@ -182,6 +341,67 @@
     "source_book": "Regelwerk",
     "description": "Begabung in Gesellschaftstalenten, Soziale Anpassungsfähigkeit, Wohlklang, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_15",
+        "name": "Fahrender Händler",
+        "ap_cost": 31,
+        "name_f": "Fahrende Händlerin",
+        "skills": {
+          "Orientierung": 4,
+          "Wildnisleben": 3,
+          "Fahrzeuge": 4
+        }
+      },
+      {
+        "id": "PV_16",
+        "name": "Fernhändler",
+        "ap_cost": 36,
+        "name_f": "Fernhändlerin",
+        "skills": {
+          "Orientierung": 3,
+          "Wildnisleben": 4,
+          "Geographie": 5,
+          "Magiekunde": 2,
+          "Sternkunde": 2
+        }
+      },
+      {
+        "id": "PV_17",
+        "name": "Geldwechsler",
+        "ap_cost": 17,
+        "name_f": "Geldwechslerin",
+        "skills": {
+          "Gassenwissen": 4,
+          "Rechnen": 2
+        }
+      },
+      {
+        "id": "PV_18",
+        "name": "Hausierer",
+        "ap_cost": 26,
+        "name_f": "Hausiererin",
+        "skills": {
+          "Orientierung": 4,
+          "Gassenwissen": 4,
+          "Menschenkenntnis": 2,
+          "Überreden": 2
+        }
+      },
+      {
+        "id": "PV_19",
+        "name": "Tauschhändler",
+        "ap_cost": 30,
+        "name_f": "Tauschhändlerin",
+        "skills": {
+          "Fährtensuchen": 4,
+          "Orientierung": 4,
+          "Wildnisleben": 4,
+          "Fahrzeuge": -2
+        },
+        "note": "Tauschhändler müssen die Kultur Fjarninger, Mohas oder Nivesen wählen."
+      }
+    ],
     "name_f": "Händlerin"
   },
   {
@@ -218,6 +438,61 @@
     "source_book": "Regelwerk",
     "description": "Giftresistenz, Immunität gegen (Gift), Immunität gegen (Krankheit), Krankheitsresistenz",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_20",
+        "name": "Hebamme",
+        "ap_cost": 11,
+        "name_f": "Hebamme",
+        "skills": {
+          "Etikette": -4,
+          "Pflanzenkunde": 1,
+          "Sagen & Legenden": 4,
+          "Heilkunde Gift": -1,
+          "Heilkunde Krankheiten": 1,
+          "Heilkunde Seele": 4
+        }
+      },
+      {
+        "id": "PV_21",
+        "name": "Medicus",
+        "ap_cost": 14,
+        "name_f": "Medica",
+        "skills": {
+          "Etikette": 3,
+          "Pflanzenkunde": 2,
+          "Heilkunde Krankheiten": 2
+        }
+      },
+      {
+        "id": "PV_22",
+        "name": "Quacksalber",
+        "ap_cost": -11,
+        "name_f": "Quacksalberin",
+        "skills": {
+          "Gaukeleien": 2,
+          "Fahrzeuge": 4,
+          "Überreden": 3,
+          "Heilkunde Gift": -3,
+          "Heilkunde Krankheiten": -4,
+          "Heilkunde Wunden": -3
+        }
+      },
+      {
+        "id": "PV_23",
+        "name": "Zahnreißer",
+        "ap_cost": -11,
+        "name_f": "Zahnreißerin",
+        "skills": {
+          "Gaukeleien": 2,
+          "Fahrzeuge": 4,
+          "Überreden": 3,
+          "Heilkunde Gift": -3,
+          "Heilkunde Krankheiten": -4,
+          "Heilkunde Wunden": -3
+        }
+      }
+    ],
     "name_f": "Heilerin"
   },
   {
@@ -255,6 +530,61 @@
     "source_book": "Regelwerk",
     "description": "Begabung in Gesellschaftstalenten, Giftresistenz, Gutaussehend",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_24",
+        "name": "Adelsspross",
+        "ap_cost": -4,
+        "name_f": "Adelsspross",
+        "skills": {
+          "Reiten": 2,
+          "Zechen": 2,
+          "Menschenkenntnis": -3,
+          "Willenskraft": -2,
+          "Geschichtswissen": -2,
+          "Rechtskunde": -1
+        }
+      },
+      {
+        "id": "PV_25",
+        "name": "Diplomat",
+        "ap_cost": 16,
+        "name_f": "Diplomatin",
+        "skills": {
+          "Bekehren & Überzeugen": 3,
+          "Etikette": 1,
+          "Überreden": 2,
+          "Willenskraft": 2,
+          "Heilkunde Gift": 3
+        }
+      },
+      {
+        "id": "PV_26",
+        "name": "Hofdame",
+        "ap_cost": -5,
+        "name_f": "Hofdame",
+        "skills": {
+          "Tanzen": 2,
+          "Zechen": -2,
+          "Stoffbearbeitung": 7
+        },
+        "note": "Hofdamen müssen als Kultur Andergaster wählen; die Hofdame muss weiblich sein."
+      },
+      {
+        "id": "PV_27",
+        "name": "Müßiggänger",
+        "ap_cost": 19,
+        "name_f": "Müßiggängerin",
+        "skills": {
+          "Tanzen": 2,
+          "Zechen": 2,
+          "Betören": 3,
+          "Geschichtswissen": -2,
+          "Rechtskunde": -1,
+          "Heilkunde Gift": 2
+        }
+      }
+    ],
     "name_f": "Höfling"
   },
   {
@@ -294,6 +624,51 @@
     "source_book": "Regelwerk",
     "description": "Entfernungssinn, Herausragender Sinn (Gehör oder Sicht), Richtungssinn, Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_28",
+        "name": "Großwildjäger",
+        "ap_cost": 18,
+        "name_f": "Großwildjägerin",
+        "skills": {
+          "Selbstbeherrschung": 3,
+          "Pflanzenkunde": -2
+        }
+      },
+      {
+        "id": "PV_29",
+        "name": "Kopfgeldjäger",
+        "ap_cost": 32,
+        "name_f": "Kopfgeldjägerin",
+        "skills": {
+          "Einschüchtern": 4,
+          "Menschenkenntnis": 5,
+          "Pflanzenkunde": -3,
+          "Tierkunde": -4
+        }
+      },
+      {
+        "id": "PV_30",
+        "name": "Sklavenjäger",
+        "ap_cost": 38,
+        "name_f": "Sklavenjägerin",
+        "skills": {
+          "Einschüchtern": 7,
+          "Menschenkenntnis": 4
+        },
+        "note": "übliche Kulturen: Aranier, Mhanadistani, Novadis, Südaventurier"
+      },
+      {
+        "id": "PV_31",
+        "name": "Stammesjäger",
+        "ap_cost": 12,
+        "name_f": "Stammesjägerin",
+        "skills": {
+          "Heilkunde Gift": 4,
+          "Steinbearbeitung": 4
+        }
+      }
+    ],
     "name_f": "Jägerin"
   },
   {
@@ -331,6 +706,7 @@
     "source_book": "Regelwerk",
     "description": "Beidhändigkeit, Hohe Lebenskraft, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Kriegerin"
   },
   {
@@ -372,6 +748,58 @@
     "source_book": "Regelwerk",
     "description": "Angenehmer Geruch, Begabung in Gesellschaftstalenten, Gutaussehend, Soziale Anpassungsfähigkeit, Wohlklang",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_32",
+        "name": "Bordellvater",
+        "ap_cost": 27,
+        "name_f": "Bordellmutter",
+        "skills": {
+          "Gassenwissen": 1,
+          "Menschenkenntnis": 2,
+          "Willenskraft": 3,
+          "Handel": 3
+        }
+      },
+      {
+        "id": "PV_33",
+        "name": "Lustknabe",
+        "ap_cost": 23,
+        "name_f": "Hure",
+        "skills": {
+          "Selbstbeherrschung": 1,
+          "Tanzen": -2,
+          "Taschendiebstahl": 2,
+          "Gassenwissen": 1,
+          "Willenskraft": 2,
+          "Rechnen": -2
+        }
+      },
+      {
+        "id": "PV_34",
+        "name": "Gesellschafter",
+        "ap_cost": 6,
+        "name_f": "Kurtisane",
+        "skills": {
+          "Betören": 1,
+          "Etikette": 4,
+          "Gassenwissen": -2,
+          "Fesseln": 2
+        }
+      },
+      {
+        "id": "PV_35",
+        "name": "Favorit",
+        "ap_cost": 10,
+        "name_f": "Mätresse",
+        "skills": {
+          "Betören": 2,
+          "Gassenwissen": -4,
+          "Etikette": 7,
+          "Fesseln": 4
+        }
+      }
+    ],
     "name_f": "Prostituierte"
   },
   {
@@ -410,6 +838,43 @@
     "source_book": "Regelwerk",
     "description": "Beidhändigkeit, Gutaussehend, Hohe Lebenskraft, Reich, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_36",
+        "name": "Hofritter",
+        "ap_cost": -2,
+        "name_f": "Hofritterin",
+        "skills": {
+          "Kraftakt": -2,
+          "Reiten": -2,
+          "Betören": 4,
+          "Etikette": 1,
+          "Kriegskunst": -2
+        }
+      },
+      {
+        "id": "PV_37",
+        "name": "Raubritter",
+        "ap_cost": -4,
+        "name_f": "Raubritterin",
+        "skills": {
+          "Reiten": -2,
+          "Etikette": -4,
+          "Handel": 4
+        }
+      },
+      {
+        "id": "PV_38",
+        "name": "Heckenritter",
+        "ap_cost": -4,
+        "name_f": "Heckenritterin",
+        "skills": {
+          "Reiten": -2,
+          "Etikette": -4,
+          "Handel": 4
+        }
+      }
+    ],
     "name_f": "Ritterin"
   },
   {
@@ -449,6 +914,46 @@
     "source_book": "Regelwerk",
     "description": "",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_39",
+        "name": "Fischer",
+        "ap_cost": 12,
+        "name_f": "Fischerin",
+        "skills": {
+          "Fischen & Angeln": 3,
+          "Tierkunde": 2
+        }
+      },
+      {
+        "id": "PV_40",
+        "name": "Pirat",
+        "ap_cost": 26,
+        "name_f": "Piratin",
+        "skills": {
+          "Einschüchtern": 4,
+          "Gassenwissen": 4
+        }
+      },
+      {
+        "id": "PV_41",
+        "name": "Walfänger",
+        "ap_cost": 18,
+        "name_f": "Walfängerin",
+        "skills": {
+          "Tierkunde": 5
+        }
+      },
+      {
+        "id": "PV_42",
+        "name": "Robbenjäger",
+        "ap_cost": 18,
+        "name_f": "Robbenjägerin",
+        "skills": {
+          "Tierkunde": 5
+        }
+      }
+    ],
     "name_f": "Seefahrerin"
   },
   {
@@ -487,6 +992,26 @@
     "source_book": "Regelwerk",
     "description": "Hohe Lebenskraft, Richtungssinn, Verbesserte Regeneration (Lebensenergie)",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_43",
+        "name": "Plänkler",
+        "ap_cost": 16,
+        "name_f": "Plänklerin"
+      },
+      {
+        "id": "PV_44",
+        "name": "Leichtgerüsteter",
+        "ap_cost": 15,
+        "name_f": "Leichtgerüstete"
+      },
+      {
+        "id": "PV_45",
+        "name": "Schwergerüsteter",
+        "ap_cost": 20,
+        "name_f": "Schwergerüstete"
+      }
+    ],
     "name_f": "Söldnerin"
   },
   {
@@ -523,6 +1048,30 @@
     "source_book": "Regelwerk",
     "description": "Herausragender Sinn (Gehör oder Sicht), Soziale Anpassungsfähigkeit, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_46",
+        "name": "Geheimagent",
+        "ap_cost": 36,
+        "name_f": "Geheimagentin",
+        "skills": {
+          "Taschendiebstahl": -3,
+          "Etikette": 4,
+          "Geographie": 4
+        }
+      },
+      {
+        "id": "PV_47",
+        "name": "Meuchelmörder",
+        "ap_cost": 72,
+        "name_f": "Meuchelmörderin",
+        "skills": {
+          "Klettern": 5,
+          "Körperbeherrschung": 6,
+          "Einschüchtern": 4
+        }
+      }
+    ],
     "name_f": "Spitzelin"
   },
   {
@@ -565,6 +1114,7 @@
     "source_book": "Regelwerk",
     "description": "Hohe Lebenskraft, Richtungssinn, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Stammeskriegerin"
   },
   {
@@ -606,6 +1156,77 @@
     "source_book": "Regelwerk",
     "description": "Begabung in Gesellschaftstalenten, Gutaussehend, Soziale Anpassungsfähigkeit, Wohlklang",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_48",
+        "name": "Bettler",
+        "ap_cost": -9,
+        "name_f": "Bettlerin",
+        "skills": {
+          "Klettern": -3,
+          "Betören": -3,
+          "Menschenkenntnis": 2,
+          "Überreden": 3,
+          "Schlösserknacken": -4
+        }
+      },
+      {
+        "id": "PV_49",
+        "name": "Dieb",
+        "ap_cost": 9,
+        "name_f": "Diebin",
+        "skills": {
+          "Taschendiebstahl": 3,
+          "Gassenwissen": -1,
+          "Orientierung": 3
+        }
+      },
+      {
+        "id": "PV_50",
+        "name": "Einbrecher",
+        "ap_cost": 12,
+        "name_f": "Einbrecherin",
+        "skills": {
+          "Klettern": 4,
+          "Taschendiebstahl": -2,
+          "Schlösserknacken": 3
+        }
+      },
+      {
+        "id": "PV_51",
+        "name": "Hochstapler",
+        "ap_cost": 35,
+        "name_f": "Hochstaplerin",
+        "skills": {
+          "Betören": 4,
+          "Etikette": 7,
+          "Verkleiden": 2,
+          "Überreden": 3
+        }
+      },
+      {
+        "id": "PV_52",
+        "name": "Spieler",
+        "ap_cost": 16,
+        "name_f": "Spielerin",
+        "skills": {
+          "Gaukeleien": 4,
+          "Menschenkenntnis": 3,
+          "Brett- & Glücksspiel": 5
+        }
+      },
+      {
+        "id": "PV_53",
+        "name": "Zuhälter",
+        "ap_cost": 8,
+        "name_f": "Zuhälterin",
+        "skills": {
+          "Einschüchtern": 7,
+          "Überreden": 2,
+          "Schlösserknacken": -4
+        }
+      }
+    ],
     "name_f": "Streunerin"
   },
   {
@@ -647,6 +1268,7 @@
     "source_book": "Regelwerk",
     "description": "Dunkelsicht II, Entfernungssinn, Hohe Seelenkraft, Richtungssinn",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Wildnisläuferin"
   },
   {
@@ -688,6 +1310,7 @@
     "source_book": "Regelwerk",
     "description": "Dunkelsicht II, Entfernungssinn, Hohe Seelenkraft, Richtungssinn",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Zauberweberin"
   },
   {
@@ -736,6 +1359,7 @@
     "source_book": "Regelwerk",
     "description": "Altersresistenz (nur bei Eigeborenen), Angenehmer Geruch, Flink, Gutaussehend, Soziale Anpassungsfähigkeit, Verhüllte Aura",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Katzenhexe"
   },
   {
@@ -781,6 +1405,7 @@
     "source_book": "Regelwerk",
     "description": "Altersresistenz (nur bei Eigeborenen), Verbesserte Regeneration (Astralenergie), Verhüllte Aura",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Krötenhexe"
   },
   {
@@ -830,6 +1455,7 @@
     "source_book": "Regelwerk",
     "description": "Altersresistenz (nur bei Eigeborenen), Verhüllte Aura",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Rabenhexe"
   },
   {
@@ -872,6 +1498,7 @@
     "source_book": "Regelwerk",
     "description": "Hohe Seelenkraft, Verbesserte Regeneration (Astralenergie)",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Gildenlose Magierin"
   },
   {
@@ -922,6 +1549,7 @@
     "source_book": "Regelwerk",
     "description": "Hohe Seelenkraft, Verbesserte Regeneration (Astralenergie)",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Graumagierin"
   },
   {
@@ -972,6 +1600,7 @@
     "source_book": "Regelwerk",
     "description": "Hohe Seelenkraft, Verbesserte Regeneration (Astralenergie)",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schwarzmagierin"
   },
   {
@@ -1023,6 +1652,7 @@
     "source_book": "Regelwerk",
     "description": "Hohe Seelenkraft, Verbesserte Regeneration (Astralenergie)",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Weißmagierin"
   },
   {
@@ -1072,6 +1702,27 @@
     "source_book": "Regelwerk",
     "description": "Giftresistenz, Immunität gegen (Gift), Immunität gegen (Krankheit), Krankheitsresistenz, Mystiker, Pragmatiker, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_54",
+        "name": "Diener Bishdariels",
+        "ap_cost": 7,
+        "name_f": "Dienerin Bishdariels",
+        "skills": {
+          "Sternkunde": 3,
+          "Heilkunde Seele": 2
+        }
+      },
+      {
+        "id": "PV_55",
+        "name": "Diener Golgaris",
+        "ap_cost": 18,
+        "name_f": "Dienerin Golgaris",
+        "skills": {
+          "Heilkunde Wunden": 3
+        }
+      }
+    ],
     "name_f": "Borongeweihte"
   },
   {
@@ -1122,6 +1773,30 @@
     "source_book": "Regelwerk",
     "description": "Hohe Seelenkraft, Mystiker, Pragmatiker, Vertrauenerweckend, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_56",
+        "name": "Pastori",
+        "ap_cost": 17,
+        "name_f": "Pastori",
+        "skills": {
+          "Geschichtswissen": 2,
+          "Magiekunde": 3,
+          "Sphärenkunde": 2
+        }
+      },
+      {
+        "id": "PV_57",
+        "name": "Satori",
+        "ap_cost": 10,
+        "name_f": "Satori",
+        "skills": {
+          "Singen": 2,
+          "Götter & Kulte": 2,
+          "Rechtskunde": 2
+        }
+      }
+    ],
     "name_f": "Hesindegeweihte"
   },
   {
@@ -1167,6 +1842,28 @@
     "source_book": "Regelwerk",
     "description": "Giftresistenz, Hohe Seelenkraft, Immunität gegen (Gift), Immunität gegen (Krankheit), Krankheitsresistenz, Mystiker, Pragmatiker, Soziale Anpassungsfähigkeit, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_58",
+        "name": "Heiler",
+        "ap_cost": 8,
+        "name_f": "Heiler",
+        "skills": {
+          "Heilkunde Krankheiten": 2,
+          "Heilkunde Wunden": 1
+        }
+      },
+      {
+        "id": "PV_59",
+        "name": "Säer",
+        "ap_cost": 15,
+        "name_f": "Säer",
+        "skills": {
+          "Pflanzenkunde": 1,
+          "Tierkunde": 4
+        }
+      }
+    ],
     "name_f": "Perainegeweihte"
   },
   {
@@ -1216,6 +1913,41 @@
     "source_book": "Regelwerk",
     "description": "Beidhändig, Entfernungssinn, Flink, Glück, Mystiker, Pragmatiker, Unscheinbar, Zwergennase",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_60",
+        "name": "Beutelschneider",
+        "ap_cost": 15,
+        "name_f": "Beutelschneiderin",
+        "skills": {
+          "Taschendiebstahl": 3,
+          "Gassenwissen": 3
+        }
+      },
+      {
+        "id": "PV_61",
+        "name": "Händler",
+        "ap_cost": 11,
+        "name_f": "Händlerin",
+        "skills": {
+          "Bekehren & Überzeugen": 2,
+          "Menschenkenntnis": 1,
+          "Handel": 2
+        }
+      },
+      {
+        "id": "PV_62",
+        "name": "Fassadenkletterer",
+        "ap_cost": 20,
+        "name_f": "Fassadenklettererin",
+        "skills": {
+          "Klettern": 3,
+          "Körperbeherrschung": 2,
+          "Menschenkenntnis": -2,
+          "Schlösserknacken": 4
+        }
+      }
+    ],
     "name_f": "Phexgeweihte"
   },
   {
@@ -1258,6 +1990,26 @@
     "source_book": "Regelwerk",
     "description": "Hohe Seelenkraft, Mystiker, Pragmatiker, Schwer zu verzaubern, Vertrauenerweckend, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_63",
+        "name": "Legalisten",
+        "ap_cost": 2,
+        "name_f": "Legalisten",
+        "skills": {
+          "Rechtskunde": 2
+        }
+      },
+      {
+        "id": "PV_64",
+        "name": "Prinzipisten",
+        "ap_cost": 12,
+        "name_f": "Prinzipisten",
+        "skills": {
+          "Magiekunde": 4
+        }
+      }
+    ],
     "name_f": "Praiosgeweihte"
   },
   {
@@ -1301,6 +2053,37 @@
     "source_book": "Regelwerk",
     "description": "Hohe Lebenskraft, Herausragende Kampftechnik, Hohe Seelenkraft, Hohe Zähigkeit, Mystiker, Pragmatiker, Reich, Vertrauenerweckend, Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_65",
+        "name": "Salutaristen",
+        "ap_cost": 13,
+        "name_f": "Salutaristen",
+        "skills": {
+          "Kriegskunst": 2,
+          "Magiekunde": 3
+        }
+      },
+      {
+        "id": "PV_66",
+        "name": "Traditionalisten",
+        "ap_cost": 12,
+        "name_f": "Traditionalisten",
+        "skills": {
+          "Selbstbeherrschung": 2,
+          "Geschichtswissen": 2
+        }
+      },
+      {
+        "id": "PV_67",
+        "name": "Honoren",
+        "ap_cost": -1,
+        "name_f": "Honoren",
+        "skills": {
+          "Kriegskunst": -2
+        }
+      }
+    ],
     "name_f": "Rondrageweihte"
   },
   {
@@ -1354,6 +2137,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Beidhändigkeit, Gutaussehend, Hohe Lebenskraft, Reich, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Adersin-Schwertgesellin"
   },
   {
@@ -1401,6 +2185,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Geborener Redner, Reich, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Adlige"
   },
   {
@@ -1455,6 +2240,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Adel, Begabung (Reiten oder Fahrzeuge), Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Baburiner Kriegerin"
   },
   {
@@ -1510,6 +2296,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Adel, Begabung (Reiten oder Fahrzeuge), Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Balihoer Kriegerin"
   },
   {
@@ -1567,6 +2354,30 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung (Pflanzenkunde oder Tierkunde), Glück",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_68",
+        "name": "Erntehelfer",
+        "ap_cost": -2,
+        "name_f": "Erntehelferin",
+        "skills": {
+          "Kraftakt": 2,
+          "Gassenwissen": 3,
+          "Tierkunde": -4
+        }
+      },
+      {
+        "id": "PV_69",
+        "name": "Viehzüchter",
+        "ap_cost": 16,
+        "name_f": "Viehzüchterin",
+        "skills": {
+          "Tierkunde": 2,
+          "Heilkunde Krankheiten": 2,
+          "Heilkunde Wunden": 1
+        }
+      }
+    ],
     "name_f": "Bäuerin"
   },
   {
@@ -1622,6 +2433,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung (Körperbeherrschung), Giftresistenz, Richtungssinn, Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Dajin-Buskur"
   },
   {
@@ -1667,6 +2479,70 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung in Gesellschaftstalenten, Glück, Soziale Anpassungsfähigkeit",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_70",
+        "name": "Erzieher",
+        "ap_cost": 6,
+        "name_f": "Erzieherin",
+        "skills": {
+          "Etikette": 3
+        }
+      },
+      {
+        "id": "PV_71",
+        "name": "Kutscher",
+        "ap_cost": 31,
+        "name_f": "Kutscherin",
+        "skills": {
+          "Reiten": 4,
+          "Tierkunde": 4,
+          "Fahrzeuge": 3,
+          "Holzbearbeitung": 4
+        }
+      },
+      {
+        "id": "PV_72",
+        "name": "Privatlehrer",
+        "ap_cost": 34,
+        "name_f": "Privatlehrerin",
+        "skills": {
+          "Geographie": 7,
+          "Geschichtswissen": 7,
+          "Sagen & Legenden": 3
+        }
+      },
+      {
+        "id": "PV_73",
+        "name": "Stallbursche",
+        "ap_cost": 23,
+        "name_f": "Stallbursche",
+        "skills": {
+          "Reiten": 4,
+          "Tierkunde": 5
+        }
+      },
+      {
+        "id": "PV_74",
+        "name": "Verwalter",
+        "ap_cost": 33,
+        "name_f": "Verwalterin",
+        "skills": {
+          "Willenskraft": 4,
+          "Rechnen": 1,
+          "Handel": 4
+        }
+      },
+      {
+        "id": "PV_75",
+        "name": "Leibdiener",
+        "ap_cost": 6,
+        "name_f": "Zofe",
+        "skills": {
+          "Etikette": 3
+        }
+      }
+    ],
     "name_f": "Dienerin"
   },
   {
@@ -1712,6 +2588,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Hohe Lebenskraft, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Elenviner Kriegerin"
   },
   {
@@ -1761,6 +2638,45 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Entfernungssinn, Giftresistenz, Hitzeresistenz, Kälteresistenz, Krankheitsresistenz, Richtungssinn, Zeitgefühl, Zwergennase",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_76",
+        "name": "Goldsucher",
+        "ap_cost": 16,
+        "name_f": "Goldsucherin",
+        "skills": {
+          "Etikette": -3,
+          "Wildnisleben": 1,
+          "Geschichtswissen": -2,
+          "Metallbearbeitung": 4,
+          "Steinbearbeitung": 5
+        }
+      },
+      {
+        "id": "PV_77",
+        "name": "Kartograph",
+        "ap_cost": 11,
+        "name_f": "Kartographin",
+        "skills": {
+          "Geographie": 2,
+          "Sternkunde": 4,
+          "Malen & Zeichnen": 3
+        }
+      },
+      {
+        "id": "PV_78",
+        "name": "Prospektor",
+        "ap_cost": 16,
+        "name_f": "Prospektorin",
+        "skills": {
+          "Wildnisleben": 1,
+          "Geschichtswissen": -2,
+          "Sternkunde": -5,
+          "Metallbearbeitung": 4,
+          "Steinbearbeitung": 5
+        }
+      }
+    ],
     "name_f": "Entdeckerin"
   },
   {
@@ -1819,6 +2735,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Beidhändigkeit, Gutaussehend, Hohe Lebenskraft, Reich, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Fedorino-Schwertgeselle"
   },
   {
@@ -1859,6 +2776,72 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung in Wissenstalenten, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_79",
+        "name": "Historiker",
+        "ap_cost": 16,
+        "name_f": "Historikerin",
+        "skills": {
+          "Magiekunde": 2,
+          "Geschichtswissen": 2,
+          "Götter & Kulte": 2
+        }
+      },
+      {
+        "id": "PV_80",
+        "name": "Mathematicus",
+        "ap_cost": 3,
+        "name_f": "Mathematica",
+        "skills": {
+          "Rechnen": 2
+        }
+      },
+      {
+        "id": "PV_81",
+        "name": "Rechtsgelehrter",
+        "ap_cost": 29,
+        "name_f": "Rechtsgelehrte",
+        "skills": {
+          "Bekehren & Überzeugen": 4,
+          "Überreden": 3,
+          "Willenskraft": 2,
+          "Rechtskunde": 3
+        }
+      },
+      {
+        "id": "PV_82",
+        "name": "Sternkundiger",
+        "ap_cost": 20,
+        "name_f": "Sternkundige",
+        "skills": {
+          "Orientierung": 4,
+          "Wildnisleben": 2,
+          "Sternkunde": 5
+        }
+      },
+      {
+        "id": "PV_83",
+        "name": "Völkerkundiger",
+        "ap_cost": 8,
+        "name_f": "Völkerkundige",
+        "skills": {
+          "Geographie": 1,
+          "Sagen & Legenden": 2
+        }
+      },
+      {
+        "id": "PV_84",
+        "name": "Zahlenmystiker",
+        "ap_cost": 13,
+        "name_f": "Zahlenmystikerin",
+        "skills": {
+          "Mechanik": 4,
+          "Rechnen": 2
+        },
+        "note": "Zahlenmystiker müssen als Kultur Aranier, Maraskaner, Mhanadistani, Novadis oder Erzzwerge wählen."
+      }
+    ],
     "name_f": "Gelehrte"
   },
   {
@@ -1910,6 +2893,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Entfernungssinn, Glück, Richtungssinn, Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Hirtin"
   },
   {
@@ -1970,6 +2954,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Gutaussehend, Hohe Lebenskraft, Reich, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Hylailer Kriegerin"
   },
   {
@@ -2006,6 +2991,70 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung in Handwerks- und Wissenstalenten",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_85",
+        "name": "Bildhauer",
+        "ap_cost": 15,
+        "name_f": "Bildhauerin",
+        "skills": {
+          "Malen & Zeichnen": 5,
+          "Steinbearbeitung": 8
+        }
+      },
+      {
+        "id": "PV_86",
+        "name": "Darsteller",
+        "ap_cost": 60,
+        "name_f": "Darstellerin",
+        "skills": {
+          "Fliegen": 2,
+          "Körperbeherrschung": 4,
+          "Singen": 4,
+          "Verkleiden": 8,
+          "Überreden": 6
+        }
+      },
+      {
+        "id": "PV_87",
+        "name": "Dichter",
+        "ap_cost": 25,
+        "name_f": "Dichterin",
+        "skills": {
+          "Sagen & Legenden": 4,
+          "Überreden": 3
+        }
+      },
+      {
+        "id": "PV_88",
+        "name": "Maler",
+        "ap_cost": 6,
+        "name_f": "Malerin",
+        "skills": {
+          "Malen & Zeichnen": 6
+        }
+      },
+      {
+        "id": "PV_89",
+        "name": "Musicus",
+        "ap_cost": 29,
+        "name_f": "Musica",
+        "skills": {
+          "Singen": 7,
+          "Musizieren": 8
+        }
+      },
+      {
+        "id": "PV_90",
+        "name": "Tanzlehrer",
+        "ap_cost": 22,
+        "name_f": "Tanzlehrerin",
+        "skills": {
+          "Körperbeherrschung": 4,
+          "Tanzen": 6
+        }
+      }
+    ],
     "name_f": "Künstlerin"
   },
   {
@@ -2061,6 +3110,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Entfernungssinn, Fuchssinn, Giftresistenz, Hohe Seelenkraft, Immunität gegen (Gift), Richtungssinn, Schlangenmensch, Schwer zu verzaubern, Waffenbegabung, Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Marwan Sahib-Balayan"
   },
   {
@@ -2106,6 +3156,29 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung (Mechanik), Herausragender Sinn, Hitzeresistenz, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_91",
+        "name": "Feinmechaniker",
+        "ap_cost": 21,
+        "name_f": "Feinmechanikerin",
+        "skills": {
+          "Etikette": 3,
+          "Überreden": 3,
+          "Handel": 3
+        }
+      },
+      {
+        "id": "PV_92",
+        "name": "Tresorbauer",
+        "ap_cost": 22,
+        "name_f": "Tresorbauerin",
+        "skills": {
+          "Kraftakt": 2,
+          "Schlösserknacken": 5
+        }
+      }
+    ],
     "name_f": "Mechanika"
   },
   {
@@ -2162,6 +3235,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Giftresistenz, Hitzeresistenz, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Mengbiller Kriegerin"
   },
   {
@@ -2222,6 +3296,7 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Hohe Lebenskraft, Reich, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Premer Kriegerin"
   },
   {
@@ -2265,6 +3340,44 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung (Metallbearbeitung), Hitzeresistent, Hohe Zähigkeit, Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_93",
+        "name": "Feinschmied",
+        "ap_cost": 8,
+        "name_f": "Feinschmiedin",
+        "skills": {
+          "Mechanik": 4
+        }
+      },
+      {
+        "id": "PV_94",
+        "name": "Goldschmied",
+        "ap_cost": 6,
+        "name_f": "Goldschmiedin",
+        "skills": {
+          "Alchimie": 2
+        }
+      },
+      {
+        "id": "PV_95",
+        "name": "Harnischmacher",
+        "ap_cost": 23,
+        "name_f": "Harnischmacherin",
+        "skills": {
+          "Lederbearbeitung": 4
+        }
+      },
+      {
+        "id": "PV_96",
+        "name": "Waffenschmied",
+        "ap_cost": 32,
+        "name_f": "Waffenschmiedin",
+        "skills": {
+          "Kriegskunst": 4
+        }
+      }
+    ],
     "name_f": "Schmiedin"
   },
   {
@@ -2310,6 +3423,57 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Glück, Gutaussehend (speziell für Liebessklaven), Soziale Anpassungsfähigkeit, Zeitgefühl, Wohlklang (speziell für Liebessklaven)",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_97",
+        "name": "Leibsklave",
+        "ap_cost": 10,
+        "name_f": "Leibsklavin",
+        "skills": {
+          "Etikette": 1,
+          "Handel": 4
+        }
+      },
+      {
+        "id": "PV_98",
+        "name": "Liebessklave",
+        "ap_cost": 6,
+        "name_f": "Liebessklavin",
+        "skills": {
+          "Betören": 3
+        }
+      },
+      {
+        "id": "PV_99",
+        "name": "Minensklave",
+        "ap_cost": 30,
+        "name_f": "Minensklavin",
+        "skills": {
+          "Kraftakt": 4,
+          "Betören": -4,
+          "Etikette": -3,
+          "Lebensmittelbearbeitung": -3
+        }
+      },
+      {
+        "id": "PV_100",
+        "name": "Sänftenträger",
+        "ap_cost": 8,
+        "name_f": "Sänftenträgerin",
+        "skills": {
+          "Kraftakt": 4
+        }
+      },
+      {
+        "id": "PV_101",
+        "name": "Vorkoster",
+        "ap_cost": 2,
+        "name_f": "Vorkosterin",
+        "skills": {
+          "Lebensmittelbearbeitung": 2
+        }
+      }
+    ],
     "name_f": "Sklavin"
   },
   {
@@ -2369,6 +3533,29 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_102",
+        "name": "Armbrustschütze",
+        "ap_cost": 12,
+        "name_f": "Armbrustschützin"
+      },
+      {
+        "id": "PV_103",
+        "name": "Bogenschütze",
+        "ap_cost": -2,
+        "name_f": "Bogenschützin"
+      },
+      {
+        "id": "PV_104",
+        "name": "Reiter",
+        "ap_cost": 22,
+        "name_f": "Reiterin",
+        "skills": {
+          "Reiten": 7
+        }
+      }
+    ],
     "name_f": "Soldatin"
   },
   {
@@ -2406,6 +3593,59 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Hitzeresistenz, Hohe Zähigkeit, Unscheinbar, Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_105",
+        "name": "Bergmann",
+        "ap_cost": 7,
+        "name_f": "Bergfrau",
+        "skills": {
+          "Steinbearbeitung": 2
+        }
+      },
+      {
+        "id": "PV_106",
+        "name": "Bauhelfer",
+        "ap_cost": 7,
+        "name_f": "Bauhelferin",
+        "skills": {
+          "Steinbearbeitung": 2
+        }
+      },
+      {
+        "id": "PV_107",
+        "name": "Fuhrmann",
+        "ap_cost": 3,
+        "name_f": "Fuhrfrau",
+        "skills": {
+          "Kraftakt": -3,
+          "Reiten": 3,
+          "Fahrzeuge": 6
+        }
+      },
+      {
+        "id": "PV_108",
+        "name": "Lastenträger",
+        "ap_cost": 16,
+        "name_f": "Lastenträgerin",
+        "skills": {
+          "Kraftakt": 2,
+          "Etikette": 3,
+          "Orientierung": 2
+        }
+      },
+      {
+        "id": "PV_109",
+        "name": "Palmschneider",
+        "ap_cost": 16,
+        "name_f": "Palmschneiderin",
+        "skills": {
+          "Klettern": 4,
+          "Kraftakt": -2,
+          "Fesseln": 2
+        }
+      }
+    ],
     "name_f": "Tagelöhner"
   },
   {
@@ -2456,6 +3696,76 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung (Wildnisleben), Giftresistenz, Herausragender Sinn (Gehör), Hitzeresistenz, Immunität gegen (Gift), Immunität gegen (Blutiger Rotz, Brabaker Schweiß), Richtungssinn",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_110",
+        "name": "Questador",
+        "ap_cost": -16,
+        "name_f": "Questadora",
+        "skills": {
+          "Selbstbeherrschung": 2,
+          "Fährtensuchen": -2,
+          "Orientierung": -2,
+          "Pflanzenkunde": -2,
+          "Tierkunde": -2,
+          "Wildnisleben": -3
+        }
+      },
+      {
+        "id": "PV_111",
+        "name": "Eis- und Schneekundiger",
+        "ap_cost": 0,
+        "name_f": "Eis- und Schneekundige"
+      },
+      {
+        "id": "PV_112",
+        "name": "Wüstenkundiger",
+        "ap_cost": 0,
+        "name_f": "Wüstenkundige"
+      },
+      {
+        "id": "PV_113",
+        "name": "Gebirgskundiger",
+        "ap_cost": 0,
+        "name_f": "Gebirgskundige"
+      },
+      {
+        "id": "PV_293",
+        "name": "Höhlenkundiger",
+        "ap_cost": 0,
+        "name_f": "Höhlenkundige"
+      },
+      {
+        "id": "PV_294",
+        "name": "Kulturlandkundiger",
+        "ap_cost": 0,
+        "name_f": "Kulturlandkundige"
+      },
+      {
+        "id": "PV_295",
+        "name": "Meereskundiger",
+        "ap_cost": 0,
+        "name_f": "Meereskundige"
+      },
+      {
+        "id": "PV_296",
+        "name": "Steppenkundiger",
+        "ap_cost": 0,
+        "name_f": "Steppenkundige"
+      },
+      {
+        "id": "PV_297",
+        "name": "Sumpfkundiger",
+        "ap_cost": 0,
+        "name_f": "Sumpfkundige"
+      },
+      {
+        "id": "PV_298",
+        "name": "Waldkundiger",
+        "ap_cost": 0,
+        "name_f": "Waldkundige"
+      }
+    ],
     "name_f": "Wildniskundige"
   },
   {
@@ -2493,6 +3803,40 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Begabung (Menschenkenntnis), Vertrauenerweckend",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_114",
+        "name": "Koch",
+        "ap_cost": 1,
+        "name_f": "Köchin",
+        "skills": {
+          "Brett- & Glücksspiel": -3,
+          "Lebensmittelbearbeitung": 4
+        }
+      },
+      {
+        "id": "PV_115",
+        "name": "Schankbursche",
+        "ap_cost": 0,
+        "name_f": "Schankmagd",
+        "skills": {
+          "Betören": 3,
+          "Handel": -3
+        }
+      },
+      {
+        "id": "PV_116",
+        "name": "Rausschmeißer",
+        "ap_cost": 8,
+        "name_f": "Rausschmeißerin",
+        "skills": {
+          "Kraftakt": 4,
+          "Tanzen": -2,
+          "Handel": -3,
+          "Lebensmittelbearbeitung": -2
+        }
+      }
+    ],
     "name_f": "Wirtin"
   },
   {
@@ -2535,6 +3879,28 @@
     "source_book": "Aventurisches Kompendium I",
     "description": "Angenehmer Geruch, Begabung (Lebensmittelbearbeitung), Herausragender Sinn (Geruch & Geschmack), Hitzeresistenz, Vertrauenerweckend, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_117",
+        "name": "Schaumkusshersteller",
+        "ap_cost": 7,
+        "name_f": "Schaumkussherstellerin",
+        "skills": {
+          "Alchimie": 2,
+          "Lebensmittelbearbeitung": 1
+        }
+      },
+      {
+        "id": "PV_118",
+        "name": "Schokoladenmacher",
+        "ap_cost": 5,
+        "name_f": "Schokoladenmacherin",
+        "skills": {
+          "Selbstbeherrschung": 1,
+          "Lebensmittelbearbeitung": 1
+        }
+      }
+    ],
     "name_f": "Zuckerbäckerin"
   },
   {
@@ -2585,7 +3951,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie I",
     "description": "Gutaussehend, Soziale Anpassungsfähigkeit, Wohlklang",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_derwisch",
@@ -2645,7 +4012,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie I",
     "description": "Hitzeresistenz, Hohe Seelenkraft, Hohe Zähigkeit, Zäher Hund",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_hazaqi",
@@ -2695,7 +4063,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie I",
     "description": "Begabung (Tanzen), Gutaussehend, Verhüllte Aura",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_magischer_taugenichts",
@@ -2739,6 +4108,45 @@
     "source_book": "Aventurische Magie I",
     "description": "Dunkelsicht I, Fuchssinn, Schlangenmensch, Verhüllte Aura, Zwergennase",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_119",
+        "name": "Bezaubernder Trickbetrüger",
+        "ap_cost": 41,
+        "name_f": "Bezaubernde Trickbetrügerin",
+        "skills": {
+          "Klettern": -2,
+          "Kraftakt": -2,
+          "Betören": 4,
+          "Gassenwissen": 2,
+          "Menschenkenntnis": 6,
+          "Überreden": 3,
+          "Verkleiden": 2,
+          "Geographie": 3,
+          "Mechanik": -3,
+          "Handel": 2,
+          "Schlösserknacken": -4
+        }
+      },
+      {
+        "id": "PV_120",
+        "name": "Hellsichtiger Grabräuber",
+        "ap_cost": 38,
+        "name_f": "Hellsichtige Grabräuberin",
+        "skills": {
+          "Taschendiebstahl": -4,
+          "Verkleiden": -2,
+          "Orientierung": 6,
+          "Geschichtswissen": 4,
+          "Götter & Kulte": 4,
+          "Mechanik": 3,
+          "Sagen & Legenden": 4,
+          "Handel": 2,
+          "Holzbearbeitung": 4,
+          "Steinbearbeitung": 4
+        }
+      }
+    ],
     "name_f": "Magische Taugenicht"
   },
   {
@@ -2790,7 +4198,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie I",
     "description": "Begabung (Tanzen), Flink, Gutaussehend",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_qabaloth_der_toechter_niobaras",
@@ -2846,7 +4255,32 @@
     "liturgies": {},
     "source_book": "Aventurische Magie I",
     "description": "Herausragender Sinn (Sicht), Hohe Seelenkraft, Soziale Anpassungsfähigkeit, Unscheinbar, Verhüllte Aura",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_158",
+        "name": "Weg der Geheimnisse",
+        "ap_cost": 1,
+        "skills": {
+          "Magiekunde": 2,
+          "Geschichtswissen": 1,
+          "Sternkunde": 1,
+          "Betören": -2,
+          "Menschenkenntnis": -2
+        }
+      },
+      {
+        "id": "PV_159",
+        "name": "Weg der Offenbarung",
+        "ap_cost": -2,
+        "skills": {
+          "Gassenwissen": 1,
+          "Heilkunde Seele": 1,
+          "Menschenkenntnis": 1,
+          "Sphärenkunde": -2
+        }
+      }
+    ]
   },
   {
     "id": "profession_rahkisa",
@@ -2896,7 +4330,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie I",
     "description": "Begabung (Tanzen), Gutaussehend",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_sangara",
@@ -2952,7 +4387,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie I",
     "description": "Glück, Magische Einstimmung (Wesen des Waldes), Soziale Anpassungsfähigkeit, Wohlklang",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_scharlatan",
@@ -3010,6 +4446,88 @@
     "source_book": "Aventurische Magie I",
     "description": "Geborener Redner, Herausragender Sinn, Hohe Astralkraft, Soziale Anpassungsfähigkeit",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_121",
+        "name": "Seher",
+        "ap_cost": 4,
+        "name_f": "Seherin",
+        "skills": {
+          "Gaukeleien": -5,
+          "Bekehren & Überzeugen": 3,
+          "Menschenkenntnis": 3,
+          "Fesseln": -4,
+          "Geschichtswissen": 2,
+          "Sagen & Legenden": -2,
+          "Heilkunde Seele": 4
+        }
+      },
+      {
+        "id": "PV_122",
+        "name": "Quacksalber",
+        "ap_cost": 74,
+        "name_f": "Quacksalberin",
+        "skills": {
+          "Pflanzenkunde": 4,
+          "Fesseln": -4,
+          "Alchimie": 2,
+          "Handel": 4,
+          "Heilkunde Gift": 4,
+          "Heilkunde Krankheiten": 4,
+          "Heilkunde Wunden": 4,
+          "Lebensmittelbearbeitung": 4
+        }
+      },
+      {
+        "id": "PV_123",
+        "name": "Trickbetrüger",
+        "ap_cost": 15,
+        "name_f": "Trickbetrügerin",
+        "skills": {
+          "Verbergen": 2,
+          "Taschendiebstahl": 4,
+          "Überreden": 3,
+          "Fesseln": -4,
+          "Brett- & Glücksspiel": 4,
+          "Sagen & Legenden": -2,
+          "Fahrzeuge": -4,
+          "Handel": 4,
+          "Malen & Zeichnen": -4,
+          "Schlösserknacken": 2,
+          "Steinbearbeitung": -4
+        }
+      },
+      {
+        "id": "PV_124",
+        "name": "Theaterzauberer",
+        "ap_cost": 16,
+        "name_f": "Theaterzauberin",
+        "skills": {
+          "Singen": 2,
+          "Verbergen": 4,
+          "Etikette": 3,
+          "Wildnisleben": -2,
+          "Fahrzeuge": -4
+        }
+      },
+      {
+        "id": "PV_125",
+        "name": "Hofzauberer",
+        "ap_cost": -5,
+        "name_f": "Hofzauberin",
+        "skills": {
+          "Tanzen": 2,
+          "Betören": 3,
+          "Etikette": 4,
+          "Gassenwissen": -4,
+          "Fesseln": -4,
+          "Wildnisleben": -2,
+          "Geschichtswissen": 2,
+          "Alchimie": 2,
+          "Fahrzeuge": -4
+        }
+      }
+    ],
     "name_f": "Scharlatanin"
   },
   {
@@ -3061,7 +4579,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie I",
     "description": "Begabung (Tanzen), Gutaussehend",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_bogner",
@@ -3101,6 +4620,7 @@
     "source_book": "Die Streitenden Königreiche",
     "description": "Entfernungssinn, Herausragender Sinn (Sicht)",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Bognerin"
   },
   {
@@ -3146,6 +4666,7 @@
     "source_book": "Die Streitenden Königreiche",
     "description": "Entfernungssinn, Kälteresistenz, Richtungssinn, Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Deichbauerin"
   },
   {
@@ -3188,6 +4709,7 @@
     "source_book": "Die Streitenden Königreiche",
     "description": "Begabung (Holzbearbeitung), Hohe Zähigkeit",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Holzfällerin"
   },
   {
@@ -3233,6 +4755,7 @@
     "source_book": "Die Streitenden Königreiche",
     "description": "Hohe Lebenskraft, Reich, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Ritterin der Streitenden Königreiche"
   },
   {
@@ -3292,6 +4815,7 @@
     "source_book": "Die Streitenden Königreiche",
     "description": "Altersresistenz (nur bei Eigeborenen), Verhüllte Aura",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Eulenhexe"
   },
   {
@@ -3345,6 +4869,7 @@
     "source_book": "Die Streitenden Königreiche",
     "description": "Altersresistenz (nur bei Eigeborenen), Verhüllte Aura",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schlangenhexe"
   },
   {
@@ -3399,6 +4924,7 @@
     "source_book": "Die Streitenden Königreiche",
     "description": "Hohe Seelenkraft, Krankheitsresistenz, Richtungssinn, Verbesserte Regeneration (Astralenergie), Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Druidin"
   },
   {
@@ -3459,6 +4985,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Begabung (Schwimmen, Boote & Schiffe), Dunkelsicht I, Entfernungssinn, Geborener Redner, Kälteresistenz, Richtungssinn",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Efferdgeweihte"
   },
   {
@@ -3507,6 +5034,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Hohe Seelenkraft, Mystiker, Pragmatiker, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Traviageweihte"
   },
   {
@@ -3561,6 +5089,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Hohe Lebenskraft, Hohe Seelenkraft, Hohe Zähigkeit, Kälteresistenz, Mystiker, Pragmatiker, Richtungssinn, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Firungeweihte"
   },
   {
@@ -3614,6 +5143,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Altersresistenz, Glück, Hohe Seelenkraft, Hohe Zähigkeit, Mystiker, Pragmatiker, Soziale Anpassungsfähigkeit, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Tsageweihte"
   },
   {
@@ -3661,6 +5191,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Begabung (Handwerkstalent), Herausragende Fertigkeit (Handwerkstalent), Hitzeresistenz, Mystiker, Pragmatiker, Soziale Anpassungsfähigkeit, Vertrauenerweckend, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Ingerimmgeweihte"
   },
   {
@@ -3719,6 +5250,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Angenehmer Geruch, Gutaussehend, Herausragender Sinn, Hohe Seelenkraft, Hohe Zähigkeit, Mystiker, Pragmatiker, Wohlklang, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Rahjageweihte"
   },
   {
@@ -3783,6 +5315,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Entfernungssinn, Glück, Hohe Seelenkraft, Hohe Zähigkeit, Mystiker, Pragmatiker, Richtungssinn, Soziale Anpassungsfähigkeit",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Avesgeweihte"
   },
   {
@@ -3840,6 +5373,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Hohe Lebenskraft, Hohe Seelenkraft, Hohe Zähigkeit, Kälteresistenz, Mystiker, Pragmatiker, Richtungssinn, Vertrauenerweckend, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Ifirngeweihte"
   },
   {
@@ -3891,6 +5425,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Hohe Lebenskraft, Herausragende Kampftechnik, Hohe Seelenkraft, Hohe Zähigkeit, Mystiker, Pragmatiker, Reich, Soziale Anpassungsfähigkeit, Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Korgeweihte"
   },
   {
@@ -3941,6 +5476,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Geborener Redner, Hohe Seelenkraft, Mystiker, Pragmatiker, Soziale Anpassungsfähigkeit, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Nandusgeweihte"
   },
   {
@@ -3999,6 +5535,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Hohe Seelenkraft, Hohe Zähigkeit, Mystiker, Pragmatiker, Richtungssinn, Vertrauenerweckend, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Swafnirgeweihte"
   },
   {
@@ -4039,6 +5576,37 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Flink, Hohe Lebenskraft, Herausragende Kampftechnik, Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_162",
+        "name": "Kundschafterin",
+        "ap_cost": 50,
+        "skills": {
+          "Klettern": 4,
+          "Sinnesschärfe": 4,
+          "Fährtensuchen": 6,
+          "Orientierung": 6,
+          "Wildnisleben": 4
+        }
+      },
+      {
+        "id": "PV_163",
+        "name": "Bogenschützin",
+        "ap_cost": 5,
+        "skills": {
+          "Holzbearbeitung": 3,
+          "Metallbearbeitung": -3
+        }
+      },
+      {
+        "id": "PV_164",
+        "name": "Rondrageweihte Amazone",
+        "ap_cost": 62,
+        "skills": {
+          "Bekehren & Überzeugen": 4
+        }
+      }
+    ],
     "name_f": "Amazone"
   },
   {
@@ -4088,6 +5656,37 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Geborener Redner, Hohe Seelenkraft, Hohe Zähigkeit, Vertrauenerweckend, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_165",
+        "name": "Eiserne Schlange",
+        "ap_cost": 59,
+        "skills": {
+          "Taschendiebstahl": 2,
+          "Verbergen": 4,
+          "Gassenwissen": 2,
+          "Überreden": 7,
+          "Verkleiden": 4,
+          "Sphärenkunde": 1,
+          "Schlösserknacken": 2
+        }
+      },
+      {
+        "id": "PV_166",
+        "name": "Arkaner Zweig",
+        "ap_cost": 0,
+        "note": "Um ein Mitglied des arkanen Zweigs zu spielen, passe die Werte einer magischen Profession an die hier voreingestellten an. Die Voraussetzungen bleiben gleich."
+      },
+      {
+        "id": "PV_167",
+        "name": "Sakraler Zweig",
+        "ap_cost": 77,
+        "skills": {
+          "Bekehren & Überzeugen": 3,
+          "Götter & Kulte": 1
+        }
+      }
+    ],
     "name_f": "Draconiterin"
   },
   {
@@ -4128,6 +5727,36 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Adel, Hohe Seelenkraft, Hohe Zähigkeit, Reich, Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_168",
+        "name": "Untotenjäger",
+        "ap_cost": 75,
+        "name_f": "Untotenjägerin",
+        "skills": {
+          "Reiten": 2,
+          "Tierkunde": 2,
+          "Kriegskunst": 2,
+          "Magiekunde": 2,
+          "Sphärenkunde": 2,
+          "Heilkunde Krankheiten": 2,
+          "Holzbearbeitung": 2,
+          "Metallbearbeitung": 2
+        }
+      },
+      {
+        "id": "PV_169",
+        "name": "Borongeweihter Golgarit",
+        "ap_cost": 100,
+        "name_f": "Borongeweihte Golgaritin",
+        "skills": {
+          "Bekehren & Überzeugen": 4,
+          "Götter & Kulte": 2,
+          "Heilkunde Seele": 4,
+          "Malen & Zeichnen": 4
+        }
+      }
+    ],
     "name_f": "Golgaritin"
   },
   {
@@ -4176,6 +5805,7 @@
     "source_book": "Aventurisches Götterwirken I",
     "description": "Geborener Redner, Giftresistenz, Hohe Seelenkraft, Hohe Zähigkeit, Mystiker, Pragmatiker, Soziale Anpassungsfähigkeit, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Namenloser-Geweihte"
   },
   {
@@ -4218,6 +5848,7 @@
     "source_book": "Die Siebenwindküste",
     "description": "Beidhändigkeit, Gutaussehend, Hohe Lebenskraft, Reich, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Distelritterin"
   },
   {
@@ -4263,6 +5894,7 @@
     "source_book": "Die Siebenwindküste",
     "description": "Beidhändigkeit, Hohe Lebenskraft, Reich, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Heckenreiterin"
   },
   {
@@ -4309,6 +5941,7 @@
     "source_book": "Die Siebenwindküste",
     "description": "",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Küstenschmugglerin"
   },
   {
@@ -4359,6 +5992,7 @@
     "source_book": "Die Siebenwindküste",
     "description": "Hohe Lebenskraft, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Havener Kriegerin"
   },
   {
@@ -4412,6 +6046,7 @@
     "source_book": "Die Siebenwindküste",
     "description": "Beidhändigkeit, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schwertgesellin nach Scanlail ni Uinin"
   },
   {
@@ -4461,6 +6096,7 @@
     "source_book": "Die Siebenwindküste",
     "description": "Begabung (Schwimmen), Hohe Lebenskraft, Richtungssinn, Verbesserte Regeneration (Lebensenergie)",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Seesoldatin"
   },
   {
@@ -4506,6 +6142,7 @@
     "source_book": "Die Siebenwindküste",
     "description": "Hohe Lebenskraft, Richtungssinn, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Windhager Sippenkriegerin"
   },
   {
@@ -4561,6 +6198,7 @@
     "source_book": "Die Siebenwindküste",
     "description": "Hohe Lebenskraft, Soziale Anpassungsfähigkeit, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Winhaller Kriegerin"
   },
   {
@@ -4609,6 +6247,7 @@
     "source_book": "Aventurische Magie II",
     "description": "Altersresistenz (nur bei Eigeborenen), Flink, Gutaussehend, Soziale Anpassungsfähigkeit, Verhüllte Aura",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Affenhexe"
   },
   {
@@ -4658,6 +6297,7 @@
     "source_book": "Aventurische Magie II",
     "description": "Altersresistenz (nur bei Eigeborenen), Angenehmer Geruch, Flink, Gutaussehend, Soziale Anpassungsfähigkeit, Verhüllte Aura",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Spinnenhexe"
   },
   {
@@ -4703,6 +6343,7 @@
     "source_book": "Aventurische Magie II",
     "description": "Dunkelsicht II, Entfernungssinn, Hohe Seelenkraft, Richtungssinn",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Bewahrerin"
   },
   {
@@ -4750,6 +6391,7 @@
     "source_book": "Aventurische Magie II",
     "description": "Dunkelsicht II, Entfernungssinn, Hohe Seelenkraft, Richtungssinn",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Formerin"
   },
   {
@@ -4797,6 +6439,7 @@
     "source_book": "Aventurische Magie II",
     "description": "Dunkelsicht II, Entfernungssinn, Hohe Seelenkraft, Richtungssinn",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Kämpferin"
   },
   {
@@ -4841,6 +6484,7 @@
     "source_book": "Aventurische Magie II",
     "description": "Dunkelsicht II, Entfernungssinn, Hohe Seelenkraft, Richtungssinn",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Legendensängerin"
   },
   {
@@ -4884,6 +6528,7 @@
     "source_book": "Aventurische Magie II",
     "description": "Flink, Geborener Redner, Schwer zu verzaubern",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schelmin"
   },
   {
@@ -4918,6 +6563,7 @@
     "source_book": "Aventurische Magie II",
     "description": "Begabung (Alchimie), Hohe Seelenkraft",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Zauberalchimistin"
   },
   {
@@ -4959,7 +6605,20 @@
     "liturgies": {},
     "source_book": "Aventurisches Kompendium II",
     "description": "Giftresistenz, Immunität gegen Gift, Immunität gegen Krankheit, Krankheitsresistenz, Zeitgefühl",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_198",
+        "name": "Giftmischer",
+        "ap_cost": -3,
+        "name_f": "Giftmischerin",
+        "skills": {
+          "Alchimie": 1,
+          "Heilkunde Gift": 1,
+          "Heilkunde Wunden": -2
+        }
+      }
+    ]
   },
   {
     "id": "profession_auftragsmoerder",
@@ -5002,6 +6661,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Auftragsmörderin"
   },
   {
@@ -5051,6 +6711,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Angenehmer Geruch, Giftresistenz, Gutaussehend, Herausragender Sinn (Tastsinn), Krankheitsresistenz",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Baderin"
   },
   {
@@ -5104,6 +6765,18 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Entfernungssinn, Flink, Herausragender Sinn (Sicht), Richtungssinn, Unscheinbar, Vertrauenerweckend, Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_199",
+        "name": "Botenreiter",
+        "ap_cost": 0,
+        "name_f": "Botenreiterin",
+        "skills": {
+          "Körperbeherrschung": -4,
+          "Reiten": 8
+        }
+      }
+    ],
     "name_f": "Botin"
   },
   {
@@ -5158,6 +6831,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Entfernungssinn, Herausragender Sinn (Gehör, Sicht), Kälteresistenz, Richtungssinn, Zäher Hund, Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Fallenstellerin"
   },
   {
@@ -5202,6 +6876,18 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Hohe Zähigkeit, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_200",
+        "name": "Metzger",
+        "ap_cost": 5,
+        "name_f": "Metzgerin",
+        "skills": {
+          "Lebensmittelbearbeitung": -1,
+          "Überreden": 2
+        }
+      }
+    ],
     "name_f": "Fleischerin"
   },
   {
@@ -5255,6 +6941,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Begabung (Reiten), Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Garether Kriegerin"
   },
   {
@@ -5303,6 +6990,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Geborener Redner, Reich, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Herrscherin"
   },
   {
@@ -5357,7 +7045,8 @@
     "liturgies": {},
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Beidhändig, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Wohlklang, Zäher Hund",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_karawanenfuehrer",
@@ -5405,6 +7094,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Entfernungssinn, Flink, Herausragender Sinn (Sicht), Richtungssinn, Unscheinbar, Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Karawanenführerin"
   },
   {
@@ -5451,6 +7141,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Geborener Redner, Hohe Seelenkraft, Reich, Soziale Anpassungsfähigkeit, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Kontoristin"
   },
   {
@@ -5498,6 +7189,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Landwehrsoldatin"
   },
   {
@@ -5545,7 +7237,8 @@
     "liturgies": {},
     "source_book": "Aventurisches Kompendium II",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_logenmitglied",
@@ -5593,7 +7286,8 @@
     "liturgies": {},
     "source_book": "Aventurisches Kompendium II",
     "description": "Geborener Redner, Reich, Vertrauenerweckend ",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_mawdli",
@@ -5635,7 +7329,8 @@
     "liturgies": {},
     "source_book": "Aventurisches Kompendium II",
     "description": "Geborener Redner, Reich, Vertrauenerweckend",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_albernischer_seefahrer",
@@ -5677,6 +7372,7 @@
     "source_book": "Havena – Versunkene Geheimnisse",
     "description": "",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Albernische Seefahrerin"
   },
   {
@@ -5723,6 +7419,7 @@
     "source_book": "Havena – Versunkene Geheimnisse",
     "description": "",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Küstenschmugglerin aus Havena"
   },
   {
@@ -5775,6 +7472,21 @@
     "source_book": "Havena – Versunkene Geheimnisse",
     "description": "",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_201",
+        "name": "Gwen Petryl-Sammler",
+        "ap_cost": 9,
+        "name_f": "Gwen Petryl-Sammlerin",
+        "skills": {
+          "Götter & Kulte": 1,
+          "Metallbearbeitung": -1,
+          "Sagen & Legenden": -1,
+          "Steinbearbeitung": 6,
+          "Sternkunde": 6
+        }
+      }
+    ],
     "name_f": "Schatzsucherin der Siebenwindküste"
   },
   {
@@ -5835,6 +7547,7 @@
     "source_book": "Havena – Versunkene Geheimnisse",
     "description": "Begabung (Schwimmen, Boote & Schiffe), Dunkelsicht I, Entfernungssinn, Geborener Redner, Kälteresistenz, Richtungssinn",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Efferdgeweihte der Siebwindküste"
   },
   {
@@ -5875,6 +7588,7 @@
     "source_book": "Unendlichkeit & Tiefenrausch",
     "description": "Entfernungssinn, Fuchssinn, Kälteresistenz, Mystiker, Pragmatiker, Richtungssinn, Vertrauenerweckend, Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Numinorupriesterin"
   },
   {
@@ -5929,6 +7643,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Wohlklang, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Metessa Galora-Schwertgesellin"
   },
   {
@@ -5990,6 +7705,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Wohlklang, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Neersander Kriegerin"
   },
   {
@@ -6039,6 +7755,22 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Geborener Redner, Reich, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_202",
+        "name": "Intrigenmeister",
+        "ap_cost": 14,
+        "name_f": "Intrigenmeisterin",
+        "skills": {
+          "Bekehren & Überzeugen": 4,
+          "Betören": 4,
+          "Reiten": -2,
+          "Selbstbeherrschung": -3,
+          "Überreden": 2,
+          "Willenskraft": 2
+        }
+      }
+    ],
     "name_f": "Patrizierin"
   },
   {
@@ -6098,6 +7830,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Kälteresistenz, Richtungssinn, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Prospektorin"
   },
   {
@@ -6150,6 +7883,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Räuberin"
   },
   {
@@ -6200,6 +7934,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Wohlklang, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Rommilyser Kriegerin"
   },
   {
@@ -6246,6 +7981,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Sappeurin"
   },
   {
@@ -6294,6 +8030,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Beidhändig, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Wohlklang, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Sarvinio della Monte-Schwertgesellin"
   },
   {
@@ -6348,6 +8085,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Beidhändigkeit, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Scanlail ui Uinin-Schwertgesellin"
   },
   {
@@ -6399,6 +8137,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Angenehmer Geruch, Gutaussehend, Wohlklang",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schankmagd"
   },
   {
@@ -6443,6 +8182,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schaukämpferin"
   },
   {
@@ -6489,6 +8229,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Geborener Redner",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schauspielerin"
   },
   {
@@ -6533,6 +8274,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Flink, Fuchssinn, Glück, Richtungssinn, Unscheinbar, Zwergennase",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schmugglerin"
   },
   {
@@ -6566,6 +8308,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schreiberin"
   },
   {
@@ -6599,6 +8342,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Schriftstellerin"
   },
   {
@@ -6652,6 +8396,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Begabung (Schwimmen), Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Seekriegerin"
   },
   {
@@ -6702,6 +8447,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Wohlklang, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Stutzerin"
   },
   {
@@ -6754,6 +8500,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Wohlklang, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Tannhaus-Schwertgesellin"
   },
   {
@@ -6798,6 +8545,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Beidhändigkeit, Flink, Fuchssinn, Glück, Richtungssinn, Schlangenmensch, Unscheinbar, Zwergennase",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Taschendiebin"
   },
   {
@@ -6844,6 +8592,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Tätowiererin"
   },
   {
@@ -6899,6 +8648,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Thorwaler Kriegerin"
   },
   {
@@ -6951,6 +8701,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Kälteresistenz, Richtungssinn, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Viehtreiberin"
   },
   {
@@ -7007,6 +8758,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Adel, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Wohlklang, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Vinsalter Kriegerin"
   },
   {
@@ -7057,6 +8809,19 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_203",
+        "name": "Schiffszimmermanm",
+        "ap_cost": 11,
+        "name_f": "Schiffszimmerfrau",
+        "skills": {
+          "Boote & Schiffe": 4,
+          "Fahrzeuge": -3,
+          "Schwimmen": 3
+        }
+      }
+    ],
     "name_f": "Zimmerfrau"
   },
   {
@@ -7104,6 +8869,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Angenehmer Geruch, Flink, Gutaussehend, Soziale Anpassungsfähigkeit, Unscheinbar, Vertrauenerweckend, Wohlklang, Zeitgefühl, Zwergennase",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Zofe"
   },
   {
@@ -7154,6 +8920,7 @@
     "source_book": "Aventurisches Kompendium II",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Zwergenkriegerin nach Hardas"
   },
   {
@@ -7190,6 +8957,51 @@
     "source_book": "Wege der Vereinigungen",
     "description": "",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_204",
+        "name": "Aktmodell",
+        "ap_cost": 129,
+        "skills": {
+          "Betören": 2,
+          "Selbstbeherrschung": 2,
+          "Willenskraft": 3
+        }
+      },
+      {
+        "id": "PV_205",
+        "name": "Erotikmaler",
+        "ap_cost": 117,
+        "name_f": "Erotikmalerin",
+        "skills": {
+          "Betören": 1,
+          "Etikette": 2,
+          "Malen & Zeichnen": 6
+        }
+      },
+      {
+        "id": "PV_206",
+        "name": "Erotikschriftsteller",
+        "ap_cost": 121,
+        "name_f": "Erotikschriftstellerin",
+        "skills": {
+          "Geographie": 3,
+          "Geschichtswissen": 2,
+          "Malen & Zeichnen": -2,
+          "Sagen & Legenden": 2
+        }
+      },
+      {
+        "id": "PV_207",
+        "name": "Liebesspielzeughersteller",
+        "ap_cost": 126,
+        "name_f": "Liebesspielzeugherstellerin",
+        "skills": {
+          "Holzbearbeitung": 7,
+          "Steinbearbeitung": 7
+        }
+      }
+    ],
     "name_f": "Erotikkünstlerin"
   },
   {
@@ -7239,6 +9051,42 @@
     "source_book": "Wege der Vereinigungen",
     "description": "Erotische Ausstrahlung, Hohe Seelenkraft, Verbesserte Regeneration (Astralenergie)",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_221",
+        "name": "Al'Anfa Sexualmagier",
+        "ap_cost": 298,
+        "name_f": "Al'Anfa Sexualmagierin"
+      },
+      {
+        "id": "PV_222",
+        "name": "Engasaler Sexualmagier",
+        "ap_cost": 277,
+        "name_f": "Engasaler Sexualmagierin",
+        "skills": {
+          "Handel": 4,
+          "Lebensmittelbearbeitung": 5,
+          "Selbstbeherrschung": -3,
+          "Magiekunde": -2,
+          "Sphärenkunde": -3,
+          "Willenskraft": 3
+        }
+      },
+      {
+        "id": "PV_223",
+        "name": "Fasarer Sexualmagier",
+        "ap_cost": 321,
+        "name_f": "Fasarer Sexualmagierin",
+        "skills": {
+          "Betören": 2,
+          "Körperbeherrschung": 4,
+          "Sinnesschärfe": 2,
+          "Zechen": 5,
+          "TAL_397": 4,
+          "Wildnisleben": -4
+        }
+      }
+    ],
     "name_f": "Sexualmagierin"
   },
   {
@@ -7296,6 +9144,7 @@
     "source_book": "Wege der Vereinigungen",
     "description": "Angenehmer Geruch, Ausdauernde/r Liebhaber/in, Erotische Ausstrahlung, Erotische Stimme, Gutaussehend, Kälteresistenz, Traumhafter Po, Wohlgeformte Brüste, Wunderschöne Vagina",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Tsatuara-Anhängerin"
   },
   {
@@ -7351,6 +9200,32 @@
     "source_book": "Wege der Vereinigungen",
     "description": "Begabte/r Aufreißer/in, Gutaussehend, Hässlich, Herausragender Sinn, Hohe Seelenkraft, Hohe Zähigkeit, Levthangeküsst, Mystiker, Potent, Stattlicher Penis",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_224",
+        "name": "Gehörnter",
+        "ap_cost": 35,
+        "name_f": "Gehörnte",
+        "skills": {
+          "Körperbeherrschung": 2
+        }
+      },
+      {
+        "id": "PV_225",
+        "name": "Priester des Weins",
+        "ap_cost": 13,
+        "name_f": "Priesterin des Weins",
+        "skills": {
+          "Brett- & Glücksspiel": 2,
+          "Fesseln": -3,
+          "Körperbeherrschung": -4,
+          "Kraftakt": 2,
+          "Lebensmittelbearbeitung": 3,
+          "Tanzen": 2,
+          "Zechen": 4
+        }
+      }
+    ],
     "name_f": "Levthanpriesterin"
   },
   {
@@ -7400,6 +9275,14 @@
     "source_book": "Wege der Vereinigungen",
     "description": "Angenehmer Geruch, Ausdauernde/ r Liebhaber/in, Erotische Ausstrahlung, Erotische Stimme, Gutaussehend, Herausragender Sinn, Hohe Seelenkraft, Hohe Zähigkeit, Hypnotische Brüste / Gesäß / Gemächt, Stattlicher Penis, Traumhafter Po, Vertrauenerweckend, Wohlgeformte Brüste, Wunderschöne Vagina",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_229",
+        "name": "Rahjageweihter Rahjasutra-Meister",
+        "ap_cost": 73,
+        "name_f": "Rahjageweihte Rahjasutra-Meisterin"
+      }
+    ],
     "name_f": "Rahjasutra-Meisterin"
   },
   {
@@ -7453,6 +9336,14 @@
     "source_book": "Wege der Vereinigungen",
     "description": "Angenehmer Geruch, Erotische Ausstrahlung, Erotische Stimme, Gutaussehend, Rahjageküsst, Wohlklang",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_230",
+        "name": "Rahjageweihter Säbeltänzer",
+        "ap_cost": 76,
+        "name_f": "Rahjageweihte Säbeltänzerin"
+      }
+    ],
     "name_f": "Säbeltänzerin"
   },
   {
@@ -7504,7 +9395,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie III",
     "description": "Waffenbegabung",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_durro_d_n",
@@ -7558,7 +9450,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie III",
     "description": "Beidhändig, Flink, Schutzgeist, Tierfreund",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_hadan_harigasta",
@@ -7607,7 +9500,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie III",
     "description": "Begabung (Metallbearbeitung), Eisenaffine Aura, Waffenbegabung",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_mudran_nura",
@@ -7657,7 +9551,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie III",
     "description": "Zäher Hund",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_nipakau_kocan",
@@ -7708,7 +9603,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie III",
     "description": "Schutzgeist",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_nuan",
@@ -7755,7 +9651,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie III",
     "description": "Dunkelsicht, Flink, Herausragender Sinn (Gehör oder Geruch), Schutzgeist",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_haindruide",
@@ -7809,6 +9706,7 @@
     "source_book": "Aventurische Magie III",
     "description": "Hohe Seelenkraft, Krankheitsresistenz, Richtungssinn, Verbesserte Regeneration (Astralenergie), Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Haindruidin"
   },
   {
@@ -7861,6 +9759,7 @@
     "source_book": "Aventurische Magie III",
     "description": "Hohe Seelenkraft, Krankheitsresistenz, Richtungssinn, Verbesserte Regeneration (Astralenergie), Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Hüterin der Kraft"
   },
   {
@@ -7909,6 +9808,50 @@
     "source_book": "Aventurische Magie III",
     "description": "Hohe Seelenkraft, Krankheitsresistenz, Richtungssinn, Verbesserte Regeneration (Astralenergie), Zeitgefühl",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_231",
+        "name": "Fakultät des Erzes",
+        "ap_cost": 286,
+        "skills": {
+          "Steinbearbeitung": 6
+        }
+      },
+      {
+        "id": "PV_232",
+        "name": "Fakultät des Eises",
+        "ap_cost": 282
+      },
+      {
+        "id": "PV_233",
+        "name": "Fakultät des Feuers",
+        "ap_cost": 291
+      },
+      {
+        "id": "PV_234",
+        "name": "Fakultät des Humus",
+        "ap_cost": 295,
+        "skills": {
+          "Heilkunde Wunden": 4
+        }
+      },
+      {
+        "id": "PV_235",
+        "name": "Fakultät der Luft",
+        "ap_cost": 302,
+        "skills": {
+          "Fliegen": 4
+        }
+      },
+      {
+        "id": "PV_236",
+        "name": "Fakultät des Wassers",
+        "ap_cost": 296,
+        "skills": {
+          "Schwimmen": 4
+        }
+      }
+    ],
     "name_f": "Konzildruidin"
   },
   {
@@ -7963,6 +9906,7 @@
     "source_book": "Aventurische Magie III",
     "description": "Hohe Seelenkraft, Krankheitsresistenz, Richtungssinn, Verbesserte Regeneration (Astralenergie), Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Mehrerin der Macht"
   },
   {
@@ -8014,6 +9958,7 @@
     "source_book": "Aventurische Magie III",
     "description": "Hohe Seelenkraft, Krankheitsresistenz, Richtungssinn, Verbesserte Regeneration (Astralenergie), Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Sumudienerin"
   },
   {
@@ -8063,6 +10008,38 @@
     "source_book": "Aventurische Magie III",
     "description": "Affinität zu Elementaren, Altersresistenz, Hohe Seelenkraft, Verhüllte Aura",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_237",
+        "name": "Gefährte des Feuers",
+        "ap_cost": 0,
+        "name_f": "Gefährtin des Feuers"
+      },
+      {
+        "id": "PV_238",
+        "name": "Gefährte des Erzes",
+        "ap_cost": 0,
+        "name_f": "Gefährtin des Erzes"
+      },
+      {
+        "id": "PV_239",
+        "name": "Gefährte des Humus",
+        "ap_cost": 0,
+        "name_f": "Gefährtin des Humus"
+      },
+      {
+        "id": "PV_240",
+        "name": "Gefährte der Luft",
+        "ap_cost": 0,
+        "name_f": "Gefährtin der Luft"
+      },
+      {
+        "id": "PV_241",
+        "name": "Gefährte des Wassers",
+        "ap_cost": 0,
+        "name_f": "Gefährtin des Wassers"
+      }
+    ],
     "name_f": "Dienerin der Erdmutter"
   },
   {
@@ -8111,6 +10088,44 @@
     "source_book": "Aventurische Magie III",
     "description": "Affinität zu Elementaren, Altersresistenz, Hohe Seelenkraft, Verhüllte Aura",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_242",
+        "name": "Luftherr",
+        "ap_cost": 0,
+        "name_f": "Luftherrin"
+      },
+      {
+        "id": "PV_243",
+        "name": "Eisherr",
+        "ap_cost": 0,
+        "name_f": "Eisherrin"
+      },
+      {
+        "id": "PV_244",
+        "name": "Erzherr",
+        "ap_cost": -5,
+        "name_f": "Erzherrin"
+      },
+      {
+        "id": "PV_245",
+        "name": "Feuerherr",
+        "ap_cost": 0,
+        "name_f": "Feuerherrin"
+      },
+      {
+        "id": "PV_246",
+        "name": "Humusherr",
+        "ap_cost": -10,
+        "name_f": "Humusherrin"
+      },
+      {
+        "id": "PV_247",
+        "name": "Wasserherr",
+        "ap_cost": 0,
+        "name_f": "Wasserherrin"
+      }
+    ],
     "name_f": "Herrin der Erde"
   },
   {
@@ -8168,6 +10183,25 @@
     "source_book": "Aventurische Magie III",
     "description": "Hohe Seelenkraft, Soziale Anpassungsfähigkeit, Unscheinbar, Verhüllte Aura",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_279",
+        "name": "Pfad der Entschlossenheit",
+        "ap_cost": 7,
+        "skills": {
+          "Willenskraft": 1
+        }
+      },
+      {
+        "id": "PV_280",
+        "name": "Pfad der Heimlichkeit",
+        "ap_cost": -5,
+        "skills": {
+          "Wildnisleben": -3,
+          "Verbergen": 2
+        }
+      }
+    ],
     "name_f": "Qabalothin der Nachtwinde"
   },
   {
@@ -8221,6 +10255,23 @@
     "source_book": "Aventurische Magie III",
     "description": "Affinität zu Dämonen, Hohe Seelenkraft, Verbesserte Regeneration (Astralenergie)",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_283",
+        "name": "Pfad des Golembauers",
+        "ap_cost": 21,
+        "name_f": "Pfad der Golembauerin",
+        "skills": {
+          "Steinbearbeitung": 5
+        }
+      },
+      {
+        "id": "PV_284",
+        "name": "Pfad des Totenbeschwörers",
+        "ap_cost": 3,
+        "name_f": "Pfad der Totenbeschwörerin"
+      }
+    ],
     "name_f": "Rashduler Dämonologin"
   },
   {
@@ -8275,7 +10326,8 @@
     "liturgies": {},
     "source_book": "Aventurische Magie III",
     "description": "Tierfreund, Vertrauenerweckend, Wohlklang",
-    "compatible_species": []
+    "compatible_species": [],
+    "variants": null
   },
   {
     "id": "profession_brobim_geode",
@@ -8328,6 +10380,26 @@
     "source_book": "Aventurische Magie III Bonusmaterial",
     "description": "Affinität zu Elementaren, Altersresistenz, Hohe Seelenkraft",
     "compatible_species": [],
+    "variants": [
+      {
+        "id": "PV_254",
+        "name": "Diener des Feuers",
+        "ap_cost": 340,
+        "name_f": "Dienerin des Feuers"
+      },
+      {
+        "id": "PV_255",
+        "name": "Diener des Erzes",
+        "ap_cost": 340,
+        "name_f": "Dienerin des Erzes"
+      },
+      {
+        "id": "PV_256",
+        "name": "Diener der Luft",
+        "ap_cost": 340,
+        "name_f": "Dienerin der Luft"
+      }
+    ],
     "name_f": "Brobim-Geodin"
   },
   {
@@ -8379,6 +10451,7 @@
     "source_book": "Die Flusslande",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Ferdoker Lanzerin"
   },
   {
@@ -8430,6 +10503,7 @@
     "source_book": "Die Flusslande",
     "description": "Beidhändigkeit, Gutaussehend, Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Klippag-Schwertgesellin"
   },
   {
@@ -8481,6 +10555,7 @@
     "source_book": "Die Flusslande",
     "description": "Begabung (Bekehren & Überzeugen, Rechtskunde), Geborener Redner, Wohlklang, Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Koscher Almgrevin"
   },
   {
@@ -8519,6 +10594,7 @@
     "source_book": "Die Flusslande",
     "description": "Begabung (Bekehren & Überzeugen, Rechtskunde), Geborener Redner, Wohlklang, Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Rechtsgelehrte"
   },
   {
@@ -8569,6 +10645,7 @@
     "source_book": "Die Flusslande",
     "description": "Begabung (ein wichtiges Handwerkstalent des Berufes), Hitzeresistenz (vor allem bei Schmiedinnen), Immunität gegen Alkohol (vor allem bei Brauerinnen und Brennerinnen), Richtungssinn, Vertrauenerweckend",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Wandergesellin"
   },
   {
@@ -8617,6 +10694,7 @@
     "source_book": "Die Flusslande",
     "description": "Hohe Lebenskraft, Verbesserte Regeneration (Lebensenergie), Waffenbegabung, Zäher Hund",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Xorloscher Drachenkämpferin"
   },
   {
@@ -8670,6 +10748,7 @@
     "source_book": "Die Flusslande",
     "description": "Hohe Seelenkraft, Krankheitsresistenz, Richtungssinn, Verbesserte Regeneration (Astralenergie), Zeitgefühl",
     "compatible_species": [],
+    "variants": null,
     "name_f": "Gratenfelser Haindruidin"
   }
 ]

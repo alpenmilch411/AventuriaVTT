@@ -46,9 +46,22 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 - **SA Purchase** in SteigerungTab: category tabs derived from data, search, filters out owned SAs, AP cost from DB
 - **improvement_cost column** on SpellTemplate + LiturgyTemplate: correct Steigerungsfaktor for all upgrade flows
 
+### Phase 4: Cantrips, Blessings, Enhancements, Variants
+New DB models: CantripTemplate (97 entries), BlessingTemplate (12 entries). New columns: `enhancements` JSON on SpellTemplate (330 spells × 3 levels) + LiturgyTemplate (211 × 3 levels), `property` on SpellTemplate (all 330 spells), `variants` JSON on ProfessionTemplate (56 professions) + SpeciesTemplate (Menschen 7 + Elfen 3 variants).
+
+Player views: SpellBook shows cantrips (tradition-filtered), blessings, per-spell enhancements with purchase status, Merkmal filter bar + PropertyBadge. SteigerungTab has "Zaubererweiterung erwerben" + "Liturgieerweiterung erwerben" purchase flows. CharacterCreator has species variant picker + profession variant picker with AP cost mods.
+
+GM views: DatenbankTab has Zaubertricks + Segnungen categories. DatenbankDetail shows enhancements (I/II/III), PropertyBadge, profession variants, species variants. DataBrowser supports cantrips/blessings as selectable types.
+
+DB total: 3,638 entities (up from 602 at session start, **6x increase**).
+
 ### Schema Changes
-- Added `improvement_cost` VARCHAR(4) to spell_templates + liturgy_templates (startup migration)
-- Added `learn_spell`, `learn_liturgy` types to level-up API endpoint
+- New tables: cantrip_templates, blessing_templates (startup migration)
+- Added `improvement_cost` VARCHAR(4) to spell_templates + liturgy_templates
+- Added `enhancements` JSON, `property` VARCHAR(64) to spell_templates
+- Added `enhancements` JSON to liturgy_templates
+- Added `variants` JSON to profession_templates + species_templates
+- Added `learn_spell`, `learn_liturgy`, `learn_spell_enhancement`, `learn_liturgy_enhancement` types to level-up API endpoint
 
 ### Data Quality
 - All 330 Optolith spells verified with correct probe/cost/duration (old Claude-generated values had wrong casting times)
