@@ -6,14 +6,27 @@
     "optolith_id": "P_1",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Musizieren": 8,
+      "Überreden": 6,
+      "Betören": 4,
+      "Menschenkenntnis": 4,
+      "Gassenwissen": 4,
+      "Etikette": 4,
+      "Sagen & Legenden": 4,
+      "Sinnesschärfe": 2,
+      "Geschichtswissen": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Barde.",
-    "ap_cost": 0,
+    "description": "Der Barde lebt von seiner Kunst, unterhält sein Publikum und kennt unzählige Geschichten und Lieder.",
+    "ap_cost": 125,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -26,14 +39,28 @@
     "optolith_id": "P_2",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Stangenwaffen": 10,
+      "Schwerter": 8,
+      "Schilde": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Einschüchtern": 4,
+      "Körperbeherrschung": 4,
+      "Kraftakt": 4,
+      "Sinnesschärfe": 4,
+      "Selbstbeherrschung": 2,
+      "Rechtskunde": 2,
+      "Kriegskunst": 2,
+      "Menschenkenntnis": 2
+    },
+    "special_abilities": ["Schildkampf I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Gardist.",
-    "ap_cost": 0,
+    "description": "Der Gardist ist ein ausgebildeter Wächter und Soldat im Dienste einer Stadtwache oder eines Adligen.",
+    "ap_cost": 145,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -46,14 +73,28 @@
     "optolith_id": "P_3",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Dolche": 8,
+      "Wurfwaffen": 8,
+      "Raufen": 6
+    },
+    "skills": {
+      "Körperbeherrschung": 6,
+      "Taschendiebstahl": 6,
+      "Überreden": 4,
+      "Betören": 4,
+      "Gassenwissen": 4,
+      "Musizieren": 4,
+      "Sinnesschärfe": 2,
+      "Verbergen": 2,
+      "Menschenkenntnis": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Gaukler.",
-    "ap_cost": 0,
+    "description": "Der Gaukler ist ein reisender Unterhaltungskünstler, Trickbetrüger und Akrobat.",
+    "ap_cost": 115,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -66,14 +107,27 @@
     "optolith_id": "P_4",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Schwerter": 10,
+      "Raufen": 10,
+      "Dolche": 8,
+      "Kettenwaffen": 8
+    },
+    "skills": {
+      "Körperbeherrschung": 6,
+      "Kraftakt": 6,
+      "Einschüchtern": 4,
+      "Sinnesschärfe": 4,
+      "Selbstbeherrschung": 2,
+      "Zechen": 2,
+      "Menschenkenntnis": 2
+    },
+    "special_abilities": ["Finte I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Gladiator.",
-    "ap_cost": 0,
+    "description": "Der Gladiator kämpft in der Arena um Ruhm und Überleben — ein Meister des Showkampfs.",
+    "ap_cost": 155,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -86,14 +140,27 @@
     "optolith_id": "P_5",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Handel": 8,
+      "Menschenkenntnis": 6,
+      "Überreden": 6,
+      "Rechnen": 6,
+      "Etikette": 4,
+      "Rechtskunde": 4,
+      "Orientierung": 2,
+      "Gassenwissen": 2,
+      "Sinnesschärfe": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Händler.",
-    "ap_cost": 0,
+    "description": "Der Händler kennt den Wert aller Waren und versteht es, Geschäfte zu machen.",
+    "ap_cost": 110,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -139,14 +206,28 @@
     "optolith_id": "P_7",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Fechtwaffen": 8,
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Etikette": 8,
+      "Menschenkenntnis": 6,
+      "Überreden": 6,
+      "Betören": 4,
+      "Rechtskunde": 4,
+      "Geschichtswissen": 4,
+      "Götter & Kulte": 2,
+      "Sinnesschärfe": 2,
+      "Verbergen": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Höfling.",
-    "ap_cost": 0,
+    "description": "Der Höfling bewegt sich in den Kreisen der Mächtigen und kennt Intrige, Etikette und Diplomatie.",
+    "ap_cost": 120,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -230,14 +311,27 @@
     "optolith_id": "P_10",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Betören": 8,
+      "Menschenkenntnis": 6,
+      "Überreden": 4,
+      "Gassenwissen": 4,
+      "Sinnesschärfe": 4,
+      "Etikette": 2,
+      "Körperbeherrschung": 2,
+      "Heilkunde Krankheiten": 2,
+      "Verbergen": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Prostituierter.",
-    "ap_cost": 0,
+    "description": "Die Prostituierte kennt die Geheimnisse der Mächtigen und weiß, wie man Menschen liest.",
+    "ap_cost": 100,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -250,14 +344,29 @@
     "optolith_id": "P_11",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Schwerter": 12,
+      "Lanzen": 10,
+      "Schilde": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Reiten": 6,
+      "Etikette": 4,
+      "Kriegskunst": 4,
+      "Körperbeherrschung": 4,
+      "Einschüchtern": 4,
+      "Kraftakt": 4,
+      "Selbstbeherrschung": 2,
+      "Geschichtswissen": 2,
+      "Götter & Kulte": 2
+    },
+    "special_abilities": ["Wuchtschlag I", "Schildkampf I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Ritter.",
-    "ap_cost": 0,
+    "description": "Der Ritter ist ein berittener Krieger des Adels, der nach dem Ehrenkodex lebt.",
+    "ap_cost": 190,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -270,14 +379,28 @@
     "optolith_id": "P_12",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Hiebwaffen": 8,
+      "Dolche": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Boote & Schiffe": 8,
+      "Schwimmen": 6,
+      "Klettern": 4,
+      "Orientierung": 4,
+      "Körperbeherrschung": 4,
+      "Kraftakt": 4,
+      "Zechen": 2,
+      "Sternkunde": 2,
+      "Geographie": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Seefahrer.",
-    "ap_cost": 0,
+    "description": "Der Seefahrer kennt Wind und Wellen und kann ein Schiff sicher durch jeden Sturm steuern.",
+    "ap_cost": 130,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -325,14 +448,27 @@
     "optolith_id": "P_14",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Dolche": 8,
+      "Raufen": 6
+    },
+    "skills": {
+      "Verbergen": 6,
+      "Schleichen": 6,
+      "Sinnesschärfe": 6,
+      "Menschenkenntnis": 6,
+      "Gassenwissen": 4,
+      "Überreden": 4,
+      "Taschendiebstahl": 4,
+      "Etikette": 2,
+      "Schlösserknacken": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Spitzel.",
-    "ap_cost": 0,
+    "description": "Der Spitzel beobachtet, belauscht und sammelt Informationen — ein Meister der Tarnung.",
+    "ap_cost": 120,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -345,14 +481,28 @@
     "optolith_id": "P_15",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Äxte": 10,
+      "Schilde": 8,
+      "Raufen": 8,
+      "Wurfwaffen": 8
+    },
+    "skills": {
+      "Einschüchtern": 4,
+      "Kraftakt": 4,
+      "Körperbeherrschung": 4,
+      "Wildnisleben": 4,
+      "Orientierung": 2,
+      "Tierkunde": 2,
+      "Sagen & Legenden": 2,
+      "Sinnesschärfe": 2
+    },
+    "special_abilities": ["Wuchtschlag I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Stammeskrieger.",
-    "ap_cost": 0,
+    "description": "Der Stammeskrieger verteidigt seinen Clan mit roher Stärke und angeborenem Kampfinstinkt.",
+    "ap_cost": 140,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -400,14 +550,29 @@
     "optolith_id": "P_17",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Bögen": 10,
+      "Dolche": 8,
+      "Raufen": 6,
+      "Äxte": 6
+    },
+    "skills": {
+      "Wildnisleben": 8,
+      "Fährtensuchen": 6,
+      "Orientierung": 6,
+      "Tierkunde": 4,
+      "Pflanzenkunde": 4,
+      "Klettern": 4,
+      "Körperbeherrschung": 4,
+      "Schleichen": 2,
+      "Sinnesschärfe": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Wildnisläufer.",
-    "ap_cost": 0,
+    "description": "Der Wildnisläufer kennt jeden Pfad und überlebt in der unberührten Natur.",
+    "ap_cost": 145,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -420,14 +585,33 @@
     "optolith_id": "P_18",
     "requires_magic": true,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
-    "spells": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Magiekunde": 6,
+      "Sinnesschärfe": 4,
+      "Willenskraft": 4,
+      "Menschenkenntnis": 4,
+      "Körperbeherrschung": 2,
+      "Sagen & Legenden": 2,
+      "Verbergen": 2,
+      "Schleichen": 2
+    },
+    "special_abilities": ["Tradition (Zauberweber)"],
+    "spells": {
+      "Odem Arcanum": 6,
+      "Flim Flam": 6,
+      "Respondami": 4,
+      "Attributo": 4,
+      "Visibili": 4,
+      "Balsam Salabunde": 4
+    },
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Zauberweber.",
-    "ap_cost": 0,
+    "description": "Der Zauberweber ist ein intuitiver Magier, der seine Gabe ohne akademische Ausbildung nutzt.",
+    "ap_cost": 255,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -480,14 +664,34 @@
     "optolith_id": "P_20",
     "requires_magic": true,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
-    "spells": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Pflanzenkunde": 6,
+      "Alchimie": 6,
+      "Magiekunde": 4,
+      "Heilkunde Gift": 4,
+      "Heilkunde Krankheiten": 4,
+      "Tierkunde": 4,
+      "Sinnesschärfe": 2,
+      "Überreden": 2,
+      "Sagen & Legenden": 2
+    },
+    "special_abilities": ["Tradition (Hexe)"],
+    "spells": {
+      "Balsam Salabunde": 6,
+      "Hexenkrallen": 4,
+      "Odem Arcanum": 4,
+      "Blitz dich find": 4,
+      "Eins mit der Natur": 4,
+      "Adlerauge": 4
+    },
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Krötenhexer.",
-    "ap_cost": 0,
+    "description": "Die Krötenhexe nutzt ihren Krötenfamiliarus und ist Meisterin der Kräuter und Gifte.",
+    "ap_cost": 275,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -500,14 +704,34 @@
     "optolith_id": "P_21",
     "requires_magic": true,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
-    "spells": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Sinnesschärfe": 6,
+      "Magiekunde": 4,
+      "Tierkunde": 4,
+      "Pflanzenkunde": 4,
+      "Einschüchtern": 4,
+      "Überreden": 4,
+      "Sagen & Legenden": 2,
+      "Orientierung": 2,
+      "Wildnisleben": 2
+    },
+    "special_abilities": ["Tradition (Hexe)"],
+    "spells": {
+      "Hexenkrallen": 6,
+      "Balsam Salabunde": 6,
+      "Adlerauge": 6,
+      "Odem Arcanum": 4,
+      "Blitz dich find": 4,
+      "Horriphobus": 4
+    },
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Rabenhexer.",
-    "ap_cost": 0,
+    "description": "Die Rabenhexe hat einen Rabenfamiliarus und sieht und weiß mehr, als es den meisten lieb ist.",
+    "ap_cost": 280,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -520,14 +744,33 @@
     "optolith_id": "P_22",
     "requires_magic": true,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
-    "spells": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Magiekunde": 6,
+      "Willenskraft": 4,
+      "Sinnesschärfe": 4,
+      "Sagen & Legenden": 4,
+      "Selbstbeherrschung": 2,
+      "Rechnen": 2,
+      "Orientierung": 2,
+      "Menschenkenntnis": 2
+    },
+    "special_abilities": ["Tradition (Gildenmagie)"],
+    "spells": {
+      "Ignifaxius": 6,
+      "Balsam Salabunde": 6,
+      "Odem Arcanum": 4,
+      "Flim Flam": 4,
+      "Fulminictus": 4,
+      "Horriphobus": 4
+    },
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Gildenloser Magier.",
-    "ap_cost": 0,
+    "description": "Der Gildenlose Magier hat seine Ausbildung außerhalb der großen Akademien erhalten.",
+    "ap_cost": 260,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -584,14 +827,35 @@
     "optolith_id": "P_24",
     "requires_magic": true,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
-    "spells": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Magiekunde": 8,
+      "Einschüchtern": 6,
+      "Willenskraft": 6,
+      "Sagen & Legenden": 4,
+      "Alchimie": 4,
+      "Rechnen": 2,
+      "Selbstbeherrschung": 2,
+      "Sinnesschärfe": 2
+    },
+    "special_abilities": ["Tradition (Gildenmagie)", "Zauber verbreiten"],
+    "spells": {
+      "Ignifaxius": 8,
+      "Horriphobus": 8,
+      "Paralysis": 6,
+      "Fulminictus": 6,
+      "Odem Arcanum": 4,
+      "Gardianum": 4,
+      "Flim Flam": 4,
+      "Balsam Salabunde": 4
+    },
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Schwarzmagier.",
-    "ap_cost": 0,
+    "description": "Der Schwarzmagier hat sich der dunklen Seite der Magie verschrieben und schreckt vor nichts zurück.",
+    "ap_cost": 300,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -604,17 +868,41 @@
     "optolith_id": "P_25",
     "requires_magic": true,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
-    "spells": {},
+    "combat_techniques": {
+      "Stangenwaffen": 8,
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Magiekunde": 8,
+      "Willenskraft": 6,
+      "Heilkunde Wunden": 4,
+      "Alchimie": 4,
+      "Rechnen": 4,
+      "Sagen & Legenden": 4,
+      "Selbstbeherrschung": 2,
+      "Sinnesschärfe": 2,
+      "Geschichtswissen": 2
+    },
+    "special_abilities": ["Tradition (Gildenmagie)", "Zauber verbreiten"],
+    "spells": {
+      "Balsam Salabunde": 8,
+      "Gardianum": 8,
+      "Ignifaxius": 6,
+      "Odem Arcanum": 6,
+      "Flim Flam": 4,
+      "Fulminictus": 4,
+      "Paralysis": 4,
+      "Respondami": 4
+    },
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Weißmagier.",
-    "ap_cost": 0,
+    "description": "Der Weißmagier ist ein Gildenmagier, der sich dem Schutz und der Heilung verschrieben hat.",
+    "ap_cost": 298,
     "compatible_species": [
       "Mensch",
-      "Halbelf"
+      "Halbelf",
+      "Elf"
     ]
   },
   {
@@ -624,14 +912,33 @@
     "optolith_id": "P_26",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Hiebwaffen": 8,
+      "Raufen": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Willenskraft": 6,
+      "Selbstbeherrschung": 4,
+      "Sagen & Legenden": 4,
+      "Geschichtswissen": 4,
+      "Menschenkenntnis": 4,
+      "Etikette": 2,
+      "Sinnesschärfe": 2,
+      "Heilkunde Wunden": 2
+    },
+    "special_abilities": ["Tradition (Boronkirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Friedvolle Aura": 6,
+      "Blendstrahl": 4,
+      "Balsam": 4,
+      "Schutz der Wehrlosen": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Borongeweihter.",
-    "ap_cost": 0,
+    "description": "Der Borongeweihte dient dem Gott des Todes und des Schlafes und geleitet die Toten ins Jenseits.",
+    "ap_cost": 235,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -644,14 +951,33 @@
     "optolith_id": "P_27",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Raufen": 6,
+      "Dolche": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Geschichtswissen": 6,
+      "Magiekunde": 6,
+      "Sagen & Legenden": 4,
+      "Rechnen": 4,
+      "Sternkunde": 4,
+      "Willenskraft": 4,
+      "Alchimie": 2,
+      "Rechtskunde": 2
+    },
+    "special_abilities": ["Tradition (Hesindekirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Blendstrahl": 6,
+      "Schutz der Wehrlosen": 4,
+      "Friedvolle Aura": 4,
+      "Balsam": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Hesindegeweihter.",
-    "ap_cost": 0,
+    "description": "Der Hesindegeweihte dient der Göttin der Weisheit, Magie und Kunst und strebt nach Erkenntnis.",
+    "ap_cost": 245,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -703,14 +1029,33 @@
     "optolith_id": "P_29",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Dolche": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Schleichen": 6,
+      "Taschendiebstahl": 4,
+      "Gassenwissen": 4,
+      "Verbergen": 4,
+      "Menschenkenntnis": 4,
+      "Überreden": 4,
+      "Willenskraft": 4,
+      "Schlösserknacken": 2
+    },
+    "special_abilities": ["Tradition (Phexkirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Blendstrahl": 4,
+      "Balsam": 4,
+      "Schutz der Wehrlosen": 4,
+      "Friedvolle Aura": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Phexgeweihter.",
-    "ap_cost": 0,
+    "description": "Der Phexgeweihte dient dem Gott der Diebe, Händler und Glückspilze.",
+    "ap_cost": 240,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -800,14 +1145,33 @@
     "optolith_id": "P_95",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Stangenwaffen": 8,
+      "Raufen": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Boote & Schiffe": 6,
+      "Schwimmen": 6,
+      "Orientierung": 4,
+      "Tierkunde": 4,
+      "Willenskraft": 4,
+      "Geographie": 2,
+      "Sternkunde": 2,
+      "Überreden": 2
+    },
+    "special_abilities": ["Tradition (Efferdkirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Balsam": 4,
+      "Blendstrahl": 4,
+      "Friedvolle Aura": 4,
+      "Schutz der Wehrlosen": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Efferdgeweihter.",
-    "ap_cost": 0,
+    "description": "Der Efferdgeweihte dient dem Gott des Wassers und der Meere und ist Herr über Wind und Wellen.",
+    "ap_cost": 235,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -820,14 +1184,33 @@
     "optolith_id": "P_96",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Raufen": 6,
+      "Dolche": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Menschenkenntnis": 6,
+      "Überreden": 6,
+      "Kochen": 4,
+      "Etikette": 4,
+      "Heilkunde Wunden": 4,
+      "Willenskraft": 4,
+      "Rechtskunde": 2,
+      "Selbstbeherrschung": 2
+    },
+    "special_abilities": ["Tradition (Traviakirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Balsam": 6,
+      "Friedvolle Aura": 6,
+      "Schutz der Wehrlosen": 4,
+      "Blendstrahl": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Traviageweihter.",
-    "ap_cost": 0,
+    "description": "Der Traviageweihte dient der Göttin der Gastfreundschaft, des Herdfeuers und der Familie.",
+    "ap_cost": 230,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -840,14 +1223,34 @@
     "optolith_id": "P_97",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Äxte": 10,
+      "Bögen": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Wildnisleben": 6,
+      "Fährtensuchen": 4,
+      "Orientierung": 4,
+      "Tierkunde": 4,
+      "Kraftakt": 4,
+      "Willenskraft": 4,
+      "Selbstbeherrschung": 2,
+      "Sinnesschärfe": 2
+    },
+    "special_abilities": ["Tradition (Firunkirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Balsam": 4,
+      "Blendstrahl": 4,
+      "Schutz der Wehrlosen": 4,
+      "Donnerkeil": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Firungeweihter.",
-    "ap_cost": 0,
+    "description": "Der Firungeweihte dient dem Gott des Winters und der Jagd und lebt in der eisigen Wildnis.",
+    "ap_cost": 245,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -860,14 +1263,33 @@
     "optolith_id": "P_98",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Raufen": 6,
+      "Dolche": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Heilkunde Wunden": 6,
+      "Heilkunde Krankheiten": 4,
+      "Menschenkenntnis": 4,
+      "Überreden": 4,
+      "Willenskraft": 4,
+      "Pflanzenkunde": 4,
+      "Etikette": 2,
+      "Tierkunde": 2
+    },
+    "special_abilities": ["Tradition (Tsakirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Balsam": 8,
+      "Heiliger Beistand": 6,
+      "Friedvolle Aura": 4,
+      "Blendstrahl": 4,
+      "Klarheit des Körpers": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Tsageweihter.",
-    "ap_cost": 0,
+    "description": "Der Tsageweihte dient der Göttin der Geburt, des Lebens und der Erneuerung.",
+    "ap_cost": 238,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -880,14 +1302,33 @@
     "optolith_id": "P_99",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Hiebwaffen": 10,
+      "Raufen": 8
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Metallbearbeitung": 8,
+      "Mechanik": 4,
+      "Steinbearbeitung": 4,
+      "Kraftakt": 4,
+      "Willenskraft": 4,
+      "Holzbearbeitung": 2,
+      "Rechnen": 2,
+      "Selbstbeherrschung": 2
+    },
+    "special_abilities": ["Tradition (Ingerimmkirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Balsam": 4,
+      "Blendstrahl": 4,
+      "Waffe des Göttlichen": 4,
+      "Schutz der Wehrlosen": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Ingerimmgeweihter.",
-    "ap_cost": 0,
+    "description": "Der Ingerimmgeweihte dient dem Gott des Feuers und der Schmiedekunst.",
+    "ap_cost": 240,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -900,14 +1341,34 @@
     "optolith_id": "P_100",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Fechtwaffen": 8,
+      "Raufen": 6,
+      "Dolche": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Betören": 6,
+      "Musizieren": 6,
+      "Etikette": 4,
+      "Menschenkenntnis": 4,
+      "Überreden": 4,
+      "Willenskraft": 4,
+      "Geschichtswissen": 2,
+      "Körperbeherrschung": 2
+    },
+    "special_abilities": ["Tradition (Rahjakirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Friedvolle Aura": 6,
+      "Blendstrahl": 4,
+      "Balsam": 4,
+      "Schutz der Wehrlosen": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Rahjageweihter.",
-    "ap_cost": 0,
+    "description": "Der Rahjageweihte dient der Göttin der Liebe, des Weins und der Ekstase.",
+    "ap_cost": 238,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -920,14 +1381,34 @@
     "optolith_id": "P_101",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Schwerter": 8,
+      "Raufen": 8,
+      "Dolche": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Orientierung": 6,
+      "Wildnisleben": 4,
+      "Geographie": 4,
+      "Körperbeherrschung": 4,
+      "Willenskraft": 4,
+      "Überreden": 4,
+      "Menschenkenntnis": 2,
+      "Klettern": 2
+    },
+    "special_abilities": ["Tradition (Aveskirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Balsam": 4,
+      "Blendstrahl": 4,
+      "Schutz der Wehrlosen": 4,
+      "Friedvolle Aura": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Avesgeweihter.",
-    "ap_cost": 0,
+    "description": "Der Avesgeweihte dient dem Gott der Reisenden und Abenteurer und ist stets unterwegs.",
+    "ap_cost": 238,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -940,14 +1421,33 @@
     "optolith_id": "P_102",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Raufen": 6,
+      "Dolche": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Sinnesschärfe": 6,
+      "Wildnisleben": 4,
+      "Tierkunde": 4,
+      "Orientierung": 4,
+      "Willenskraft": 4,
+      "Pflanzenkunde": 4,
+      "Selbstbeherrschung": 2,
+      "Fährtensuchen": 2
+    },
+    "special_abilities": ["Tradition (Ifirnkirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Balsam": 6,
+      "Friedvolle Aura": 4,
+      "Blendstrahl": 4,
+      "Schutz der Wehrlosen": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Ifirngeweihter.",
-    "ap_cost": 0,
+    "description": "Der Ifirngeweihte dient der Halbgöttin Ifirn, Beschützerin der kleinen Tiere und des Schnees.",
+    "ap_cost": 228,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -960,14 +1460,34 @@
     "optolith_id": "P_103",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Stangenwaffen": 10,
+      "Raufen": 8,
+      "Schilde": 8
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Kraftakt": 6,
+      "Kriegskunst": 4,
+      "Einschüchtern": 4,
+      "Körperbeherrschung": 4,
+      "Willenskraft": 4,
+      "Selbstbeherrschung": 2,
+      "Wildnisleben": 2,
+      "Orientierung": 2
+    },
+    "special_abilities": ["Tradition (Korkirche)", "Wuchtschlag I"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Donnerkeil": 6,
+      "Waffe des Göttlichen": 4,
+      "Schutz der Wehrlosen": 4,
+      "Balsam": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Korgeweihter.",
-    "ap_cost": 0,
+    "description": "Der Korgeweihte dient dem Halbgott Kor, dem Herrn des blutigen Kampfes.",
+    "ap_cost": 252,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -980,14 +1500,33 @@
     "optolith_id": "P_104",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Raufen": 6,
+      "Dolche": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Geschichtswissen": 6,
+      "Rechnen": 4,
+      "Sagen & Legenden": 4,
+      "Rechtskunde": 4,
+      "Menschenkenntnis": 4,
+      "Willenskraft": 4,
+      "Magiekunde": 2,
+      "Überreden": 4
+    },
+    "special_abilities": ["Tradition (Nanduskirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Blendstrahl": 4,
+      "Friedvolle Aura": 4,
+      "Balsam": 4,
+      "Schutz der Wehrlosen": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Nandusgeweihter.",
-    "ap_cost": 0,
+    "description": "Der Nandusgeweihte dient dem Halbgott Nandus, dem Sucher nach verborgener Wahrheit.",
+    "ap_cost": 232,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -1000,14 +1539,34 @@
     "optolith_id": "P_105",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Äxte": 10,
+      "Schilde": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Boote & Schiffe": 6,
+      "Schwimmen": 4,
+      "Kraftakt": 4,
+      "Einschüchtern": 4,
+      "Willenskraft": 4,
+      "Körperbeherrschung": 2,
+      "Orientierung": 2,
+      "Sagen & Legenden": 2
+    },
+    "special_abilities": ["Tradition (Swafnirkirche)", "Wuchtschlag I"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Donnerkeil": 6,
+      "Waffe des Göttlichen": 4,
+      "Schutz der Wehrlosen": 4,
+      "Balsam": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Swafnirgeweihter.",
-    "ap_cost": 0,
+    "description": "Der Swafnirgeweihte dient dem thorwalschen Halbgott Swafnir und ist Krieger und Seefahrer.",
+    "ap_cost": 250,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -1020,14 +1579,29 @@
     "optolith_id": "P_106",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Schwerter": 10,
+      "Bögen": 10,
+      "Schilde": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Körperbeherrschung": 6,
+      "Kraftakt": 4,
+      "Einschüchtern": 4,
+      "Wildnisleben": 4,
+      "Reiten": 4,
+      "Sinnesschärfe": 4,
+      "Orientierung": 2,
+      "Kriegskunst": 2,
+      "Selbstbeherrschung": 2
+    },
+    "special_abilities": ["Schildkampf I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Amazone.",
-    "ap_cost": 0,
+    "description": "Die Amazone ist eine furchtlose Kriegerin aus den Steppen und Wäldern, geschult in Bogen und Schwert.",
+    "ap_cost": 175,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -1040,14 +1614,28 @@
     "optolith_id": "P_107",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Zweihandschwerter": 12,
+      "Raufen": 8,
+      "Dolche": 6
+    },
+    "skills": {
+      "Einschüchtern": 6,
+      "Kraftakt": 6,
+      "Selbstbeherrschung": 4,
+      "Kriegskunst": 4,
+      "Körperbeherrschung": 4,
+      "Willenskraft": 4,
+      "Götter & Kulte": 2,
+      "Sinnesschärfe": 2,
+      "Sagen & Legenden": 2
+    },
+    "special_abilities": ["Wuchtschlag I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Draconiter.",
-    "ap_cost": 0,
+    "description": "Der Draconiter ist ein Ritter des Ordens vom Heiligen Drachen, furchtlos und gnadenlos.",
+    "ap_cost": 180,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -1060,14 +1648,29 @@
     "optolith_id": "P_108",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Hiebwaffen": 10,
+      "Schilde": 8,
+      "Raufen": 8,
+      "Dolche": 6
+    },
+    "skills": {
+      "Einschüchtern": 6,
+      "Kraftakt": 6,
+      "Selbstbeherrschung": 4,
+      "Körperbeherrschung": 4,
+      "Willenskraft": 4,
+      "Kriegskunst": 2,
+      "Götter & Kulte": 2,
+      "Sinnesschärfe": 2,
+      "Orientierung": 2
+    },
+    "special_abilities": ["Schildkampf I", "Wuchtschlag I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Golgarit.",
-    "ap_cost": 0,
+    "description": "Der Golgarit gehört dem Orden des Schweigens an und kämpft gegen die Mächte der Finsternis.",
+    "ap_cost": 180,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -1080,14 +1683,33 @@
     "optolith_id": "P_109",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Dolche": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Willenskraft": 6,
+      "Einschüchtern": 6,
+      "Verbergen": 4,
+      "Schleichen": 4,
+      "Menschenkenntnis": 4,
+      "Überreden": 4,
+      "Selbstbeherrschung": 2,
+      "Sagen & Legenden": 2
+    },
+    "special_abilities": ["Tradition (Namenlose Kirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Blendstrahl": 6,
+      "Friedvolle Aura": 4,
+      "Schutz der Wehrlosen": 4,
+      "Balsam": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Namenloser-Geweihter.",
-    "ap_cost": 0,
+    "description": "Der Namenlose-Geweihte dient dem verbotenen dreizehnten Gott und agiert im Verborgenen.",
+    "ap_cost": 245,
     "compatible_species": [
       "Mensch",
       "Halbelf"

@@ -35,7 +35,16 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Etikette": 1,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Handel": 1,
+      "Rechnen": 1,
+      "Götter & Kulte": 1,
+      "Rechtskunde": 1,
+      "Geschichtswissen": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -46,10 +55,15 @@
         "level": 2
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Aranier.",
-    "ap_cost": 0
+    "description": "Kultur der Aranier. Bewohner Araniens, einer Provinz zwischen Mittelreich und Tulamidenlanden.",
+    "ap_cost": 19
   },
   {
     "id": "culture_bornlaender",
@@ -59,17 +73,31 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Einschüchtern": 1,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Handel": 1,
+      "Orientierung": 1,
+      "Wildnisleben": 1,
+      "Rechnen": 1,
+      "Zechen": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Bornländer.",
-    "ap_cost": 0
+    "description": "Kultur der Bornländer. Pragmatische Händler und Junker des rauhen Bornlands.",
+    "ap_cost": 17
   },
   {
     "id": "culture_fjarninger",
@@ -79,7 +107,15 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Einschüchtern": 1,
+      "Kraftakt": 1,
+      "Körperbeherrschung": 1,
+      "Orientierung": 1,
+      "Wildnisleben": 2,
+      "Tierkunde": 1,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -88,8 +124,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Fjarninger.",
-    "ap_cost": 0
+    "description": "Kultur der Fjarninger. Raues Barbarenvolk der Gjalskerländer und Grenzgebiete.",
+    "ap_cost": 14
   },
   {
     "id": "culture_horasier",
@@ -133,17 +169,30 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Überreden": 1,
+      "Menschenkenntnis": 1,
+      "Sinnesschärfe": 1,
+      "Orientierung": 1,
+      "Pflanzenkunde": 1,
+      "Sagen & Legenden": 1,
+      "Götter & Kulte": 1,
+      "Heilkunde Wunden": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
+      },
+      {
+        "name": "Tulamidya",
+        "level": 2
       }
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Maraskaner.",
-    "ap_cost": 0
+    "description": "Kultur der Maraskaner. Ein eigensinniges, von Rätselphilosophie geprägtes Inselvolk.",
+    "ap_cost": 14
   },
   {
     "id": "culture_mhanadistani",
@@ -153,17 +202,31 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Etikette": 1,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Handel": 1,
+      "Rechnen": 1,
+      "Götter & Kulte": 1,
+      "Geschichtswissen": 1,
+      "Magiekunde": 1
+    },
     "languages": [
       {
         "name": "Tulamidya",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Tulamidya-Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Mhanadistani.",
-    "ap_cost": 0
+    "description": "Kultur der Mhanadistani. Hochkultiviertes tulamidisches Stadtvolk mit reicher Gelehrtentradition.",
+    "ap_cost": 19
   },
   {
     "id": "culture_mittelreicher",
@@ -207,7 +270,16 @@
     "compatible_species": [
       "Mensch"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Fährtensuchen": 1,
+      "Körperbeherrschung": 1,
+      "Klettern": 1,
+      "Schleichen": 1,
+      "Sinnesschärfe": 1,
+      "Pflanzenkunde": 1,
+      "Tierkunde": 1,
+      "Wildnisleben": 1
+    },
     "languages": [
       {
         "name": "Mohisch",
@@ -216,8 +288,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Mohas.",
-    "ap_cost": 0
+    "description": "Kultur der Mohas. Dschungelbewohner Südaventuriens mit tiefer Naturverbundenheit.",
+    "ap_cost": 16
   },
   {
     "id": "culture_nivesen",
@@ -259,7 +331,16 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Handel": 1,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Orientierung": 1,
+      "Wildnisleben": 1,
+      "Tierkunde": 1,
+      "Sagen & Legenden": 1,
+      "Fährtensuchen": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -268,8 +349,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Norbarden.",
-    "ap_cost": 0
+    "description": "Kultur der Norbarden. Fahrende Händler und Wanderhirten des Nordens.",
+    "ap_cost": 13
   },
   {
     "id": "culture_nordaventurier",
@@ -279,17 +360,31 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Einschüchtern": 1,
+      "Kraftakt": 1,
+      "Orientierung": 1,
+      "Wildnisleben": 1,
+      "Zechen": 1,
+      "Holzbearbeitung": 1,
+      "Sagen & Legenden": 1,
+      "Körperbeherrschung": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Nordaventurier.",
-    "ap_cost": 0
+    "description": "Kultur der Nordaventurier. Bewohner der rauen nördlichen Provinzen jenseits des Kosch.",
+    "ap_cost": 15
   },
   {
     "id": "culture_nostrier",
@@ -299,7 +394,16 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Einschüchtern": 1,
+      "Kraftakt": 1,
+      "Schwimmen": 1,
+      "Zechen": 1,
+      "Orientierung": 1,
+      "Sagen & Legenden": 1,
+      "Boote & Schiffe": 1,
+      "Körperbeherrschung": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -308,8 +412,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Nostrier.",
-    "ap_cost": 0
+    "description": "Kultur der Nostrier. Seefahrendes Küstenvolk mit erbitterter Rivalität zu den Andergastern.",
+    "ap_cost": 15
   },
   {
     "id": "culture_novadis",
@@ -346,17 +450,31 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Gassenwissen": 1,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Handel": 1,
+      "Götter & Kulte": 1,
+      "Orientierung": 1,
+      "Rechnen": 1,
+      "Pflanzenkunde": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Südaventurier.",
-    "ap_cost": 0
+    "description": "Kultur der Südaventurier. Bewohner der südlichen Stadtstaaten, beeinflusst von vielen Kulturen.",
+    "ap_cost": 14
   },
   {
     "id": "culture_svellttaler",
@@ -366,17 +484,31 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Gassenwissen": 1,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Handel": 1,
+      "Orientierung": 1,
+      "Rechnen": 1,
+      "Rechtskunde": 1,
+      "Etikette": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Svellttaler.",
-    "ap_cost": 0
+    "description": "Kultur der Svellttaler. Handelskundige Bewohner des fruchtbaren Svelltlands.",
+    "ap_cost": 16
   },
   {
     "id": "culture_thorwaler",
@@ -419,17 +551,31 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Etikette": 1,
+      "Menschenkenntnis": 1,
+      "Handel": 1,
+      "Rechnen": 1,
+      "Götter & Kulte": 1,
+      "Geschichtswissen": 1,
+      "Boote & Schiffe": 1,
+      "Schwimmen": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Zyklopäer.",
-    "ap_cost": 0
+    "description": "Kultur der Zyklopäer. Bewohner der Zyklopeninseln mit reicher Seefahrertradition.",
+    "ap_cost": 18
   },
   {
     "id": "culture_auelfen",
@@ -467,7 +613,15 @@
     "compatible_species": [
       "Elf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Körperbeherrschung": 1,
+      "Sinnesschärfe": 1,
+      "Orientierung": 1,
+      "Tierkunde": 1,
+      "Wildnisleben": 2,
+      "Sagen & Legenden": 1,
+      "Pflanzenkunde": 1
+    },
     "languages": [
       {
         "name": "Isdira",
@@ -476,8 +630,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Firnelfen.",
-    "ap_cost": 0
+    "description": "Kultur der Firnelfen. In den eisigen Weiten des hohen Nordens lebende Elfen.",
+    "ap_cost": 18
   },
   {
     "id": "culture_waldelfen",
@@ -552,7 +706,15 @@
     "compatible_species": [
       "Zwerg"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Handel": 2,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Rechnen": 1,
+      "Mechanik": 1,
+      "Steinbearbeitung": 1,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Rogolan",
@@ -563,10 +725,15 @@
         "level": 3
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Rogolan-Runen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Brillantzwerge.",
-    "ap_cost": 0
+    "description": "Kultur der Brillantzwerge. Handelskundige Zwerge, berühmt für ihre Edelsteinschleiferei.",
+    "ap_cost": 20
   },
   {
     "id": "culture_erzzwerge",
@@ -575,17 +742,31 @@
     "compatible_species": [
       "Zwerg"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Kraftakt": 1,
+      "Selbstbeherrschung": 1,
+      "Zechen": 1,
+      "Mechanik": 1,
+      "Metallbearbeitung": 1,
+      "Steinbearbeitung": 2,
+      "Sagen & Legenden": 1,
+      "Kriegskunst": 1
+    },
     "languages": [
       {
         "name": "Rogolan",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Rogolan-Runen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Erzzwerge.",
-    "ap_cost": 0
+    "description": "Kultur der Erzzwerge. Uraltes, traditionsbewusstes Zwergenvolk tief unter den Bergen.",
+    "ap_cost": 21
   },
   {
     "id": "culture_huegelzwerge",
@@ -594,7 +775,16 @@
     "compatible_species": [
       "Zwerg"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Handel": 1,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Rechnen": 1,
+      "Kochen": 1,
+      "Zechen": 1,
+      "Sagen & Legenden": 1,
+      "Pflanzenkunde": 1
+    },
     "languages": [
       {
         "name": "Rogolan",
@@ -605,10 +795,15 @@
         "level": 3
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Rogolan-Runen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Hügelzwerge.",
-    "ap_cost": 0
+    "description": "Kultur der Hügelzwerge. Gesellige, menschenfreundliche Zwerge in oberirdischen Siedlungen.",
+    "ap_cost": 18
   },
   {
     "id": "culture_zahori",
@@ -617,7 +812,16 @@
     "compatible_species": [
       "Mensch"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Sinnesschärfe": 1,
+      "Orientierung": 1,
+      "Wildnisleben": 1,
+      "Tierkunde": 1,
+      "Pflanzenkunde": 1,
+      "Sagen & Legenden": 1,
+      "Götter & Kulte": 1,
+      "Heilkunde Wunden": 1
+    },
     "languages": [
       {
         "name": "Tulamidya",
@@ -626,8 +830,8 @@
     ],
     "scripts": [],
     "source_book": "Supplement",
-    "description": "Kultur der Zahori.",
-    "ap_cost": 0
+    "description": "Kultur der Zahori. Wanderndes Wüstenvolk mit seherischen Traditionen.",
+    "ap_cost": 15
   },
   {
     "id": "culture_koboldweltler",
@@ -636,7 +840,15 @@
     "compatible_species": [
       "Mensch"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Verbergen": 1,
+      "Schleichen": 1,
+      "Sinnesschärfe": 1,
+      "Taschendiebstahl": 1,
+      "Gassenwissen": 1,
+      "Sagen & Legenden": 1,
+      "Pflanzenkunde": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -645,8 +857,8 @@
     ],
     "scripts": [],
     "source_book": "Supplement",
-    "description": "Kultur der Koboldweltler.",
-    "ap_cost": 0
+    "description": "Kultur der Koboldweltler. In der Koboldwelt aufgewachsene Menschen mit feenhaften Eigenheiten.",
+    "ap_cost": 12
   },
   {
     "id": "culture_steppenelfen",
@@ -655,7 +867,15 @@
     "compatible_species": [
       "Elf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Körperbeherrschung": 1,
+      "Sinnesschärfe": 1,
+      "Orientierung": 1,
+      "Tierkunde": 1,
+      "Wildnisleben": 1,
+      "Reiten": 2,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Isdira",
@@ -664,8 +884,8 @@
     ],
     "scripts": [],
     "source_book": "Supplement",
-    "description": "Kultur der Steppenelfen.",
-    "ap_cost": 0
+    "description": "Kultur der Steppenelfen. Nomadische Elfen der offenen Steppen, meisterhafte Reiter.",
+    "ap_cost": 19
   },
   {
     "id": "culture_engasaler",
@@ -674,17 +894,31 @@
     "compatible_species": [
       "Mensch"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Etikette": 1,
+      "Menschenkenntnis": 1,
+      "Handel": 1,
+      "Rechnen": 1,
+      "Götter & Kulte": 1,
+      "Pflanzenkunde": 1,
+      "Kochen": 1,
+      "Orientierung": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Supplement",
-    "description": "Kultur der Engasaler.",
-    "ap_cost": 0
+    "description": "Kultur der Engasaler. Bewohner des fruchtbaren Engasal-Tals, geprägt von Ackerbau und Handel.",
+    "ap_cost": 14
   },
   {
     "id": "culture_ferkina",
@@ -693,7 +927,16 @@
     "compatible_species": [
       "Mensch"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Einschüchtern": 1,
+      "Kraftakt": 1,
+      "Körperbeherrschung": 1,
+      "Klettern": 1,
+      "Orientierung": 1,
+      "Wildnisleben": 1,
+      "Sagen & Legenden": 1,
+      "Kriegskunst": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -702,8 +945,8 @@
     ],
     "scripts": [],
     "source_book": "Supplement",
-    "description": "Kultur der Ferkina.",
-    "ap_cost": 0
+    "description": "Kultur der Ferkina. Kriegerisches Bergvolk der Raschtulswall-Region.",
+    "ap_cost": 16
   },
   {
     "id": "culture_gjalsker",
@@ -712,7 +955,15 @@
     "compatible_species": [
       "Mensch"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Einschüchtern": 1,
+      "Kraftakt": 1,
+      "Körperbeherrschung": 1,
+      "Wildnisleben": 2,
+      "Orientierung": 1,
+      "Tierkunde": 1,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -721,8 +972,8 @@
     ],
     "scripts": [],
     "source_book": "Supplement",
-    "description": "Kultur der Gjalsker.",
-    "ap_cost": 0
+    "description": "Kultur der Gjalsker. Raue Barbaren der Gjalskerländer, geprägt von harten Wintern.",
+    "ap_cost": 14
   },
   {
     "id": "culture_trollzacker",
@@ -731,7 +982,16 @@
     "compatible_species": [
       "Mensch"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Kraftakt": 1,
+      "Körperbeherrschung": 1,
+      "Orientierung": 1,
+      "Wildnisleben": 1,
+      "Tierkunde": 1,
+      "Pflanzenkunde": 1,
+      "Holzbearbeitung": 1,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -740,8 +1000,8 @@
     ],
     "scripts": [],
     "source_book": "Supplement",
-    "description": "Kultur der Trollzacker.",
-    "ap_cost": 0
+    "description": "Kultur der Trollzacker. Bäuerliches Grenzvolk an den Trollzacken, zäh und naturverbunden.",
+    "ap_cost": 13
   },
   {
     "id": "culture_wildzwerge",
@@ -750,7 +1010,15 @@
     "compatible_species": [
       "Zwerg"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Körperbeherrschung": 1,
+      "Schleichen": 1,
+      "Sinnesschärfe": 1,
+      "Wildnisleben": 2,
+      "Tierkunde": 1,
+      "Pflanzenkunde": 1,
+      "Klettern": 1
+    },
     "languages": [
       {
         "name": "Rogolan",
@@ -759,7 +1027,7 @@
     ],
     "scripts": [],
     "source_book": "Supplement",
-    "description": "Kultur der Wildzwerge.",
-    "ap_cost": 0
+    "description": "Kultur der Wildzwerge. In der Wildnis lebende Zwerge ohne Bindung an die großen Zwergenstädte.",
+    "ap_cost": 16
   }
 ]

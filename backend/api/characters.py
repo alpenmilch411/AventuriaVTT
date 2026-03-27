@@ -46,8 +46,8 @@ def _recompute_derived(attributes: dict, spells: dict, liturgies: dict, existing
 
     is_magic = bool(spells)
     is_blessed = bool(liturgies)
-    result["AsP_max"] = math.ceil((mu + in_ + ch) / 2) if is_magic else 0
-    result["KaP_max"] = math.ceil((mu + kl + in_) / 2) if is_blessed else 0
+    result["AsP_max"] = (20 + round((mu + in_ + ch) / 3)) if is_magic else 0
+    result["KaP_max"] = (20 + round((mu + kl + in_) / 3)) if is_blessed else 0
 
     return result
 
@@ -139,6 +139,7 @@ class CharacterListResponse(BaseModel):
     name: str
     species: Optional[str] = None
     profession: Optional[str] = None
+    experience_grade: Optional[str] = None
     status: str
     total_ap: int
     available_ap: int
@@ -751,6 +752,7 @@ async def quick_template(
         experience_grade=body.experience_grade or "erfahren",
         total_ap=total_ap,
         available_ap=0,
+        creation_finalized=True,
         attributes=template.get("attributes"),
         derived_values=template.get("derived_values"),
         combat_values=template.get("combat_values"),

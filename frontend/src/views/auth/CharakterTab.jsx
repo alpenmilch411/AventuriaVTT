@@ -510,9 +510,32 @@ export default function CharakterTab() {
     showSuccess(`${character.name} erstellt!`)
   }
 
-  const handleEdit = (character) => {
-    // Navigate to character detail / editor
-    window.location.href = `/characters/${character.id}`
+  const [editCharacter, setEditCharacter] = useState(null)
+  const [editLoading, setEditLoading] = useState(false)
+
+  const handleEdit = async (character) => {
+    // Fetch full character data then open creator in edit mode
+    setEditLoading(true)
+    try {
+      const res = await fetch(`/api/characters/${character.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) throw new Error('Charakter konnte nicht geladen werden')
+      const fullChar = await res.json()
+      setEditCharacter(fullChar)
+    } catch (err) {
+      showError(err.message)
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
+  const handleEdited = (updatedCharacter) => {
+    setCharacters((prev) =>
+      prev.map((c) => (c.id === updatedCharacter.id ? updatedCharacter : c))
+    )
+    setEditCharacter(null)
+    showSuccess(`${updatedCharacter.name} aktualisiert!`)
   }
 
   const handleExport = async (character) => {
@@ -592,6 +615,14 @@ export default function CharakterTab() {
           Importieren
         </button>
       </div>
+
+      {/* Edit loading */}
+      {editLoading && (
+        <div className="flex items-center gap-2 text-dsa-parchment-dark text-sm">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Charakter laden...
+        </div>
+      )}
 
       {/* Result toast */}
       {result && (
@@ -685,6 +716,15 @@ export default function CharakterTab() {
           onCreated={(character) => {
             handleCreated(character)
             setShowCreator(false)
+          }}
+        />
+      )}
+      {editCharacter && (
+        <CharacterCreator
+          editCharacter={editCharacter}
+          onClose={() => setEditCharacter(null)}
+          onCreated={(character) => {
+            handleEdited(character)
           }}
         />
       )}
