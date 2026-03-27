@@ -118,6 +118,10 @@ class ProfessionTemplate(Base):
     liturgies: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     source_book: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    starting_equipment: Mapped[Optional[list]] = mapped_column(JSON, nullable=True,
+        comment="List of {template_id, quantity, equipped?} dicts")
+    starting_money: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True,
+        comment="{dukaten, silber, heller, kreuzer}")
 
     # User-contribution fields
     created_by_user_id: Mapped[Optional[str]] = mapped_column(
@@ -451,6 +455,69 @@ class CombatTechniqueTemplate(Base):
 
     def __repr__(self) -> str:
         return f"<CombatTechniqueTemplate {self.id!r}>"
+
+
+# ---------------------------------------------------------------------------
+# RulesSnippet
+# ---------------------------------------------------------------------------
+
+class AdvantageTemplate(Base):
+    __tablename__ = "advantage_templates"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    ap_cost: Mapped[int] = mapped_column(Integer, default=0)
+    category: Mapped[Optional[str]] = mapped_column(String(64), nullable=True,
+        comment="allgemein, kampf, magisch, karmal, sozial")
+    levels: Mapped[int] = mapped_column(Integer, default=1,
+        comment="Max levels (1 for most, 2-3 for tiered)")
+    prerequisites: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True,
+        comment="Species restrictions, min attributes, etc.")
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    rules_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True,
+        comment="Mechanical effect text")
+
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
+    def __repr__(self) -> str:
+        return f"<AdvantageTemplate {self.id!r}>"
+
+
+# ---------------------------------------------------------------------------
+# DisadvantageTemplate
+# ---------------------------------------------------------------------------
+
+class DisadvantageTemplate(Base):
+    __tablename__ = "disadvantage_templates"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    ap_cost: Mapped[int] = mapped_column(Integer, default=0,
+        comment="AP gained (positive value = AP you receive)")
+    category: Mapped[Optional[str]] = mapped_column(String(64), nullable=True,
+        comment="allgemein, kampf, magisch, karmal, sozial")
+    levels: Mapped[int] = mapped_column(Integer, default=1,
+        comment="Max levels (1 for most, 2-3 for tiered)")
+    prerequisites: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True,
+        comment="Species restrictions, min attributes, etc.")
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    rules_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True,
+        comment="Mechanical effect text")
+
+    # User-contribution fields
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_by_username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    is_custom: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+
+    def __repr__(self) -> str:
+        return f"<DisadvantageTemplate {self.id!r}>"
 
 
 # ---------------------------------------------------------------------------

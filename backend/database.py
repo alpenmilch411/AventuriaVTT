@@ -61,6 +61,8 @@ async def init_db():
             await conn.run_sync(_migrate_add_species_extra_columns)
             await conn.run_sync(_migrate_add_active_buffs_column)
             await conn.run_sync(_migrate_add_languages_column)
+            await conn.run_sync(_migrate_add_profession_equipment_columns)
+            await conn.run_sync(_migrate_create_advantage_disadvantage_tables)
 
 
 def _migrate_add_user_contribution_columns(connection):
@@ -213,3 +215,62 @@ def _migrate_add_languages_column(connection):
         connection.execute(
             text("ALTER TABLE characters ADD COLUMN languages TEXT")
         )
+
+
+def _migrate_add_profession_equipment_columns(connection):
+    """Add starting_equipment and starting_money to profession_templates."""
+    from sqlalchemy import text
+
+    result = connection.execute(text("PRAGMA table_info(profession_templates)"))
+    existing_cols = {row[1] for row in result.fetchall()}
+
+    if "starting_equipment" not in existing_cols:
+        connection.execute(
+            text("ALTER TABLE profession_templates ADD COLUMN starting_equipment TEXT")
+        )
+    if "starting_money" not in existing_cols:
+        connection.execute(
+            text("ALTER TABLE profession_templates ADD COLUMN starting_money TEXT")
+        )
+
+
+def _migrate_create_advantage_disadvantage_tables(connection):
+    """Create advantage_templates and disadvantage_templates tables if they don't exist."""
+    from sqlalchemy import text, inspect
+
+    inspector = inspect(connection)
+    existing_tables = inspector.get_table_names()
+
+    if "advantage_templates" not in existing_tables:
+        connection.execute(text("""
+            CREATE TABLE advantage_templates (
+                id VARCHAR(64) PRIMARY KEY,
+                name VARCHAR(128) NOT NULL,
+                ap_cost INTEGER NOT NULL DEFAULT 0,
+                category VARCHAR(32),
+                levels INTEGER DEFAULT 1,
+                prerequisites TEXT,
+                description TEXT,
+                rules_text TEXT,
+                created_by_user_id VARCHAR(36),
+                created_by_username VARCHAR(64),
+                is_custom BOOLEAN DEFAULT 0
+            )
+        """))
+
+    if "disadvantage_templates" not in existing_tables:
+        connection.execute(text("""
+            CREATE TABLE disadvantage_templates (
+                id VARCHAR(64) PRIMARY KEY,
+                name VARCHAR(128) NOT NULL,
+                ap_cost INTEGER NOT NULL DEFAULT 0,
+                category VARCHAR(32),
+                levels INTEGER DEFAULT 1,
+                prerequisites TEXT,
+                description TEXT,
+                rules_text TEXT,
+                created_by_user_id VARCHAR(36),
+                created_by_username VARCHAR(64),
+                is_custom BOOLEAN DEFAULT 0
+            )
+        """))

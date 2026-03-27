@@ -1,0 +1,749 @@
+[
+  {
+    "profession_id": "profession_barde",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "laute", "type": "items", "quantity": 1},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "wolldecke", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 2, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_gardist",
+    "items": [
+      {"template_id": "speer", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "kurzschwert", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "fackel", "type": "items", "quantity": 3}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_gaukler",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "wurfdolch", "type": "weapons", "quantity": 3, "equipped": false},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 3},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1},
+      {"template_id": "kartenspiel", "type": "items", "quantity": 1},
+      {"template_id": "wuerfelset", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 3, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_gladiator",
+    "items": [
+      {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "flegel", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 3},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 2, "silber": 0, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_haendler",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "guerteltasche", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "karte_regional", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "wolldecke", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 5, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_heiler",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 5},
+      {"template_id": "heilkraeuterpaeckchen", "type": "items", "quantity": 5},
+      {"template_id": "heiltrank_klein", "type": "items", "quantity": 2},
+      {"template_id": "gegengift", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 2, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_hoefling",
+    "items": [
+      {"template_id": "rapier", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "guerteltasche", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "spiegel_klein", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 5, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_jaeger",
+    "items": [
+      {"template_id": "langbogen", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "wurfdolch", "type": "weapons", "quantity": 3, "equipped": false},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "pfeil", "type": "items", "quantity": 20},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1},
+      {"template_id": "tierfalle", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_krieger",
+    "items": [
+      {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "speer", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "wetzstein", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_prostituierter",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "guerteltasche", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 3},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "spiegel_klein", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 3}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_ritter",
+    "items": [
+      {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "kettenruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "wetzstein", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 3, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_seefahrer",
+    "items": [
+      {"template_id": "saebel", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 2},
+      {"template_id": "enterhaken", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kompass", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 2, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_soeldner",
+    "items": [
+      {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "armbrust_leicht", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_leder", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "bolzen", "type": "items", "quantity": 15},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "wetzstein", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_spitzel",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "guerteltasche", "type": "items", "quantity": 1},
+      {"template_id": "dietrichset", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 3},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 3}
+    ],
+    "money": {"dukaten": 2, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_stammeskrieger",
+    "items": [
+      {"template_id": "streitaxt", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "wurfbeil", "type": "weapons", "quantity": 3, "equipped": false},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "kleiner_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "wolldecke", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 0, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_streuner",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 2, "equipped": true},
+      {"template_id": "wurfdolch", "type": "weapons", "quantity": 3, "equipped": false},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "guerteltasche", "type": "items", "quantity": 1},
+      {"template_id": "dietrichset", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 3},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 0, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_wildnislaeufer",
+    "items": [
+      {"template_id": "kurzbogen", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "streitaxt", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "pfeil", "type": "items", "quantity": 20},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1},
+      {"template_id": "tierfalle", "type": "items", "quantity": 2},
+      {"template_id": "angelhaken_leine", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 0, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_zauberweber",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 5},
+      {"template_id": "pergament_leer", "type": "items", "quantity": 5}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_katzenhexer",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "heilkraeuterpaeckchen", "type": "items", "quantity": 3},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "phiole_leer", "type": "items", "quantity": 3},
+      {"template_id": "wolldecke", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 3, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_kroetenhexer",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "heilkraeuterpaeckchen", "type": "items", "quantity": 5},
+      {"template_id": "phiole_leer", "type": "items", "quantity": 5},
+      {"template_id": "alchemistisches_labor", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 3, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_rabenhexer",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "heilkraeuterpaeckchen", "type": "items", "quantity": 3},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "wolldecke", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 3, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_gildenloser_magier",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "kampfstab_magier", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "pergament_leer", "type": "items", "quantity": 5},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 5}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_graumagier",
+    "items": [
+      {"template_id": "kampfstab_magier", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "pergament_leer", "type": "items", "quantity": 10},
+      {"template_id": "astraltrank", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 5}
+    ],
+    "money": {"dukaten": 2, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_schwarzmagier",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "pergament_leer", "type": "items", "quantity": 10},
+      {"template_id": "astraltrank", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 5}
+    ],
+    "money": {"dukaten": 2, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_weissmagier",
+    "items": [
+      {"template_id": "kampfstab_magier", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "pergament_leer", "type": "items", "quantity": 10},
+      {"template_id": "heiltrank_klein", "type": "items", "quantity": 2},
+      {"template_id": "astraltrank", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 5}
+    ],
+    "money": {"dukaten": 2, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_borongeweihter",
+    "items": [
+      {"template_id": "streitkolben", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 2},
+      {"template_id": "kerze", "type": "items", "quantity": 10},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_hesindegeweihter",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "pergament_leer", "type": "items", "quantity": 10},
+      {"template_id": "weihwasser", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 5}
+    ],
+    "money": {"dukaten": 2, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_perainegeweihter",
+    "items": [
+      {"template_id": "streitkolben", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 5},
+      {"template_id": "heilkraeuterpaeckchen", "type": "items", "quantity": 5},
+      {"template_id": "heiltrank_klein", "type": "items", "quantity": 2},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_phexgeweihter",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 2, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "guerteltasche", "type": "items", "quantity": 1},
+      {"template_id": "dietrichset", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 2, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_praiosgeweihter",
+    "items": [
+      {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 3},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 2}
+    ],
+    "money": {"dukaten": 2, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_rondrageweihter",
+    "items": [
+      {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "wetzstein", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 2}
+    ],
+    "money": {"dukaten": 2, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_efferdgeweihter",
+    "items": [
+      {"template_id": "speer", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "kompass", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "angelhaken_leine", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_traviageweihter",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "kochgeschirr", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 3},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "wolldecke", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_firungeweihter",
+    "items": [
+      {"template_id": "streitaxt", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "kurzbogen", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "pelzwams", "type": "armor", "quantity": 1, "equipped": false},
+      {"template_id": "pfeil", "type": "items", "quantity": 15},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 0, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_tsageweihter",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 5},
+      {"template_id": "heilkraeuterpaeckchen", "type": "items", "quantity": 3},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_ingerimmgeweihter",
+    "items": [
+      {"template_id": "kriegshammer", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "hammer", "type": "items", "quantity": 1},
+      {"template_id": "eisennagel", "type": "items", "quantity": 10},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "wetzstein", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_rahjageweihter",
+    "items": [
+      {"template_id": "rapier", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "laute", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 1},
+      {"template_id": "wein_flasche", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 3, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_avesgeweihter",
+    "items": [
+      {"template_id": "saebel", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1},
+      {"template_id": "karte_regional", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_ifirngeweihter",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "pelzwams", "type": "armor", "quantity": 1, "equipped": false},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "heilkraeuterpaeckchen", "type": "items", "quantity": 3},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 0, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_korgeweihter",
+    "items": [
+      {"template_id": "speer", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "wetzstein", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_nandusgeweihter",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "schreibzeug", "type": "items", "quantity": 1},
+      {"template_id": "pergament_leer", "type": "items", "quantity": 10},
+      {"template_id": "weihwasser", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 5}
+    ],
+    "money": {"dukaten": 2, "silber": 10, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_swafnirgeweihter",
+    "items": [
+      {"template_id": "streitaxt", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "thorwalerschild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "seil", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schnaps_zwergisch", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_amazone",
+    "items": [
+      {"template_id": "saebel", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "langbogen", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "kleiner_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "pfeil", "type": "items", "quantity": 20},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "schlafsack", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_draconiter",
+    "items": [
+      {"template_id": "zweihaender", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "kettenruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "wetzstein", "type": "items", "quantity": 1},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "verbandszeug", "type": "items", "quantity": 2}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_golgarit",
+    "items": [
+      {"template_id": "streitkolben", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 7},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 3},
+      {"template_id": "eisenpflock", "type": "items", "quantity": 5},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  },
+  {
+    "profession_id": "profession_namenloser_geweihter",
+    "items": [
+      {"template_id": "dolch", "type": "weapons", "quantity": 2, "equipped": true},
+      {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "rucksack", "type": "items", "quantity": 1},
+      {"template_id": "guerteltasche", "type": "items", "quantity": 1},
+      {"template_id": "proviant_tag", "type": "items", "quantity": 5},
+      {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
+      {"template_id": "weihwasser", "type": "items", "quantity": 2},
+      {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
+      {"template_id": "kerze", "type": "items", "quantity": 5},
+      {"template_id": "seil", "type": "items", "quantity": 1}
+    ],
+    "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
+  }
+]

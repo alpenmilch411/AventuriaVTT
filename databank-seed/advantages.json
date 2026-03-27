@@ -1,0 +1,432 @@
+[
+  {
+    "id": "adlig_1",
+    "name": "Adlig I",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held entstammt dem niederen Adel und genießt gewisse Privilegien.",
+    "rules_text": "Der Held gilt als Angehöriger des niederen Adels. Er erhält +1 auf Etikette-Proben in adligen Kreisen."
+  },
+  {
+    "id": "adlig_2",
+    "name": "Adlig II",
+    "ap_cost": 10,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"advantages": ["adlig_1"]},
+    "description": "Der Held entstammt dem mittleren Adel.",
+    "rules_text": "Der Held gilt als Angehöriger des mittleren Adels. Er erhält +2 auf Etikette-Proben in adligen Kreisen."
+  },
+  {
+    "id": "adlig_3",
+    "name": "Adlig III",
+    "ap_cost": 15,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"advantages": ["adlig_2"]},
+    "description": "Der Held entstammt dem Hochadel.",
+    "rules_text": "Der Held gilt als Angehöriger des Hochadels mit entsprechenden Privilegien und Verantwortungen."
+  },
+  {
+    "id": "altersresistenz",
+    "name": "Altersresistenz",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held altert langsamer als gewöhnlich.",
+    "rules_text": "Altersmodifikatoren werden halbiert (aufgerundet)."
+  },
+  {
+    "id": "beidhaendig",
+    "name": "Beidhändig",
+    "ap_cost": 15,
+    "category": "kampf",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann beide Hände gleich geschickt einsetzen.",
+    "rules_text": "Abzüge für den Kampf mit der Nebenhand entfallen vollständig."
+  },
+  {
+    "id": "dunkelsicht_1",
+    "name": "Dunkelsicht I",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": {"species": ["Elf", "Halbelf"]},
+    "description": "Der Held kann bei schwachem Licht noch gut sehen.",
+    "rules_text": "Modifikatoren durch Dunkelheit werden um 1 gesenkt."
+  },
+  {
+    "id": "dunkelsicht_2",
+    "name": "Dunkelsicht II",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": {"species": ["Zwerg"], "advantages": ["dunkelsicht_1"]},
+    "description": "Der Held kann in fast völliger Dunkelheit sehen.",
+    "rules_text": "Modifikatoren durch Dunkelheit werden um 2 gesenkt."
+  },
+  {
+    "id": "eisenaffin",
+    "name": "Eisenaffin",
+    "ap_cost": 15,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Eisen stört die Magie des Helden weniger als üblich.",
+    "rules_text": "Probenmodifikatoren durch Eisen und Stahl werden halbiert (aufgerundet)."
+  },
+  {
+    "id": "flink_1",
+    "name": "Flink I",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Der Held ist besonders schnell auf den Beinen.",
+    "rules_text": "GS +1."
+  },
+  {
+    "id": "flink_2",
+    "name": "Flink II",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": {"advantages": ["flink_1"]},
+    "description": "Der Held ist außergewöhnlich schnell auf den Beinen.",
+    "rules_text": "GS +1 (insgesamt +2 mit Flink I)."
+  },
+  {
+    "id": "geborener_redner",
+    "name": "Geborener Redner",
+    "ap_cost": 10,
+    "category": "sozial",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hat ein natürliches Talent fürs Reden.",
+    "rules_text": "Der Held erhält +1 auf alle Proben auf Überreden."
+  },
+  {
+    "id": "glueck_1",
+    "name": "Glück I",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Das Schicksal ist dem Helden wohl gesonnen.",
+    "rules_text": "Der Held erhält 1 zusätzlichen Schicksalspunkt (SchiP)."
+  },
+  {
+    "id": "glueck_2",
+    "name": "Glück II",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": {"advantages": ["glueck_1"]},
+    "description": "Das Schicksal ist dem Helden besonders wohl gesonnen.",
+    "rules_text": "Der Held erhält 1 weiteren zusätzlichen Schicksalspunkt (insgesamt +2 SchiP)."
+  },
+  {
+    "id": "glueck_3",
+    "name": "Glück III",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": {"advantages": ["glueck_2"]},
+    "description": "Das Schicksal begünstigt den Helden auf außergewöhnliche Weise.",
+    "rules_text": "Der Held erhält 1 weiteren zusätzlichen Schicksalspunkt (insgesamt +3 SchiP)."
+  },
+  {
+    "id": "gutaussehend",
+    "name": "Gutaussehend",
+    "ap_cost": 10,
+    "category": "sozial",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hat ein besonders ansprechendes Äußeres.",
+    "rules_text": "+1 auf Betören-Proben, +1 auf Überreden-Proben bei entsprechend empfänglichen Personen."
+  },
+  {
+    "id": "hohe_astralkraft_1",
+    "name": "Hohe Astralkraft I",
+    "ap_cost": 25,
+    "category": "magisch",
+    "levels": 2,
+    "prerequisites": {"magic": true},
+    "description": "Der Held verfügt über eine besonders hohe Astralkraft.",
+    "rules_text": "AsP-Maximum +5."
+  },
+  {
+    "id": "hohe_astralkraft_2",
+    "name": "Hohe Astralkraft II",
+    "ap_cost": 25,
+    "category": "magisch",
+    "levels": 2,
+    "prerequisites": {"magic": true, "advantages": ["hohe_astralkraft_1"]},
+    "description": "Der Held hat eine außergewöhnlich hohe Astralkraft.",
+    "rules_text": "AsP-Maximum +5 (insgesamt +10 mit Hohe Astralkraft I)."
+  },
+  {
+    "id": "hohe_karmalkraft_1",
+    "name": "Hohe Karmalkraft I",
+    "ap_cost": 25,
+    "category": "karmal",
+    "levels": 2,
+    "prerequisites": {"blessed": true},
+    "description": "Der Held verfügt über eine besonders hohe Karmalkraft.",
+    "rules_text": "KaP-Maximum +5."
+  },
+  {
+    "id": "hohe_karmalkraft_2",
+    "name": "Hohe Karmalkraft II",
+    "ap_cost": 25,
+    "category": "karmal",
+    "levels": 2,
+    "prerequisites": {"blessed": true, "advantages": ["hohe_karmalkraft_1"]},
+    "description": "Der Held hat eine außergewöhnlich hohe Karmalkraft.",
+    "rules_text": "KaP-Maximum +5 (insgesamt +10 mit Hohe Karmalkraft I)."
+  },
+  {
+    "id": "hohe_lebenskraft_1",
+    "name": "Hohe Lebenskraft I",
+    "ap_cost": 25,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Der Held ist von besonderer Robustheit.",
+    "rules_text": "LeP-Maximum +5."
+  },
+  {
+    "id": "hohe_lebenskraft_2",
+    "name": "Hohe Lebenskraft II",
+    "ap_cost": 25,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": {"advantages": ["hohe_lebenskraft_1"]},
+    "description": "Der Held ist von außergewöhnlicher Robustheit.",
+    "rules_text": "LeP-Maximum +5 (insgesamt +10 mit Hohe Lebenskraft I)."
+  },
+  {
+    "id": "hohe_seelenkraft",
+    "name": "Hohe Seelenkraft",
+    "ap_cost": 25,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hat eine besonders starke Seele.",
+    "rules_text": "SK +1."
+  },
+  {
+    "id": "hohe_zaehigkeit",
+    "name": "Hohe Zähigkeit",
+    "ap_cost": 25,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held ist besonders widerstandsfähig.",
+    "rules_text": "ZK +1."
+  },
+  {
+    "id": "koboldfreund",
+    "name": "Koboldfreund",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hat eine besondere Verbindung zu Kobolden.",
+    "rules_text": "Kobolde sind dem Helden freundlich gesinnt; +2 auf Tierkunde-Proben bei Kobolden."
+  },
+  {
+    "id": "magieresistenz_1",
+    "name": "Magieresistenz I",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Der Held ist resistenter gegen Magie.",
+    "rules_text": "SK +1 gegen magische Effekte."
+  },
+  {
+    "id": "magieresistenz_2",
+    "name": "Magieresistenz II",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": {"advantages": ["magieresistenz_1"]},
+    "description": "Der Held ist stark magieresistent.",
+    "rules_text": "SK +1 gegen magische Effekte (insgesamt +2)."
+  },
+  {
+    "id": "natuerliche_waffe",
+    "name": "Natürliche Waffe",
+    "ap_cost": 5,
+    "category": "kampf",
+    "levels": 1,
+    "prerequisites": {"species": ["Ork"]},
+    "description": "Der Held hat natürliche Waffen wie Klauen oder Hörner.",
+    "rules_text": "Raufen-Angriffe richten 1W6+1 TP statt 1W6 TP an."
+  },
+  {
+    "id": "reich_1",
+    "name": "Reich I",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 10,
+    "prerequisites": null,
+    "description": "Der Held verfügt über mehr Geld als üblich.",
+    "rules_text": "Der Held startet mit dem doppelten Startgeld."
+  },
+  {
+    "id": "reich_2",
+    "name": "Reich II",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 10,
+    "prerequisites": {"advantages": ["reich_1"]},
+    "description": "Der Held verfügt über ein beträchtliches Vermögen.",
+    "rules_text": "Der Held startet mit dem dreifachen Startgeld."
+  },
+  {
+    "id": "soziale_anpassungsfaehigkeit",
+    "name": "Soziale Anpassungsfähigkeit",
+    "ap_cost": 15,
+    "category": "sozial",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann sich schnell verschiedenen sozialen Umgebungen anpassen.",
+    "rules_text": "Abzüge durch unbekannte soziale Umgebungen werden halbiert."
+  },
+  {
+    "id": "verbesserte_regeneration_1",
+    "name": "Verbesserte Regeneration I (LeP)",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held regeneriert schneller als gewöhnlich.",
+    "rules_text": "LeP-Regeneration +1 pro Regenerationsphase."
+  },
+  {
+    "id": "verbesserte_regeneration_2",
+    "name": "Verbesserte Regeneration II (AsP)",
+    "ap_cost": 10,
+    "category": "magisch",
+    "levels": 3,
+    "prerequisites": {"magic": true},
+    "description": "Der Held regeneriert Astralenergie schneller.",
+    "rules_text": "AsP-Regeneration +1 pro Regenerationsphase."
+  },
+  {
+    "id": "verbesserte_regeneration_3",
+    "name": "Verbesserte Regeneration III (KaP)",
+    "ap_cost": 10,
+    "category": "karmal",
+    "levels": 3,
+    "prerequisites": {"blessed": true},
+    "description": "Der Held regeneriert Karmaenergie schneller.",
+    "rules_text": "KaP-Regeneration +1 pro Regenerationsphase."
+  },
+  {
+    "id": "zaeher_hund",
+    "name": "Zäher Hund",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held bleibt länger auf den Beinen, auch wenn es brenzlig wird.",
+    "rules_text": "Der Held fällt erst bei -5 LeP unter sein Minimum in Ohnmacht (statt 0)."
+  },
+  {
+    "id": "zweistimmiger_gesang",
+    "name": "Zweistimmiger Gesang",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": {"species": ["Zwerg"]},
+    "description": "Der Zwerg kann gleichzeitig zwei Töne singen.",
+    "rules_text": "+2 auf Musizieren (Gesang) Proben."
+  },
+  {
+    "id": "unempfindlich_gegen_hitze",
+    "name": "Unempfindlich gegen Hitze",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann Hitze besser ertragen als andere.",
+    "rules_text": "Proben gegen Hitzeeffekte erhalten +1."
+  },
+  {
+    "id": "unempfindlich_gegen_kaelte",
+    "name": "Unempfindlich gegen Kälte",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann Kälte besser ertragen als andere.",
+    "rules_text": "Proben gegen Kälteeffekte erhalten +1."
+  },
+  {
+    "id": "gutes_gedaechtnis",
+    "name": "Gutes Gedächtnis",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hat ein ausgezeichnetes Erinnerungsvermögen.",
+    "rules_text": "+1 auf alle Wissenstalent-Proben, bei denen Erinnerung relevant ist."
+  },
+  {
+    "id": "entfernungssinn",
+    "name": "Entfernungssinn",
+    "ap_cost": 10,
+    "category": "kampf",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann Entfernungen besonders gut einschätzen.",
+    "rules_text": "+2 auf Fernkampf-Proben bei der Bestimmung der Distanz."
+  },
+  {
+    "id": "schwer_zu_verzaubern",
+    "name": "Schwer zu verzaubern",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Zauber haben es schwer, auf den Helden zu wirken.",
+    "rules_text": "Vergleichsproben gegen Zauber erhalten +1."
+  },
+  {
+    "id": "herausragende_fertigkeit",
+    "name": "Herausragende Fertigkeit",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann ein bestimmtes Talent über die normale Obergrenze hinaus steigern.",
+    "rules_text": "Die Obergrenze eines bestimmten Talents wird um 1 angehoben."
+  },
+  {
+    "id": "herausragender_sinn",
+    "name": "Herausragender Sinn",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Einer der fünf Sinne des Helden ist besonders gut ausgeprägt.",
+    "rules_text": "+2 auf Sinnesschärfe-Proben, die den gewählten Sinn betreffen."
+  },
+  {
+    "id": "kampfrausch",
+    "name": "Kampfrausch",
+    "ap_cost": 15,
+    "category": "kampf",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann sich in einen kontrollierten Kampfrausch versetzen.",
+    "rules_text": "AT +1, PA -1 für die Dauer des Kampfrausches. Muss mit Selbstbeherrschung beendet werden."
+  }
+]

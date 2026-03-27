@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   Plus, Upload, Download, Pencil, TrendingUp, Trash2,
-  Loader2, AlertCircle, User, X, Check, FileUp, Swords, Wand2, Shield
+  Loader2, AlertCircle, User, X, Check, FileUp, Swords, Wand2, Shield, Eye
 } from 'lucide-react'
 import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
 import Modal from '../../components/common/Modal'
 import Badge from '../../components/common/Badge'
 import CharacterCreator from './CharacterCreator'
+import CharacterViewer from './CharacterViewer'
 import SteigerungModal from './SteigerungModal'
 
 const GRADE_COLORS = {
@@ -365,7 +366,7 @@ function DeleteModal({ isOpen, character, onClose, onConfirm, loading }) {
 
 // ── Character Card ──
 
-function CharacterCard({ character, onEdit, onLevelUp, onExport, onDelete }) {
+function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelete }) {
   const grade = (character.experience_grade || 'erfahren').toLowerCase()
   const gradeLabel = GRADE_LABELS[grade] || character.experience_grade || 'Erfahren'
   const gradeVariant = GRADE_COLORS[grade] || 'default'
@@ -414,6 +415,14 @@ function CharacterCard({ character, onEdit, onLevelUp, onExport, onDelete }) {
 
       {/* Action buttons */}
       <div className="flex border-t border-dsa-bg-medium divide-x divide-dsa-bg-medium">
+        <button
+          onClick={() => onView(character)}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-gold hover:bg-dsa-gold/5 transition"
+          title="Anzeigen"
+        >
+          <Eye className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Anzeigen</span>
+        </button>
         <button
           onClick={() => onEdit(character)}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-light transition"
@@ -466,6 +475,8 @@ export default function CharakterTab() {
   const [showDelete, setShowDelete] = useState(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [levelUpChar, setLevelUpChar] = useState(null)
+  const [viewCharacter, setViewCharacter] = useState(null)
+  const [viewLoading, setViewLoading] = useState(false)
 
   // Fetch characters on mount
   useEffect(() => {
@@ -536,6 +547,22 @@ export default function CharakterTab() {
     )
     setEditCharacter(null)
     showSuccess(`${updatedCharacter.name} aktualisiert!`)
+  }
+
+  const handleView = async (character) => {
+    setViewLoading(true)
+    try {
+      const res = await fetch(`/api/characters/${character.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) throw new Error('Charakter konnte nicht geladen werden')
+      const fullChar = await res.json()
+      setViewCharacter(fullChar)
+    } catch (err) {
+      showError(err.message)
+    } finally {
+      setViewLoading(false)
+    }
   }
 
   const handleExport = async (character) => {
@@ -616,8 +643,8 @@ export default function CharakterTab() {
         </button>
       </div>
 
-      {/* Edit loading */}
-      {editLoading && (
+      {/* Loading indicators */}
+      {(editLoading || viewLoading) && (
         <div className="flex items-center gap-2 text-dsa-parchment-dark text-sm">
           <Loader2 className="w-4 h-4 animate-spin" />
           Charakter laden...
@@ -676,6 +703,7 @@ export default function CharakterTab() {
             <CharacterCard
               key={char.id}
               character={char}
+              onView={handleView}
               onEdit={handleEdit}
               onLevelUp={setLevelUpChar}
               onExport={handleExport}
@@ -726,6 +754,12 @@ export default function CharakterTab() {
           onCreated={(character) => {
             handleEdited(character)
           }}
+        />
+      )}
+      {viewCharacter && (
+        <CharacterViewer
+          character={viewCharacter}
+          onClose={() => setViewCharacter(null)}
         />
       )}
     </div>

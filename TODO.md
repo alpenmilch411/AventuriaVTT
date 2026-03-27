@@ -46,14 +46,16 @@
 - [ ] DatenbankDetailModal missing Escape key support
 - [ ] Session lobby→active transition has no clear UI
 
-## Data Completeness
-- [ ] Fill remaining culture AP costs + skill packages (24 of 33 still placeholder)
-- [ ] Fill remaining profession data (15+ still have empty skills/combat_techniques)
-- [ ] Audit species/cultures/professions accuracy against DSA5 rulebook
-- [ ] Advantages/disadvantages catalog (currently free-form, no templates)
-- [ ] Expand creature coverage (60 currently, Optolith/Wiki has more)
-- [ ] Expand spell/liturgy coverage (30 spells + 20 liturgies currently)
-- [ ] Special abilities completeness check vs Optolith
+## Data Completeness & Optolith Integration (HIGH PRIORITY)
+- [ ] **Optolith data audit** — Optolith is installed at `~/Library/Application Support/Optolith/`. Needs a thorough comparison screen: for every entity type (species, cultures, professions, advantages, disadvantages, spells, liturgies, talents, SAs, combat techniques, items, creatures), compare our seed data against Optolith's licensed data and show what can be used, replaced, or added. Build an import tool or at minimum a diff report.
+- [ ] Verify ALL seed data accuracy against Optolith (AP costs, skill bonuses, attribute mods, formulas)
+- [ ] Replace approximate Claude-generated values with exact Optolith values where available
+- [ ] Insure compatability if with existing database, frontend and backend.
+- [ ] Import missing advantages/disadvantages from Optolith (full catalog with AP costs, prerequisites, rules)
+- [ ] Import missing spells/liturgies from Optolith (full catalog per tradition)
+- [ ] Import missing special abilities from Optolith
+- [ ] Import missing creatures from Optolith
+- [ ] Expand culture/profession coverage from Optolith supplement data
 - [ ] Icons and portraits for creatures/professions/species
 
 ## Removed from Scope

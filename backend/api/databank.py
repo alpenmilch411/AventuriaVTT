@@ -28,6 +28,8 @@ from models.databank import (
     SpeciesTemplate,
     CultureTemplate,
     ProfessionTemplate,
+    AdvantageTemplate,
+    DisadvantageTemplate,
 )
 
 router = APIRouter(prefix="/api/databank", tags=["databank"])
@@ -52,6 +54,8 @@ TYPE_MODEL_MAP = {
     "species": SpeciesTemplate,
     "cultures": CultureTemplate,
     "professions": ProfessionTemplate,
+    "advantages": AdvantageTemplate,
+    "disadvantages": DisadvantageTemplate,
 }
 
 # Categories that support user-contribution fields
@@ -59,6 +63,7 @@ _USER_CONTRIB_CATEGORIES = {
     "creatures", "weapons", "armor", "shields", "items",
     "spells", "liturgies", "special_abilities", "talents",
     "species", "cultures", "professions",
+    "advantages", "disadvantages",
 }
 
 VALID_TYPES = list(TYPE_MODEL_MAP.keys())
@@ -88,6 +93,8 @@ SUBCATEGORY_FIELD: dict[str, str] = {
     "special_abilities": "category",
     "talents":           "category",
     "combat_techniques": "category",
+    "advantages":        "category",
+    "disadvantages":     "category",
 }
 
 

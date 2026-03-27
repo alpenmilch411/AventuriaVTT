@@ -1,0 +1,442 @@
+[
+  {
+    "id": "angst_vor",
+    "name": "Angst vor ...",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hat eine ausgeprägte Angst vor einem bestimmten Auslöser.",
+    "rules_text": "Bei Konfrontation mit dem Auslöser: Selbstbeherrschung-Probe oder 1 Stufe Furcht."
+  },
+  {
+    "id": "artefaktgebunden",
+    "name": "Artefaktgebunden",
+    "ap_cost": 10,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": {"magic": true},
+    "description": "Die magische Kraft des Helden ist an ein bestimmtes Artefakt gebunden.",
+    "rules_text": "Ohne das gebundene Artefakt erleidet der Held -3 auf alle Zauberproben."
+  },
+  {
+    "id": "autoritaetsglaeubig",
+    "name": "Autoritätsgläubig",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hinterfragt Autoritätspersonen nur ungern.",
+    "rules_text": "-2 auf Willenskraft-Proben gegen Befehle von Autoritätspersonen."
+  },
+  {
+    "id": "blind",
+    "name": "Blind",
+    "ap_cost": 30,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held ist blind.",
+    "rules_text": "Der Held kann nicht sehen. Alle sichtabhängigen Proben erhalten -6 oder sind unmöglich."
+  },
+  {
+    "id": "blutrausch",
+    "name": "Blutrausch",
+    "ap_cost": 10,
+    "category": "kampf",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held neigt im Kampf dazu, die Kontrolle zu verlieren.",
+    "rules_text": "Bei einer Verwundung (ab 5 SP): Selbstbeherrschung -2, bei Scheitern blindwütig (AT+2, PA-2, keine Flucht, greift nächstes Ziel an)."
+  },
+  {
+    "id": "eingeschraenkter_sinn",
+    "name": "Eingeschränkter Sinn",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Einer der fünf Sinne des Helden ist eingeschränkt.",
+    "rules_text": "-2 auf Sinnesschärfe-Proben, die den betroffenen Sinn betreffen."
+  },
+  {
+    "id": "fettleibig",
+    "name": "Fettleibig",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held ist stark übergewichtig.",
+    "rules_text": "GS -1, -2 auf Körperbeherrschung, -2 auf Klettern."
+  },
+  {
+    "id": "glaesern",
+    "name": "Gläsern",
+    "ap_cost": 15,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": {"magic": true},
+    "description": "Die Aura des Helden ist für andere Magier leicht zu erkennen.",
+    "rules_text": "Andere Magiekundige erhalten +4 auf Odem-Arcanum-Proben, um den Helden zu erkennen."
+  },
+  {
+    "id": "goldgier",
+    "name": "Goldgier",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held ist dem Reichtum verfallen.",
+    "rules_text": "Bei Verlockungen durch Geld/Schätze: Willenskraft-Probe oder der Held muss nachgeben."
+  },
+  {
+    "id": "hitzeempfindlich",
+    "name": "Hitzeempfindlich",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held verträgt Hitze schlecht.",
+    "rules_text": "-1 auf alle Proben bei hohen Temperaturen."
+  },
+  {
+    "id": "jaehzorn",
+    "name": "Jähzorn",
+    "ap_cost": 10,
+    "category": "sozial",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held wird schnell wütend.",
+    "rules_text": "Bei Provokation: Selbstbeherrschung-Probe -2, bei Scheitern unkontrollierter Ausbruch."
+  },
+  {
+    "id": "kaelteempfindlich",
+    "name": "Kälteempfindlich",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held verträgt Kälte schlecht.",
+    "rules_text": "-1 auf alle Proben bei niedrigen Temperaturen."
+  },
+  {
+    "id": "krankheitsanfaellig",
+    "name": "Krankheitsanfällig",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held wird schneller krank als andere.",
+    "rules_text": "-2 auf Zähigkeitsproben gegen Krankheiten."
+  },
+  {
+    "id": "kraemmerseele",
+    "name": "Krämerseele",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann kein Schnäppchen auslassen.",
+    "rules_text": "Bei günstigen Angeboten: Willenskraft-Probe oder der Held muss zuschlagen."
+  },
+  {
+    "id": "lichtempfindlich",
+    "name": "Lichtempfindlich",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Helles Licht blendet den Helden schneller.",
+    "rules_text": "-1 auf alle Proben bei grellem Licht oder im hellen Sonnenlicht."
+  },
+  {
+    "id": "niedrige_lebenskraft_1",
+    "name": "Niedrige Lebenskraft I",
+    "ap_cost": 25,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Der Held ist von schwacher Konstitution.",
+    "rules_text": "LeP-Maximum -5."
+  },
+  {
+    "id": "niedrige_lebenskraft_2",
+    "name": "Niedrige Lebenskraft II",
+    "ap_cost": 25,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": {"disadvantages": ["niedrige_lebenskraft_1"]},
+    "description": "Der Held ist von besonders schwacher Konstitution.",
+    "rules_text": "LeP-Maximum -5 (insgesamt -10)."
+  },
+  {
+    "id": "niedrige_seelenkraft",
+    "name": "Niedrige Seelenkraft",
+    "ap_cost": 25,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hat eine schwache Seele.",
+    "rules_text": "SK -1."
+  },
+  {
+    "id": "niedrige_astralkraft_1",
+    "name": "Niedrige Astralkraft I",
+    "ap_cost": 25,
+    "category": "magisch",
+    "levels": 2,
+    "prerequisites": {"magic": true},
+    "description": "Der Held hat weniger Astralenergie als gewöhnliche Magier.",
+    "rules_text": "AsP-Maximum -5."
+  },
+  {
+    "id": "niedrige_karmalkraft_1",
+    "name": "Niedrige Karmalkraft I",
+    "ap_cost": 25,
+    "category": "karmal",
+    "levels": 2,
+    "prerequisites": {"blessed": true},
+    "description": "Der Held hat weniger Karmaenergie als gewöhnliche Geweihte.",
+    "rules_text": "KaP-Maximum -5."
+  },
+  {
+    "id": "pech_1",
+    "name": "Pech I",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Das Schicksal meint es nicht gut mit dem Helden.",
+    "rules_text": "SchiP -1."
+  },
+  {
+    "id": "pech_2",
+    "name": "Pech II",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["pech_1"]},
+    "description": "Das Schicksal meint es richtig schlecht mit dem Helden.",
+    "rules_text": "SchiP -1 (insgesamt -2)."
+  },
+  {
+    "id": "pech_3",
+    "name": "Pech III",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["pech_2"]},
+    "description": "Der Held scheint vom Schicksal verflucht zu sein.",
+    "rules_text": "SchiP -1 (insgesamt -3)."
+  },
+  {
+    "id": "personalitaets_1",
+    "name": "Persönlichkeitsschwäche I",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held hat eine leichte Charakterschwäche.",
+    "rules_text": "-1 auf Proben in sozialen Situationen, die von der Schwäche betroffen sind."
+  },
+  {
+    "id": "personalitaets_2",
+    "name": "Persönlichkeitsschwäche II",
+    "ap_cost": 10,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["personalitaets_1"]},
+    "description": "Der Held hat eine deutliche Charakterschwäche.",
+    "rules_text": "-2 auf Proben in sozialen Situationen, die von der Schwäche betroffen sind."
+  },
+  {
+    "id": "personalitaets_3",
+    "name": "Persönlichkeitsschwäche III",
+    "ap_cost": 15,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["personalitaets_2"]},
+    "description": "Der Held hat eine massive Charakterschwäche.",
+    "rules_text": "-3 auf Proben in sozialen Situationen, die von der Schwäche betroffen sind."
+  },
+  {
+    "id": "phobie",
+    "name": "Phobie",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held hat eine lähmende Phobie vor etwas Bestimmtem.",
+    "rules_text": "Bei Konfrontation: Willenskraft-Probe -3, bei Scheitern 2 Stufen Furcht."
+  },
+  {
+    "id": "prinzipientreue_1",
+    "name": "Prinzipientreue I",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held hält sich streng an einen Moralkodex.",
+    "rules_text": "Der Held darf unter keinen Umständen gegen sein gewähltes Prinzip verstoßen."
+  },
+  {
+    "id": "prinzipientreue_2",
+    "name": "Prinzipientreue II",
+    "ap_cost": 10,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["prinzipientreue_1"]},
+    "description": "Der Held verteidigt seine Prinzipien auch unter hohem persönlichem Risiko.",
+    "rules_text": "Verstöße gegen die Prinzipien verursachen 1 Stufe Betäubung aus Scham und Schuldgefühl."
+  },
+  {
+    "id": "schulden_1",
+    "name": "Schulden I",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held hat Schulden.",
+    "rules_text": "Der Held schuldet einem Gläubiger 100 Silbertaler. Startgeld halbiert."
+  },
+  {
+    "id": "schulden_2",
+    "name": "Schulden II",
+    "ap_cost": 10,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["schulden_1"]},
+    "description": "Der Held hat erhebliche Schulden.",
+    "rules_text": "Der Held schuldet einem Gläubiger 500 Silbertaler. Kein Startgeld."
+  },
+  {
+    "id": "schulden_3",
+    "name": "Schulden III",
+    "ap_cost": 15,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["schulden_2"]},
+    "description": "Der Held hat massive Schulden bei gefährlichen Leuten.",
+    "rules_text": "Der Held schuldet einem Gläubiger 1000+ Silbertaler. Kein Startgeld, der Gläubiger schickt Geldeintreiber."
+  },
+  {
+    "id": "schwacher_astralkoerper_1",
+    "name": "Schwacher Astralkörper I",
+    "ap_cost": 15,
+    "category": "magisch",
+    "levels": 2,
+    "prerequisites": {"magic": true},
+    "description": "Der Astralkörper des Helden ist anfällig.",
+    "rules_text": "-1 auf alle Proben zur Abwehr astraler Einflüsse."
+  },
+  {
+    "id": "schwacher_astralkoerper_2",
+    "name": "Schwacher Astralkörper II",
+    "ap_cost": 15,
+    "category": "magisch",
+    "levels": 2,
+    "prerequisites": {"magic": true, "disadvantages": ["schwacher_astralkoerper_1"]},
+    "description": "Der Astralkörper des Helden ist äußerst anfällig.",
+    "rules_text": "-2 auf alle Proben zur Abwehr astraler Einflüsse (insgesamt)."
+  },
+  {
+    "id": "sturmempfindlich",
+    "name": "Sturmempfindlich",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Sturm und Unwetter setzen dem Helden besonders zu.",
+    "rules_text": "-1 auf alle Proben bei starkem Wind oder Sturm."
+  },
+  {
+    "id": "taub",
+    "name": "Taub",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann nicht hören.",
+    "rules_text": "Alle hörabhängigen Proben sind automatisch misslungen. -3 auf INI (keine akustische Warnung)."
+  },
+  {
+    "id": "unfaehig",
+    "name": "Unfähig",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann ein bestimmtes Talent überhaupt nicht erlernen.",
+    "rules_text": "Das gewählte Talent kann nicht gesteigert werden und bleibt auf FW 0."
+  },
+  {
+    "id": "verpflichtungen_1",
+    "name": "Verpflichtungen I",
+    "ap_cost": 5,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held hat Pflichten gegenüber einer Organisation oder Person.",
+    "rules_text": "Gelegentlich muss der Held seinen Verpflichtungen nachkommen, auch wenn sie ungelegen kommen."
+  },
+  {
+    "id": "verpflichtungen_2",
+    "name": "Verpflichtungen II",
+    "ap_cost": 10,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["verpflichtungen_1"]},
+    "description": "Der Held hat starke Verpflichtungen.",
+    "rules_text": "Regelmäßig muss der Held seinen Verpflichtungen nachkommen und dafür Zeit und Ressourcen aufwenden."
+  },
+  {
+    "id": "verpflichtungen_3",
+    "name": "Verpflichtungen III",
+    "ap_cost": 15,
+    "category": "sozial",
+    "levels": 3,
+    "prerequisites": {"disadvantages": ["verpflichtungen_2"]},
+    "description": "Der Held ist einer mächtigen Instanz nahezu hörig.",
+    "rules_text": "Der Held muss ständig den Wünschen seiner Verpflichtung nachkommen und kann Aufträge kaum ablehnen."
+  },
+  {
+    "id": "wahrer_name",
+    "name": "Wahrer Name",
+    "ap_cost": 10,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": {"magic": true},
+    "description": "Der Held hat einen wahren Namen, der ihn magisch verwundbar macht.",
+    "rules_text": "Wer den wahren Namen kennt, erhält +5 auf alle Zauberproben gegen den Helden."
+  },
+  {
+    "id": "niedrige_zaehigkeit",
+    "name": "Niedrige Zähigkeit",
+    "ap_cost": 25,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held ist besonders anfällig gegenüber körperlichen Einflüssen.",
+    "rules_text": "ZK -1."
+  },
+  {
+    "id": "schlechte_regeneration_1",
+    "name": "Schlechte Regeneration I (LeP)",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held regeneriert langsamer als gewöhnlich.",
+    "rules_text": "LeP-Regeneration -1 pro Regenerationsphase (mindestens 0)."
+  },
+  {
+    "id": "schlechte_regeneration_2",
+    "name": "Schlechte Regeneration II (AsP)",
+    "ap_cost": 10,
+    "category": "magisch",
+    "levels": 3,
+    "prerequisites": {"magic": true},
+    "description": "Der Held regeneriert Astralenergie langsamer.",
+    "rules_text": "AsP-Regeneration -1 pro Regenerationsphase (mindestens 0)."
+  }
+]

@@ -42,6 +42,8 @@ from models.databank import (  # noqa: E402
     SpeciesTemplate,
     CultureTemplate,
     ProfessionTemplate,
+    AdvantageTemplate,
+    DisadvantageTemplate,
 )
 from models.wiki import WikiPage  # noqa: E402
 from models.user import User  # noqa: E402
@@ -117,7 +119,15 @@ SEED_MAP: Dict[str, Tuple[type, List[str]]] = {
     ),
     "professions.json": (
         ProfessionTemplate,
-        ["compatible_species", "combat_techniques", "skills", "special_abilities", "spells", "liturgies"],
+        ["compatible_species", "combat_techniques", "skills", "special_abilities", "spells", "liturgies", "starting_equipment", "starting_money"],
+    ),
+    "advantages.json": (
+        AdvantageTemplate,
+        ["prerequisites"],
+    ),
+    "disadvantages.json": (
+        DisadvantageTemplate,
+        ["prerequisites"],
     ),
 }
 
@@ -147,6 +157,8 @@ REQUIRED_FIELDS: Dict[str, List[str]] = {
     "species": ["id", "name", "lep_base"],
     "cultures": ["id", "name"],
     "professions": ["id", "name"],
+    "advantages": ["id", "name", "ap_cost"],
+    "disadvantages": ["id", "name", "ap_cost"],
 }
 
 # Map JSON filenames to validation entity types
@@ -165,6 +177,8 @@ _FILE_TO_ENTITY: Dict[str, str] = {
     "species.json": "species",
     "cultures.json": "cultures",
     "professions.json": "professions",
+    "advantages.json": "advantages",
+    "disadvantages.json": "disadvantages",
 }
 
 
@@ -243,6 +257,33 @@ def _upsert_batch(session: Session, model: type, records: List[dict], entity_typ
             session.add(model(**row))
         count += 1
 
+    return count
+
+
+def _seed_profession_equipment(session: Session) -> int:
+    """Load profession_equipment.json and set starting_equipment/starting_money on ProfessionTemplate rows."""
+    filepath = SEED_DIR / "profession_equipment.json"
+    if not filepath.exists():
+        log.warning("profession_equipment.json not found, skipping")
+        return 0
+
+    records = _load_json(filepath)
+    count = 0
+    for rec in records:
+        prof_id = rec.get("profession_id")
+        if not prof_id:
+            continue
+
+        prof = session.get(ProfessionTemplate, prof_id)
+        if not prof:
+            log.warning("  profession '%s' not found, skipping equipment", prof_id)
+            continue
+
+        prof.starting_equipment = rec.get("items", [])
+        prof.starting_money = rec.get("money", {})
+        count += 1
+
+    log.info("  Updated starting equipment for %d professions", count)
     return count
 
 
@@ -676,6 +717,11 @@ def seed(database_url: Optional[str] = None) -> Dict[str, int]:
             log.warning("  %d cross-reference issue(s) found", len(xref_warnings))
         else:
             log.info("  All cross-references OK")
+
+        # Seed profession starting equipment from separate mapping file
+        log.info("Seeding profession starting equipment...")
+        equip_count = _seed_profession_equipment(session)
+        results["profession_equipment.json"] = equip_count
 
         # Seed wiki pages
         log.info("Seeding wiki pages...")
