@@ -4,6 +4,53 @@
 
 ---
 
+## Session 13 — Architecture overhaul, buff system, character creation (2026-03-27)
+**Type:** Claude Code — multi-agent teams (10+ agents across 6 teams)
+
+### Architecture: DB-ID Inventory
+Replaced all name-based/regex item classification with template_id-based DB lookups. Backend now enriches inventory items on serve — thin storage ({template_id, quantity, equipped}), rich delivery (all template fields merged). New shared modules: `combatComputation.js` (pure combat stats), `itemClassification.js` (DB-category classification). All regex classifiers deleted.
+
+### Buff System (new feature)
+Full attribute buff system: `active_buffs` on Character model, WS handlers (apply/remove/edit/clear_expired), frontend timer UI with countdown and auto-expire. GM can add/edit/remove buffs per character. `computeCombatStats` applies buffs before deriving AT/PA/Schadensbonus. Elixier der Stärke → KK+2 for 30 min with visible timer.
+
+### Item Effects Engine
+28 items converted from text-only to machine-readable structured effects (probe_bonus, condition_remove, heal_per_rest). Combat items wired into TurnFlow. Probe bonus items auto-offered during talent probes. Inventory shows contextual badges.
+
+### Unified Browsers
+All 4 database browsers (DatenbankTab, DataBrowser, LootPanel, InventoryPanel) now share category definitions from `DatenbankDetail.jsx`. DatenbankTab has "Alle" cross-category search. Categories aligned everywhere.
+
+### Character Creation Fixes
+- "Bearbeiten" now opens CharacterCreator in edit mode (was broken — wrong route + read-only view)
+- DSA5 rules: AsP/KaP formula corrected, 80 AP advantage cap enforced, AT/PA split UI for melee
+- Expanded to 33 advantages + 33 disadvantages in wizard (was 10 each)
+- Species auto-advantages shown, spell/liturgy selection toggles added
+
+### Character Viewer (new)
+Full 9-tab read-only viewer: Übersicht, Eigenschaften, Abgeleitete Werte, Kampf, Talente, Magie, SF/Vor/Nach, Ausrüstung, Profil. Every value clickable with DSA5 formula explanations. Portrait upload. TipAbbr tooltips everywhere.
+
+### New DB Data
+- 43 advantages + 44 disadvantages (new models, seed files, API endpoints)
+- Starting equipment for all 46 professions (mapping to existing item template_ids)
+- All 33 cultures + all 46 professions filled with real skill/combat/AP data
+- Languages support (DB column, wizard save, player + GM display)
+- SA purchase step in wizard
+- Seed import validation (required fields + cross-references)
+
+### Bug Fixes
+- React infinite loop on combat start (batched store updates, useRef guard)
+- Säbel AT/PA=0, GM overview all 0, AP awards not persisting
+- Character edit blocked during active session (locked_session_id guard)
+
+### Commits
+- `c557888` Session 13: DB-ID inventory, buff system, unified browsers, structured effects
+- `4cccbe6` Fix React infinite loop on combat start
+- `1baebf2` Extract TODO.md from SPEC.md
+- `d7b6d03` Fix character creation: routing, wizard, DSA5 rules, seed data
+- `996115a` Add languages support
+- `3864a1f` Character viewer, wizard help, advantages/disadvantages DB, starting equipment
+
+---
+
 ## Session 12 — Characters tab: full stack build (2026-03-26)
 **Type:** Claude Code — multi-agent team (TeamCreate + DSA Veteran + Backend Auditor + Backend Builder + Character Creator + Character Manager)
 

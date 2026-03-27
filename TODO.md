@@ -29,7 +29,6 @@
 - [ ] Regelmodul-System (optional rules toggle)
 - [ ] Campaign achievements
 - [ ] Complexity level switching (Basic/Standard/Advanced)
-- [ ] Quick character templates UI — backend exists (6 archetypes), UI pending
 - [ ] Export (character, campaign, session log)
 
 ## Open Bugs & Polish
@@ -50,7 +49,7 @@
 - [ ] **Optolith data audit** — Optolith is installed at `~/Library/Application Support/Optolith/`. Needs a thorough comparison screen: for every entity type (species, cultures, professions, advantages, disadvantages, spells, liturgies, talents, SAs, combat techniques, items, creatures), compare our seed data against Optolith's licensed data and show what can be used, replaced, or added. Build an import tool or at minimum a diff report.
 - [ ] Verify ALL seed data accuracy against Optolith (AP costs, skill bonuses, attribute mods, formulas)
 - [ ] Replace approximate Claude-generated values with exact Optolith values where available
-- [ ] Insure compatability if with existing database, frontend and backend.
+- [ ] Insure compatability with existing database, frontend and backend
 - [ ] Import missing advantages/disadvantages from Optolith (full catalog with AP costs, prerequisites, rules)
 - [ ] Import missing spells/liturgies from Optolith (full catalog per tradition)
 - [ ] Import missing special abilities from Optolith
@@ -79,8 +78,17 @@
 - [x] DatenbankTab "Alle" cross-category search
 - [x] AP awards persisted to DB at session end
 - [x] Character edit blocked during active session
-- [x] Seed data fixes (Zweihandhiebwaffen, umlauts, 9 cultures, 10 professions)
+- [x] Seed data fixes (Zweihandhiebwaffen, umlauts, all 33 cultures, all 46 professions filled)
 - [x] Seed import validation (required fields + cross-references)
-- [x] React infinite loop on combat start fixed
+- [x] React infinite loop on combat start fixed (3 fixes: batched store, useRef guard, useEffect)
 - [x] Säbel AT/PA=0 fixed, GM overview AT/PA/FK fixed
 - [x] Verzückung + Bewusstlosigkeit conditions added
+- [x] Languages support (DB column, wizard save, player + GM display)
+- [x] Character creation: Bearbeiten opens wizard in edit mode, available_ap fix
+- [x] DSA5 rules fixes: AsP/KaP formula, 80 AP advantage cap, AT/PA split UI
+- [x] Character viewer (9-tab read-only overlay with formula explanations, portrait upload)
+- [x] Wizard help text on all 10 creation steps
+- [x] Advantages DB (43 entries) + Disadvantages DB (44 entries) — models, seed, API
+- [x] Starting equipment per profession (46 professions mapped to existing item template_ids)
+- [x] SA purchase step in wizard (browse + toggle from DB)
+- [x] Wizard fetches advantages/disadvantages from API instead of hardcoded arrays
