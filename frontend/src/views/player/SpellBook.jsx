@@ -43,12 +43,22 @@ function SpellBook({ sendMessage }) {
   useEffect(() => {
     if (!token) return
     const h = { Authorization: `Bearer ${token}` }
-    Promise.all([
-      fetch('/api/databank/spells', { headers: h }).then(r => r.ok ? r.json() : []).catch(() => []),
-      fetch('/api/databank/liturgies', { headers: h }).then(r => r.ok ? r.json() : []).catch(() => []),
-    ]).then(([sl, ll]) => {
-      const spells = Array.isArray(sl) ? sl : sl.items || []
-      const lits = Array.isArray(ll) ? ll : ll.items || []
+    const fetchAll = async (cat) => {
+      let all = [], page = 1
+      while (true) {
+        try {
+          const res = await fetch(`/api/databank/${cat}?page_size=200&page=${page}`, { headers: h })
+          if (!res.ok) break
+          const data = await res.json()
+          const items = data.items || []
+          all = all.concat(items)
+          if (items.length < 200 || page * 200 >= (data.total || Infinity)) break
+          page++
+        } catch { break }
+      }
+      return all
+    }
+    Promise.all([fetchAll('spells'), fetchAll('liturgies')]).then(([spells, lits]) => {
       // Index by lowercase name for lookup
       const sMap = {}
       for (const s of spells) {

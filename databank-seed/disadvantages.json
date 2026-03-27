@@ -1,13 +1,23 @@
 [
   {
     "id": "angst_vor",
-    "name": "Angst vor ...",
-    "ap_cost": 10,
+    "name": "Angst vor …",
+    "ap_cost": 8,
     "category": "allgemein",
-    "levels": 1,
+    "levels": 3,
     "prerequisites": null,
-    "description": "Der Held hat eine ausgeprägte Angst vor einem bestimmten Auslöser.",
-    "rules_text": "Bei Konfrontation mit dem Auslöser: Selbstbeherrschung-Probe oder 1 Stufe Furcht."
+    "description": "Pro Stufe der Angst erleidet der Held eine Stufe *Furcht*, so lange er dem Auslöser ausgesetzt ist.",
+    "rules_text": "Pro Stufe der Angst erleidet der Held eine Stufe *Furcht*, so lange er dem Auslöser ausgesetzt ist."
+  },
+  {
+    "id": "arm",
+    "name": "Arm",
+    "ap_cost": 1,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Durch den Nachteil *Arm* erhält ein Held bei der Generierung 250 Silbertaler weniger pro Stufe. Wählt er also 3 Stufen *Arm*, beginnt er ohne Startkapital und besitzt nur ein Kleiderpaket der Kategori",
+    "rules_text": "Durch den Nachteil *Arm* erhält ein Held bei der Generierung 250 Silbertaler weniger pro Stufe. Wählt er also 3 Stufen *Arm*, beginnt er ohne Startkapital und besitzt nur ein Kleiderpaket der Kategorie arm."
   },
   {
     "id": "artefaktgebunden",
@@ -15,159 +25,229 @@
     "ap_cost": 10,
     "category": "magisch",
     "levels": 1,
-    "prerequisites": {"magic": true},
-    "description": "Die magische Kraft des Helden ist an ein bestimmtes Artefakt gebunden.",
-    "rules_text": "Ohne das gebundene Artefakt erleidet der Held -3 auf alle Zauberproben."
+    "prerequisites": null,
+    "description": "Ist der Held nicht in direktem Kontakt mit dem Artefakt (dies bedeutet: Kontakt mit der Haut), kann er nur erschwert Zaubern. Dieser Nachteil erschwert Zauber um 1, wenn die Bedingung des Körperkontak",
+    "rules_text": "Ist der Held nicht in direktem Kontakt mit dem Artefakt (dies bedeutet: Kontakt mit der Haut), kann er nur erschwert Zaubern. Dieser Nachteil erschwert Zauber um 1, wenn die Bedingung des Körperkontaktes nicht erfüllt ist. Wird das Artefakt vernichtet, kann er so lange nur mit der Erschwernis Zauber wirken, bis er selbst ein neues Artefakt gleicher Machart hergestellt hat, in das die Artefaktgebundenheit automatisch einfließt."
   },
   {
-    "id": "autoritaetsglaeubig",
-    "name": "Autoritätsgläubig",
-    "ap_cost": 5,
-    "category": "sozial",
+    "id": "behaebig",
+    "name": "Behäbig",
+    "ap_cost": 4,
+    "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held hinterfragt Autoritätspersonen nur ungern.",
-    "rules_text": "-2 auf Willenskraft-Proben gegen Befehle von Autoritätspersonen."
+    "description": "Durch Behäbig verliert ein Held 1 Punkt von seinem Geschwindigkeit-Grundwert.",
+    "rules_text": "Durch Behäbig verliert ein Held 1 Punkt von seinem Geschwindigkeit-Grundwert."
   },
   {
     "id": "blind",
     "name": "Blind",
-    "ap_cost": 30,
+    "ap_cost": 50,
     "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held ist blind.",
-    "rules_text": "Der Held kann nicht sehen. Alle sichtabhängigen Proben erhalten -6 oder sind unmöglich."
+    "description": "Durch den Nachteil ist ihm der Einsatz vieler Fertigkeiten erschwert oder erst gar nicht möglich. Dies gilt ebenfalls für Sonderfertigkeiten. Welche Handlungen um wie viel erschwert oder gar unmöglich",
+    "rules_text": "Durch den Nachteil ist ihm der Einsatz vieler Fertigkeiten erschwert oder erst gar nicht möglich. Dies gilt ebenfalls für Sonderfertigkeiten. Welche Handlungen um wie viel erschwert oder gar unmöglich sind, entscheidet der Meister. Die Blindheit ist nicht heilbar, außer durch ein Großes Wunder. Der Held erhält den Status *Blind*."
   },
   {
     "id": "blutrausch",
     "name": "Blutrausch",
     "ap_cost": 10,
-    "category": "kampf",
+    "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held neigt im Kampf dazu, die Kontrolle zu verlieren.",
-    "rules_text": "Bei einer Verwundung (ab 5 SP): Selbstbeherrschung -2, bei Scheitern blindwütig (AT+2, PA-2, keine Flucht, greift nächstes Ziel an)."
+    "description": "Der Held erhält unter speziellen Umständen den Status *Blutrausch*. Der Blutrausch wird aktiviert, wenn der Held durch einen Angriff eine Stufe des Zustands *Schmerz* erleidet oder ihm seine Probe auf",
+    "rules_text": "Der Held erhält unter speziellen Umständen den Status *Blutrausch*. Der Blutrausch wird aktiviert, wenn der Held durch einen Angriff eine Stufe des Zustands *Schmerz* erleidet oder ihm seine Probe auf *Willenskraft* zur Aktivierung der Schlechten Eigenschaft Jähzorn misslingt."
   },
   {
     "id": "eingeschraenkter_sinn",
     "name": "Eingeschränkter Sinn",
-    "ap_cost": 10,
+    "ap_cost": 0,
     "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Einer der fünf Sinne des Helden ist eingeschränkt.",
-    "rules_text": "-2 auf Sinnesschärfe-Proben, die den betroffenen Sinn betreffen."
+    "description": "Wer über einen Eingeschränkten Sinn verfügt, dessen Proben auf *Sinnesschärfe* sind um 2 erschwert, wenn die Probe den entsprechenden Sinn betrifft. Eingeschränkte Sicht erschwert zudem Proben auf Fer",
+    "rules_text": "Wer über einen Eingeschränkten Sinn verfügt, dessen Proben auf *Sinnesschärfe* sind um 2 erschwert, wenn die Probe den entsprechenden Sinn betrifft. Eingeschränkte Sicht erschwert zudem Proben auf Fernkampf um 2. Folgende Sinne können gewählt werden: Sicht, Gehör, Geruch & Geschmack, Tastsinn. Ein Held kann bis zu zwei eingeschränkte Sinne besitzen."
+  },
+  {
+    "id": "farbenblind",
+    "name": "Farbenblind",
+    "ap_cost": 2,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Für den Abenteurer sind Farben nicht zu unterscheiden. Dies kann sich bei einigen Proben, etwa auf *Alchimie* („Rote Flüssigkeit in grüne Flüssigkeit schütten.“), beim Zuordnen von Wappen (*Etikette*)",
+    "rules_text": "Für den Abenteurer sind Farben nicht zu unterscheiden. Dies kann sich bei einigen Proben, etwa auf *Alchimie* („Rote Flüssigkeit in grüne Flüssigkeit schütten.“), beim Zuordnen von Wappen (*Etikette*) oder bei der *Orientierung* im Dschungel negativ auswirken. Ob eine Probe abgelegt werden kann und wie hoch die Erschwernis ist, entscheidet der Meister."
   },
   {
     "id": "fettleibig",
     "name": "Fettleibig",
-    "ap_cost": 15,
+    "ap_cost": 25,
     "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held ist stark übergewichtig.",
-    "rules_text": "GS -1, -2 auf Körperbeherrschung, -2 auf Klettern."
+    "description": "Der Nachteil hat zur Folge, dass Proben auf *Klettern*, *Körperbeherrschung*, *Tanzen* und *Verbergen* um 1 erschwert sind.",
+    "rules_text": "Der Nachteil hat zur Folge, dass Proben auf *Klettern*, *Körperbeherrschung*, *Tanzen* und *Verbergen* um 1 erschwert sind."
   },
   {
-    "id": "glaesern",
-    "name": "Gläsern",
-    "ap_cost": 15,
-    "category": "magisch",
-    "levels": 1,
-    "prerequisites": {"magic": true},
-    "description": "Die Aura des Helden ist für andere Magier leicht zu erkennen.",
-    "rules_text": "Andere Magiekundige erhalten +4 auf Odem-Arcanum-Proben, um den Helden zu erkennen."
-  },
-  {
-    "id": "goldgier",
-    "name": "Goldgier",
+    "id": "giftanfaellig",
+    "name": "Giftanfällig",
     "ap_cost": 5,
-    "category": "sozial",
-    "levels": 1,
+    "category": "allgemein",
+    "levels": 2,
     "prerequisites": null,
-    "description": "Der Held ist dem Reichtum verfallen.",
-    "rules_text": "Bei Verlockungen durch Geld/Schätze: Willenskraft-Probe oder der Held muss nachgeben."
+    "description": "Eine Giftanfälligkeit verschlechtert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Giften zu widerstehen.",
+    "rules_text": "Eine Giftanfälligkeit verschlechtert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Giften zu widerstehen."
+  },
+  {
+    "id": "haesslich",
+    "name": "Hässlich",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Durch jede Stufe dieses Nachteils erleidet der Held eine Erschwernis von 1 auf *Betören (Anbandeln, Liebeskünste)*, *Überreden (Manipulieren, Schmeicheln)* und *Handel (Feilschen)*.",
+    "rules_text": "Durch jede Stufe dieses Nachteils erleidet der Held eine Erschwernis von 1 auf *Betören (Anbandeln, Liebeskünste)*, *Überreden (Manipulieren, Schmeicheln)* und *Handel (Feilschen)*."
   },
   {
     "id": "hitzeempfindlich",
     "name": "Hitzeempfindlich",
-    "ap_cost": 5,
+    "ap_cost": 3,
     "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held verträgt Hitze schlecht.",
-    "rules_text": "-1 auf alle Proben bei hohen Temperaturen."
-  },
-  {
-    "id": "jaehzorn",
-    "name": "Jähzorn",
-    "ap_cost": 10,
-    "category": "sozial",
-    "levels": 1,
-    "prerequisites": null,
-    "description": "Der Held wird schnell wütend.",
-    "rules_text": "Bei Provokation: Selbstbeherrschung-Probe -2, bei Scheitern unkontrollierter Ausbruch."
+    "description": "Hitzestufen werden für den Helden um 1 Stufe erhöht, sobald er mindestens unter Hitzestufe 2 leidet.",
+    "rules_text": "Hitzestufen werden für den Helden um 1 Stufe erhöht, sobald er mindestens unter Hitzestufe 2 leidet."
   },
   {
     "id": "kaelteempfindlich",
     "name": "Kälteempfindlich",
-    "ap_cost": 5,
+    "ap_cost": 3,
     "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held verträgt Kälte schlecht.",
-    "rules_text": "-1 auf alle Proben bei niedrigen Temperaturen."
+    "description": "Kältestufen werden für den Helden um 1 Stufe erhöht, sobald er mindestens unter Kältestufe 1 leidet.",
+    "rules_text": "Kältestufen werden für den Helden um 1 Stufe erhöht, sobald er mindestens unter Kältestufe 1 leidet."
+  },
+  {
+    "id": "keine_flugsalbe",
+    "name": "Keine Flugsalbe",
+    "ap_cost": 25,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann die Sonderfertigkeit Flugsalbe nicht erwerben. Dadurch wird die Sonderfertigkeit Tradition (Hexe) um 10 AP billiger.",
+    "rules_text": "Der Held kann die Sonderfertigkeit Flugsalbe nicht erwerben. Dadurch wird die Sonderfertigkeit Tradition (Hexe) um 10 AP billiger."
+  },
+  {
+    "id": "kein_vertrauter",
+    "name": "Kein Vertrauter",
+    "ap_cost": 25,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann die Sonderfertigkeit Vertrautenbindung nicht erwerben. Dadurch wird die Sonderfertigkeit Tradition (Hexe) um 10 AP billiger.",
+    "rules_text": "Der Held kann die Sonderfertigkeit Vertrautenbindung nicht erwerben. Dadurch wird die Sonderfertigkeit Tradition (Hexe) um 10 AP billiger."
+  },
+  {
+    "id": "koerpergebundene_kraft",
+    "name": "Körpergebundene Kraft",
+    "ap_cost": 5,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Sobald der Held, aus welchem Grunde auch immer, einen Teil seiner Haarpracht einbüßt (z.B. durch Abschneiden, Feuer etc.; unabhängig von der Länge), verliert er sofort 10 Astralpunkte (bis zu einem Mi",
+    "rules_text": "Sobald der Held, aus welchem Grunde auch immer, einen Teil seiner Haarpracht einbüßt (z.B. durch Abschneiden, Feuer etc.; unabhängig von der Länge), verliert er sofort 10 Astralpunkte (bis zu einem Minimum von 0). Diese können normal regeneriert werden. Der normale menschliche Haarverlust zählt nicht als Verlust der Haarpracht."
+  },
+  {
+    "id": "koerperliche_auffaelligkeit",
+    "name": "Körperliche Auffälligkeit",
+    "ap_cost": 2,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Ein Held kann maximal zwei Körperliche Auffälligkeiten wählen. Die Körperliche Auffälligkeit zieht gelegentlich Erschwernisse auf Gesellschaftstalente aufgrund von Aberglaube oder Misstrauen nach sich",
+    "rules_text": "Ein Held kann maximal zwei Körperliche Auffälligkeiten wählen. Die Körperliche Auffälligkeit zieht gelegentlich Erschwernisse auf Gesellschaftstalente aufgrund von Aberglaube oder Misstrauen nach sich."
   },
   {
     "id": "krankheitsanfaellig",
     "name": "Krankheitsanfällig",
     "ap_cost": 5,
     "category": "allgemein",
-    "levels": 1,
+    "levels": 2,
     "prerequisites": null,
-    "description": "Der Held wird schneller krank als andere.",
-    "rules_text": "-2 auf Zähigkeitsproben gegen Krankheiten."
+    "description": "Eine Krankheitsanfälligkeit verschlechtert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Krankheiten zu widerstehen.",
+    "rules_text": "Eine Krankheitsanfälligkeit verschlechtert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Krankheiten zu widerstehen."
   },
   {
-    "id": "kraemmerseele",
-    "name": "Krämerseele",
-    "ap_cost": 5,
-    "category": "sozial",
+    "id": "laestige_mindergeister",
+    "name": "Lästige Mindergeister",
+    "ap_cost": 20,
+    "category": "magisch",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held kann kein Schnäppchen auslassen.",
-    "rules_text": "Bei günstigen Angeboten: Willenskraft-Probe oder der Held muss zuschlagen."
+    "description": "Jedes Mal wenn der Zauberer Astralenergie ausgibt, würfelt er mit dem W20. Ist das Ergebnis gleich oder kleiner der ausgegebenen Astralenergiemenge, tauchen Mindergeister auf und belästigen den Zauber",
+    "rules_text": "Jedes Mal wenn der Zauberer Astralenergie ausgibt, würfelt er mit dem W20. Ist das Ergebnis gleich oder kleiner der ausgegebenen Astralenergiemenge, tauchen Mindergeister auf und belästigen den Zauberer. Welche Art von Mindergeistern erscheinen, entscheidet der Meister je nach Situation. Beispiele sind Windbeutel, die das Haar des Zauberers selbst bei Windstille wallen lassen, Tränenlinge, die sich unter die Augen setzen, oder Feuerwusel, die Gegenstände des Zauberers erhitzen oder gar verkohlen. Außerdem sind alle Fertigkeitsproben wegen der Ablenkung um 1 erschwert. Die Mindergeister bleiben für 10 Minuten, ehe sie von selbst wieder verschwinden. Sind durch zu häufiges Zaubern mehrere Mindergeister erschienen, summieren sich die Erschwernis dennoch nicht auf."
   },
   {
     "id": "lichtempfindlich",
     "name": "Lichtempfindlich",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held erleidet eine Stufe *Schmerz*, sobald er Sonnenlicht ausgesetzt ist, das heller ist als Dämmerlicht. Diese Auswirkung lässt sich vermeiden, wenn der Betroffene seinen kompletten Körper inklus",
+    "rules_text": "Der Held erleidet eine Stufe *Schmerz*, sobald er Sonnenlicht ausgesetzt ist, das heller ist als Dämmerlicht. Diese Auswirkung lässt sich vermeiden, wenn der Betroffene seinen kompletten Körper inklusive der Augen verhüllt."
+  },
+  {
+    "id": "magische_einschraenkung",
+    "name": "Magische Einschränkung",
+    "ap_cost": 30,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "In der Umgebung, für die der Nachteil gilt, hat der Zauberer bei magischen Fertigkeitsproben keine Erschwernisse, ansonsten eine von 1.",
+    "rules_text": "In der Umgebung, für die der Nachteil gilt, hat der Zauberer bei magischen Fertigkeitsproben keine Erschwernisse, ansonsten eine von 1."
+  },
+  {
+    "id": "nachtblind",
+    "name": "Nachtblind",
     "ap_cost": 10,
     "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Helles Licht blendet den Helden schneller.",
-    "rules_text": "-1 auf alle Proben bei grellem Licht oder im hellen Sonnenlicht."
+    "description": "Sobald der Held mindestens eine Stufe Sichterschwernis durch Dunkelheit erleidet, wird diese Erschwernis für ihn um eine Stufe erhöht.",
+    "rules_text": "Sobald der Held mindestens eine Stufe Sichterschwernis durch Dunkelheit erleidet, wird diese Erschwernis für ihn um eine Stufe erhöht."
   },
   {
-    "id": "niedrige_lebenskraft_1",
-    "name": "Niedrige Lebenskraft I",
-    "ap_cost": 25,
-    "category": "allgemein",
-    "levels": 2,
+    "id": "niedrige_astralkraft",
+    "name": "Niedrige Astralkraft",
+    "ap_cost": 2,
+    "category": "magisch",
+    "levels": 7,
     "prerequisites": null,
-    "description": "Der Held ist von schwacher Konstitution.",
-    "rules_text": "LeP-Maximum -5."
+    "description": "Der AE-Grundwert sinkt durch diesen Nachteil um 1 Punkt pro Stufe des Nachteils.",
+    "rules_text": "Der AE-Grundwert sinkt durch diesen Nachteil um 1 Punkt pro Stufe des Nachteils."
   },
   {
-    "id": "niedrige_lebenskraft_2",
-    "name": "Niedrige Lebenskraft II",
-    "ap_cost": 25,
+    "id": "niedrige_karmalkraft",
+    "name": "Niedrige Karmalkraft",
+    "ap_cost": 2,
+    "category": "karmal",
+    "levels": 7,
+    "prerequisites": null,
+    "description": "Der KE-Grundwert sinkt durch diesen Nachteil um 1 Punkt pro Stufe des Nachteils.",
+    "rules_text": "Der KE-Grundwert sinkt durch diesen Nachteil um 1 Punkt pro Stufe des Nachteils."
+  },
+  {
+    "id": "niedrige_lebenskraft",
+    "name": "Niedrige Lebenskraft",
+    "ap_cost": 4,
     "category": "allgemein",
-    "levels": 2,
-    "prerequisites": {"disadvantages": ["niedrige_lebenskraft_1"]},
-    "description": "Der Held ist von besonders schwacher Konstitution.",
-    "rules_text": "LeP-Maximum -5 (insgesamt -10)."
+    "levels": 7,
+    "prerequisites": null,
+    "description": "Der LE-Grundwert sinkt durch diesen Nachteil um 1 Punkt pro Stufe des Nachteils.",
+    "rules_text": "Der LE-Grundwert sinkt durch diesen Nachteil um 1 Punkt pro Stufe des Nachteils."
   },
   {
     "id": "niedrige_seelenkraft",
@@ -176,238 +256,8 @@
     "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held hat eine schwache Seele.",
-    "rules_text": "SK -1."
-  },
-  {
-    "id": "niedrige_astralkraft_1",
-    "name": "Niedrige Astralkraft I",
-    "ap_cost": 25,
-    "category": "magisch",
-    "levels": 2,
-    "prerequisites": {"magic": true},
-    "description": "Der Held hat weniger Astralenergie als gewöhnliche Magier.",
-    "rules_text": "AsP-Maximum -5."
-  },
-  {
-    "id": "niedrige_karmalkraft_1",
-    "name": "Niedrige Karmalkraft I",
-    "ap_cost": 25,
-    "category": "karmal",
-    "levels": 2,
-    "prerequisites": {"blessed": true},
-    "description": "Der Held hat weniger Karmaenergie als gewöhnliche Geweihte.",
-    "rules_text": "KaP-Maximum -5."
-  },
-  {
-    "id": "pech_1",
-    "name": "Pech I",
-    "ap_cost": 20,
-    "category": "allgemein",
-    "levels": 3,
-    "prerequisites": null,
-    "description": "Das Schicksal meint es nicht gut mit dem Helden.",
-    "rules_text": "SchiP -1."
-  },
-  {
-    "id": "pech_2",
-    "name": "Pech II",
-    "ap_cost": 20,
-    "category": "allgemein",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["pech_1"]},
-    "description": "Das Schicksal meint es richtig schlecht mit dem Helden.",
-    "rules_text": "SchiP -1 (insgesamt -2)."
-  },
-  {
-    "id": "pech_3",
-    "name": "Pech III",
-    "ap_cost": 20,
-    "category": "allgemein",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["pech_2"]},
-    "description": "Der Held scheint vom Schicksal verflucht zu sein.",
-    "rules_text": "SchiP -1 (insgesamt -3)."
-  },
-  {
-    "id": "personalitaets_1",
-    "name": "Persönlichkeitsschwäche I",
-    "ap_cost": 5,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": null,
-    "description": "Der Held hat eine leichte Charakterschwäche.",
-    "rules_text": "-1 auf Proben in sozialen Situationen, die von der Schwäche betroffen sind."
-  },
-  {
-    "id": "personalitaets_2",
-    "name": "Persönlichkeitsschwäche II",
-    "ap_cost": 10,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["personalitaets_1"]},
-    "description": "Der Held hat eine deutliche Charakterschwäche.",
-    "rules_text": "-2 auf Proben in sozialen Situationen, die von der Schwäche betroffen sind."
-  },
-  {
-    "id": "personalitaets_3",
-    "name": "Persönlichkeitsschwäche III",
-    "ap_cost": 15,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["personalitaets_2"]},
-    "description": "Der Held hat eine massive Charakterschwäche.",
-    "rules_text": "-3 auf Proben in sozialen Situationen, die von der Schwäche betroffen sind."
-  },
-  {
-    "id": "phobie",
-    "name": "Phobie",
-    "ap_cost": 15,
-    "category": "allgemein",
-    "levels": 1,
-    "prerequisites": null,
-    "description": "Der Held hat eine lähmende Phobie vor etwas Bestimmtem.",
-    "rules_text": "Bei Konfrontation: Willenskraft-Probe -3, bei Scheitern 2 Stufen Furcht."
-  },
-  {
-    "id": "prinzipientreue_1",
-    "name": "Prinzipientreue I",
-    "ap_cost": 5,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": null,
-    "description": "Der Held hält sich streng an einen Moralkodex.",
-    "rules_text": "Der Held darf unter keinen Umständen gegen sein gewähltes Prinzip verstoßen."
-  },
-  {
-    "id": "prinzipientreue_2",
-    "name": "Prinzipientreue II",
-    "ap_cost": 10,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["prinzipientreue_1"]},
-    "description": "Der Held verteidigt seine Prinzipien auch unter hohem persönlichem Risiko.",
-    "rules_text": "Verstöße gegen die Prinzipien verursachen 1 Stufe Betäubung aus Scham und Schuldgefühl."
-  },
-  {
-    "id": "schulden_1",
-    "name": "Schulden I",
-    "ap_cost": 5,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": null,
-    "description": "Der Held hat Schulden.",
-    "rules_text": "Der Held schuldet einem Gläubiger 100 Silbertaler. Startgeld halbiert."
-  },
-  {
-    "id": "schulden_2",
-    "name": "Schulden II",
-    "ap_cost": 10,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["schulden_1"]},
-    "description": "Der Held hat erhebliche Schulden.",
-    "rules_text": "Der Held schuldet einem Gläubiger 500 Silbertaler. Kein Startgeld."
-  },
-  {
-    "id": "schulden_3",
-    "name": "Schulden III",
-    "ap_cost": 15,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["schulden_2"]},
-    "description": "Der Held hat massive Schulden bei gefährlichen Leuten.",
-    "rules_text": "Der Held schuldet einem Gläubiger 1000+ Silbertaler. Kein Startgeld, der Gläubiger schickt Geldeintreiber."
-  },
-  {
-    "id": "schwacher_astralkoerper_1",
-    "name": "Schwacher Astralkörper I",
-    "ap_cost": 15,
-    "category": "magisch",
-    "levels": 2,
-    "prerequisites": {"magic": true},
-    "description": "Der Astralkörper des Helden ist anfällig.",
-    "rules_text": "-1 auf alle Proben zur Abwehr astraler Einflüsse."
-  },
-  {
-    "id": "schwacher_astralkoerper_2",
-    "name": "Schwacher Astralkörper II",
-    "ap_cost": 15,
-    "category": "magisch",
-    "levels": 2,
-    "prerequisites": {"magic": true, "disadvantages": ["schwacher_astralkoerper_1"]},
-    "description": "Der Astralkörper des Helden ist äußerst anfällig.",
-    "rules_text": "-2 auf alle Proben zur Abwehr astraler Einflüsse (insgesamt)."
-  },
-  {
-    "id": "sturmempfindlich",
-    "name": "Sturmempfindlich",
-    "ap_cost": 5,
-    "category": "allgemein",
-    "levels": 1,
-    "prerequisites": null,
-    "description": "Sturm und Unwetter setzen dem Helden besonders zu.",
-    "rules_text": "-1 auf alle Proben bei starkem Wind oder Sturm."
-  },
-  {
-    "id": "taub",
-    "name": "Taub",
-    "ap_cost": 20,
-    "category": "allgemein",
-    "levels": 1,
-    "prerequisites": null,
-    "description": "Der Held kann nicht hören.",
-    "rules_text": "Alle hörabhängigen Proben sind automatisch misslungen. -3 auf INI (keine akustische Warnung)."
-  },
-  {
-    "id": "unfaehig",
-    "name": "Unfähig",
-    "ap_cost": 15,
-    "category": "allgemein",
-    "levels": 1,
-    "prerequisites": null,
-    "description": "Der Held kann ein bestimmtes Talent überhaupt nicht erlernen.",
-    "rules_text": "Das gewählte Talent kann nicht gesteigert werden und bleibt auf FW 0."
-  },
-  {
-    "id": "verpflichtungen_1",
-    "name": "Verpflichtungen I",
-    "ap_cost": 5,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": null,
-    "description": "Der Held hat Pflichten gegenüber einer Organisation oder Person.",
-    "rules_text": "Gelegentlich muss der Held seinen Verpflichtungen nachkommen, auch wenn sie ungelegen kommen."
-  },
-  {
-    "id": "verpflichtungen_2",
-    "name": "Verpflichtungen II",
-    "ap_cost": 10,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["verpflichtungen_1"]},
-    "description": "Der Held hat starke Verpflichtungen.",
-    "rules_text": "Regelmäßig muss der Held seinen Verpflichtungen nachkommen und dafür Zeit und Ressourcen aufwenden."
-  },
-  {
-    "id": "verpflichtungen_3",
-    "name": "Verpflichtungen III",
-    "ap_cost": 15,
-    "category": "sozial",
-    "levels": 3,
-    "prerequisites": {"disadvantages": ["verpflichtungen_2"]},
-    "description": "Der Held ist einer mächtigen Instanz nahezu hörig.",
-    "rules_text": "Der Held muss ständig den Wünschen seiner Verpflichtung nachkommen und kann Aufträge kaum ablehnen."
-  },
-  {
-    "id": "wahrer_name",
-    "name": "Wahrer Name",
-    "ap_cost": 10,
-    "category": "magisch",
-    "levels": 1,
-    "prerequisites": {"magic": true},
-    "description": "Der Held hat einen wahren Namen, der ihn magisch verwundbar macht.",
-    "rules_text": "Wer den wahren Namen kennt, erhält +5 auf alle Zauberproben gegen den Helden."
+    "description": "Der SK-Grundwert des Helden ist um 1 schlechter.",
+    "rules_text": "Der SK-Grundwert des Helden ist um 1 schlechter."
   },
   {
     "id": "niedrige_zaehigkeit",
@@ -416,27 +266,657 @@
     "category": "allgemein",
     "levels": 1,
     "prerequisites": null,
-    "description": "Der Held ist besonders anfällig gegenüber körperlichen Einflüssen.",
-    "rules_text": "ZK -1."
+    "description": "Der ZK-Grundwert des Helden ist um 1 schlechter.",
+    "rules_text": "Der ZK-Grundwert des Helden ist um 1 schlechter."
   },
   {
-    "id": "schlechte_regeneration_1",
-    "name": "Schlechte Regeneration I (LeP)",
+    "id": "pech",
+    "name": "Pech",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held startet pro Stufe des Nachteils mit 1 Schicksalspunkt weniger als üblich. Sein Maximum an Schicksalspunkten sinkt hierdurch um einen Punkt pro Stufe. Die Anzahl der Schicksalspunkte darf hier",
+    "rules_text": "Der Held startet pro Stufe des Nachteils mit 1 Schicksalspunkt weniger als üblich. Sein Maximum an Schicksalspunkten sinkt hierdurch um einen Punkt pro Stufe. Die Anzahl der Schicksalspunkte darf hierbei nicht unter 0 fallen."
+  },
+  {
+    "id": "pechmagnet",
+    "name": "Pechmagnet",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Bei jeder zufälligen Bestimmung des Meisters (Welcher Held wird von dem Pfeil getroffen? Wer stand von der Gruppe in der Nähe der Falle, als sie ausgelöst wurde?) sind die Chancen bei einem Abenteurer",
+    "rules_text": "Bei jeder zufälligen Bestimmung des Meisters (Welcher Held wird von dem Pfeil getroffen? Wer stand von der Gruppe in der Nähe der Falle, als sie ausgelöst wurde?) sind die Chancen bei einem Abenteurer mit diesem Nachteil mindestens doppelt so hoch wie die eines Helden ohne Pechmagnet. Der Nachteil sollte in der Heldengruppe nicht bei allen Helden auftreten, da sich der Nachteil ansonsten aufhebt. Dementsprechend erfordert die Wahl von Pechmagnet Rücksprache mit dem Meister."
+  },
+  {
+    "id": "persoenlichkeitsschwaechen",
+    "name": "Persönlichkeitsschwächen",
+    "ap_cost": 0,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "In passenden Situationen kann der Meister durchaus für die angegebenen Fertigkeiten eine Erschwernis von 1 aussprechen, wenn er dies für angemessen hält. Es dürfen bis zu zwei Persönlichkeitsschwächen",
+    "rules_text": "In passenden Situationen kann der Meister durchaus für die angegebenen Fertigkeiten eine Erschwernis von 1 aussprechen, wenn er dies für angemessen hält. Es dürfen bis zu zwei Persönlichkeitsschwächen pro Held gewählt werden."
+  },
+  {
+    "id": "prinzipientreue",
+    "name": "Prinzipientreue",
     "ap_cost": 10,
     "category": "allgemein",
     "levels": 3,
     "prerequisites": null,
-    "description": "Der Held regeneriert langsamer als gewöhnlich.",
-    "rules_text": "LeP-Regeneration -1 pro Regenerationsphase (mindestens 0)."
+    "description": "Prinzipientreue gibt es in drei Stufen. Während die erste Stufe den Helden nur leicht einschränkt, ist die zweite Stufe schon fordernd, die letzte Stufe benachteiligt den Helden schwer. Ein Held kann ",
+    "rules_text": "Prinzipientreue gibt es in drei Stufen. Während die erste Stufe den Helden nur leicht einschränkt, ist die zweite Stufe schon fordernd, die letzte Stufe benachteiligt den Helden schwer. Ein Held kann mehreren Prinzipien folgen, er bekommt jedoch nur einmal Abenteuerpunkte für den Nachteil (und zwar für die höchste Prinzipientreuestufe). Wer gegen seine Prinzipien verstößt, erleidet eine Erschwernis von 1 auf alle Fertigkeitsproben. Dieser Zustand dauert mindestens eine Stunde an, über die genaue Länge entscheidet der Meister unter Berücksichtigung der Schwere des Verstoßes."
   },
   {
-    "id": "schlechte_regeneration_2",
-    "name": "Schlechte Regeneration II (AsP)",
+    "id": "schlafwandler",
+    "name": "Schlafwandler",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Kein Held sollte mehr als einmal pro Woche schlafwandeln. Am Tag nach dem Schlafwandeln erhält der Held 24 Stunden lang eine Stufe des Zustands *Betäubung* durch die geringe Erholung in der Nacht. Die",
+    "rules_text": "Kein Held sollte mehr als einmal pro Woche schlafwandeln. Am Tag nach dem Schlafwandeln erhält der Held 24 Stunden lang eine Stufe des Zustands *Betäubung* durch die geringe Erholung in der Nacht. Die Regeneration ist für den Held in der Nacht, in der er schlafwandelt um 1 gesenkt."
+  },
+  {
+    "id": "schlechte_angewohnheit",
+    "name": "Schlechte Angewohnheit",
+    "ap_cost": 2,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Ein Held kann so viele Schlechte Angewohnheiten wählen, wie er möchte, erhält hierdurch allerdings insgesamt maximal 6 AP. In seltenen Fällen kann der Meister auch Erschwernisse auf Gesellschaftstalen",
+    "rules_text": "Ein Held kann so viele Schlechte Angewohnheiten wählen, wie er möchte, erhält hierdurch allerdings insgesamt maximal 6 AP. In seltenen Fällen kann der Meister auch Erschwernisse auf Gesellschaftstalente vergeben."
+  },
+  {
+    "id": "schlechte_eigenschaft_aberglaube",
+    "name": "Schlechte Eigenschaft (Aberglaube)",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held weicht vor schwarzen Katzen, Unglückszahlen und anderen schlechten Omen zurück.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_autoritaetsglaube",
+    "name": "Schlechte Eigenschaft (Autoritätsglaube)",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held zweifelt nicht an den Worten höhergestellter Personen, selbst wenn sie unlogische Befehle erteilen oder unglaubwürdig sind.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_geiz",
+    "name": "Schlechte Eigenschaft (Geiz)",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Wenn der Held erst einmal Gold oder andere Wertgegenstände besitzt, gibt er sie nur ungerne wieder her. Lieber schränkt er sich selbst und andere finanziell ein, und er geht sogar unnötige Risiken ein, um Geld zu sparen.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_goldgier",
+    "name": "Schlechte Eigenschaft (Goldgier)",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Goldgierige Helden lassen alle Vorsicht fallen, wenn es darum geht, eine Schatztruhe oder andere wertvolle Gegenstände zu untersuchen und an sich zu nehmen.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_jaehzorn",
+    "name": "Schlechte Eigenschaft (Jähzorn)",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held ist sehr reizbar und neigt zu Wutausbrüchen, die meist nur kurz anhalten, aber zu gewalttätigem Verhalten führen können.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_kleptomanie",
+    "name": "Schlechte Eigenschaft (Kleptomanie)",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Manche Abenteurer stehlen um des Stehlens willen, egal ob das Diebesgut einen nennenswerten Wert hat oder nicht, ohne über die Konsequenzen nachzudenken.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_naiv",
+    "name": "Schlechte Eigenschaft (Naiv)",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held ist gutherzig und naiv, vertraut den falschen Leuten und kann sich kaum vorstellen, dass manche Leute es nicht gut mit ihm meinen. Er wird auch durch Enttäuschungen nicht vorsichtiger.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_neugier",
+    "name": "Schlechte Eigenschaft (Neugier)",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Jeder Abenteurer ist neugierig, aber einige Abenteurer werden so von ihrer Neugierde getrieben, dass sie unnötige Risiken eingehen, um sie zu befriedigen.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_rachsucht",
+    "name": "Schlechte Eigenschaft (Rachsucht)",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Während jähzornige Helden sofort ihrer Wut freien Lauf lassen, sind rachsüchtige besonnener und planen langfristig, wie sie sich für Kränkungen, egal wie gering, rächen können.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_spielsucht",
+    "name": "Schlechte Eigenschaft (Spielsucht)",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Spielsüchtige lassen sich leicht zu riskanten Glücksspielen und Wetten verleiten. Oft führt die Spielsucht zu hohen Spielschulden.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_eigenschaft_verschwendungssucht",
+    "name": "Schlechte Eigenschaft (Verschwendungssucht)",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Geld bleibt nicht lange im Besitz des Helden. Er gibt es mit vollen Händen (für sinnlose Dinge) aus.",
+    "rules_text": "In jeder Situation, in der der Held mit einem potenziellen Auslöser seiner Schlechten Eigenschaft konfrontiert wird, muss er eine Probe auf Willenskraft bestehen, um sich zu beherrschen. Gelingt ihm diese Probe, ist alles in Ordnung, ansonsten muss er entsprechend der Schlechten Eigenschaft agieren. Seine Schlechte Eigenschaft hat ihn so lange im Griff, wie er dem Auslöser ausgesetzt ist. Der Meister kann für die Probe auf Willenskraft entsprechend der Stärke des Auslösers Erschwernisse oder Erleichterungen aussprechen. Es dürfen bis zu zwei Schlechte Eigenschaften pro Held gewählt werden. Kombinationen, die sich ausschließen (z.B. Geiz und Verschwendungssucht), dürfen nicht gewählt werden. Das letzte Wort darüber hat der Spielleiter."
+  },
+  {
+    "id": "schlechte_regeneration_astralenergie",
+    "name": "Schlechte Regeneration (Astralenergie)",
     "ap_cost": 10,
     "category": "magisch",
     "levels": 3,
-    "prerequisites": {"magic": true},
-    "description": "Der Held regeneriert Astralenergie langsamer.",
-    "rules_text": "AsP-Regeneration -1 pro Regenerationsphase (mindestens 0)."
+    "prerequisites": null,
+    "description": "Für jede Stufe des Nachteils muss der Held beim Regenerationswurf 1 Punkt abziehen (bis zu einem Minimum von 0).",
+    "rules_text": "Für jede Stufe des Nachteils muss der Held beim Regenerationswurf 1 Punkt abziehen (bis zu einem Minimum von 0)."
+  },
+  {
+    "id": "schlechte_regeneration_karmalenergie",
+    "name": "Schlechte Regeneration (Karmalenergie)",
+    "ap_cost": 10,
+    "category": "karmal",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Für jede Stufe des Nachteils muss der Held beim Regenerationswurf 1 Punkt abziehen (bis zu einem Minimum von 0).",
+    "rules_text": "Für jede Stufe des Nachteils muss der Held beim Regenerationswurf 1 Punkt abziehen (bis zu einem Minimum von 0)."
+  },
+  {
+    "id": "schlechte_regeneration_lebensenergie",
+    "name": "Schlechte Regeneration (Lebensenergie)",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Für jede Stufe des Nachteils muss der Held beim Regenerationswurf 1 Punkt abziehen (bis zu einem Minimum von 0).",
+    "rules_text": "Für jede Stufe des Nachteils muss der Held beim Regenerationswurf 1 Punkt abziehen (bis zu einem Minimum von 0)."
+  },
+  {
+    "id": "schwacher_astralkoerper",
+    "name": "Schwacher Astralkörper",
+    "ap_cost": 15,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Jedes Mal, wenn der Held Astralpunkte ausgibt, verliert er einen Astralpunkt zusätzlich.",
+    "rules_text": "Jedes Mal, wenn der Held Astralpunkte ausgibt, verliert er einen Astralpunkt zusätzlich."
+  },
+  {
+    "id": "schwacher_karmalkoerper",
+    "name": "Schwacher Karmalkörper",
+    "ap_cost": 15,
+    "category": "karmal",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Jedes Mal, wenn der Held Karmapunkte ausgibt, verliert er einen Karmapunkt zusätzlich.",
+    "rules_text": "Jedes Mal, wenn der Held Karmapunkte ausgibt, verliert er einen Karmapunkt zusätzlich."
+  },
+  {
+    "id": "sensibler_geruchssinn",
+    "name": "Sensibler Geruchssinn",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Solange der Held dem Geruch ausgesetzt ist, erleidet er eine Stufe *Verwirrung*.",
+    "rules_text": "Solange der Held dem Geruch ausgesetzt ist, erleidet er eine Stufe *Verwirrung*."
+  },
+  {
+    "id": "sprachfehler",
+    "name": "Sprachfehler",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Bei Gesellschaftstalenten (außer *Menschenkenntnis* und *Willenskraft*) und *Handeln (Feilschen)* kann er nach Meisterentscheid eine Erschwernis von 1 erhalten, wenn es darum geht, mit anderen Persone",
+    "rules_text": "Bei Gesellschaftstalenten (außer *Menschenkenntnis* und *Willenskraft*) und *Handeln (Feilschen)* kann er nach Meisterentscheid eine Erschwernis von 1 erhalten, wenn es darum geht, mit anderen Personen zu sprechen."
+  },
+  {
+    "id": "stigma",
+    "name": "Stigma",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Meister kann eine Erschwernis von 1 auf Gesellschaftstalente (ausgenommen *Einschüchtern*, *Menschenkenntnis* und *Willenskraft*) und *Handel (Feilschen)* aussprechen, wenn er dies für angemessen ",
+    "rules_text": "Der Meister kann eine Erschwernis von 1 auf Gesellschaftstalente (ausgenommen *Einschüchtern*, *Menschenkenntnis* und *Willenskraft*) und *Handel (Feilschen)* aussprechen, wenn er dies für angemessen hält. Ein Held kann den Nachteil nur einmal wählen."
+  },
+  {
+    "id": "stumm",
+    "name": "Stumm",
+    "ap_cost": 40,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann sich in den meisten Fällen mit anderen Personen nicht verständigen (außer über Zeichensprache oder schriftlich). Der Einsatz von Zaubern und anderen Handlungen, die Sprache erfordern, is",
+    "rules_text": "Der Held kann sich in den meisten Fällen mit anderen Personen nicht verständigen (außer über Zeichensprache oder schriftlich). Der Einsatz von Zaubern und anderen Handlungen, die Sprache erfordern, ist unmöglich oder stark erschwert. Der Held erhält dauerhaft den Status *Stumm*."
+  },
+  {
+    "id": "taub",
+    "name": "Taub",
+    "ap_cost": 40,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann keine Probe auf *Sinnesschärfe* ablegen, die mit dem Hören zu tun haben. Er erhält den Status *Taub*.",
+    "rules_text": "Der Held kann keine Probe auf *Sinnesschärfe* ablegen, die mit dem Hören zu tun haben. Er erhält den Status *Taub*."
+  },
+  {
+    "id": "unfaehig",
+    "name": "Unfähig",
+    "ap_cost": 1,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held muss bei einer Probe auf das Talent das beste Würfelergebnis einer Teilprobe neu würfeln. Das zweite Ergebnis ist bindend. Ein Abenteurer kann maximal zwei Unfähigkeiten besitzen.",
+    "rules_text": "Der Held muss bei einer Probe auf das Talent das beste Würfelergebnis einer Teilprobe neu würfeln. Das zweite Ergebnis ist bindend. Ein Abenteurer kann maximal zwei Unfähigkeiten besitzen."
+  },
+  {
+    "id": "unfrei",
+    "name": "Unfrei",
+    "ap_cost": 8,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann eine Erschwernis erhalten, wenn er als Unfreier Höhergestellte mit Gesellschaftstalenten überzeugen will. In seiner Kultur hat er zudem mit Unterdrückung zu kämpfen, genießt fast keinen ",
+    "rules_text": "Der Held kann eine Erschwernis erhalten, wenn er als Unfreier Höhergestellte mit Gesellschaftstalenten überzeugen will. In seiner Kultur hat er zudem mit Unterdrückung zu kämpfen, genießt fast keinen rechtlichen Schutz und gilt als Besitz eines Höhergestellten. Genaueres hierzu siehe **Regelwerk** Seite **338**."
+  },
+  {
+    "id": "verpflichtungen",
+    "name": "Verpflichtungen",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Der Held muss Anweisungen desjenigen befolgen, dem er verpflichtet ist, oder mit den Konsequenzen leben. Ein Held kann mehreren Institutionen oder Personen verpflichtet sein, er bekommt jedoch nur ein",
+    "rules_text": "Der Held muss Anweisungen desjenigen befolgen, dem er verpflichtet ist, oder mit den Konsequenzen leben. Ein Held kann mehreren Institutionen oder Personen verpflichtet sein, er bekommt jedoch nur einmal Abenteuerpunkte für den Nachteil (und zwar für die höchste Verpflichtungsstufe)."
+  },
+  {
+    "id": "verstuemmelt",
+    "name": "Verstümmelt",
+    "ap_cost": 0,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Viele Fertigkeitsproben können durch die Verstümmelung erschwert oder unmöglich sein. Die Entscheidung hierüber obliegt dem Meister je nach Situation.\n\n- **Einarmig:** Einer der beiden Arme des Charak",
+    "rules_text": "Viele Fertigkeitsproben können durch die Verstümmelung erschwert oder unmöglich sein. Die Entscheidung hierüber obliegt dem Meister je nach Situation.\n\n- **Einarmig:** Einer der beiden Arme des Charakters fehlt mindestens bis zum Ellbogen.\n- **Einäugig:** Eines der beiden Augen des Helden ist blind oder er hat es verloren. Fernkampfangriffe sind dadurch um 4 erschwert.\n- **Einbeinig:** Der Held hat nur ein Bein, bzw. es ist unterhalb des Knies amputiert. Der Geschwindigkeit- Grundwert ist halbiert. Krücken und einfache Prothesen wie ein Holzbein helfen gegen die Verminderung der Geschwindigkeit nicht.\n- **Einhändig:** Dem Abenteurer fehlt eine Hand.\n- **Einohrig:** Eines der Ohren ist abgeschnitten oder verkrüppelt. Proben auf *Sinnesschärfe* auf Hören sind für den Helden grundsätzlich um 1 erschwert."
+  },
+  {
+    "id": "wahrer_name",
+    "name": "Wahrer Name",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Wenn ein Zauberer einen Zauberspruch gegen ein Ziel einsetzt, dessen Wahren Namen er kennt (und der über diesen Nachteil verfügt), verschlechtert sich die Seelenkraft und die Zähigkeit des Ziels um 4,",
+    "rules_text": "Wenn ein Zauberer einen Zauberspruch gegen ein Ziel einsetzt, dessen Wahren Namen er kennt (und der über diesen Nachteil verfügt), verschlechtert sich die Seelenkraft und die Zähigkeit des Ziels um 4, womit es leichter zu verzaubern ist."
+  },
+  {
+    "id": "wilde_magie",
+    "name": "Wilde Magie",
+    "ap_cost": 10,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "19er werden bei Fertigkeitsproben auf Zauber und Rituale in Hinsicht auf die Bestimmung eines Patzers wie eine 20 behandelt.",
+    "rules_text": "19er werden bei Fertigkeitsproben auf Zauber und Rituale in Hinsicht auf die Bestimmung eines Patzers wie eine 20 behandelt."
+  },
+  {
+    "id": "zauberanfaellig",
+    "name": "Zauberanfällig",
+    "ap_cost": 12,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Gegen Magie sind Seelenkraft und Zähigkeit um 1 pro Stufe schlechter als üblich.",
+    "rules_text": "Gegen Magie sind Seelenkraft und Zähigkeit um 1 pro Stufe schlechter als üblich."
+  },
+  {
+    "id": "zerbrechlich",
+    "name": "Zerbrechlich",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Erschwernisse durch den Zustand *Schmerz* werden wie bei einer Stufe höher behandelt. Die *Handlungsunfähigkeit* tritt somit bereits bei Stufe III ein.",
+    "rules_text": "Erschwernisse durch den Zustand *Schmerz* werden wie bei einer Stufe höher behandelt. Die *Handlungsunfähigkeit* tritt somit bereits bei Stufe III ein."
+  },
+  {
+    "id": "glaesern",
+    "name": "Gläsern",
+    "ap_cost": 3,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Die Wundschwelle des Helden sinkt durch den Nachteil um 1.",
+    "rules_text": "Die Wundschwelle des Helden sinkt durch den Nachteil um 1."
+  },
+  {
+    "id": "verweichlicht",
+    "name": "Verweichlicht",
+    "ap_cost": 3,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Bei der Probe auf Selbstbeherrschung (*Handlungsfähigkeit bewahren* oder *Störungen ignorieren*) bei Wundeffekten bekommt die Heldin eine Erschwernis von 2.",
+    "rules_text": "Bei der Probe auf Selbstbeherrschung (*Handlungsfähigkeit bewahren* oder *Störungen ignorieren*) bei Wundeffekten bekommt die Heldin eine Erschwernis von 2."
+  },
+  {
+    "id": "instabiler_zauberer",
+    "name": "Instabiler Zauberer",
+    "ap_cost": 5,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Würfelt der Held einen Patzer bei einem Zauber oder einer magischen Handlung, durchdringt ihn magische Energie und er erleidet 2W6 SP.",
+    "rules_text": "Würfelt der Held einen Patzer bei einem Zauber oder einer magischen Handlung, durchdringt ihn magische Energie und er erleidet 2W6 SP."
+  },
+  {
+    "id": "kleine_zauberauswahl",
+    "name": "Kleine Zauberauswahl",
+    "ap_cost": 10,
+    "category": "magisch",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Der intuitive Zauberer muss pro Stufe einen der drei Zauber streichen, über die er maximal verfügen kann.",
+    "rules_text": "Der intuitive Zauberer muss pro Stufe einen der drei Zauber streichen, über die er maximal verfügen kann."
+  },
+  {
+    "id": "schwache_zaubermelodien",
+    "name": "Schwache Zaubermelodien",
+    "ap_cost": 8,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Die Heldin kann nur Personen bis zu SK 1 durch ihre Zaubermelodien verzaubern (statt bis zu SK 2).",
+    "rules_text": "Die Heldin kann nur Personen bis zu SK 1 durch ihre Zaubermelodien verzaubern (statt bis zu SK 2)."
+  },
+  {
+    "id": "schwache_zaubertaenze",
+    "name": "Schwache Zaubertänze",
+    "ap_cost": 8,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann nur Personen bis zu SK 1 durch seine magischen Handlungen verzaubern (statt bis zu SK 2).",
+    "rules_text": "Der Held kann nur Personen bis zu SK 1 durch seine magischen Handlungen verzaubern (statt bis zu SK 2)."
+  },
+  {
+    "id": "verminderte_zaubermelodien",
+    "name": "Verminderte Zaubermelodien",
+    "ap_cost": 2,
+    "category": "magisch",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Die Zaubermelodien der Abenteurerin reichen pro Stufe des Nachteils 2 Schritt weniger weit als üblich.",
+    "rules_text": "Die Zaubermelodien der Abenteurerin reichen pro Stufe des Nachteils 2 Schritt weniger weit als üblich."
+  },
+  {
+    "id": "verminderte_zaubertaenze",
+    "name": "Verminderte Zaubertänze",
+    "ap_cost": 2,
+    "category": "magisch",
+    "levels": 3,
+    "prerequisites": null,
+    "description": "Die Zaubertänze des Abenteurers reichen pro Stufe des Nachteils 2 Schritt weniger weit als üblich.",
+    "rules_text": "Die Zaubertänze des Abenteurers reichen pro Stufe des Nachteils 2 Schritt weniger weit als üblich."
+  },
+  {
+    "id": "jagdwildgeruch",
+    "name": "Jagdwildgeruch",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Meister kann immer, wenn der Held nahe genug an hungrigen Raubtieren ist (50 Schritt Radius) und diese ihn wittern, mit dem W6 würfeln. Bei einer 1-2 halten sie den Abenteurer für Beute und greife",
+    "rules_text": "Der Meister kann immer, wenn der Held nahe genug an hungrigen Raubtieren ist (50 Schritt Radius) und diese ihn wittern, mit dem W6 würfeln. Bei einer 1-2 halten sie den Abenteurer für Beute und greifen ihn an. Sollte es zu einem Kampf mit einer ganzen Heldengruppe kommen, so greifen die Raubtiere bevorzugt einen Helden mit dem Nachteil Jagdwildgeruch an. Als Raubtiere gelten beispielsweise Jaguare und Würgeschlangen, auf keinen Fall aber reine Pflanzenfresser. Welche Tiere von dem Geruch genau angelockt werden, entscheidet der Meister."
+  },
+  {
+    "id": "raubtiergeruch",
+    "name": "Raubtiergeruch",
+    "ap_cost": 3,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Meister kann immer, wenn der Held nahe genug an domestizierten Tieren ist und diese ihn wittern, mit dem W6 würfeln. Bei einer 1 versuchen sie, vor der vermeintlichen Bedrohung zu fliehen. Hunde u",
+    "rules_text": "Der Meister kann immer, wenn der Held nahe genug an domestizierten Tieren ist und diese ihn wittern, mit dem W6 würfeln. Bei einer 1 versuchen sie, vor der vermeintlichen Bedrohung zu fliehen. Hunde und Katzen meiden die Nähe eines Helden mit diesem Nachteil, Pferde scheuen und selbst Schafe und Ziegen fliehen blökend, sobald er sich ihnen nähert. Bei Proben auf *Tierkunde* und *Reiten* im Umgang mit domestizierten Tieren kann ein Held mit Raubtiergeruch maximal 1 QS übrig behalten."
+  },
+  {
+    "id": "boeser_namensvetter",
+    "name": "Böser Namensvetter",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held gerät ständig in Schwierigkeiten, weil sich jemand für ihn ausgibt oder schlimmer: tatsächlich so heißt wie er. Dies kann nach Meisterentscheid Erschwernisse von 1 bis 3 auf Gesellschaftstale",
+    "rules_text": "Der Held gerät ständig in Schwierigkeiten, weil sich jemand für ihn ausgibt oder schlimmer: tatsächlich so heißt wie er. Dies kann nach Meisterentscheid Erschwernisse von 1 bis 3 auf Gesellschaftstalente nach sich ziehen (mit Ausnahme von *Menschenkenntnis* und *Willenskraft*) . Die Häufigkeit und die Auswirkungen sollten von Spielerin und Spielleiterin zusammen festgelegt werden."
+  },
+  {
+    "id": "laecherlicher_name",
+    "name": "Lächerlicher Name",
+    "ap_cost": 3,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Die Heldin hatte schon immer einen lächerlichen Namen, oder aber sie hat sich irgendwann einen ehrenrührigen Beinamen verdient. Wenn die Heldin ihren Namen nennt, muss ihr Gegenüber eine Probe auf *Wi",
+    "rules_text": "Die Heldin hatte schon immer einen lächerlichen Namen, oder aber sie hat sich irgendwann einen ehrenrührigen Beinamen verdient. Wenn die Heldin ihren Namen nennt, muss ihr Gegenüber eine Probe auf *Willenskraft* bestehen, um nicht unangemessen zu reagieren. Hat sich jemand an den Namen gewöhnt, entfällt diese Probe."
+  },
+  {
+    "id": "schlechtes_namensgedaechtnis",
+    "name": "Schlechtes Namensgedächtnis",
+    "ap_cost": 2,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held kann sich kaum einen Namen richtig merken, auch nicht die seiner Reisegefährten, seines Lehnsherrn, des Kontaktmanns in den Schwarzen Landen, der eigenen Kinder oder seiner Angebeteten. Entwe",
+    "rules_text": "Der Held kann sich kaum einen Namen richtig merken, auch nicht die seiner Reisegefährten, seines Lehnsherrn, des Kontaktmanns in den Schwarzen Landen, der eigenen Kinder oder seiner Angebeteten. Entweder bringt er alles durcheinander, nennt Leute beim falschen Namen, oder aber er ändert sie aus Versehen ständig ab. Alle Teilproben auf Klugheit bei Proben auf *Etikette* (*Heraldik & Stammbäume* oder *Klatsch & Tratsch*) sind um 2 erschwert."
+  },
+  {
+    "id": "schurkenname",
+    "name": "Schurkenname",
+    "ap_cost": 2,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Eine Heldin mit diesem Nachteil bekommt nach Meisterentscheid bei Proben auf die Talente *Etikette* und *Überreden* eine Erschwernis von 1 auf alle Teilproben, die auf Charisma abgelegt werden, wenn s",
+    "rules_text": "Eine Heldin mit diesem Nachteil bekommt nach Meisterentscheid bei Proben auf die Talente *Etikette* und *Überreden* eine Erschwernis von 1 auf alle Teilproben, die auf Charisma abgelegt werden, wenn sich ihr Gegenüber an dem Schurkennamen stört und dieser dem Gegenüber bekannt ist. Dafür erhält die Heldin eine Erleichterung von 1 auf Teilproben bei Charisma in dem Talent *Einschüchtern*."
+  },
+  {
+    "id": "unpassender_name",
+    "name": "Unpassender Name",
+    "ap_cost": 4,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Ein Held mit diesem Nachteil bekommt nach Meisterentscheid bei Proben auf die Talente *Bekehren & Überzeugen* und *Überreden* eine Erschwernis von 1 auf alle Teilproben, die auf Charisma abgelegt werd",
+    "rules_text": "Ein Held mit diesem Nachteil bekommt nach Meisterentscheid bei Proben auf die Talente *Bekehren & Überzeugen* und *Überreden* eine Erschwernis von 1 auf alle Teilproben, die auf Charisma abgelegt werden, wenn sich sein Gegenüber an dem unpassenden Namen stört und dieser dem Gegenüber bekannt ist."
+  },
+  {
+    "id": "unvertraeglichkeit_gegenueber_alkohol",
+    "name": "Unverträglichkeit gegenüber Alkohol",
+    "ap_cost": 2,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Wer über diesen Nachteil verfügt, für den verdoppeln sich die Auswirkungen nach Giftproben beim Konsum von Alkohol. Würde der Held beispielsweise 1 Stufe *Berauscht* erleiden, erhält er stattdessen di",
+    "rules_text": "Wer über diesen Nachteil verfügt, für den verdoppeln sich die Auswirkungen nach Giftproben beim Konsum von Alkohol. Würde der Held beispielsweise 1 Stufe *Berauscht* erleiden, erhält er stattdessen direkt 2 Stufen des Zustands."
+  },
+  {
+    "id": "wenige_predigten",
+    "name": "Wenige Predigten",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Bei Stufe I kann der Zelot nur 2 Predigt-Sonderfertigkeiten beherrschen, bei Stufe II sogar nur 1.",
+    "rules_text": "Bei Stufe I kann der Zelot nur 2 Predigt-Sonderfertigkeiten beherrschen, bei Stufe II sogar nur 1."
+  },
+  {
+    "id": "wenige_visionen",
+    "name": "Wenige Visionen",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Bei Stufe I kann der Zelot nur 2 Vision-Sonderfertigkeiten beherrschen, bei Stufe II sogar nur 1.",
+    "rules_text": "Bei Stufe I kann der Zelot nur 2 Vision-Sonderfertigkeiten beherrschen, bei Stufe II sogar nur 1."
+  },
+  {
+    "id": "lernfaul",
+    "name": "Lernfaul",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Schelm kann keine Zauber in Schelmenstreiche umwandeln.",
+    "rules_text": "Der Schelm kann keine Zauber in Schelmenstreiche umwandeln."
+  },
+  {
+    "id": "abneigung_sexpraktik",
+    "name": "Abneigung (Sexpraktik)",
+    "ap_cost": 2,
+    "category": "allgemein",
+    "levels": 4,
+    "prerequisites": null,
+    "description": "Der Held hat eine Abneigung für eine bestimmte Sexpraktik (siehe Seite **100**). Pro Stufe ist die Probe auf *Betören (Liebeskünste)* für andere Teilnehmer des Liebesspiels um 1 erschwert, wenn sie di",
+    "rules_text": "Der Held hat eine Abneigung für eine bestimmte Sexpraktik (siehe Seite **100**). Pro Stufe ist die Probe auf *Betören (Liebeskünste)* für andere Teilnehmer des Liebesspiels um 1 erschwert, wenn sie diese Sexpraktik bei dem Helden einsetzen.<br>\nEin Held kann maximal über zwei Abneigungen verfügen."
+  },
+  {
+    "id": "fixierung",
+    "name": "Fixierung",
+    "ap_cost": 3,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Sollte die Fixierung beim Liebesspiel fehlen, sind Proben auf *Betören (Liebeskünste)* um 2 erschwert. Eine Heldin kann maximal über zwei Fixierungen verfügen.",
+    "rules_text": "Sollte die Fixierung beim Liebesspiel fehlen, sind Proben auf *Betören (Liebeskünste)* um 2 erschwert. Eine Heldin kann maximal über zwei Fixierungen verfügen."
+  },
+  {
+    "id": "frigide",
+    "name": "Frigide",
+    "ap_cost": 10,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Möchte jemand den Helden beim Liebesspiel *Erregung* verschaffen, so ist die Probe auf *Betören (Liebeskünste)* für ihn um 3 erschwert.<br>\nEin frigider Held kann zudem keinen ekstatischen Höhepunkt e",
+    "rules_text": "Möchte jemand den Helden beim Liebesspiel *Erregung* verschaffen, so ist die Probe auf *Betören (Liebeskünste)* für ihn um 3 erschwert.<br>\nEin frigider Held kann zudem keinen ekstatischen Höhepunkt erlangen (siehe Seite **105**)."
+  },
+  {
+    "id": "homophobie_heterophobie",
+    "name": "Homophobie/Heterophobie",
+    "ap_cost": 15,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Gegenüber Homo- und Bisexuellen hat die Heldin bei Proben auf Gesellschaftstalente (außer auf *Einschüchtern* und *Willenskraft*) eine Erschwernis von 2 (Stufe I) bzw. 4 (Stufe II). Voraussetzung ist,",
+    "rules_text": "Gegenüber Homo- und Bisexuellen hat die Heldin bei Proben auf Gesellschaftstalente (außer auf *Einschüchtern* und *Willenskraft*) eine Erschwernis von 2 (Stufe I) bzw. 4 (Stufe II). Voraussetzung ist, dass die Heldin die sexuelle Orientierung ihres Gegenübers kennt, ansonsten kommt keine Erschwernis zu tragen. Gegenüber anderen Aventuriern, die weder homophob noch homo- oder bisexuell sind, erleidet die Heldin immer noch Erschwernisse von 1 bzw. 2., wenn ihr Gegenüber ihre Homophobie bemerkt.<br>\nDie extrem seltene Heterophobie folgt den gleichen Regeln, nur dass die Heldin Heterosexuelle nicht leiden kann."
+  },
+  {
+    "id": "schlechter_geschmack",
+    "name": "Schlechter Geschmack",
+    "ap_cost": 2,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Wenn die Heldin sich mittels einer Probe auf *Betören (Aufhübschen)* zurechtmachen will, erhält sie eine Erschwernis von 1.",
+    "rules_text": "Wenn die Heldin sich mittels einer Probe auf *Betören (Aufhübschen)* zurechtmachen will, erhält sie eine Erschwernis von 1."
+  },
+  {
+    "id": "unerotische_stimme",
+    "name": "Unerotische Stimme",
+    "ap_cost": 3,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Proben auf *Betören (Anbändeln)* und ebenso Proben auf *Betören (Liebeskünste)* sind um X erschwert, wenn der Held die Sexpraktik Verbalerotik einsetzt.",
+    "rules_text": "Proben auf *Betören (Anbändeln)* und ebenso Proben auf *Betören (Liebeskünste)* sind um X erschwert, wenn der Held die Sexpraktik Verbalerotik einsetzt."
+  },
+  {
+    "id": "untreu",
+    "name": "Untreu",
+    "ap_cost": 3,
+    "category": "allgemein",
+    "levels": 2,
+    "prerequisites": null,
+    "description": "Die Heldin erhält bei Proben auf *Willenskraft (Betören widerstehen)* eine Erschwernis von 1 pro Stufe der Sonderfertigkeit.",
+    "rules_text": "Die Heldin erhält bei Proben auf *Willenskraft (Betören widerstehen)* eine Erschwernis von 1 pro Stufe der Sonderfertigkeit."
+  },
+  {
+    "id": "verfruehter_hoehepunkt",
+    "name": "Verfrühter Höhepunkt",
+    "ap_cost": 8,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held bekommt seinen Höhepunkt bereits bei *Erregung* Stufe III. *Erregung* Stufe III wird bei ihm wie *Erregung* Stufe IV behandelt.",
+    "rules_text": "Der Held bekommt seinen Höhepunkt bereits bei *Erregung* Stufe III. *Erregung* Stufe III wird bei ihm wie *Erregung* Stufe IV behandelt."
+  },
+  {
+    "id": "impotent",
+    "name": "Impotent",
+    "ap_cost": 20,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Bei Proben auf *Betören (Liebeskünste)* hat der Held eine Erschwernis von 5. Ausnahmen können bei Sexpraktiken auftreten, wo ein erigiertes Glied nicht notwendig ist. Die Erschwernis kann hier nach Me",
+    "rules_text": "Bei Proben auf *Betören (Liebeskünste)* hat der Held eine Erschwernis von 5. Ausnahmen können bei Sexpraktiken auftreten, wo ein erigiertes Glied nicht notwendig ist. Die Erschwernis kann hier nach Meisterentscheid niedriger ausfallen oder ganz wegfallen. Der Held kann zudem nie mehr als 1 Stufe *Erregung* erhalten."
+  },
+  {
+    "id": "unfruchtbar",
+    "name": "Unfruchtbar",
+    "ap_cost": 5,
+    "category": "allgemein",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Der Held ist nicht in der Lage, ein Kind zu zeugen. Eine unfruchtbare Heldin hingegen kann keine Kinder bekommen. Ein Wurf auf die Zeugungs- oder Empfängnistabelle (siehe Seite **111/112**) ist deshal",
+    "rules_text": "Der Held ist nicht in der Lage, ein Kind zu zeugen. Eine unfruchtbare Heldin hingegen kann keine Kinder bekommen. Ein Wurf auf die Zeugungs- oder Empfängnistabelle (siehe Seite **111/112**) ist deshalb nicht notwendig.<br>\nDieser Nachteil ist nicht zur todsicheren Verhütung gedacht, der Held sollte, wenn dieser gewählt wird, auch entsprechend unter diesem Umstand leiden. Der Meister kann in passenden Situationen diesen Nachteil wie eine Persönlichkeitsschwäche behandeln und eine Erschwernis von 1 auf Fertigkeitsproben vergeben."
+  },
+  {
+    "id": "laestige_bluetenfeen",
+    "name": "Lästige Blütenfeen",
+    "ap_cost": 10,
+    "category": "magisch",
+    "levels": 1,
+    "prerequisites": null,
+    "description": "Jedes Mal, wenn der Zauberer Astralenergie ausgibt und es eine Gegend ist, in der Blütenfeen leben, würfelt er mit dem W20. Ist das Ergebnis gleich oder kleiner der ausgegebenen Astralenergiemenge, da",
+    "rules_text": "Jedes Mal, wenn der Zauberer Astralenergie ausgibt und es eine Gegend ist, in der Blütenfeen leben, würfelt er mit dem W20. Ist das Ergebnis gleich oder kleiner der ausgegebenen Astralenergiemenge, dann tauchen eine oder mehrere Blütenfeen auf und belästigen den Zauberer.<br>\nAlle folgenden Fertigkeitsproben sind in diesem Fall wegen der Ablenkung um 1 erschwert. Die Feenbleiben für 10 Minuten, ehe sie von selbst wieder verschwinden. Man kann nicht von mehr als einer Blütenfee gleichzeitig abgelenkt werden, die Erschwernis steigt also nicht durch weitere Feen, die durch den Nachteil erscheinen."
   }
 ]

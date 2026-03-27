@@ -36,10 +36,23 @@ export default function DataBrowser({ type, onSelect, onClose, title }) {
 
   useEffect(() => {
     if (!token || !config) return
-    fetch(`${config.url}?page_size=200`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.ok ? r.json() : [])
-      .then(d => { setItems(Array.isArray(d) ? d : d.items || []); setLoading(false) })
-      .catch(() => setLoading(false))
+    const h = { Authorization: `Bearer ${token}` }
+    ;(async () => {
+      let all = [], page = 1
+      while (true) {
+        try {
+          const res = await fetch(`${config.url}?page_size=200&page=${page}`, { headers: h })
+          if (!res.ok) break
+          const data = await res.json()
+          const items = Array.isArray(data) ? data : data.items || []
+          all = all.concat(items)
+          if (items.length < 200 || page * 200 >= (data.total || Infinity)) break
+          page++
+        } catch { break }
+      }
+      setItems(all)
+      setLoading(false)
+    })()
   }, [token, type])
 
   // Parse tradition JSON arrays, or return single-element array for plain values

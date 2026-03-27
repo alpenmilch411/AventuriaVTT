@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 1.9.0
-**Last updated:** 2026-03-26
-**Status:** Characters tab complete (Session 12) — creator wizard, manager UI, between-session AP, Optolith-aligned species/cultures/professions in DB
+**Version:** 2.0.0
+**Last updated:** 2026-03-27
+**Status:** Optolith data integration complete (Session 14) — 3,529 entities from authoritative DSA5 source, learn-new-spell/liturgy, SA purchase, all hardcoded game data replaced with DB lookups
 
 ---
 

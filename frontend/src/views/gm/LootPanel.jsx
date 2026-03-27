@@ -149,10 +149,19 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
     if (!token) return
     setDbLoading(true)
     const headers = { Authorization: `Bearer ${token}` }
-    const load = (cat) => fetch(`/api/databank/${cat}?page_size=200`, { headers })
-      .then(r => r.ok ? r.json() : [])
-      .then(data => (Array.isArray(data) ? data : (data.items || [])).map(i => ({ ...i, _type: cat })))
-      .catch(() => [])
+    const load = async (cat) => {
+      let all = [], page = 1
+      while (true) {
+        const res = await fetch(`/api/databank/${cat}?page_size=200&page=${page}`, { headers })
+        if (!res.ok) break
+        const data = await res.json()
+        const items = data.items || []
+        all = all.concat(items.map(i => ({ ...i, _type: cat })))
+        if (items.length < 200 || page * 200 >= (data.total || Infinity)) break
+        page++
+      }
+      return all
+    }
 
     Promise.all([load('items'), load('weapons'), load('armor'), load('shields')])
       .then(([items, weapons, armor, shields]) => {

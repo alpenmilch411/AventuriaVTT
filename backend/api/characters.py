@@ -562,9 +562,54 @@ async def level_up(
                 ct_data[upgrade_id] = current_val + 1
             char.combat_techniques = ct_data
 
+        elif upgrade_type == "learn_spell":
+            if upgrade_id in char_data["spells"]:
+                warnings.append(f"Spell {upgrade_id} already known — skipped")
+                continue
+            # Look up spell template from DB for authoritative improvement_cost
+            from models.databank import SpellTemplate
+            spell_result = await db.execute(
+                select(SpellTemplate).where(SpellTemplate.id == upgrade_id)
+            )
+            spell_tmpl = spell_result.scalar_one_or_none()
+            if not spell_tmpl:
+                warnings.append(f"Unknown spell: {upgrade_id}")
+                continue
+            # Activation cost = SF table cost at FW 0 (DSA5 rule)
+            factor = (spell_tmpl.improvement_cost or "C").upper()
+            cost = leveling.calculate_upgrade_cost(0, factor)
+            char_data["spells"][upgrade_id] = 0
+
+        elif upgrade_type == "learn_liturgy":
+            if upgrade_id in char_data["liturgies"]:
+                warnings.append(f"Liturgy {upgrade_id} already known — skipped")
+                continue
+            from models.databank import LiturgyTemplate
+            liturgy_result = await db.execute(
+                select(LiturgyTemplate).where(LiturgyTemplate.id == upgrade_id)
+            )
+            liturgy_tmpl = liturgy_result.scalar_one_or_none()
+            if not liturgy_tmpl:
+                warnings.append(f"Unknown liturgy: {upgrade_id}")
+                continue
+            factor = (liturgy_tmpl.improvement_cost or "C").upper()
+            cost = leveling.calculate_upgrade_cost(0, factor)
+            char_data["liturgies"][upgrade_id] = 0
+
         elif upgrade_type == "special_ability":
-            ap_cost = upgrade.get("ap_cost", 0)
-            cost = ap_cost
+            # Look up SA template from DB for authoritative ap_cost
+            from models.databank import SpecialAbilityTemplate
+            sa_result = await db.execute(
+                select(SpecialAbilityTemplate).where(SpecialAbilityTemplate.id == upgrade_id)
+            )
+            sa_tmpl = sa_result.scalar_one_or_none()
+            if sa_tmpl and sa_tmpl.ap_cost is not None:
+                cost = sa_tmpl.ap_cost
+            else:
+                # Fallback: trust frontend value only if template not in DB (custom SA)
+                cost = upgrade.get("ap_cost", 0)
+                if not sa_tmpl:
+                    warnings.append(f"SA '{upgrade_id}' not found in DB — using provided AP cost")
             char_data["special_abilities"].append(upgrade_id)
 
         else:

@@ -189,7 +189,7 @@ export const CONDITIONS = {
     levels: 1, category: 'kampf', icon: '❗',
     flat: { AT: -4, PA: -4, AW: -4 },
     summary: 'Im ersten Moment eines Hinterhalts überrumpelt.',
-    source: 'Fehlgeschlagene Sinnenschärfe-Probe gegen Hinterhalt, Überraschungsangriff.',
+    source: 'Fehlgeschlagene Sinnesschärfe-Probe gegen Hinterhalt, Überraschungsangriff.',
     removal: 'Endet automatisch nach der ersten Kampfrunde.',
     desc: ['Überrascht: -4 auf alle Kampfwerte in der ersten Kampfrunde. Danach normal handlungsfähig.'],
   },

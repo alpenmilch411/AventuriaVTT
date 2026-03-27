@@ -63,6 +63,7 @@ async def init_db():
             await conn.run_sync(_migrate_add_languages_column)
             await conn.run_sync(_migrate_add_profession_equipment_columns)
             await conn.run_sync(_migrate_create_advantage_disadvantage_tables)
+            await conn.run_sync(_migrate_add_improvement_cost_columns)
 
 
 def _migrate_add_user_contribution_columns(connection):
@@ -274,3 +275,17 @@ def _migrate_create_advantage_disadvantage_tables(connection):
                 is_custom BOOLEAN DEFAULT 0
             )
         """))
+
+
+def _migrate_add_improvement_cost_columns(connection):
+    """Add improvement_cost column to spell_templates and liturgy_templates."""
+    from sqlalchemy import text
+
+    for table in ["spell_templates", "liturgy_templates"]:
+        result = connection.execute(text(f"PRAGMA table_info({table})"))
+        existing_cols = {row[1] for row in result.fetchall()}
+
+        if "improvement_cost" not in existing_cols:
+            connection.execute(
+                text(f"ALTER TABLE {table} ADD COLUMN improvement_cost VARCHAR(4)")
+            )

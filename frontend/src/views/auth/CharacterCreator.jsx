@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import {
   X, ChevronLeft, ChevronRight, Check, AlertTriangle, Loader2,
-  Shield, Plus, Minus, RefreshCw,
+  Shield, Plus, Minus, RefreshCw, Search,
 } from 'lucide-react'
 import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
@@ -58,40 +58,15 @@ const ATTR_META = {
 // Vorteile/Nachteile presets are now fetched from the DB at runtime
 // (see advantagesAll / disadvantagesAll state in CharacterCreator)
 
-// ── Talent categories with default SF (rules constants) ──
-const TALENT_CATEGORIES = [
-  { id: 'körper', label: 'Körpertalente', color: 'text-orange-400', sf: 'B',
-    talents: ['Klettern','Körperbeherrschung','Kraftakt','Schwimmen','Selbstbeherrschung','Sinnesschärfe','Verbergen','Zechen'] },
-  { id: 'gesellschaft', label: 'Gesellschaftstalente', color: 'text-pink-400', sf: 'B',
-    talents: ['Betören','Einschüchtern','Etikette','Gassenwissen','Menschenkenntnis','Überreden'] },
-  { id: 'natur', label: 'Naturtalente', color: 'text-green-400', sf: 'C',
-    talents: ['Fährtensuchen','Orientierung','Pflanzenkunde','Tierkunde','Wildnisleben'] },
-  { id: 'wissen', label: 'Wissenstalente', color: 'text-blue-400', sf: 'C',
-    talents: ['Geschichtswissen','Götter & Kulte','Magiekunde','Mechanik','Rechtskunde','Sagen & Legenden'] },
-  { id: 'handwerk', label: 'Handwerkstalente', color: 'text-amber-400', sf: 'B',
-    talents: ['Alchemie','Heilkunde Krankheiten','Heilkunde Wunden','Holzbearbeitung','Kochen','Lederbearbeitung','Metallbearbeitung','Musizieren','Schlösserknacken','Steinbearbeitung','Taschendiebstahl'] },
-]
-
-// ── Kampftechniken with SF (rules constants) ──
-const KT_DATA = [
-  { name: 'Dolche',           sf: 'B', type: 'melee' },
-  { name: 'Fechtwaffen',      sf: 'C', type: 'melee' },
-  { name: 'Hiebwaffen',       sf: 'C', type: 'melee' },
-  { name: 'Kettenwaffen',     sf: 'C', type: 'melee' },
-  { name: 'Lanzen',           sf: 'B', type: 'melee' },
-  { name: 'Raufen',           sf: 'B', type: 'melee' },
-  { name: 'Schilde',          sf: 'C', type: 'melee' },
-  { name: 'Schwerter',        sf: 'C', type: 'melee' },
-  { name: 'Stangenwaffen',    sf: 'C', type: 'melee' },
-  { name: 'Zweihandschwerter',sf: 'C', type: 'melee' },
-  { name: 'Zweihandäxte',     sf: 'C', type: 'melee' },
-  { name: 'Äxte',             sf: 'C', type: 'melee' },
-  { name: 'Armbrüste',        sf: 'B', type: 'ranged' },
-  { name: 'Bögen',            sf: 'C', type: 'ranged' },
-  { name: 'Blasrohre',        sf: 'B', type: 'ranged' },
-  { name: 'Schleudern',       sf: 'B', type: 'ranged' },
-  { name: 'Wurfwaffen',       sf: 'B', type: 'ranged' },
-]
+// ── Talent category metadata (for display; talents come from DB) ──
+const TALENT_CATEGORY_META = {
+  'körper':       { label: 'Körpertalente',       color: 'text-orange-400', sf: 'B' },
+  'gesellschaft': { label: 'Gesellschaftstalente', color: 'text-pink-400',  sf: 'B' },
+  'natur':        { label: 'Naturtalente',         color: 'text-green-400',  sf: 'C' },
+  'wissen':       { label: 'Wissenstalente',       color: 'text-blue-400',   sf: 'C' },
+  'handwerk':     { label: 'Handwerkstalente',     color: 'text-amber-400',  sf: 'B' },
+}
+const TALENT_CATEGORY_ORDER = ['körper', 'gesellschaft', 'natur', 'wissen', 'handwerk']
 
 // ────────────────────────────────────────────────────────────────────────────
 // Step titles
@@ -115,12 +90,19 @@ const STEPS = [
 // ────────────────────────────────────────────────────────────────────────────
 
 async function fetchDatabank(entityType, token) {
-  const res = await fetch(`/api/databank/${entityType}?page_size=200`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!res.ok) throw new Error(`Fehler beim Laden von ${entityType}`)
-  const data = await res.json()
-  return data.items || []
+  let all = [], page = 1
+  while (true) {
+    const res = await fetch(`/api/databank/${entityType}?page_size=200&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) throw new Error(`Fehler beim Laden von ${entityType}`)
+    const data = await res.json()
+    const items = data.items || []
+    all = all.concat(items)
+    if (items.length < 200 || page * 200 >= (data.total || Infinity)) break
+    page++
+  }
+  return all
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -181,8 +163,10 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
   const [advantagesAll, setAdvantagesAll] = useState([])
   const [disadvantagesAll, setDisadvantagesAll] = useState([])
   const [specialAbilitiesAll, setSpecialAbilitiesAll] = useState([])
-  const [apiLoading, setApiLoading] = useState({ species: false, cultures: false, professions: false, advantages: false, disadvantages: false, specialAbilities: false })
-  const [apiError, setApiError] = useState({ species: null, cultures: null, professions: null, advantages: null, disadvantages: null, specialAbilities: null })
+  const [talentsAll, setTalentsAll] = useState([])
+  const [combatTechAll, setCombatTechAll] = useState([])
+  const [apiLoading, setApiLoading] = useState({ species: false, cultures: false, professions: false, advantages: false, disadvantages: false, specialAbilities: false, talents: false, combatTech: false })
+  const [apiError, setApiError] = useState({ species: null, cultures: null, professions: null, advantages: null, disadvantages: null, specialAbilities: null, talents: null, combatTech: null })
 
   const loadSpecies = useCallback(async () => {
     setApiLoading(l => ({ ...l, species: true }))
@@ -250,7 +234,29 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     setApiLoading(l => ({ ...l, specialAbilities: false }))
   }, [token])
 
-  useEffect(() => { loadSpecies(); loadCultures(); loadProfessions(); loadAdvantages(); loadDisadvantages(); loadSpecialAbilities() }, [loadSpecies, loadCultures, loadProfessions, loadAdvantages, loadDisadvantages, loadSpecialAbilities])
+  const loadTalents = useCallback(async () => {
+    setApiLoading(l => ({ ...l, talents: true }))
+    setApiError(e => ({ ...e, talents: null }))
+    try {
+      setTalentsAll(await fetchDatabank('talents', token))
+    } catch (err) {
+      setApiError(e => ({ ...e, talents: err.message }))
+    }
+    setApiLoading(l => ({ ...l, talents: false }))
+  }, [token])
+
+  const loadCombatTech = useCallback(async () => {
+    setApiLoading(l => ({ ...l, combatTech: true }))
+    setApiError(e => ({ ...e, combatTech: null }))
+    try {
+      setCombatTechAll(await fetchDatabank('combat_techniques', token))
+    } catch (err) {
+      setApiError(e => ({ ...e, combatTech: err.message }))
+    }
+    setApiLoading(l => ({ ...l, combatTech: false }))
+  }, [token])
+
+  useEffect(() => { loadSpecies(); loadCultures(); loadProfessions(); loadAdvantages(); loadDisadvantages(); loadSpecialAbilities(); loadTalents(); loadCombatTech() }, [loadSpecies, loadCultures, loadProfessions, loadAdvantages, loadDisadvantages, loadSpecialAbilities, loadTalents, loadCombatTech])
 
   // ── Wizard state ──
   const [step, setStep] = useState(0)
@@ -409,6 +415,44 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     return kt
   }, [profession])
 
+  // Dynamic talent categories from DB templates
+  const talentCategories = useMemo(() => {
+    if (talentsAll.length === 0) return []
+    const grouped = {}
+    for (const t of talentsAll) {
+      const cat = t.category || 'handwerk'
+      if (!grouped[cat]) grouped[cat] = []
+      grouped[cat].push(t.name)
+    }
+    return TALENT_CATEGORY_ORDER
+      .filter(id => grouped[id])
+      .map(id => ({
+        id,
+        ...(TALENT_CATEGORY_META[id] || { label: id, color: 'text-dsa-parchment', sf: 'B' }),
+        talents: grouped[id].sort(),
+      }))
+  }, [talentsAll])
+
+  // Dynamic KT data from DB templates
+  const ktData = useMemo(() => {
+    if (combatTechAll.length === 0) return []
+    return combatTechAll.map(ct => ({
+      name: ct.name,
+      sf: ct.improvement_cost || 'C',
+      type: ct.category === 'fernkampf' ? 'ranged' : 'melee',
+    }))
+  }, [combatTechAll])
+
+  // Talent SF lookup from DB data (for AP calculation)
+  const talentSFMap = useMemo(() => {
+    const map = {}
+    for (const t of talentsAll) {
+      const cat = t.category || 'handwerk'
+      map[t.name] = t.improvement_cost || TALENT_CATEGORY_META[cat]?.sf || 'B'
+    }
+    return map
+  }, [talentsAll])
+
   // Species free points total used
   const speciesFreeUsed = Object.values(speciesFreePoints).reduce((s, v) => s + v, 0)
 
@@ -439,7 +483,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     let skillSpend = 0
     for (const [talentName, delta] of Object.entries(talentUpgrades)) {
       const base = baseSkills[talentName] || 0
-      const sf = TALENT_CATEGORIES.find(c => c.talents.includes(talentName))?.sf || 'B'
+      const sf = talentSFMap[talentName] || 'B'
       for (let i = 0; i < delta; i++) {
         skillSpend += getSkillCost(base + i, sf)
       }
@@ -449,7 +493,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     let ktSpend = 0
     for (const [ktName, delta] of Object.entries(ktUpgrades)) {
       const base = baseKT[ktName] || 6
-      const ktd = KT_DATA.find(k => k.name === ktName)
+      const ktd = ktData.find(k => k.name === ktName)
       const sf = ktd?.sf || 'C'
       for (let i = 0; i < delta; i++) {
         ktSpend += getSkillCost(base + i, sf)
@@ -466,7 +510,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     const remaining = freeAP - attrSpend - skillSpend - ktSpend - vorteileAP + nachteileRefund - saSpend
 
     return { total, speciesAP, cultureAP, professionAP, freeAP, attrSpend, skillSpend, ktSpend, vorteileAP, vorteileAPRaw, nachteileRefund, saSpend, remaining }
-  }, [gradeData, species, culture, profession, attrUpgrades, baseAttributes, talentUpgrades, baseSkills, ktUpgrades, baseKT, vorteile, nachteile, purchasedSAs])
+  }, [gradeData, species, culture, profession, attrUpgrades, baseAttributes, talentUpgrades, baseSkills, ktUpgrades, baseKT, vorteile, nachteile, purchasedSAs, talentSFMap, ktData])
 
   // ── Derived values ──
   const derivedValues = useMemo(() => {
@@ -556,7 +600,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
 
     // Build final KT dict with AT/PA splits for melee
     const combatTechniques = {}
-    for (const ktd of KT_DATA) {
+    for (const ktd of ktData) {
       const base = baseKT[ktd.name] || 6
       const upgrade = ktUpgrades[ktd.name] || 0
       const ktw = base + upgrade
@@ -660,7 +704,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
       case 4: return <StepProfession profession={profession} setProfession={setProfession} professions={filteredProfessions} gradeData={gradeData} loading={apiLoading.professions} error={apiError.professions} onRetry={loadProfessions} />
       case 5: return <StepVorNachteile vorteile={vorteile} setVorteile={setVorteile} nachteile={nachteile} setNachteile={setNachteile} apBudget={apBudget} species={species} advantagesAll={advantagesAll} disadvantagesAll={disadvantagesAll} loadingAdv={apiLoading.advantages} loadingDis={apiLoading.disadvantages} errorAdv={apiError.advantages} errorDis={apiError.disadvantages} onRetryAdv={loadAdvantages} onRetryDis={loadDisadvantages} />
       case 6: return <StepAttributes baseAttributes={baseAttributes} attrUpgrades={attrUpgrades} setAttrUpgrades={setAttrUpgrades} gradeData={gradeData} apBudget={apBudget} derivedValues={derivedValues} />
-      case 7: return <StepTalentsKT baseSkills={baseSkills} talentUpgrades={talentUpgrades} setTalentUpgrades={setTalentUpgrades} baseKT={baseKT} ktUpgrades={ktUpgrades} setKtUpgrades={setKtUpgrades} atPaSplits={atPaSplits} setAtPaSplits={setAtPaSplits} gradeData={gradeData} apBudget={apBudget} isMagic={isMagic} isBlessed={isBlessed} professionSpells={profession?.spells} professionLiturgies={profession?.liturgies} selectedSpells={selectedSpells} setSelectedSpells={setSelectedSpells} selectedLiturgies={selectedLiturgies} setSelectedLiturgies={setSelectedLiturgies} professionSAs={profession?.special_abilities} purchasedSAs={purchasedSAs} setPurchasedSAs={setPurchasedSAs} specialAbilitiesAll={specialAbilitiesAll} loadingSAs={apiLoading.specialAbilities} errorSAs={apiError.specialAbilities} onRetrySAs={loadSpecialAbilities} />
+      case 7: return <StepTalentsKT baseSkills={baseSkills} talentUpgrades={talentUpgrades} setTalentUpgrades={setTalentUpgrades} baseKT={baseKT} ktUpgrades={ktUpgrades} setKtUpgrades={setKtUpgrades} atPaSplits={atPaSplits} setAtPaSplits={setAtPaSplits} gradeData={gradeData} apBudget={apBudget} isMagic={isMagic} isBlessed={isBlessed} professionSpells={profession?.spells} professionLiturgies={profession?.liturgies} selectedSpells={selectedSpells} setSelectedSpells={setSelectedSpells} selectedLiturgies={selectedLiturgies} setSelectedLiturgies={setSelectedLiturgies} professionSAs={profession?.special_abilities} purchasedSAs={purchasedSAs} setPurchasedSAs={setPurchasedSAs} specialAbilitiesAll={specialAbilitiesAll} loadingSAs={apiLoading.specialAbilities} errorSAs={apiError.specialAbilities} onRetrySAs={loadSpecialAbilities} talentCategories={talentCategories} ktData={ktData} />
       case 8: return <StepDerived derivedValues={derivedValues} isMagic={isMagic} isBlessed={isBlessed} />
       case 9: return <StepSummary name={name} nickname={nickname} species={species} culture={culture} profession={profession} grade={grade} gradeData={gradeData} finalAttributes={finalAttributes} derivedValues={derivedValues} apBudget={apBudget} vorteile={vorteile} nachteile={nachteile} isMagic={isMagic} isBlessed={isBlessed} submitError={submitError} />
       default: return null
@@ -1354,8 +1398,180 @@ function DerivedChip({ label, value }) {
   )
 }
 
+// ── SA category metadata ──
+const SA_CATEGORY_META = {
+  alle:                { label: 'Alle',          color: 'text-dsa-parchment' },
+  nahkampf:            { label: 'Nahkampf',      color: 'text-red-400' },
+  fernkampf:           { label: 'Fernkampf',     color: 'text-emerald-400' },
+  allgemein:           { label: 'Allgemein',      color: 'text-dsa-gold' },
+  allgemein_nichtkampf:{ label: 'Nichtkampf',    color: 'text-cyan-400' },
+  magisch:             { label: 'Magisch',        color: 'text-violet-400' },
+  karmal:              { label: 'Karmal',         color: 'text-amber-400' },
+}
+const SA_CATEGORY_ORDER = ['alle', 'nahkampf', 'fernkampf', 'allgemein', 'allgemein_nichtkampf', 'magisch', 'karmal']
+
+// ── SA Selector with search & category filter ──
+function SASelector({ professionSAs, purchasedSAs, setPurchasedSAs, specialAbilitiesAll, loadingSAs, errorSAs, onRetrySAs, apBudget }) {
+  const [searchText, setSearchText] = useState('')
+  const [activeCat, setActiveCat] = useState('alle')
+
+  // Filter SAs by search + category, excluding profession-granted ones
+  const filteredSAs = useMemo(() => {
+    const query = searchText.toLowerCase().trim()
+    return specialAbilitiesAll.filter(sa => {
+      if (professionSAs && professionSAs.includes(sa.name)) return false
+      if (activeCat !== 'alle' && sa.category !== activeCat) return false
+      if (query && !sa.name.toLowerCase().includes(query)) return false
+      return true
+    })
+  }, [specialAbilitiesAll, professionSAs, searchText, activeCat])
+
+  const totalAvailable = specialAbilitiesAll.filter(sa => !(professionSAs && professionSAs.includes(sa.name))).length
+
+  return (
+    <div className="space-y-4">
+      {/* Profession-granted SAs (non-removable) */}
+      {professionSAs && professionSAs.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold text-dsa-gold/70 mb-2">Von Profession (inklusive)</h3>
+          <div className="space-y-1">
+            {professionSAs.map(sa => (
+              <div
+                key={sa}
+                className="w-full text-left px-3 py-2 rounded border border-dsa-gold/30 bg-dsa-gold/5 text-xs flex items-center justify-between"
+              >
+                <span className="text-dsa-parchment">{sa}</span>
+                <span className="text-[10px] text-dsa-parchment-dark/50 flex items-center gap-1">
+                  <Shield className="w-3 h-3" /> Profession
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Purchasable SAs with search/filter */}
+      <div>
+        <h3 className="text-xs font-semibold text-dsa-gold mb-2">Zusätzliche Sonderfertigkeiten</h3>
+        {loadingSAs ? (
+          <div className="flex items-center justify-center gap-2 py-6 text-dsa-parchment-dark">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-xs">Lade Sonderfertigkeiten...</span>
+          </div>
+        ) : errorSAs ? (
+          <div className="text-center py-4">
+            <p className="text-xs text-red-400 mb-2">Fehler beim Laden der Sonderfertigkeiten</p>
+            <button onClick={onRetrySAs} className="text-xs text-dsa-gold hover:underline flex items-center gap-1 mx-auto">
+              <RefreshCw className="w-3 h-3" /> Erneut versuchen
+            </button>
+          </div>
+        ) : specialAbilitiesAll.length === 0 ? (
+          <p className="text-xs text-dsa-parchment-dark py-4">Keine Sonderfertigkeiten in der Datenbank vorhanden.</p>
+        ) : (
+          <>
+            {/* Search input */}
+            <div className="relative mb-3">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/50" />
+              <input
+                type="text"
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                placeholder="Sonderfertigkeit suchen..."
+                className="w-full pl-8 pr-3 py-2 text-xs bg-dsa-bg-card border border-dsa-bg-medium rounded text-dsa-parchment placeholder:text-dsa-parchment-dark/40 focus:outline-none focus:border-dsa-gold/50"
+              />
+              {searchText && (
+                <button onClick={() => setSearchText('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-dsa-parchment-dark/50 hover:text-dsa-parchment">
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            {/* Category filter tabs */}
+            <div className="flex flex-wrap gap-1 mb-3">
+              {SA_CATEGORY_ORDER.map(cat => {
+                const meta = SA_CATEGORY_META[cat]
+                const count = cat === 'alle'
+                  ? totalAvailable
+                  : specialAbilitiesAll.filter(sa => sa.category === cat && !(professionSAs && professionSAs.includes(sa.name))).length
+                if (cat !== 'alle' && count === 0) return null
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCat(cat)}
+                    className={clsx(
+                      'px-2 py-1 text-[10px] rounded border transition-colors',
+                      activeCat === cat
+                        ? 'border-dsa-gold/50 bg-dsa-gold/10 text-dsa-gold font-semibold'
+                        : 'border-dsa-bg-medium bg-dsa-bg-card text-dsa-parchment-dark hover:border-dsa-gold/30 hover:text-dsa-parchment'
+                    )}
+                  >
+                    {meta.label} ({count})
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Result count */}
+            <p className="text-[10px] text-dsa-parchment-dark/60 mb-2">
+              {filteredSAs.length} von {totalAvailable} Sonderfertigkeiten
+              {purchasedSAs.length > 0 && (
+                <span className="text-dsa-gold ml-2">&middot; {purchasedSAs.length} gewählt</span>
+              )}
+            </p>
+
+            {/* SA list */}
+            <div className="space-y-1 max-h-[50vh] overflow-y-auto">
+              {filteredSAs.length === 0 ? (
+                <p className="text-xs text-dsa-parchment-dark/60 py-4 text-center">Keine Treffer für diese Suche.</p>
+              ) : filteredSAs.map(sa => {
+                const isPurchased = purchasedSAs.some(p => p.id === sa.id)
+                const canAfford = isPurchased || apBudget.remaining >= (sa.ap_cost || 0)
+                const catMeta = SA_CATEGORY_META[sa.category] || SA_CATEGORY_META.allgemein
+                return (
+                  <button
+                    key={sa.id}
+                    disabled={!isPurchased && !canAfford}
+                    onClick={() => {
+                      setPurchasedSAs(prev =>
+                        isPurchased
+                          ? prev.filter(p => p.id !== sa.id)
+                          : [...prev, sa]
+                      )
+                    }}
+                    className={clsx(
+                      'w-full text-left px-3 py-2 rounded border text-xs transition-all flex items-center justify-between',
+                      isPurchased
+                        ? 'border-dsa-gold/50 bg-dsa-gold/10 text-dsa-gold'
+                        : canAfford
+                          ? 'border-dsa-bg-medium bg-dsa-bg-card text-dsa-parchment-dark hover:border-dsa-gold/30'
+                          : 'border-dsa-bg-medium bg-dsa-bg-card text-dsa-parchment-dark/40 cursor-not-allowed'
+                    )}
+                  >
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className={clsx('truncate', isPurchased ? 'text-dsa-gold' : 'text-dsa-parchment')}>{sa.name}</span>
+                        <span className={clsx('text-[9px] shrink-0', catMeta.color)}>{catMeta.label}</span>
+                      </div>
+                      {sa.description && (
+                        <span className="text-[10px] text-dsa-parchment-dark/60 line-clamp-1">{sa.description}</span>
+                      )}
+                    </div>
+                    <span className={clsx('font-mono text-[11px] shrink-0 ml-2', isPurchased ? 'text-dsa-gold' : 'text-dsa-parchment-dark')}>
+                      {sa.ap_cost || 0} AP
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ── Step 8: Talente & Kampftechniken ──
-function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, ktUpgrades, setKtUpgrades, atPaSplits, setAtPaSplits, gradeData, apBudget, isMagic, isBlessed, professionSpells, professionLiturgies, selectedSpells, setSelectedSpells, selectedLiturgies, setSelectedLiturgies, professionSAs, purchasedSAs, setPurchasedSAs, specialAbilitiesAll, loadingSAs, errorSAs, onRetrySAs }) {
+function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, ktUpgrades, setKtUpgrades, atPaSplits, setAtPaSplits, gradeData, apBudget, isMagic, isBlessed, professionSpells, professionLiturgies, selectedSpells, setSelectedSpells, selectedLiturgies, setSelectedLiturgies, professionSAs, purchasedSAs, setPurchasedSAs, specialAbilitiesAll, loadingSAs, errorSAs, onRetrySAs, talentCategories, ktData }) {
   const hasSpellsOrLiturgies = (isMagic && professionSpells && Object.keys(professionSpells).length > 0) || (isBlessed && professionLiturgies && Object.keys(professionLiturgies).length > 0)
   const [activeTab, setActiveTab] = useState('talents')
 
@@ -1424,7 +1640,12 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
 
       {activeTab === 'talents' ? (
         <div className="space-y-4">
-          {TALENT_CATEGORIES.map(cat => (
+          {talentCategories.length === 0 ? (
+            <div className="flex items-center justify-center gap-2 py-6 text-dsa-parchment-dark">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-xs">Lade Talente...</span>
+            </div>
+          ) : talentCategories.map(cat => (
             <div key={cat.id}>
               <h3 className={clsx('text-xs font-semibold mb-2', cat.color)}>{cat.label}</h3>
               <div className="space-y-1">
@@ -1463,7 +1684,12 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
         </div>
       ) : activeTab === 'kt' ? (
         <div className="space-y-1">
-          {KT_DATA.map(kt => {
+          {ktData.length === 0 ? (
+            <div className="flex items-center justify-center gap-2 py-6 text-dsa-parchment-dark">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-xs">Lade Kampftechniken...</span>
+            </div>
+          ) : ktData.map(kt => {
             const base = baseKT[kt.name] || 6
             const delta = ktUpgrades[kt.name] || 0
             const val = base + delta
@@ -1635,87 +1861,16 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
           )}
         </div>
       ) : activeTab === 'sa' ? (
-        <div className="space-y-4">
-          {/* Profession-granted SAs (non-removable) */}
-          {professionSAs && professionSAs.length > 0 && (
-            <div>
-              <h3 className="text-xs font-semibold text-dsa-gold/70 mb-2">Von Profession (inklusive)</h3>
-              <div className="space-y-1">
-                {professionSAs.map(sa => (
-                  <div
-                    key={sa}
-                    className="w-full text-left px-3 py-2 rounded border border-dsa-gold/30 bg-dsa-gold/5 text-xs flex items-center justify-between"
-                  >
-                    <span className="text-dsa-parchment">{sa}</span>
-                    <span className="text-[10px] text-dsa-parchment-dark/50 flex items-center gap-1">
-                      <Shield className="w-3 h-3" /> Profession
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Purchasable SAs */}
-          <div>
-            <h3 className="text-xs font-semibold text-dsa-gold mb-2">Zusätzliche Sonderfertigkeiten</h3>
-            {loadingSAs ? (
-              <div className="flex items-center justify-center gap-2 py-6 text-dsa-parchment-dark">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-xs">Lade Sonderfertigkeiten...</span>
-              </div>
-            ) : errorSAs ? (
-              <div className="text-center py-4">
-                <p className="text-xs text-red-400 mb-2">Fehler beim Laden der Sonderfertigkeiten</p>
-                <button onClick={onRetrySAs} className="text-xs text-dsa-gold hover:underline flex items-center gap-1 mx-auto">
-                  <RefreshCw className="w-3 h-3" /> Erneut versuchen
-                </button>
-              </div>
-            ) : specialAbilitiesAll.length === 0 ? (
-              <p className="text-xs text-dsa-parchment-dark py-4">Keine Sonderfertigkeiten in der Datenbank vorhanden.</p>
-            ) : (
-              <div className="space-y-1 max-h-[50vh] overflow-y-auto">
-                {specialAbilitiesAll.map(sa => {
-                  const fromProfession = professionSAs && professionSAs.includes(sa.name)
-                  if (fromProfession) return null
-                  const isPurchased = purchasedSAs.some(p => p.id === sa.id)
-                  const canAfford = isPurchased || apBudget.remaining >= (sa.ap_cost || 0)
-                  return (
-                    <button
-                      key={sa.id}
-                      disabled={!isPurchased && !canAfford}
-                      onClick={() => {
-                        setPurchasedSAs(prev =>
-                          isPurchased
-                            ? prev.filter(p => p.id !== sa.id)
-                            : [...prev, sa]
-                        )
-                      }}
-                      className={clsx(
-                        'w-full text-left px-3 py-2 rounded border text-xs transition-all flex items-center justify-between',
-                        isPurchased
-                          ? 'border-dsa-gold/50 bg-dsa-gold/10 text-dsa-gold'
-                          : canAfford
-                            ? 'border-dsa-bg-medium bg-dsa-bg-card text-dsa-parchment-dark hover:border-dsa-gold/30'
-                            : 'border-dsa-bg-medium bg-dsa-bg-card text-dsa-parchment-dark/40 cursor-not-allowed'
-                      )}
-                    >
-                      <div className="flex flex-col gap-0.5">
-                        <span>{sa.name}</span>
-                        {sa.description && (
-                          <span className="text-[10px] text-dsa-parchment-dark/60 line-clamp-1">{sa.description}</span>
-                        )}
-                      </div>
-                      <span className={clsx('font-mono text-[11px] shrink-0 ml-2', isPurchased ? 'text-dsa-gold' : 'text-dsa-parchment-dark')}>
-                        {sa.ap_cost || 0} AP
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+        <SASelector
+          professionSAs={professionSAs}
+          purchasedSAs={purchasedSAs}
+          setPurchasedSAs={setPurchasedSAs}
+          specialAbilitiesAll={specialAbilitiesAll}
+          loadingSAs={loadingSAs}
+          errorSAs={errorSAs}
+          onRetrySAs={onRetrySAs}
+          apBudget={apBudget}
+        />
       ) : null}
     </div>
   )

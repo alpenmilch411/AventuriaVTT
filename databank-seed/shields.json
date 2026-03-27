@@ -1,68 +1,137 @@
 [
   {
-    "id": "faust_buckler",
-    "name": "Faust-/Buckler",
-    "icon_id": "shield_buckler",
-    "at_mod": -1,
-    "pa_mod": 1,
-    "weight": 0.5,
-    "price": 50,
-    "size": "klein",
-    "description": "Ein kleiner Faustschild, der die Parade mit der Waffenhand unterstützt."
-  },
-  {
-    "id": "kleiner_schild",
-    "name": "Kleiner Schild",
-    "icon_id": "shield_small",
-    "at_mod": -1,
-    "pa_mod": 2,
-    "weight": 1.5,
-    "price": 80,
-    "size": "klein",
-    "description": "Ein leichter Rundschild, der guten Schutz bei geringer Beeinträchtigung bietet."
-  },
-  {
-    "id": "mittlerer_schild",
-    "name": "Mittlerer Schild",
-    "icon_id": "shield_medium",
-    "at_mod": -2,
-    "pa_mod": 3,
-    "weight": 3.0,
-    "price": 120,
-    "size": "mittel",
-    "description": "Ein mittelgroßer Schild, der soliden Schutz gegen die meisten Angriffe bietet."
-  },
-  {
-    "id": "grosser_schild",
-    "name": "Großer Schild",
-    "icon_id": "shield_large",
-    "at_mod": -3,
-    "pa_mod": 4,
-    "weight": 5.0,
-    "price": 200,
-    "size": "groß",
-    "description": "Ein großer Schild, der fast den ganzen Körper schützt, aber die Offensive einschränkt."
-  },
-  {
-    "id": "grossschild",
-    "name": "Großschild",
-    "icon_id": "shield_tower",
+    "id": "holzschild",
+    "name": "Holzschild",
     "at_mod": -4,
-    "pa_mod": 5,
-    "weight": 7.0,
-    "price": 300,
-    "size": "riesig",
-    "description": "Ein mannshoher Turmschild, der fast vollständige Deckung bietet, aber schwer zu handhaben ist."
+    "pa_mod": 1,
+    "weight": 3.5,
+    "price": 50,
+    "description": null
+  },
+  {
+    "id": "lederschild",
+    "name": "Lederschild",
+    "at_mod": -4,
+    "pa_mod": 1,
+    "weight": 2,
+    "price": 30,
+    "description": null
   },
   {
     "id": "thorwalerschild",
     "name": "Thorwalerschild",
-    "icon_id": "shield_thorwal",
-    "at_mod": -1,
+    "at_mod": -5,
     "pa_mod": 2,
-    "weight": 2.0,
+    "weight": 4.5,
+    "price": 70,
+    "description": null
+  },
+  {
+    "id": "grossschild",
+    "name": "Großschild",
+    "at_mod": -6,
+    "pa_mod": 3,
+    "weight": 6,
     "price": 100,
-    "size": "mittel",
-    "description": "Ein runder Holzschild thorwalscher Machart mit Metallbuckel, beliebt bei nordischen Kriegern."
+    "description": null
+  },
+  {
+    "id": "faustschild",
+    "name": "Faustschild",
+    "at_mod": -3,
+    "pa_mod": 0,
+    "weight": 1,
+    "price": 40,
+    "description": null
+  },
+  {
+    "id": "amazonenschild",
+    "name": "Amazonenschild",
+    "at_mod": -5,
+    "pa_mod": 2,
+    "weight": 3.5,
+    "price": 85,
+    "description": null
+  },
+  {
+    "id": "walschild",
+    "name": "Walschild",
+    "at_mod": -5,
+    "pa_mod": 2,
+    "weight": 3.5,
+    "price": 85,
+    "description": null
+  },
+  {
+    "id": "havener_buckler_vollmetallbuckler",
+    "name": "Havener Buckler (Vollmetallbuckler)",
+    "at_mod": -3,
+    "pa_mod": 0,
+    "weight": 1,
+    "price": 40,
+    "description": null
+  },
+  {
+    "id": "turnierschild_der_streitenden_koenigreiche",
+    "name": "Turnierschild der Streitenden Königreiche",
+    "at_mod": -4,
+    "pa_mod": 1,
+    "weight": 3.5,
+    "price": 30,
+    "description": null
+  },
+  {
+    "id": "bock",
+    "name": "Bock",
+    "at_mod": 0,
+    "pa_mod": -3,
+    "weight": 3,
+    "price": 80,
+    "description": null
+  },
+  {
+    "id": "grosser_lederschild",
+    "name": "Großer Lederschild",
+    "at_mod": -5,
+    "pa_mod": 2,
+    "weight": 2.5,
+    "price": 45,
+    "description": null
+  },
+  {
+    "id": "turmschild",
+    "name": "Turmschild",
+    "at_mod": -6,
+    "pa_mod": 3,
+    "weight": 7,
+    "price": 120,
+    "description": null
+  },
+  {
+    "id": "turnierschild",
+    "name": "Turnierschild",
+    "at_mod": -4,
+    "pa_mod": 1,
+    "weight": 3.5,
+    "price": 30,
+    "description": null
+  },
+  {
+    "id": "verstaerkter_holzschild",
+    "name": "Verstärkter Holzschild",
+    "at_mod": -4,
+    "pa_mod": 1,
+    "weight": 4,
+    "price": 70,
+    "description": null
+  },
+  {
+    "id": "brillantzwergischer_buckler",
+    "name": "Brillantzwergischer Buckler",
+    "at_mod": -3,
+    "pa_mod": 0,
+    "weight": 1,
+    "price": 50,
+    "description": null
   }
 ]

@@ -46,15 +46,53 @@
 - [ ] Session lobby→active transition has no clear UI
 
 ## Data Completeness & Optolith Integration (HIGH PRIORITY)
-- [ ] **Optolith data audit** — Optolith is installed at `~/Library/Application Support/Optolith/`. Needs a thorough comparison screen: for every entity type (species, cultures, professions, advantages, disadvantages, spells, liturgies, talents, SAs, combat techniques, items, creatures), compare our seed data against Optolith's licensed data and show what can be used, replaced, or added. Build an import tool or at minimum a diff report.
-- [ ] Verify ALL seed data accuracy against Optolith (AP costs, skill bonuses, attribute mods, formulas)
-- [ ] Replace approximate Claude-generated values with exact Optolith values where available
-- [ ] Insure compatability with existing database, frontend and backend
-- [ ] Import missing advantages/disadvantages from Optolith (full catalog with AP costs, prerequisites, rules)
-- [ ] Import missing spells/liturgies from Optolith (full catalog per tradition)
-- [ ] Import missing special abilities from Optolith
-- [ ] Import missing creatures from Optolith
-- [ ] Expand culture/profession coverage from Optolith supplement data
+
+**Audit completed 2026-03-27.** Reports: `reports/optolith-audit-report.md`, `reports/feature-unlock-report.md`, `reports/optolith-integration-plan.md`. Converter: `backend/importers/optolith_converter.py`. Optolith v1.5.2 data extracted to `/tmp/optolith-data/`. Two-layer architecture: `de-DE/` (German text) + `univ/` (structured numeric data). Converter merges both.
+
+**Coverage: 505 entities → 3,317 importable (+2,812)**
+
+- [x] Optolith data audit — full diff report per entity type (see `reports/optolith-audit-report.md`)
+- [x] Verify seed data accuracy against Optolith — 3 critical talent name bugs, ~8 naming mismatches, spell accuracy issues found
+- [x] Compatibility analysis — app broadly compatible; 4 page_size truncation fixes + 2 schema additions needed (see `reports/feature-unlock-report.md`)
+- [x] Build Optolith YAML → seed JSON converter (`backend/importers/optolith_converter.py`, 1148 lines, --dry-run/--category flags)
+
+### Phase 1: Bug Fixes + Clean Import — DONE (2026-03-27)
+- [x] **P0: Fix talent name bugs** — "Sinnenschärfe"→"Sinnesschärfe", "Kochen"→"Lebensmittelbearbeitung", "Fesseln/Entfesseln"→"Fesseln" (+ updated all culture/profession/item/SA/spell references)
+- [x] **P0: Fix advantage/disadvantage naming** — "Eisenaffin"→"Eisenaffine Aura", "Unempfindlich gegen Hitze/Kälte"→"Hitzeresistenz"/"Kälteresistenz", "Angst vor ..."→"Angst vor", "Persönlichkeitsschwäche"→"Persönlichkeitsschwächen"
+- [x] **P0: Fix page_size=200 truncation** — auto-pagination in CharacterCreator, SpellBook, LootPanel, DataBrowser (fetches all pages in a loop)
+- [x] **P0: Remove "Äxte" combat technique** — removed from seed.py, remapped weapons/professions/SAs to "Hiebwaffen"
+- [x] **P0: Remove "Kampfrausch" from advantages** — was misclassified (it's a Special Ability in DSA5)
+- [x] **P0: Replace all 30 spells** with Optolith values — now 330 spells with correct casting times/costs/durations
+- [x] **P0: Replace all 20 liturgies** with Optolith values — now 226 liturgies with correct DSA5 names
+- [x] **P0: Replace weapons/armor/shields** with Optolith values — 245 weapons, 52 armor, 15 shields
+- [x] Ran converter + `python -m databank.seed` — DB now at 1,404 databank rows (was 602, +802)
+
+### Phase 2: Schema + High-Impact Features — DONE (2026-03-27)
+- [x] Add `improvement_cost` column to `SpellTemplate` + `LiturgyTemplate` — added column + startup migration, all 330 spells + 226 liturgies have SF populated from Optolith
+- [x] Run converter for: advantages (43→161), disadvantages (44→110), items (113→594), professions (46→180)
+- [x] Add SA search/filter to CharacterCreator Step 8 — `SASelector` component with text search, category tabs, filtered count
+- [x] Replace hardcoded `TALENT_CATEGORIES` in CharacterCreator with DB talent template lookups — all 59 talents now shown, grouped by category
+- [x] Replace hardcoded `KT_SF` in SteigerungTab with `ct.improvement_cost` from template data
+
+### Phase 3: Full Expansion — DONE (2026-03-27)
+- [x] Import 1,438 special abilities from Optolith (64→1,438)
+- [x] Add "Learn New Spell/Liturgy" feature to SteigerungTab — tradition-filtered browser, backend validates against DB templates, dynamic tradition detection from SA names
+- [x] Add SA purchase interface to SteigerungTab — category tabs derived from data, search, filters out owned SAs, backend validates AP cost against DB
+- [x] Restructure disadvantages: 11 "Schlechte Eigenschaft" sub-options with correct DSA5 naming and AP costs from Optolith
+- [x] Fix profession equipment ID mismatches — 19 broken template_ids remapped, 34 missing mundane items + 3 armor pieces added
+- [x] Fix test character data — liturgy names, talent key mismatches, inventory template_ids corrected
+- [x] Fix wiki pages — 3 fabricated liturgy names replaced with real DSA5 names
+- [x] Remove all hardcoded values — activation costs validated by backend, tradition detection dynamic, SA categories derived from data
+- [x] DB now at 3,529 databank rows (was 602 at session start, **5.9x increase**)
+
+### Phase 4: Enrichment (future)
+- [ ] Add Cantrips table (97 Zaubertricks) + Blessings table (12 Segnungen) — new entity types
+- [ ] Add Spell Enhancements (330 entries, 3 levels each = 1,629 upgrade options) — needs new model or JSON field
+- [ ] Add Liturgy Enhancements (213 entries) — needs new model or JSON field
+- [ ] Add Profession Variants (297 sub-specializations) — needs variant system on ProfessionTemplate
+- [ ] Add culture metadata: common/uncommon advantages/disadvantages (wizard guidance), commonNames (name generator), areaKnowledge
+- [ ] Add spell `property` (Merkmal) column for filtering (Heilung, Illusion, Telekinese, etc.)
+- [ ] Add Curses (24), Elven Magical Songs (18), and other exotic entity types
 - [ ] Icons and portraits for creatures/professions/species
 
 ## Removed from Scope

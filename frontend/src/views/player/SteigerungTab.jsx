@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { TrendingUp, Brain, Swords, Sparkles, Sun, ChevronDown, ChevronUp, Check, X, HelpCircle, Star, AlertTriangle } from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
+import { TrendingUp, Brain, Swords, Sparkles, Sun, ChevronDown, ChevronUp, Check, X, HelpCircle, Star, AlertTriangle, Search, BookOpen, Plus, Shield } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useAuthStore from '../../stores/authStore'
 import clsx from 'clsx'
@@ -36,13 +36,62 @@ const TALENT_SF = {
   'koerper': 'B', 'body': 'B', 'social': 'B', 'nature': 'C', 'knowledge': 'C', 'craft': 'B',
 }
 
-// Kampftechnik-Steigerungsfaktor (aus DSA5-Regelwerk)
-const KT_SF = {
-  'Dolche': 'B', 'Fechtwaffen': 'C', 'Hiebwaffen': 'C', 'Kettenwaffen': 'C',
-  'Lanzen': 'B', 'Raufen': 'B', 'Schilde': 'C', 'Schwerter': 'C',
-  'Stangenwaffen': 'C', 'Zweihandschwerter': 'C', 'Zweihandäxte': 'C',
-  'Äxte': 'C', 'Armbrüste': 'B', 'Bögen': 'C', 'Blasrohre': 'B',
-  'Schleudern': 'B', 'Wurfwaffen': 'B',
+// KT_SF removed — improvement_cost comes from combat technique templates via DB
+
+// Activation cost for learning a new spell/liturgy = SF table cost at FW 0 (DSA5 rule)
+function getActivationCost(sf) {
+  const table = SF_TABLES[sf]
+  return table ? table[0] : SF_TABLES['C'][0]
+}
+
+// Auto-paginating databank fetch (reused from CharacterCreator)
+async function fetchDatabank(entityType, token) {
+  let all = [], page = 1
+  while (true) {
+    const res = await fetch(`/api/databank/${entityType}?page_size=200&page=${page}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) throw new Error(`Fehler beim Laden von ${entityType}`)
+    const data = await res.json()
+    const items = data.items || []
+    all = all.concat(items)
+    if (items.length < 200 || page * 200 >= (data.total || Infinity)) break
+    page++
+  }
+  return all
+}
+
+// Extract tradition name from character's special_abilities list
+// Extract all tradition names from character SAs via pattern matching
+// e.g. "Tradition (Gildenmagier)" → "Gildenmagier"
+// Works for both magical and karmal traditions — downstream filtering
+// against spell/liturgy tradition arrays handles the distinction.
+function extractTraditions(specialAbilities) {
+  if (!Array.isArray(specialAbilities)) return []
+  const traditions = []
+  for (const sa of specialAbilities) {
+    const name = typeof sa === 'string' ? sa : sa?.name || sa?.id || ''
+    const match = name.match(/^Tradition\s*\((.+)\)$/i)
+    if (match) traditions.push(match[1])
+  }
+  return traditions
+}
+
+// Derive unique SA categories from fetched data (called inside component)
+function buildSaCategoryTabs(saTemplates) {
+  if (!saTemplates.length) return [{ id: 'alle', label: 'Alle' }]
+  const counts = {}
+  for (const sa of saTemplates) {
+    const cat = (sa.category || '').toLowerCase()
+    if (cat) counts[cat] = (counts[cat] || 0) + 1
+  }
+  // Sort by count descending, take top categories as individual tabs
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1])
+  const tabs = [{ id: 'alle', label: 'Alle' }]
+  for (const [cat] of sorted.slice(0, 10)) {
+    tabs.push({ id: cat, label: cat.charAt(0).toUpperCase() + cat.slice(1) })
+  }
+  return tabs
 }
 
 const ATTR_META = {
@@ -77,7 +126,7 @@ function getAttrCost(currentValue) {
 }
 
 // ── Confirmation Modal ──
-function ConfirmModal({ title, description, cost, available, onConfirm, onCancel }) {
+function ConfirmModal({ title, description, cost, available, onConfirm, onCancel, confirmLabel = 'Steigern' }) {
   const affordable = cost <= available
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={onCancel}>
@@ -118,7 +167,7 @@ function ConfirmModal({ title, description, cost, available, onConfirm, onCancel
               className="flex-1 px-3 py-2 text-xs bg-dsa-gold/20 border border-dsa-gold/30 rounded-sm text-dsa-gold font-bold hover:bg-dsa-gold/30 transition disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <Check className="w-3.5 h-3.5 inline mr-1" />
-              Steigern
+              {confirmLabel}
             </button>
           </div>
         </div>
@@ -192,21 +241,31 @@ export default function SteigerungTab() {
   const [combatTechTemplates, setCombatTechTemplates] = useState([])
   const [spellTemplates, setSpellTemplates] = useState([])
   const [liturgyTemplates, setLiturgyTemplates] = useState([])
+  const [saTemplates, setSaTemplates] = useState([])
 
-  // Load databank templates
+  const [spellSearch, setSpellSearch] = useState('')
+  const [liturgySearch, setLiturgySearch] = useState('')
+  const [showSpellBrowser, setShowSpellBrowser] = useState(false)
+  const [showLiturgyBrowser, setShowLiturgyBrowser] = useState(false)
+  const [saSearch, setSaSearch] = useState('')
+  const [saFilterGroup, setSaFilterGroup] = useState('alle')
+  const [showSaBrowser, setShowSaBrowser] = useState(false)
+
+  // Load databank templates (with auto-pagination for large collections)
   useEffect(() => {
     if (!token) return
-    const headers = { Authorization: `Bearer ${token}` }
     Promise.all([
-      fetch('/api/databank/talents', { headers }).then(r => r.ok ? r.json() : []),
-      fetch('/api/databank/combat_techniques', { headers }).then(r => r.ok ? r.json() : []),
-      fetch('/api/databank/spells', { headers }).then(r => r.ok ? r.json() : []),
-      fetch('/api/databank/liturgies', { headers }).then(r => r.ok ? r.json() : []),
-    ]).then(([t, ct, s, l]) => {
-      setTalentTemplates(Array.isArray(t) ? t : t.items || [])
-      setCombatTechTemplates(Array.isArray(ct) ? ct : ct.items || [])
-      setSpellTemplates(Array.isArray(s) ? s : s.items || [])
-      setLiturgyTemplates(Array.isArray(l) ? l : l.items || [])
+      fetchDatabank('talents', token),
+      fetchDatabank('combat_techniques', token),
+      fetchDatabank('spells', token),
+      fetchDatabank('liturgies', token),
+      fetchDatabank('special_abilities', token),
+    ]).then(([t, ct, s, l, sa]) => {
+      setTalentTemplates(t)
+      setCombatTechTemplates(ct)
+      setSpellTemplates(s)
+      setLiturgyTemplates(l)
+      setSaTemplates(sa)
     }).catch(err => console.error('Failed to fetch databank:', err))
   }, [token])
 
@@ -221,6 +280,96 @@ export default function SteigerungTab() {
   const availableAP = myCharacter.available_ap || 0
   const grade = (myCharacter.experience_grade || 'erfahren').toLowerCase()
   const limits = GRADE_LIMITS[grade] || GRADE_LIMITS.erfahren
+  const charSAs = myCharacter.special_abilities || []
+
+  // Detect character's magic/karmal traditions from SAs
+  // Extract all traditions — same list is matched against spell traditions (magic)
+  // and liturgy traditions (karmal) separately, so no need to distinguish here
+  const allTraditions = useMemo(() => extractTraditions(charSAs), [charSAs])
+
+  // Separate magic vs karmal by checking which tradition names appear in spell vs liturgy template data
+  const magicTraditions = useMemo(() => {
+    if (!allTraditions.length || !spellTemplates.length) return allTraditions
+    const spellTraditionSet = new Set(spellTemplates.flatMap(s => s.tradition || []))
+    return allTraditions.filter(t => spellTraditionSet.has(t))
+  }, [allTraditions, spellTemplates])
+
+  const karmalTraditions = useMemo(() => {
+    if (!allTraditions.length || !liturgyTemplates.length) return allTraditions
+    const liturgyTraditionSet = new Set(liturgyTemplates.flatMap(l => l.tradition || []))
+    return allTraditions.filter(t => liturgyTraditionSet.has(t))
+  }, [allTraditions, liturgyTemplates])
+  const isMagic = Object.keys(spells).length > 0 || magicTraditions.length > 0
+  const isBlessed = Object.keys(liturgies).length > 0 || karmalTraditions.length > 0
+
+  // Filter spells the character can learn (not already known, matching tradition)
+  const learnableSpells = useMemo(() => {
+    if (!isMagic || spellTemplates.length === 0) return []
+    const normName = (n) => n.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä':'ae','ö':'oe','ü':'ue','ß':'ss' }[m]||m))
+    const knownNorm = new Set(Object.keys(spells).map(normName))
+    return spellTemplates.filter(s => {
+      // Exclude already known
+      if (knownNorm.has(normName(s.name))) return false
+      // Filter by tradition if we can detect it
+      if (magicTraditions.length > 0 && Array.isArray(s.tradition) && s.tradition.length > 0) {
+        return s.tradition.some(t => magicTraditions.includes(t))
+      }
+      return true // can't filter — show all
+    })
+  }, [isMagic, spellTemplates, spells, magicTraditions])
+
+  // Filter liturgies the character can learn (not already known, matching tradition)
+  const learnableLiturgies = useMemo(() => {
+    if (!isBlessed || liturgyTemplates.length === 0) return []
+    const normName = (n) => n.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä':'ae','ö':'oe','ü':'ue','ß':'ss' }[m]||m))
+    const knownNorm = new Set(Object.keys(liturgies).map(normName))
+    return liturgyTemplates.filter(l => {
+      if (knownNorm.has(normName(l.name))) return false
+      if (karmalTraditions.length > 0 && Array.isArray(l.tradition) && l.tradition.length > 0) {
+        return l.tradition.some(t => karmalTraditions.includes(t))
+      }
+      return true
+    })
+  }, [isBlessed, liturgyTemplates, liturgies, karmalTraditions])
+
+  // Filtered by search
+  const filteredLearnableSpells = useMemo(() => {
+    if (!spellSearch.trim()) return learnableSpells
+    const q = spellSearch.trim().toLowerCase()
+    return learnableSpells.filter(s => s.name.toLowerCase().includes(q))
+  }, [learnableSpells, spellSearch])
+
+  const filteredLearnableLiturgies = useMemo(() => {
+    if (!liturgySearch.trim()) return learnableLiturgies
+    const q = liturgySearch.trim().toLowerCase()
+    return learnableLiturgies.filter(l => l.name.toLowerCase().includes(q))
+  }, [learnableLiturgies, liturgySearch])
+
+  // Build dynamic SA category tabs from fetched data
+  const saCategoryTabs = useMemo(() => buildSaCategoryTabs(saTemplates), [saTemplates])
+
+  // Filter purchasable SAs (exclude already owned)
+  const purchasableSAs = useMemo(() => {
+    if (saTemplates.length === 0) return []
+    const ownedNames = new Set(
+      (charSAs || []).map(sa => (typeof sa === 'string' ? sa : sa?.name || sa?.id || '').toLowerCase())
+    )
+    return saTemplates.filter(sa => !ownedNames.has(sa.name.toLowerCase()))
+  }, [saTemplates, charSAs])
+
+  const filteredSAs = useMemo(() => {
+    let items = purchasableSAs
+    // Category filter — direct match against actual DB category
+    if (saFilterGroup !== 'alle') {
+      items = items.filter(sa => (sa.category || '').toLowerCase() === saFilterGroup)
+    }
+    // Text search
+    if (saSearch.trim()) {
+      const q = saSearch.trim().toLowerCase()
+      items = items.filter(sa => sa.name.toLowerCase().includes(q))
+    }
+    return items
+  }, [purchasableSAs, saFilterGroup, saSearch])
 
   // ── Execute upgrade via API ──
   const doUpgrade = async () => {
@@ -235,6 +384,7 @@ export default function SteigerungTab() {
             type: confirm.type,
             id: confirm.id,
             ...(confirm.sf ? { steigerungsfaktor: confirm.sf } : {}),
+            ...(confirm.apCost != null ? { ap_cost: confirm.apCost } : {}),
           }],
         }),
       })
@@ -269,6 +419,33 @@ export default function SteigerungTab() {
 
   const requestUpgrade = (title, desc, cost, type, id, sf) => {
     setConfirm({ title, desc, cost, type, id, sf })
+  }
+
+  const requestLearn = (template, learnType) => {
+    const sf = template.improvement_cost || 'C'
+    const cost = getActivationCost(sf)
+    const typeLabel = learnType === 'learn_spell' ? 'Zauber' : 'Liturgie'
+    const probe = template.probe ? (Array.isArray(template.probe) ? template.probe.join('/') : template.probe) : ''
+    setConfirm({
+      title: `${template.name} lernen`,
+      desc: `${typeLabel} „${template.name}" neu erlernen (Aktivierung auf FW 0).${probe ? ` Probe: ${probe}.` : ''} Steigerungsfaktor ${sf}. ${template.description || ''}`.trim(),
+      cost,
+      type: learnType,
+      id: template.id || template.name,
+      sf,
+    })
+  }
+
+  const requestPurchaseSA = (sa) => {
+    const cost = sa.ap_cost || 0
+    setConfirm({
+      title: `${sa.name} erwerben`,
+      desc: `Sonderfertigkeit „${sa.name}" erwerben.${sa.category ? ` Kategorie: ${sa.category}.` : ''} ${sa.description || sa.rules_text || ''}`.trim(),
+      cost,
+      type: 'special_ability',
+      id: sa.name,
+      apCost: cost,
+    })
   }
 
   return (
@@ -424,7 +601,7 @@ export default function SteigerungTab() {
           const normName = (n) => n.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä':'ae','ö':'oe','ü':'ue','ß':'ss' }[m]||m))
           const charVal = Object.entries(charCT).find(([k]) => normName(k) === normName(ct.name) || k.toLowerCase() === ct.name.toLowerCase())?.[1] || 0
           const val = typeof charVal === 'object' ? (charVal.ktw || charVal.value || 6) : (charVal || 6)
-          const sf = KT_SF[ct.name] || ct.steigerungsfaktor || 'C'
+          const sf = ct.improvement_cost || 'C'
           const cost = getUpgradeCost(val, sf)
           const maxReached = val >= limits.kt
           const leAttr = ct.primary_attribute ? ct.primary_attribute.join('/') : ''
@@ -465,7 +642,7 @@ export default function SteigerungTab() {
             const normName = (n) => n.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä':'ae','ö':'oe','ü':'ue','ß':'ss' }[m]||m))
             const charVal = Object.entries(spells).find(([k]) => normName(k) === normName(s.name) || k.toLowerCase() === s.name.toLowerCase())?.[1] || 0
             const val = typeof charVal === 'object' ? (charVal.fw || charVal.value || 0) : (charVal || 0)
-            const sf = s.steigerungsfaktor || 'C'
+            const sf = s.improvement_cost || 'C'
             const cost = getUpgradeCost(val, sf)
             const maxReached = val >= limits.spell
             const probe = s.probe ? (Array.isArray(s.probe) ? s.probe.join('/') : s.probe) : ''
@@ -504,7 +681,7 @@ export default function SteigerungTab() {
             const normName = (n) => n.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä':'ae','ö':'oe','ü':'ue','ß':'ss' }[m]||m))
             const charVal = Object.entries(liturgies).find(([k]) => normName(k) === normName(l.name) || k.toLowerCase() === l.name.toLowerCase())?.[1] || 0
             const val = typeof charVal === 'object' ? (charVal.fw || charVal.value || 0) : (charVal || 0)
-            const sf = l.steigerungsfaktor || 'C'
+            const sf = l.improvement_cost || 'C'
             const cost = getUpgradeCost(val, sf)
             const maxReached = val >= limits.spell
             const probe = l.probe ? (Array.isArray(l.probe) ? l.probe.join('/') : l.probe) : ''
@@ -528,6 +705,245 @@ export default function SteigerungTab() {
           })}
         </Section>
       )}
+
+      {/* ── 6. Neuen Zauber lernen (magic characters only) ── */}
+      {isMagic && (
+        <Section title="Neuen Zauber lernen" icon={BookOpen} color="text-purple-400" count={`${learnableSpells.length} verfügbar`}>
+          <div className="text-[10px] text-dsa-parchment-dark px-2 pb-1">
+            Hier kannst du neue Zauber erlernen, die deiner Tradition entsprechen.
+            Die Aktivierungskosten hängen vom Steigerungsfaktor des Zaubers ab (A=1, B=2, C=3, D=4 Abenteuerpunkte).
+            Der Zauber startet bei Fertigkeitswert 0 — danach kannst du ihn oben normal steigern.
+            {magicTraditions.length > 0 && (
+              <span className="text-dsa-mana"> Deine Tradition: <strong>{magicTraditions.join(', ')}</strong></span>
+            )}
+          </div>
+          {/* Toggle browser */}
+          <div className="px-2">
+            <button
+              onClick={() => setShowSpellBrowser(!showSpellBrowser)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold border rounded-sm transition bg-purple-900/20 border-purple-800/30 text-purple-300 hover:bg-purple-900/30"
+            >
+              <Plus className="w-3 h-3" />
+              {showSpellBrowser ? 'Zauber-Browser schließen' : 'Zauber-Browser öffnen'}
+            </button>
+          </div>
+          {showSpellBrowser && (
+            <div className="px-2 pt-1 space-y-1">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/40" />
+                <input
+                  type="text"
+                  value={spellSearch}
+                  onChange={e => setSpellSearch(e.target.value)}
+                  placeholder="Zauber suchen..."
+                  className="w-full pl-7 pr-3 py-1.5 bg-dsa-bg-card border border-dsa-bg-medium rounded-sm text-xs text-dsa-parchment placeholder:text-dsa-parchment-dark/30 focus:outline-none focus:border-purple-600/50"
+                />
+              </div>
+              {magicTraditions.length === 0 && (
+                <div className="flex items-center gap-2 text-amber-400 text-[10px] bg-amber-900/20 border border-amber-800/30 rounded-sm p-2">
+                  <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Keine Tradition erkannt — es werden alle Zauber angezeigt.</span>
+                </div>
+              )}
+              <div className="text-[9px] text-dsa-parchment-dark px-1">{filteredLearnableSpells.length} Zauber gefunden</div>
+              <div className="max-h-64 overflow-y-auto space-y-0.5">
+                {filteredLearnableSpells.map(s => {
+                  const sf = s.improvement_cost || 'C'
+                  const cost = getActivationCost(sf)
+                  const affordable = cost <= availableAP
+                  const probe = s.probe ? (Array.isArray(s.probe) ? s.probe.join('/') : s.probe) : ''
+                  return (
+                    <div key={s.id} className="flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-dsa-bg-card/50 transition">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-dsa-parchment truncate">{s.name}</span>
+                          <span className="text-[9px] font-mono text-dsa-parchment-dark/50 bg-dsa-bg-card px-1 rounded">{sf}</span>
+                        </div>
+                        {probe && <div className="text-[9px] text-dsa-parchment-dark/50">Probe: {probe}</div>}
+                        {s.asp_cost && <div className="text-[9px] text-dsa-parchment-dark/40">{s.asp_cost}</div>}
+                      </div>
+                      <button
+                        onClick={() => requestLearn(s, 'learn_spell')}
+                        disabled={!affordable}
+                        className={clsx(
+                          'flex items-center gap-1 px-2 py-1 rounded-sm text-[10px] font-bold border transition min-w-[72px] justify-center',
+                          affordable
+                            ? 'bg-purple-900/20 border-purple-800/30 text-purple-300 hover:bg-purple-900/30'
+                            : 'bg-dsa-bg-card border-dsa-bg-medium text-dsa-parchment-dark/40 cursor-not-allowed'
+                        )}
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        {cost} AP
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </Section>
+      )}
+
+      {/* ── 7. Neue Liturgie lernen (blessed characters only) ── */}
+      {isBlessed && (
+        <Section title="Neue Liturgie lernen" icon={BookOpen} color="text-yellow-400" count={`${learnableLiturgies.length} verfügbar`}>
+          <div className="text-[10px] text-dsa-parchment-dark px-2 pb-1">
+            Hier kannst du neue Liturgien erlernen, die deiner karmalen Tradition entsprechen.
+            Die Aktivierungskosten hängen vom Steigerungsfaktor ab (A=1, B=2, C=3, D=4 Abenteuerpunkte).
+            Die Liturgie startet bei Fertigkeitswert 0 — danach kannst du sie oben normal steigern.
+            {karmalTraditions.length > 0 && (
+              <span className="text-dsa-karma"> Deine Tradition: <strong>{karmalTraditions.join(', ')}</strong></span>
+            )}
+          </div>
+          <div className="px-2">
+            <button
+              onClick={() => setShowLiturgyBrowser(!showLiturgyBrowser)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold border rounded-sm transition bg-yellow-900/20 border-yellow-800/30 text-yellow-300 hover:bg-yellow-900/30"
+            >
+              <Plus className="w-3 h-3" />
+              {showLiturgyBrowser ? 'Liturgie-Browser schließen' : 'Liturgie-Browser öffnen'}
+            </button>
+          </div>
+          {showLiturgyBrowser && (
+            <div className="px-2 pt-1 space-y-1">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/40" />
+                <input
+                  type="text"
+                  value={liturgySearch}
+                  onChange={e => setLiturgySearch(e.target.value)}
+                  placeholder="Liturgie suchen..."
+                  className="w-full pl-7 pr-3 py-1.5 bg-dsa-bg-card border border-dsa-bg-medium rounded-sm text-xs text-dsa-parchment placeholder:text-dsa-parchment-dark/30 focus:outline-none focus:border-yellow-600/50"
+                />
+              </div>
+              {karmalTraditions.length === 0 && (
+                <div className="flex items-center gap-2 text-amber-400 text-[10px] bg-amber-900/20 border border-amber-800/30 rounded-sm p-2">
+                  <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Keine karmale Tradition erkannt — es werden alle Liturgien angezeigt.</span>
+                </div>
+              )}
+              <div className="text-[9px] text-dsa-parchment-dark px-1">{filteredLearnableLiturgies.length} Liturgien gefunden</div>
+              <div className="max-h-64 overflow-y-auto space-y-0.5">
+                {filteredLearnableLiturgies.map(l => {
+                  const sf = l.improvement_cost || 'C'
+                  const cost = getActivationCost(sf)
+                  const affordable = cost <= availableAP
+                  const probe = l.probe ? (Array.isArray(l.probe) ? l.probe.join('/') : l.probe) : ''
+                  return (
+                    <div key={l.id} className="flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-dsa-bg-card/50 transition">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-dsa-parchment truncate">{l.name}</span>
+                          <span className="text-[9px] font-mono text-dsa-parchment-dark/50 bg-dsa-bg-card px-1 rounded">{sf}</span>
+                        </div>
+                        {probe && <div className="text-[9px] text-dsa-parchment-dark/50">Probe: {probe}</div>}
+                        {l.kap_cost && <div className="text-[9px] text-dsa-parchment-dark/40">{l.kap_cost}</div>}
+                      </div>
+                      <button
+                        onClick={() => requestLearn(l, 'learn_liturgy')}
+                        disabled={!affordable}
+                        className={clsx(
+                          'flex items-center gap-1 px-2 py-1 rounded-sm text-[10px] font-bold border transition min-w-[72px] justify-center',
+                          affordable
+                            ? 'bg-yellow-900/20 border-yellow-800/30 text-yellow-300 hover:bg-yellow-900/30'
+                            : 'bg-dsa-bg-card border-dsa-bg-medium text-dsa-parchment-dark/40 cursor-not-allowed'
+                        )}
+                      >
+                        <Sun className="w-3 h-3" />
+                        {cost} AP
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </Section>
+      )}
+
+      {/* ── 8. Sonderfertigkeit erwerben ── */}
+      <Section title="Sonderfertigkeit erwerben" icon={Shield} color="text-emerald-400" count={`${purchasableSAs.length} verfügbar`}>
+        <div className="text-[10px] text-dsa-parchment-dark px-2 pb-1">
+          Sonderfertigkeiten verleihen deinem Helden besondere Fähigkeiten — Kampfmanöver, magische Techniken oder allgemeine Vorteile.
+          Die Abenteuerpunkte-Kosten sind je nach Sonderfertigkeit unterschiedlich.
+        </div>
+        <div className="px-2">
+          <button
+            onClick={() => setShowSaBrowser(!showSaBrowser)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold border rounded-sm transition bg-emerald-900/20 border-emerald-800/30 text-emerald-300 hover:bg-emerald-900/30"
+          >
+            <Plus className="w-3 h-3" />
+            {showSaBrowser ? 'SF-Browser schließen' : 'SF-Browser öffnen'}
+          </button>
+        </div>
+        {showSaBrowser && (
+          <div className="px-2 pt-1 space-y-1">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/40" />
+              <input
+                type="text"
+                value={saSearch}
+                onChange={e => setSaSearch(e.target.value)}
+                placeholder="Sonderfertigkeit suchen..."
+                className="w-full pl-7 pr-3 py-1.5 bg-dsa-bg-card border border-dsa-bg-medium rounded-sm text-xs text-dsa-parchment placeholder:text-dsa-parchment-dark/30 focus:outline-none focus:border-emerald-600/50"
+              />
+            </div>
+            {/* Category filter tabs */}
+            <div className="flex flex-wrap gap-1">
+              {saCategoryTabs.map(g => (
+                <button
+                  key={g.id}
+                  onClick={() => setSaFilterGroup(g.id)}
+                  className={clsx(
+                    'px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-sm border transition',
+                    saFilterGroup === g.id
+                      ? 'bg-emerald-900/30 border-emerald-700/50 text-emerald-300'
+                      : 'bg-dsa-bg-card border-dsa-bg-medium text-dsa-parchment-dark hover:text-dsa-parchment'
+                  )}
+                >
+                  {g.label}
+                </button>
+              ))}
+            </div>
+            <div className="text-[9px] text-dsa-parchment-dark px-1">{filteredSAs.length} Sonderfertigkeiten gefunden</div>
+            <div className="max-h-72 overflow-y-auto space-y-0.5">
+              {filteredSAs.map(sa => {
+                const cost = sa.ap_cost || 0
+                const affordable = cost <= availableAP
+                return (
+                  <div key={sa.id} className="flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-dsa-bg-card/50 transition">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-dsa-parchment truncate">{sa.name}</span>
+                        {sa.category && (
+                          <span className="text-[9px] text-dsa-parchment-dark/40 bg-dsa-bg-card px-1 rounded truncate max-w-[80px]" title={sa.category}>{sa.category}</span>
+                        )}
+                      </div>
+                      {sa.description && <div className="text-[9px] text-dsa-parchment-dark/50 truncate">{sa.description.slice(0, 80)}{sa.description.length > 80 ? '…' : ''}</div>}
+                    </div>
+                    <button
+                      onClick={() => requestPurchaseSA(sa)}
+                      disabled={!affordable || cost === 0}
+                      className={clsx(
+                        'flex items-center gap-1 px-2 py-1 rounded-sm text-[10px] font-bold border transition min-w-[72px] justify-center flex-shrink-0',
+                        affordable && cost > 0
+                          ? 'bg-emerald-900/20 border-emerald-800/30 text-emerald-300 hover:bg-emerald-900/30'
+                          : 'bg-dsa-bg-card border-dsa-bg-medium text-dsa-parchment-dark/40 cursor-not-allowed'
+                      )}
+                      title={cost === 0 ? 'AP-Kosten unbekannt' : undefined}
+                    >
+                      <Shield className="w-3 h-3" />
+                      {cost > 0 ? `${cost} AP` : '? AP'}
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </Section>
 
       {/* ── Steigerungsfaktor Explanation ── */}
       <div className="bg-dsa-bg-card/30 border border-dsa-bg-medium rounded-sm px-3 py-2 text-[10px] text-dsa-parchment-dark leading-relaxed">
@@ -557,6 +973,7 @@ export default function SteigerungTab() {
           available={availableAP}
           onConfirm={doUpgrade}
           onCancel={() => setConfirm(null)}
+          confirmLabel={confirm.type.startsWith('learn_') ? 'Lernen' : confirm.type === 'special_ability' ? 'Erwerben' : 'Steigern'}
         />
       )}
     </div>

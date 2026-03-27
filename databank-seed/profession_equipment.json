@@ -21,7 +21,7 @@
       {"template_id": "kurzschwert", "type": "weapons", "quantity": 1, "equipped": false},
       {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
-      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "holzschild", "type": "shields", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 5},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
@@ -51,8 +51,8 @@
     "items": [
       {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
       {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
-      {"template_id": "flegel", "type": "weapons", "quantity": 1, "equipped": false},
-      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "kriegsflegel", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "lederharnisch", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 5},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
@@ -167,7 +167,7 @@
       {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
       {"template_id": "kettenruestung", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
-      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "holzschild", "type": "shields", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 7},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
@@ -198,9 +198,9 @@
     "profession_id": "profession_soeldner",
     "items": [
       {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
-      {"template_id": "armbrust_leicht", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "leichte_armbrust", "type": "weapons", "quantity": 1, "equipped": false},
       {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
-      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "lederharnisch", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "helm_leder", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "bolzen", "type": "items", "quantity": 15},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
@@ -234,7 +234,7 @@
       {"template_id": "streitaxt", "type": "weapons", "quantity": 1, "equipped": true},
       {"template_id": "wurfbeil", "type": "weapons", "quantity": 3, "equipped": false},
       {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
-      {"template_id": "kleiner_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "faustschild", "type": "shields", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 5},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
@@ -319,7 +319,7 @@
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
       {"template_id": "heilkraeuterpaeckchen", "type": "items", "quantity": 5},
       {"template_id": "phiole_leer", "type": "items", "quantity": 5},
-      {"template_id": "alchemistisches_labor", "type": "items", "quantity": 1},
+      {"template_id": "alchimistenlabor", "type": "items", "quantity": 1},
       {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
     ],
     "money": {"dukaten": 1, "silber": 3, "heller": 0, "kreuzer": 0}
@@ -343,7 +343,7 @@
     "profession_id": "profession_gildenloser_magier",
     "items": [
       {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": true},
-      {"template_id": "kampfstab_magier", "type": "weapons", "quantity": 1, "equipped": false},
+      {"template_id": "kampfstab", "type": "weapons", "quantity": 1, "equipped": false},
       {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 5},
@@ -358,7 +358,7 @@
   {
     "profession_id": "profession_graumagier",
     "items": [
-      {"template_id": "kampfstab_magier", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "kampfstab", "type": "weapons", "quantity": 1, "equipped": true},
       {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
       {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
@@ -391,7 +391,7 @@
   {
     "profession_id": "profession_weissmagier",
     "items": [
-      {"template_id": "kampfstab_magier", "type": "weapons", "quantity": 1, "equipped": true},
+      {"template_id": "kampfstab", "type": "weapons", "quantity": 1, "equipped": true},
       {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
       {"template_id": "tuchruestung", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
@@ -410,7 +410,7 @@
     "profession_id": "profession_borongeweihter",
     "items": [
       {"template_id": "streitkolben", "type": "weapons", "quantity": 1, "equipped": true},
-      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "lederharnisch", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 5},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
@@ -474,7 +474,7 @@
     "profession_id": "profession_praiosgeweihter",
     "items": [
       {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
-      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "lederharnisch", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 5},
@@ -492,7 +492,7 @@
       {"template_id": "langschwert", "type": "weapons", "quantity": 1, "equipped": true},
       {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
-      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "holzschild", "type": "shields", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 7},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
@@ -527,7 +527,7 @@
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 7},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
-      {"template_id": "kochgeschirr", "type": "items", "quantity": 1},
+      {"template_id": "kupferkessel", "type": "items", "quantity": 1},
       {"template_id": "verbandszeug", "type": "items", "quantity": 3},
       {"template_id": "weihwasser", "type": "items", "quantity": 2},
       {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
@@ -571,7 +571,7 @@
     "profession_id": "profession_ingerimmgeweihter",
     "items": [
       {"template_id": "kriegshammer", "type": "weapons", "quantity": 1, "equipped": true},
-      {"template_id": "beschlagene_lederruestung", "type": "armor", "quantity": 1, "equipped": true},
+      {"template_id": "lederharnisch", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 5},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
@@ -594,7 +594,7 @@
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
       {"template_id": "laute", "type": "items", "quantity": 1},
       {"template_id": "weihwasser", "type": "items", "quantity": 1},
-      {"template_id": "wein_flasche", "type": "items", "quantity": 2},
+      {"template_id": "wein", "type": "items", "quantity": 2},
       {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1}
     ],
     "money": {"dukaten": 3, "silber": 10, "heller": 0, "kreuzer": 0}
@@ -638,7 +638,7 @@
       {"template_id": "speer", "type": "weapons", "quantity": 1, "equipped": true},
       {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
-      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "holzschild", "type": "shields", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 7},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},
@@ -677,7 +677,7 @@
       {"template_id": "seil", "type": "items", "quantity": 1},
       {"template_id": "weihwasser", "type": "items", "quantity": 2},
       {"template_id": "feuerstein_stahl", "type": "items", "quantity": 1},
-      {"template_id": "schnaps_zwergisch", "type": "items", "quantity": 1}
+      {"template_id": "schnaps", "type": "items", "quantity": 1}
     ],
     "money": {"dukaten": 1, "silber": 5, "heller": 0, "kreuzer": 0}
   },
@@ -687,7 +687,7 @@
       {"template_id": "saebel", "type": "weapons", "quantity": 1, "equipped": true},
       {"template_id": "langbogen", "type": "weapons", "quantity": 1, "equipped": false},
       {"template_id": "lederruestung", "type": "armor", "quantity": 1, "equipped": true},
-      {"template_id": "kleiner_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "faustschild", "type": "shields", "quantity": 1, "equipped": true},
       {"template_id": "pfeil", "type": "items", "quantity": 20},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 7},
@@ -720,7 +720,7 @@
       {"template_id": "dolch", "type": "weapons", "quantity": 1, "equipped": false},
       {"template_id": "kettenhemd", "type": "armor", "quantity": 1, "equipped": true},
       {"template_id": "helm_eisen", "type": "armor", "quantity": 1, "equipped": true},
-      {"template_id": "mittlerer_schild", "type": "shields", "quantity": 1, "equipped": true},
+      {"template_id": "holzschild", "type": "shields", "quantity": 1, "equipped": true},
       {"template_id": "rucksack", "type": "items", "quantity": 1},
       {"template_id": "proviant_tag", "type": "items", "quantity": 7},
       {"template_id": "trinkschlauch", "type": "items", "quantity": 1},

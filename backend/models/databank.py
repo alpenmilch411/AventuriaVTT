@@ -327,6 +327,9 @@ class SpellTemplate(Base):
     damage: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     condition_inflicted: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     buff_effect: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    improvement_cost: Mapped[Optional[str]] = mapped_column(
+        String(4), nullable=True, comment="Steigerungsfaktor: A, B, C, or D"
+    )
 
     # User-contribution fields
     created_by_user_id: Mapped[Optional[str]] = mapped_column(
@@ -361,6 +364,9 @@ class LiturgyTemplate(Base):
     damage: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     condition_inflicted: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     buff_effect: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    improvement_cost: Mapped[Optional[str]] = mapped_column(
+        String(4), nullable=True, comment="Steigerungsfaktor: A, B, C, or D"
+    )
 
     # User-contribution fields
     created_by_user_id: Mapped[Optional[str]] = mapped_column(

@@ -4,6 +4,59 @@
 
 ---
 
+## Session 14 — Optolith Data Integration (2026-03-27)
+**Type:** Claude Code — multi-agent teams (12 agents across 4 teams)
+
+### Optolith Converter
+Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith v1.5.2 two-layer YAML (de-DE text + univ structured numerics), maps to our seed JSON format. Supports --dry-run, --category, --output-dir. Handles all entity types: species, cultures, professions, advantages, disadvantages, spells, liturgies, SAs, talents, combat techniques, weapons, armor, shields, items.
+
+### Data Expansion (602 → 3,529 entities, 5.9x)
+| Category | Before | After | Source |
+|----------|--------|-------|--------|
+| Spells | 30 | 332 | Optolith (corrected casting times, costs, durations) |
+| Liturgies | 20 | 246 | Optolith (real DSA5 names, replacing fabricated ones) |
+| Special Abilities | 64 | 1,438 | Optolith (traditions, styles, crafts, languages) |
+| Weapons | 42 | 257 | Optolith |
+| Armor | 16 | 63 | Optolith + 3 missing pieces for professions |
+| Shields | 6 | 19 | Optolith |
+| Items | 113 | 631 | Optolith + 34 mundane items for profession equipment |
+| Advantages | 43 | 161 | Optolith |
+| Disadvantages | 44 | 92 | Optolith + 11 Schlechte Eigenschaft sub-options |
+| Professions | 46 | 180 | Optolith |
+| Talents | 59 | 61 | Verified + name fixes |
+| Combat Techniques | 22 | 21 | Removed fake "Äxte" CT |
+
+### Bug Fixes (P0)
+- 3 talent name bugs: Sinnenschärfe→Sinnesschärfe, Kochen→Lebensmittelbearbeitung, Fesseln/Entfesseln→Fesseln
+- 5 advantage/disadvantage naming mismatches corrected to DSA5/Optolith
+- "Äxte" combat technique removed (not real DSA5), weapons remapped to Hiebwaffen
+- "Kampfrausch" moved from advantages to SAs (misclassified)
+- 19 broken profession equipment template_ids remapped
+- Test character liturgy/talent/inventory references fixed
+- Wiki pages: 3 fabricated liturgy names replaced
+
+### Frontend Fixes
+- Auto-pagination in CharacterCreator, SpellBook, LootPanel, DataBrowser (was silently truncating at 200)
+- Hardcoded TALENT_CATEGORIES (36 talents) → DB lookup (all 59+)
+- Hardcoded KT_SF map → ct.improvement_cost from templates
+- SA selection in character creator: search + category filter for 1,438 SAs
+
+### New Features
+- **Learn New Spell/Liturgy** in SteigerungTab: tradition-filtered browser, dynamic tradition detection from SA names, backend validates activation cost against DB templates
+- **SA Purchase** in SteigerungTab: category tabs derived from data, search, filters out owned SAs, AP cost from DB
+- **improvement_cost column** on SpellTemplate + LiturgyTemplate: correct Steigerungsfaktor for all upgrade flows
+
+### Schema Changes
+- Added `improvement_cost` VARCHAR(4) to spell_templates + liturgy_templates (startup migration)
+- Added `learn_spell`, `learn_liturgy` types to level-up API endpoint
+
+### Data Quality
+- All 330 Optolith spells verified with correct probe/cost/duration (old Claude-generated values had wrong casting times)
+- Disadvantages restructured: Schlechte Eigenschaft with 11 proper sub-options
+- All cross-references validated (profession equipment → item/weapon/armor templates)
+
+---
+
 ## Session 13 — Architecture overhaul, buff system, character creation (2026-03-27)
 **Type:** Claude Code — multi-agent teams (10+ agents across 6 teams)
 
