@@ -10,11 +10,13 @@
 ### Optolith Converter
 Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith v1.5.2 two-layer YAML (de-DE text + univ structured numerics), maps to our seed JSON format. Supports --dry-run, --category, --output-dir. Handles all entity types: species, cultures, professions, advantages, disadvantages, spells, liturgies, SAs, talents, combat techniques, weapons, armor, shields, items.
 
-### Data Expansion (602 → 3,529 entities, 5.9x)
+### Data Expansion (602 → 3,638 entities, 6x)
 | Category | Before | After | Source |
 |----------|--------|-------|--------|
-| Spells | 30 | 332 | Optolith (corrected casting times, costs, durations) |
-| Liturgies | 20 | 246 | Optolith (real DSA5 names, replacing fabricated ones) |
+| Spells | 30 | 332 | Optolith (+ enhancements ×3, property/Merkmal) |
+| Liturgies | 20 | 246 | Optolith (+ enhancements ×3) |
+| Cantrips | 0 | 97 | Optolith (new entity type) |
+| Blessings | 0 | 12 | Optolith (new entity type) |
 | Special Abilities | 64 | 1,438 | Optolith (traditions, styles, crafts, languages) |
 | Weapons | 42 | 257 | Optolith |
 | Armor | 16 | 63 | Optolith + 3 missing pieces for professions |
@@ -22,7 +24,8 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 | Items | 113 | 631 | Optolith + 34 mundane items for profession equipment |
 | Advantages | 43 | 161 | Optolith |
 | Disadvantages | 44 | 92 | Optolith + 11 Schlechte Eigenschaft sub-options |
-| Professions | 46 | 180 | Optolith |
+| Professions | 46 | 180 | Optolith (56 with variants) |
+| Species | 4 | 4 | + variants (Menschen 7, Elfen 3) |
 | Talents | 59 | 61 | Verified + name fixes |
 | Combat Techniques | 22 | 21 | Removed fake "Äxte" CT |
 
@@ -45,6 +48,13 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 - **Learn New Spell/Liturgy** in SteigerungTab: tradition-filtered browser, dynamic tradition detection from SA names, backend validates activation cost against DB templates
 - **SA Purchase** in SteigerungTab: category tabs derived from data, search, filters out owned SAs, AP cost from DB
 - **improvement_cost column** on SpellTemplate + LiturgyTemplate: correct Steigerungsfaktor for all upgrade flows
+
+### Code Quality: Shared Engine Modules
+Extracted 4 shared modules from 13 files of duplicated code:
+- `combatManeuvers.js` — MANEUVERS + PLAYER_MANEUVERS (fixed CombatOverlay bug: wrong Wuchtschlag/Finte values)
+- `advancementCosts.js` — SF_TABLES, ATTR_COST, getUpgradeCost(), getActivationCost() (was 3× duplicated)
+- `saStatEffects.js` — getSAStatEffects() for passive SA combat mods (was 2× duplicated)
+- `tooltips.js` — SF/ADV/DISADV tooltip maps (was 5× duplicated)
 
 ### Phase 4: Cantrips, Blessings, Enhancements, Variants
 New DB models: CantripTemplate (97 entries), BlessingTemplate (12 entries). New columns: `enhancements` JSON on SpellTemplate (330 spells × 3 levels) + LiturgyTemplate (211 × 3 levels), `property` on SpellTemplate (all 330 spells), `variants` JSON on ProfessionTemplate (56 professions) + SpeciesTemplate (Menschen 7 + Elfen 3 variants).

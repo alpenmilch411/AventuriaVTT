@@ -1,5 +1,5 @@
 # Aventuria VTT — TODO
-**Last updated:** 2026-03-27 (Session 13)
+**Last updated:** 2026-03-27 (Session 14)
 
 ---
 
@@ -49,7 +49,7 @@
 
 **Audit completed 2026-03-27.** Reports: `reports/optolith-audit-report.md`, `reports/feature-unlock-report.md`, `reports/optolith-integration-plan.md`. Converter: `backend/importers/optolith_converter.py`. Optolith v1.5.2 data extracted to `/tmp/optolith-data/`. Two-layer architecture: `de-DE/` (German text) + `univ/` (structured numeric data). Converter merges both.
 
-**Coverage: 505 entities → 3,317 importable (+2,812)**
+**Final result: 602 → 3,638 entities (6x increase) — all phases complete**
 
 - [x] Optolith data audit — full diff report per entity type (see `reports/optolith-audit-report.md`)
 - [x] Verify seed data accuracy against Optolith — 3 critical talent name bugs, ~8 naming mismatches, spell accuracy issues found
