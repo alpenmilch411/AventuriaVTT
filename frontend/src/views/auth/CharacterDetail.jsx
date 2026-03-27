@@ -7,6 +7,7 @@ import {
 import useAuthStore from '../../stores/authStore'
 import ProgressBar from '../../components/common/ProgressBar'
 import Badge from '../../components/common/Badge'
+import { SF_TOOLTIPS as SF_INFO, ADV_TOOLTIPS as ADVANTAGE_INFO, DISADV_TOOLTIPS as DISADVANTAGE_INFO } from '../../engine/tooltips'
 
 // ── Comprehensive DSA5 explanations ──
 
@@ -42,42 +43,7 @@ const COMBAT_INFO = {
   RW: 'Reichweite — Waffenreichweite: kurz (Dolch), mittel (Schwert), lang (Speer). Bestimmt aus welcher Entfernung angegriffen werden kann.',
 }
 
-const ADVANTAGE_INFO = {
-  'Zäher Hund': 'Dein Held bleibt bei Bewusstlosigkeit länger stabil und erhält +1 auf Proben gegen Schmerz-Zustände.',
-  'Hohe Zähigkeit': 'Erhöhte Zähigkeit (ZK) +1. Besser gegen Gift, Krankheiten und körperliche Magie.',
-  'Gutaussehend': '+1 auf alle Proben die mit Aussehen zu tun haben (Betören, Überreden in sozialen Situationen).',
-  'Zauberer': 'Dein Held kann Zauber wirken und hat Astralpunkte (AsP). Voraussetzung für alle magischen Fähigkeiten.',
-  'Geweihter': 'Dein Held ist ein Geweihter einer Gottheit und kann Liturgien wirken. Hat Karmapunkte (KaP).',
-  'Fuchssinn': '+1 auf Sinnesschärfe-Proben. Dein Held bemerkt Details die andere übersehen.',
-  'Dunkelsicht': 'Kann bei Dämmerung ohne Malus sehen. In Dunkelheit nur -1 statt -3.',
-  'Hohe Karmalkraft I': '+15 KaP-Maximum. Mehr göttliche Energie für Liturgien.',
-}
-
-const DISADVANTAGE_INFO = {
-  'Jähzorn': 'Bei Provokation muss eine Selbstbeherrschung-Probe bestanden werden, sonst greift der Held blind an. Erschwert diplomatische Lösungen.',
-  'Goldgier': 'Der Held kann Schätzen schwer widerstehen. Selbstbeherrschung-Probe nötig um Gold/Edelsteine nicht an sich zu nehmen.',
-  'Neugier': 'Der Held kann Geheimnisse und Rätsel nicht ignorieren. Selbstbeherrschung nötig um von einem Mysterium abzulassen.',
-  'Körperliche Auffälligkeit (spitze Ohren)': 'Die elfischen Ohren fallen auf und können in manchen Regionen Aventuriens Misstrauen erregen.',
-  'Prinzipientreue': 'Der Held muss seinen Prinzipien treu bleiben, auch wenn es nachteilig ist. Bei Verletzung der Prinzipien: schlechtes Gewissen und Malus.',
-  'Mitleid': 'Kann Leid nicht ignorieren. Muss helfen, auch wenn es gefährlich oder taktisch unklug ist.',
-  'Platzangst': 'In engen Räumen (Höhlen, Kerker) erhält der Held den Zustand Furcht 1. Kann durch Selbstbeherrschung unterdrückt werden.',
-}
-
-const SF_INFO = {
-  'Wuchtschlag I': 'Manöver: -2 auf AT, aber +2 TP bei Treffer. Macht mehr Schaden auf Kosten der Treffsicherheit. Basismanöver — verfügbar für alle, aber ohne diese SF nochmal -2 auf AT.',
-  'Wuchtschlag II': 'Wie Wuchtschlag I, aber -4 auf AT und +4 TP. Für Kämpfer die sicher treffen können.',
-  'Wuchtschlag III': '-6 auf AT, +6 TP. Maximaler Schaden, extrem schwer zu treffen.',
-  'Finte I': 'Manöver: -1 auf AT, aber der Gegner erhält -2 auf Parade. Hilft gegen gut gepanzerte Feinde.',
-  'Schildkampf I': 'Erlaubt es, den Schild aktiv zur Parade einzusetzen. Gibt +1 PA mit Schild. Ohne diese SF kann ein Schild nur passiv schützen.',
-  'Schildkampf II': '+2 PA mit Schild statt +1.',
-  'Rüstungsgewöhnung I': 'Reduziert die Behinderung (BE) deiner Rüstung um 1. Aus BE 3 wird BE 2. Weniger Malus auf GS, INI und körperliche Proben.',
-  'Tradition (Gildenmagie)': 'Magische Tradition der Gildenmagier. Erlaubt das Lernen und Wirken von Gildenmagier-Zaubern.',
-  'Tradition (Perainekirche)': 'Karmale Tradition der Peraine-Kirche. Erlaubt das Wirken von Peraine-Liturgien (Heilung, Segen, Schutz).',
-  'Scharfschütze': 'Fernkampf: Kein Malus für die zweite Distanzstufe. Der Schütze trifft auch auf größere Entfernung präzise.',
-  'Schnellladen (Bogen)': 'Erlaubt es, einen Bogen in einer freien Aktion statt einer Aktion zu laden. Ermöglicht Schuss + Bewegung in einer Runde.',
-  'Zauber verbreiten': 'Erlaubt es, Zauber auf mehrere Ziele gleichzeitig zu wirken (kostet mehr AsP).',
-  'Liturgiestil (Peraine)': 'Spezieller Stil der Peraine-Liturgien. Gibt Boni auf Heilungs-Liturgien.',
-}
+// ADVANTAGE_INFO, DISADVANTAGE_INFO, SF_INFO imported from engine/tooltips
 
 const TALENT_INFO = {
   klettern: { probe: 'MU/GE/KK', desc: 'Felsklettern, Baumklettern, Mauerklettern. Wird durch Belastung erschwert.' },

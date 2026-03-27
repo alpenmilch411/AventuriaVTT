@@ -9,6 +9,7 @@ import useCombatValues from '../../hooks/useCombatValues'
 import { COMBAT_SPECIAL_ABILITIES } from '../../engine/weaponProperties'
 import { findTemplate, isWeapon as isWeaponItem, isArmor as isArmorItem, isShield as isShieldItem, isHelm as isHelmItem, isFocus as isFocusItem } from '../../engine/itemClassification'
 import Badge from '../../components/common/Badge'
+import { SF_TOOLTIPS as SF_EXPLAIN } from '../../engine/tooltips'
 import clsx from 'clsx'
 
 // ── Visual Maps ──
@@ -25,34 +26,7 @@ const PROP_STYLE = {
   fesselnd:        { bg: 'bg-cyan-900/30 text-cyan-400 border-cyan-800/30', tip: 'Kann das Ziel bei einem Treffer festhalten (Fesselmanöver). Ziel muss sich befreien.' },
 }
 
-// ── SF Explanations (beginner-friendly) ──
-const SF_EXPLAIN = {
-  'Wuchtschlag I': 'Du schlägst besonders hart zu. Dein Angriff wird schwieriger (-2 AT), aber der Schaden steigt um 2.',
-  'Wuchtschlag II': 'Noch härter zuschlagen. -4 auf Angriff, aber +4 Schaden bei Treffer.',
-  'Wuchtschlag III': 'Maximale Wucht. -6 AT, +6 TP — nur für erfahrene Kämpfer.',
-  'Finte I': 'Du täuschst den Gegner an. -1 auf deinen Angriff, aber der Gegner bekommt -2 auf seine Parade.',
-  'Finte II': '-2 AT, Gegner -4 PA. Sehr effektiv gegen gut gepanzerte Feinde.',
-  'Finte III': '-3 AT, Gegner -6 PA. Meisterhafte Täuschung.',
-  'Hammerschlag': 'Gewaltiger Schlag der Rüstung durchbricht. -4 AT, +4 TP, RS des Gegners halbiert.',
-  'Todesstoß': 'Vernichtender Angriff. -8 AT, Schaden x2. Nur 1x pro Kampf einsetzbar.',
-  'Niederwerfen': 'Versuch den Gegner umzuwerfen. -2 AT, bei Treffer KK-Vergleich — Gegner ist liegend.',
-  'Ausfall': 'Überraschender Vorstoß. -2 AT, dafür zählt deine Reichweite eine Stufe höher.',
-  'Meisterparade': 'Du kannst in einer Kampfrunde ein zweites Mal parieren. Die zweite Parade hat -4.',
-  'Schildkampf I': '+1 auf Parade wenn du einen Schild trägst. Grundvoraussetzung für effektiven Schildeinsatz.',
-  'Schildkampf II': '+2 auf Parade mit Schild. Du bist ein Meister der Schildverteidigung.',
-  'Rüstungsgewöhnung I': 'Deine Rüstung behindert dich weniger. Behinderung (BE) sinkt um 1.',
-  'Rüstungsgewöhnung II': 'BE sinkt um 2. Du bewegst dich in Rüstung fast so frei wie ohne.',
-  'Verbessertes Ausweichen I': '+2 auf Ausweichen. Gut für Kämpfer ohne Schild.',
-  'Verbessertes Ausweichen II': '+4 auf Ausweichen. Du weichst Angriffen meisterhaft aus.',
-  'Kampfreflexe': '+2 auf Initiative und du kannst nicht überrascht werden.',
-  'Kampfgespür': '+1 auf Parade und +1 auf Ausweichen. Allgemeiner Verteidigungsbonus.',
-  'Scharfschütze': 'Distanzabzüge beim Fernkampf um 2 reduziert. Nah und Mittel ohne Malus.',
-  'Schnellladen (Bogen)': 'Du lädst deinen Bogen als freie Aktion statt als Aktion. Ermöglicht Schießen jede Runde.',
-  'Präziser Schuss I': 'Gezielter Schuss: -4 FK, aber +2 TP. Für Situationen wo Schaden zählt.',
-  'Schnellschuss': '2 Schüsse pro Kampfrunde, aber jeweils -4 FK.',
-  'Beidhändiger Kampf I': 'Du kämpfst mit zwei Waffen. Zusatzangriff mit der Nebenhand bei -4 AT.',
-  'Beidhändiger Kampf II': 'Wie I, aber Nebenhand nur -2 AT. Fast so gut wie die Haupthand.',
-}
+// SF_EXPLAIN imported from engine/tooltips
 
 // ── Tooltip ──
 function Tip({ text }) {

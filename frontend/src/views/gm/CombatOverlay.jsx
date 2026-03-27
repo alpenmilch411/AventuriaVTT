@@ -13,6 +13,7 @@ import ProgressBar from '../../components/common/ProgressBar'
 import { getCreatureIcon } from '../../utils/icons'
 import ActiveBuffs from '../../components/common/ActiveBuffs'
 import Modal from '../../components/common/Modal'
+import { PLAYER_MANEUVERS } from '../../engine/combatManeuvers'
 import clsx from 'clsx'
 
 /**
@@ -74,13 +75,7 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
   const [playerDefenseRoll, setPlayerDefenseRoll] = useState('')
   const [playerDamageValue, setPlayerDamageValue] = useState('')
 
-  const PLAYER_MANEUVERS = [
-    { id: 'none', label: 'Ohne Manoever', atMod: 0, tpMod: 0, desc: 'Normaler Angriff.' },
-    { id: 'wuchtschlag1', label: 'Wuchtschlag I', atMod: -2, tpMod: 2, desc: '-2 AT, +2 Schaden.' },
-    { id: 'wuchtschlag2', label: 'Wuchtschlag II', atMod: -4, tpMod: 4, desc: '-4 AT, +4 Schaden.' },
-    { id: 'finte1', label: 'Finte I', atMod: -1, tpMod: 0, desc: '-1 AT, Gegner -2 Parade.', defMod: -2 },
-    { id: 'finte2', label: 'Finte II', atMod: -2, tpMod: 0, desc: '-2 AT, Gegner -4 Parade.', defMod: -4 },
-  ]
+  // PLAYER_MANEUVERS imported from '../../engine/combatManeuvers'
 
   // Find first available battle if battleId not provided (player side)
   const effectiveBattleId = battleId || Object.keys(battles)[0]

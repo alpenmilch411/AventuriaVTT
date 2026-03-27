@@ -9,6 +9,8 @@ import { getConditionModifier, getConditionModifierGross, CONDITIONS as CONDITIO
 import { computeCombatStats } from '../../engine/combatComputation'
 import { COMBAT_SPECIAL_ABILITIES } from '../../engine/weaponProperties'
 import { isBuffActive } from '../../engine/buffSystem'
+import { getSAStatEffects } from '../../engine/saStatEffects'
+import { SF_TOOLTIPS as SF_EXPLAIN, ADV_TOOLTIPS as ADV_EXPLAIN, DISADV_TOOLTIPS as DISADV_EXPLAIN } from '../../engine/tooltips'
 import ProgressBar from '../../components/common/ProgressBar'
 import Badge from '../../components/common/Badge'
 import ActiveBuffs from '../../components/common/ActiveBuffs'
@@ -238,56 +240,7 @@ const COND_COLORS = {
   'kampf': 'border-amber-800/40 bg-amber-950/20',
 }
 
-// ── SF explanation lookup (inline, same as CharacterSheet) ──
-const SF_EXPLAIN = {
-  'Wuchtschlag I': '-2 AT, +2 Schaden bei Treffer.',
-  'Wuchtschlag II': '-4 AT, +4 Schaden bei Treffer.',
-  'Finte I': '-1 AT, Gegner -2 PA.',
-  'Schildkampf I': '+1 Parade mit Schild.',
-  'Schildkampf II': '+2 Parade mit Schild.',
-  'Rüstungsgewöhnung I': 'Behinderung -1.',
-  'Rüstungsgewöhnung II': 'Behinderung -2.',
-  'Kampfreflexe': '+2 Initiative, immun gegen Überraschung.',
-  'Kampfgespür': '+1 Parade, +1 Ausweichen.',
-  'Verbessertes Ausweichen I': '+2 Ausweichen.',
-  'Beidhändiger Kampf I': 'Zusatzangriff Nebenhand (-4 AT).',
-  'Scharfschütze': 'Distanzabzüge -2.',
-  'Schnellladen (Bogen)': 'Bogen als freie Aktion laden.',
-  'Tradition (Gildenmagie)': 'Gildenmagier-Zauber lernen und wirken.',
-  'Tradition (Perainekirche)': 'Peraine-Liturgien wirken.',
-  'Zauber verbreiten': 'Zauber auf mehrere Ziele (mehr AsP).',
-  'Liturgiestil (Peraine)': 'Bonus auf Heilungs-Liturgien.',
-  'Ortskenntnis': '+1 auf Gassenwissen/Orientierung am Ort.',
-  'Geländekunde': '+1 auf Fährtensuchen/Orientierung/Pflanzenkunde im Gelände.',
-  'Athlet': 'Körperbeherrschung/Kraftakt +1 QS.',
-  'Nerven aus Stahl': 'Willenskraft gegen Einschüchtern +1 QS.',
-  'Fallen entschärfen': 'Schlösserknacken für Fallen.',
-  'Astrale Meditation': 'LeP in AsP umwandeln (1:1).',
-  'Kraftkontrolle': 'Zauberkosten -1 AsP.',
-  'Magische Regeneration I': '+1 AsP/Regeneration.',
-  'Karmale Meditation': 'Verzicht auf LeP-Regen, +1W6 KaP.',
-  'Karmale Regeneration I': '+1 KaP/Regeneration.',
-}
-
-const ADV_EXPLAIN = {
-  'Zäher Hund': '+1 gegen Schmerz, länger stabil bei Bewusstlosigkeit.',
-  'Hohe Zähigkeit': '+1 Zähigkeit (ZK).',
-  'Gutaussehend': '+1 auf Aussehen-Proben.',
-  'Zauberer': 'Kann zaubern, hat Astralpunkte.',
-  'Geweihter': 'Kann Liturgien wirken, hat Karmapunkte.',
-  'Fuchssinn': '+1 Sinnesschärfe.',
-  'Dunkelsicht': 'Kein Malus bei Dämmerung, nur -1 bei Dunkelheit.',
-  'Hohe Karmalkraft I': '+15 KaP Maximum.',
-}
-
-const DISADV_EXPLAIN = {
-  'Jähzorn': 'Bei Provokation: Selbstbeherrschung oder blinder Angriff.',
-  'Goldgier': 'Schwer Schätzen zu widerstehen.',
-  'Neugier': 'Kann Geheimnisse nicht ignorieren.',
-  'Prinzipientreue': 'Muss Prinzipien folgen, auch wenn nachteilig.',
-  'Mitleid': 'Muss Leidenden helfen.',
-  'Platzangst': 'Enge Räume: Furcht 1.',
-}
+// SF_EXPLAIN, ADV_EXPLAIN, DISADV_EXPLAIN imported from engine/tooltips
 
 // ── SF categorization rules (same as CharacterSheet) ──
 const SF_CATS = [
@@ -472,42 +425,8 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose, databankTe
     return { label: `${c.name} ${['','I','II','III','IV'][Math.min(l,4)]}`, val }
   })
 
-  // SF passive effects on specific combat stats (same logic as VitalsBar)
-  const sfLines = (stat) => {
-    const results = []
-    const superseded = new Set()
-    const checks = {
-      'INI': [{ match: /kampfreflexe/i, val: 2, label: 'Kampfreflexe' }],
-      'AW': [
-        { match: /verbessertes ausweichen.*II|verbessertes ausweichen.*2/i, val: 4, label: 'Verbessertes Ausweichen II' },
-        { match: /verbessertes ausweichen.*I|verbessertes ausweichen(?!.*II)/i, val: 2, label: 'Verbessertes Ausweichen I' },
-        { match: /kampfgesp/i, val: 1, label: 'Kampfgespür' },
-      ],
-      'PA': [
-        { match: /schildkampf.*II/i, val: 2, label: 'Schildkampf II', supersedes: /schildkampf.*I/i },
-        { match: /schildkampf.*I/i, val: 1, label: 'Schildkampf I' },
-        { match: /kampfgesp/i, val: 1, label: 'Kampfgespür' },
-      ],
-      'BE': [
-        { match: /stungsgew.*II|stungsgewöhnung.*II/i, val: -2, label: 'Rüstungsgewöhnung II', supersedes: /stungsgew.*I/i },
-        { match: /stungsgew.*I|stungsgewöhnung.*I/i, val: -1, label: 'Rüstungsgewöhnung I' },
-      ],
-    }
-    for (const sf of sfs) {
-      for (const c of (checks[stat] || [])) {
-        if (c.match.test(sf) && c.supersedes) {
-          for (const sf2 of sfs) { if (c.supersedes.test(sf2) && sf2 !== sf) superseded.add(sf2) }
-        }
-      }
-    }
-    for (const sf of sfs) {
-      if (superseded.has(sf)) continue
-      for (const c of (checks[stat] || [])) {
-        if (c.match.test(sf)) { results.push({ label: sf, val: c.val }); break }
-      }
-    }
-    return results
-  }
+  // SF passive effects on specific combat stats
+  const sfLines = (stat) => getSAStatEffects(stat, sfs)
 
   // Compute BE from armor (with template fallback for items without inline rs/be)
   const matchArmorTpl = (name) => armorTemplates.find(t => name.toLowerCase().includes(t.name.toLowerCase().split(' ')[0]) || t.name.toLowerCase().includes(name.toLowerCase().split(' ')[0]))

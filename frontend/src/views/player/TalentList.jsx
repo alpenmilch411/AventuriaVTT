@@ -9,6 +9,7 @@ import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
 import useAuthStore from '../../stores/authStore'
 import useCombatValues from '../../hooks/useCombatValues'
+import { TALENT_SF } from '../../engine/advancementCosts'
 import clsx from 'clsx'
 
 const ATTR_NAMES = {
@@ -34,11 +35,7 @@ const ATTR_ICONS = {
   FF: Hand, GE: Wind, KO: HeartPulse, KK: Hammer,
 }
 
-// Talent-Kategorien → Standard-Steigerungsfaktor (DSA5 Regelwerk)
-const TALENT_SF = {
-  'körper': 'B', 'gesellschaft': 'B', 'natur': 'C', 'wissen': 'C', 'handwerk': 'B',
-  'koerper': 'B', 'body': 'B', 'social': 'B', 'nature': 'C', 'knowledge': 'C', 'craft': 'B',
-}
+// TALENT_SF imported from engine/advancementCosts
 
 const CATEGORIES = [
   { id: 'körper', label: 'Körpertalente', icon: Activity, color: 'text-orange-400', bgActive: 'bg-orange-900/30 border-orange-700/40', desc: 'Körperliche Fähigkeiten — Klettern, Schleichen, Schwimmen, Selbstbeherrschung und mehr' },

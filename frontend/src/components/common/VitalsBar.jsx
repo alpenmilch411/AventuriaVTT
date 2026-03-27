@@ -4,6 +4,7 @@ import { Heart, Sparkles, Sun, Weight, Coins, Shield, Swords, Crosshair, Zap, Fl
 import useCharacterStore from '../../stores/characterStore'
 import ProgressBar from './ProgressBar'
 import { getConditionModifierGross, CONDITIONS as CONDITIONS_REF } from '../../engine/conditionsEngine'
+import { getSAStatEffects } from '../../engine/saStatEffects'
 import Badge from './Badge'
 import ActiveBuffs from './ActiveBuffs'
 import clsx from 'clsx'
@@ -140,42 +141,7 @@ function VitalsBar({
 
   // SF effects on derived stats
   const charSpecials = useCharacterStore?.getState?.()?.myCharacter?.special_abilities || []
-  const sfLines = (stat) => {
-    const results = []
-    const superseded = new Set()
-    const checks = {
-      'INI': [
-        { match: /kampfreflexe/i, val: 2, label: 'Kampfreflexe' },
-      ],
-      'AW': [
-        { match: /verbessertes ausweichen.*II|verbessertes ausweichen.*2/i, val: 4, label: 'Verbessertes Ausweichen II' },
-        { match: /verbessertes ausweichen.*I|verbessertes ausweichen(?!.*II)/i, val: 2, label: 'Verbessertes Ausweichen I' },
-        { match: /kampfgesp/i, val: 1, label: 'Kampfgespür' },
-      ],
-      'BE': [
-        // II supersedes I — only show the highest level, not both
-        { match: /stungsgew.*II|stungsgewöhnung.*II/i, val: -2, label: 'Rüstungsgewöhnung II', supersedes: /stungsgew.*I/i },
-        { match: /stungsgew.*I|stungsgewöhnung.*I/i, val: -1, label: 'Rüstungsgewöhnung I' },
-      ],
-    }
-    // First pass: find superseding SFs
-    for (const sf of charSpecials) {
-      for (const c of (checks[stat] || [])) {
-        if (c.match.test(sf) && c.supersedes) {
-          // Mark lower-level SFs as superseded
-          for (const sf2 of charSpecials) { if (c.supersedes.test(sf2) && sf2 !== sf) superseded.add(sf2) }
-        }
-      }
-    }
-    // Second pass: collect non-superseded SFs
-    for (const sf of charSpecials) {
-      if (superseded.has(sf)) continue
-      for (const c of (checks[stat] || [])) {
-        if (c.match.test(sf)) { results.push({ label: sf, val: c.val }); break }
-      }
-    }
-    return results
-  }
+  const sfLines = (stat) => getSAStatEffects(stat, charSpecials)
 
   // Build rich tooltip with full derivation
   const condBreakdown = (stat) => {

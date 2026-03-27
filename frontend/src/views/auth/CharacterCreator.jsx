@@ -6,41 +6,7 @@ import {
 import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
 import { TipAbbr } from '../../components/Tooltip'
-
-// ────────────────────────────────────────────────────────────────────────────
-// DSA5 Cost Tables (rules constants, not DB data)
-// ────────────────────────────────────────────────────────────────────────────
-
-const SF_TABLES = {
-  A: { 0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1, 8:2,9:2,10:2,11:2,12:2, 13:3,14:3,15:3, 16:4,17:4, 18:5,19:6,20:7,21:8,22:9,23:10,24:12 },
-  B: { 0:2,1:2,2:2,3:2,4:2,5:2,6:2,7:2, 8:4,9:4,10:4,11:4,12:4, 13:6,14:6,15:6, 16:8,17:8, 18:10,19:12,20:14,21:16,22:18,23:20,24:24 },
-  C: { 0:3,1:3,2:3,3:3,4:3,5:3,6:3,7:3, 8:6,9:6,10:6,11:6,12:6, 13:9,14:9,15:9, 16:12,17:12, 18:15,19:18,20:21,21:24,22:27,23:30,24:36 },
-  D: { 0:4,1:4,2:4,3:4,4:4,5:4,6:4,7:4, 8:8,9:8,10:8,11:8,12:8, 13:12,14:12,15:12, 16:16,17:16, 18:20,19:24,20:28,21:32,22:36,23:40,24:48 },
-  E: { 0:5,1:5,2:5,3:5,4:5,5:5,6:5,7:5, 8:10,9:10,10:10,11:10,12:10, 13:15,14:15,15:15, 16:20,17:20, 18:25,19:30,20:35,21:40,22:45,23:50,24:60 },
-}
-
-const ATTR_COST = {
-  8:15, 9:15, 10:15, 11:15, 12:15, 13:15, 14:15,
-  15:30, 16:30, 17:30, 18:60, 19:60, 20:120, 21:120, 22:240, 23:240, 24:480,
-}
-
-function getAttrCost(val) { return ATTR_COST[val] || (val < 8 ? 15 : 480) }
-
-function getSkillCost(val, sf) {
-  const table = SF_TABLES[sf]
-  if (!table) return 999
-  return table[val] ?? (val > 24 ? table[24] * Math.pow(2, val - 24) : 999)
-}
-
-const ERFAHRUNGSGRADE = {
-  unerfahren:       { label: 'Unerfahren',      ap: 900,  maxAttr: 14, maxSkill: 14, maxKt: 14 },
-  durchschnittlich: { label: 'Durchschnittlich', ap: 1000, maxAttr: 15, maxSkill: 16, maxKt: 16 },
-  erfahren:         { label: 'Erfahren',         ap: 1100, maxAttr: 16, maxSkill: 18, maxKt: 18 },
-  kompetent:        { label: 'Kompetent',        ap: 1200, maxAttr: 17, maxSkill: 20, maxKt: 20 },
-  meisterlich:      { label: 'Meisterlich',      ap: 1400, maxAttr: 18, maxSkill: 22, maxKt: 22 },
-  brillant:         { label: 'Brillant',         ap: 1700, maxAttr: 19, maxSkill: 24, maxKt: 24 },
-  legendaer:        { label: 'Legendär',         ap: 2100, maxAttr: 20, maxSkill: 25, maxKt: 25 },
-}
+import { EXPERIENCE_GRADES as ERFAHRUNGSGRADE, getAttrCost, getUpgradeCost as getSkillCost } from '../../engine/advancementCosts'
 
 const ATTR_KEYS = ['MU','KL','IN','CH','FF','GE','KO','KK']
 
@@ -1000,7 +966,7 @@ function StepSpecies({ species, setSpecies, speciesFreePoints, setSpeciesFreePoi
               const specBase = species.base_attributes?.[attr] || 8
               const delta = speciesFreePoints[attr] || 0
               const val = specBase + delta
-              const atMax = gradeData && val >= gradeData.maxAttr
+              const atMax = gradeData && val >= gradeData.attr
               return (
                 <div key={attr} className="flex items-center justify-between bg-dsa-bg rounded p-2">
                   <div>
@@ -1026,7 +992,7 @@ function StepSpecies({ species, setSpecies, speciesFreePoints, setSpeciesFreePoi
           </div>
           {gradeData && Object.entries(speciesFreePoints).some(([attr, d]) => {
             const val = (species.base_attributes?.[attr] || 8) + d
-            return val > gradeData.maxAttr
+            return val > gradeData.attr
           }) && (
             <div className="flex items-center gap-2 text-xs text-red-400">
               <AlertTriangle className="w-3.5 h-3.5" />
@@ -1129,7 +1095,7 @@ function StepProfession({ profession, setProfession, professions, gradeData, loa
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {professions.map((p) => {
             const ct = p.combat_techniques || {}
-            const hasOverLimit = gradeData && Object.values(ct).some(v => v > gradeData.maxKt)
+            const hasOverLimit = gradeData && Object.values(ct).some(v => v > gradeData.kt)
             const skillEntries = p.skills ? Object.keys(p.skills) : []
             return (
               <button
@@ -1337,7 +1303,7 @@ function StepAttributes({ baseAttributes, attrUpgrades, setAttrUpgrades, gradeDa
           const base = baseAttributes[attr] || 8
           const delta = attrUpgrades[attr] || 0
           const val = base + delta
-          const atMax = gradeData && val >= gradeData.maxAttr
+          const atMax = gradeData && val >= gradeData.attr
           const nextCost = getAttrCost(val)
           return (
             <div
@@ -1653,7 +1619,7 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
                   const base = baseSkills[talent] || 0
                   const delta = talentUpgrades[talent] || 0
                   const val = base + delta
-                  const atMax = gradeData && val >= gradeData.maxSkill
+                  const atMax = gradeData && val >= gradeData.skill
                   const nextCost = getSkillCost(val, cat.sf)
                   return (
                     <div key={talent} className="flex items-center justify-between bg-dsa-bg-card border border-dsa-bg-medium rounded px-3 py-1.5">
@@ -1693,7 +1659,7 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
             const base = baseKT[kt.name] || 6
             const delta = ktUpgrades[kt.name] || 0
             const val = base + delta
-            const atMax = gradeData && val >= gradeData.maxKt
+            const atMax = gradeData && val >= gradeData.kt
             const nextCost = getSkillCost(val, kt.sf)
             const isMelee = kt.type === 'melee'
             const split = atPaSplits[kt.name]

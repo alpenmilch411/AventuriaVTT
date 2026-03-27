@@ -6,6 +6,7 @@ import { getConditionModifier, CONDITIONS } from '../../engine/conditionsEngine'
 import { isBuffActive } from '../../engine/buffSystem'
 import ActiveBuffs from '../../components/common/ActiveBuffs'
 import Badge from '../../components/common/Badge'
+import { SF_TOOLTIPS as SF_EXPLAIN, ADV_TOOLTIPS as ADV_EXPLAIN, DISADV_TOOLTIPS as DISADV_EXPLAIN } from '../../engine/tooltips'
 import clsx from 'clsx'
 
 // ── Attribute metadata ──
@@ -20,56 +21,7 @@ const ATTR = {
   KK: { name: 'Körperkraft', icon: Hammer, color: 'text-amber-400', bg: 'from-amber-900/30 to-amber-950/10 border-amber-800/20', desc: 'Muskelkraft. Beeinflusst Nahkampfschaden und Tragkraft.' },
 }
 
-// ── SF Explanations ──
-const SF_EXPLAIN = {
-  'Wuchtschlag I': '-2 AT, +2 Schaden bei Treffer.',
-  'Wuchtschlag II': '-4 AT, +4 Schaden bei Treffer.',
-  'Finte I': '-1 AT, Gegner -2 PA.',
-  'Schildkampf I': '+1 Parade mit Schild.',
-  'Schildkampf II': '+2 Parade mit Schild.',
-  'Rüstungsgewöhnung I': 'Behinderung -1.',
-  'Rüstungsgewöhnung II': 'Behinderung -2.',
-  'Kampfreflexe': '+2 Initiative, immun gegen Überraschung.',
-  'Kampfgespür': '+1 Parade, +1 Ausweichen.',
-  'Verbessertes Ausweichen I': '+2 Ausweichen.',
-  'Beidhändiger Kampf I': 'Zusatzangriff Nebenhand (-4 AT).',
-  'Scharfschütze': 'Distanzabzüge -2.',
-  'Schnellladen (Bogen)': 'Bogen als freie Aktion laden.',
-  'Tradition (Gildenmagie)': 'Gildenmagier-Zauber lernen und wirken.',
-  'Tradition (Perainekirche)': 'Peraine-Liturgien wirken.',
-  'Zauber verbreiten': 'Zauber auf mehrere Ziele (mehr AsP).',
-  'Liturgiestil (Peraine)': 'Bonus auf Heilungs-Liturgien.',
-  'Ortskenntnis': '+1 auf Gassenwissen/Orientierung am Ort.',
-  'Geländekunde': '+1 auf Fährtensuchen/Orientierung/Pflanzenkunde im Gelände.',
-  'Athlet': 'Körperbeherrschung/Kraftakt +1 QS.',
-  'Nerven aus Stahl': 'Willenskraft gegen Einschüchtern +1 QS.',
-  'Fallen entschärfen': 'Schlösserknacken für Fallen.',
-  'Astrale Meditation': 'LeP in AsP umwandeln (1:1).',
-  'Kraftkontrolle': 'Zauberkosten -1 AsP.',
-  'Magische Regeneration I': '+1 AsP/Regeneration.',
-  'Karmale Meditation': 'Verzicht auf LeP-Regen, +1W6 KaP.',
-  'Karmale Regeneration I': '+1 KaP/Regeneration.',
-}
-
-const ADV_EXPLAIN = {
-  'Zäher Hund': '+1 gegen Schmerz, länger stabil bei Bewusstlosigkeit.',
-  'Hohe Zähigkeit': '+1 Zähigkeit (ZK).',
-  'Gutaussehend': '+1 auf Aussehen-Proben.',
-  'Zauberer': 'Kann zaubern, hat Astralpunkte.',
-  'Geweihter': 'Kann Liturgien wirken, hat Karmapunkte.',
-  'Fuchssinn': '+1 Sinnesschärfe.',
-  'Dunkelsicht': 'Kein Malus bei Dämmerung, nur -1 bei Dunkelheit.',
-  'Hohe Karmalkraft I': '+15 KaP Maximum.',
-}
-
-const DISADV_EXPLAIN = {
-  'Jähzorn': 'Bei Provokation: Selbstbeherrschung oder blinder Angriff.',
-  'Goldgier': 'Schwer Schätzen zu widerstehen.',
-  'Neugier': 'Kann Geheimnisse nicht ignorieren.',
-  'Prinzipientreue': 'Muss Prinzipien folgen, auch wenn nachteilig.',
-  'Mitleid': 'Muss Leidenden helfen.',
-  'Platzangst': 'Enge Räume: Furcht 1.',
-}
+// SF_EXPLAIN, ADV_EXPLAIN, DISADV_EXPLAIN imported from engine/tooltips
 
 // Derive condition display info from the canonical CONDITIONS engine
 const COND_COLORS = {

@@ -5,6 +5,7 @@ import {
   Wind, Zap, Brain, Target,
 } from 'lucide-react'
 import clsx from 'clsx'
+import { SF_TOOLTIPS as SF_INFO, ADV_TOOLTIPS as ADV_INFO, DISADV_TOOLTIPS as DISADV_INFO } from '../../engine/tooltips'
 import Badge from '../../components/common/Badge'
 import ProgressBar from '../../components/common/ProgressBar'
 import { TipAbbr } from '../../components/Tooltip'
@@ -88,54 +89,7 @@ const COMBAT_INFO = {
   BE: 'Behinderung — Malus durch schwere Rüstung auf GS, INI und körperliche Proben.',
 }
 
-// ── Special ability explanations ──
-const SF_INFO = {
-  'Wuchtschlag I': '-2 AT, +2 TP. Mehr Schaden auf Kosten der Treffsicherheit.',
-  'Wuchtschlag II': '-4 AT, +4 TP.',
-  'Wuchtschlag III': '-6 AT, +6 TP.',
-  'Finte I': '-1 AT, Gegner -2 PA. Hilft gegen gut gepanzerte Feinde.',
-  'Schildkampf I': '+1 PA mit Schild.',
-  'Schildkampf II': '+2 PA mit Schild.',
-  'Rüstungsgewöhnung I': 'BE der Rüstung -1.',
-  'Tradition (Gildenmagie)': 'Erlaubt Gildenmagier-Zauber.',
-  'Tradition (Perainekirche)': 'Erlaubt Peraine-Liturgien (Heilung, Segen).',
-  'Scharfschütze': 'Kein Malus für zweite Distanzstufe.',
-  'Schnellladen (Bogen)': 'Bogen laden als freie Aktion.',
-}
-
-// ── Advantage/Disadvantage explanations ──
-const ADV_INFO = {
-  'Hohe Lebenskraft': '+LeP Maximum.',
-  'Hohe Astralkraft': '+AsP Maximum.',
-  'Hohe Karmalkraft': '+KaP Maximum.',
-  'Glück': '+1 SchiP pro Stufe.',
-  'Zäher Hund': 'Länger stabil bei Bewusstlosigkeit. +1 gegen Schmerz.',
-  'Gutaussehend': '+1 auf Proben mit Aussehen.',
-  'Eisern': '+1 auf Proben gegen Furcht.',
-  'Geborener Krieger': '+1 auf AT-Proben.',
-  'Dunkelsicht': 'Bessere Sicht bei Dunkelheit.',
-  'Flink': '+1 GS pro Stufe.',
-  'Waffenbegabung': '+1 AT/PA mit einer gewählten Waffe.',
-  'Hohe Seelenkraft': '+1 SK.',
-  'Hohe Zähigkeit': '+1 ZK.',
-  'Verbesserte Regeneration': '+1 auf Regeneration.',
-  'Schwer zu verzaubern': '+2 SK gegen Zauber.',
-}
-const DISADV_INFO = {
-  'Niedrige Lebenskraft': '-LeP Maximum.',
-  'Niedrige Astralkraft': '-AsP Maximum.',
-  'Niedrige Karmalkraft': '-KaP Maximum.',
-  'Pech': '-1 SchiP pro Stufe.',
-  'Goldgier': 'Selbstbeherrschung nötig gegen Schätze.',
-  'Neugier': 'Kann Geheimnisse nicht ignorieren.',
-  'Angst': 'Zustand Furcht in bestimmten Situationen.',
-  'Blutrausch': 'Bei Kampf Selbstbeherrschung oder unkontrollierter Angriff.',
-  'Niedrige Seelenkraft': '-1 SK.',
-  'Niedrige Zähigkeit': '-1 ZK.',
-  'Lahm': '-1 GS.',
-  'Nachtblind': '-3 bei Dunkelheit statt -1.',
-  'Prinzipientreue': 'Muss Prinzipien treu bleiben, auch wenn nachteilig.',
-}
+// SF_INFO, ADV_INFO, DISADV_INFO imported from engine/tooltips
 
 // ── Talent category info ──
 const TALENT_CATEGORIES = {
