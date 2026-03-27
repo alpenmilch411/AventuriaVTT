@@ -4042,9 +4042,14 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 
 ---
 
-## 11. Roadmap (Phased Development)
+## 11. Roadmap
 
-### Phase 1: Playable MVP — DONE (2026-03-22)
+**See `TODO.md` for the full roadmap, open tasks, and recently completed work.**
+
+The roadmap was extracted from SPEC.md into a standalone file on 2026-03-27 to keep this spec focused on architecture and requirements. Claude Code reads TODO.md at session start and updates it when tasks are completed.
+
+<!-- Everything below this line was moved to TODO.md on 2026-03-27 -->
+<!-- Phase 1: Playable MVP — DONE (2026-03-22)
 - [x] Browser-based app: React + Vite + TailwindCSS
 - [x] User accounts (email/password login, JWT auth)
 - [x] Character import (Optolith JSON + DSA Ultimate JSON parsers built)
@@ -4428,3 +4433,5 @@ This is not optional. A commit without updated docs means the next session start
 - 2026-03-25: Components read from Zustand stores (live WS updates), never from API fetches during active sessions
 - 2026-03-25: DEVLOG entries written in non-technical language describing user-visible changes, not implementation details
 - 2026-03-25: SPEC.md + DEVLOG.md MUST be updated before every commit (Pre-Commit Protocol in section 12)
+-->
+<!-- End of roadmap content moved to TODO.md -->

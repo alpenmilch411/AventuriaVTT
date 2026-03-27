@@ -6,7 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Aventuria VTT — browser-based GM toolkit for Das Schwarze Auge 5th Edition (DSA5). A GM runs sessions from a cockpit (laptop), players join from phones, and a shared screen shows the map. Everything syncs in real-time via WebSocket.
 
-**Key docs:** `SPEC.md` is the authoritative technical specification. `GOTCHAS.md` lists DSA5 rules implementation traps — read it before touching engine code. `DEVLOG.md` tracks development sessions.
+**Key docs:** `SPEC.md` is the authoritative technical specification. `TODO.md` is the roadmap and task list — read it at session start, update it when completing tasks. `GOTCHAS.md` lists DSA5 rules implementation traps — read it before touching engine code. `DEVLOG.md` tracks development sessions.
+
+## Session Start (MANDATORY)
+At the start of every conversation, read these files before doing anything:
+1. `TODO.md` — current roadmap, open tasks, what was recently completed
+2. `SPEC.md` sections 1-3 — architecture refresher (skip if already familiar)
+3. `GOTCHAS.md` — DSA5 implementation traps
+4. Last 3 entries in `DEVLOG.md` — recent session context
+
+Then confirm: "Last session completed [X]. Open tasks: [Y]. What do you want to work on?"
 
 ## Commands
 
