@@ -75,6 +75,7 @@ class CharacterCreate(BaseModel):
     special_abilities: Optional[list] = None
     advantages: Optional[Any] = None
     disadvantages: Optional[Any] = None
+    languages: Optional[list] = None
     basis_inventory: Optional[dict] = None
 
 
@@ -98,6 +99,7 @@ class CharacterUpdate(BaseModel):
     special_abilities: Optional[list] = None
     advantages: Optional[dict] = None
     disadvantages: Optional[dict] = None
+    languages: Optional[list] = None
     basis_inventory: Optional[dict] = None
     death_record: Optional[dict] = None
 
@@ -124,6 +126,7 @@ class CharacterResponse(BaseModel):
     special_abilities: Optional[list] = None
     advantages: Optional[list] = None
     disadvantages: Optional[list] = None
+    languages: Optional[list] = None
     basis_inventory: Optional[Any] = None
     current_vitals: Optional[dict] = None
     conditions: Optional[list] = None

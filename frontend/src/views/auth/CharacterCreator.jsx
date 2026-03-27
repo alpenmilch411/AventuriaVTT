@@ -623,6 +623,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
       special_abilities: profession?.special_abilities || (isEdit ? editCharacter.special_abilities : []) || [],
       advantages,
       disadvantages,
+      languages: culture?.languages || (isEdit ? editCharacter.languages : []) || [],
       basis_inventory: (isEdit ? editCharacter.basis_inventory : null) || { items: [] },
     }
 

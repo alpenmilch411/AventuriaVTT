@@ -54,6 +54,10 @@ class Character(Base):
     advantages: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     disadvantages: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     basis_inventory: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    languages: Mapped[Optional[list]] = mapped_column(
+        JSON, nullable=True,
+        comment="Languages and scripts [{name, level}] — from culture + purchases",
+    )
 
     # Live session state — persisted between sessions
     current_vitals: Mapped[Optional[dict]] = mapped_column(

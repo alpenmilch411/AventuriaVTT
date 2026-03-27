@@ -419,6 +419,27 @@ function CharacterSheet({ sendMessage }) {
         )
       })()}
 
+      {/* ━━ Sprachen & Schriften ━━ */}
+      {myCharacter.languages?.length > 0 && (
+        <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden">
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-dsa-bg-medium/50">
+            <BookOpen className="w-4 h-4 text-dsa-mana" />
+            <span className="text-xs font-bold uppercase tracking-wider text-dsa-mana">Sprachen</span>
+          </div>
+          <div className="p-3 flex flex-wrap gap-2">
+            {myCharacter.languages.map((lang, i) => {
+              const name = typeof lang === 'string' ? lang : lang.name
+              const level = typeof lang === 'object' ? lang.level : null
+              return (
+                <span key={i} className="bg-dsa-mana/10 border border-dsa-mana/20 rounded-sm px-2 py-1 text-xs text-dsa-mana-light">
+                  {name}{level != null && <span className="text-dsa-parchment-dark/50 ml-1">({level})</span>}
+                </span>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* ━━ ROW 4: Bio ━━ */}
       {myCharacter.bio && (
         <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden">

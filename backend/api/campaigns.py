@@ -959,6 +959,7 @@ async def get_campaign_players_detail(
                     "spells": char.spells,
                     "liturgies": char.liturgies,
                     "special_abilities": char.special_abilities,
+                    "languages": char.languages or [],
                     "advantages": char.advantages,
                     "disadvantages": char.disadvantages,
                     "basis_inventory": enriched_inv,

@@ -60,6 +60,7 @@ async def init_db():
             await conn.run_sync(_migrate_add_character_creation_fields)
             await conn.run_sync(_migrate_add_species_extra_columns)
             await conn.run_sync(_migrate_add_active_buffs_column)
+            await conn.run_sync(_migrate_add_languages_column)
 
 
 def _migrate_add_user_contribution_columns(connection):
@@ -199,3 +200,16 @@ def _migrate_add_active_buffs_column(connection):
                 connection.execute(
                     text(f"ALTER TABLE {table} ADD COLUMN {col_name} {col_type}")
                 )
+
+
+def _migrate_add_languages_column(connection):
+    """Add languages JSON column to characters table."""
+    from sqlalchemy import text
+
+    result = connection.execute(text("PRAGMA table_info(characters)"))
+    existing_cols = {row[1] for row in result.fetchall()}
+
+    if "languages" not in existing_cols:
+        connection.execute(
+            text("ALTER TABLE characters ADD COLUMN languages TEXT")
+        )
