@@ -107,6 +107,18 @@ export default function GMCockpit() {
   const activeBattle = battles[activeBattleId]
   const connectedCount = players.filter(p => p.connected).length
 
+  // Open popups when quickAction is selected (moved out of render to avoid infinite loops)
+  useEffect(() => {
+    if (!quickAction || selectedPlayerIds.size === 0) return
+    if (quickAction === 'probe' && !showProbePopup) setShowProbePopup(true)
+    if (quickAction === 'health' && !showVitalsPopup) setShowVitalsPopup(true)
+    if (quickAction === 'condition' && !showConditionPopup) setShowConditionPopup(true)
+    if (quickAction === 'items' && !showLoot) {
+      setShowLoot({ sourceName: 'Gegenstaende', sourceItems: [], targetPlayerIds: [...selectedPlayerIds] })
+      setQuickAction(null)
+    }
+  }, [quickAction]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const togglePlayer = (id) => {
     setSelectedPlayerIds(prev => {
       const next = new Set(prev)
@@ -421,25 +433,6 @@ export default function GMCockpit() {
                   <button onClick={() => setQuickAction(null)} className="text-dsa-parchment-dark hover:text-dsa-parchment"><X className="w-3 h-3" /></button>
                 </div>
 
-                {quickAction === 'probe' && (() => {
-                  if (!showProbePopup && selectedPlayerIds.size > 0) setTimeout(() => setShowProbePopup(true), 50)
-                  return null
-                })()}
-
-                {quickAction === 'health' && (() => {
-                  if (!showVitalsPopup && selectedPlayerIds.size > 0) setTimeout(() => setShowVitalsPopup(true), 50)
-                  return null
-                })()}
-
-                {quickAction === 'items' && (() => {
-                  if (!showLoot) setTimeout(() => { setShowLoot({ sourceName: 'Gegenstaende', sourceItems: [], targetPlayerIds: [...selectedPlayerIds] }); setQuickAction(null) }, 50)
-                  return null
-                })()}
-
-                {quickAction === 'condition' && (() => {
-                  if (!showConditionPopup && selectedPlayerIds.size > 0) setTimeout(() => setShowConditionPopup(true), 50)
-                  return null
-                })()}
 
                 {quickAction === 'whisper' && (
                   <div className="space-y-1.5">

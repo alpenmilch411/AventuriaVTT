@@ -253,16 +253,42 @@ const useCombatStore = create((set, get) => ({
     const { type, payload } = msg
     switch (type) {
       case 'combat_start': {
-        const battleId = payload.battle_id || `battle_${Date.now()}`
         const iniOrder = payload.initiative_order || payload.combatants || []
-        const id = get().createBattle(payload.name || 'Kampf')
-        if (iniOrder.length > 0) {
+        const name = payload.name || 'Kampf'
+        // If GM already created this battle locally (via BattleManager.createBattle),
+        // just update the existing active battle with initiative data instead of creating a duplicate
+        const existing = get().activeBattleId
+        if (existing && get().battles[existing]) {
           set((state) => ({
-            battles: { ...state.battles, [id]: { ...state.battles[id], initiativeOrder: iniOrder, round: payload.round_number || payload.round || 1 } },
+            battles: {
+              ...state.battles,
+              [existing]: {
+                ...state.battles[existing],
+                initiativeOrder: iniOrder.length > 0 ? iniOrder : state.battles[existing].initiativeOrder,
+                round: iniOrder.length > 0 ? (payload.round_number || payload.round || 1) : state.battles[existing].round,
+              },
+            },
+            combatResult: null,
+          }))
+        } else {
+          // Player receiving combat_start — create the battle fresh
+          const id = payload.battle_id || `battle_${Date.now()}`
+          set((state) => ({
+            battles: {
+              ...state.battles,
+              [id]: {
+                id,
+                name,
+                round: iniOrder.length > 0 ? (payload.round_number || payload.round || 1) : 1,
+                initiativeOrder: iniOrder,
+                currentTurnIndex: 0,
+                log: [{ type: 'system', text: `${name} beginnt!`, timestamp: Date.now() }],
+              },
+            },
+            activeBattleId: id,
+            combatResult: null,
           }))
         }
-        get().addCombatLogEntry({ type: 'system', text: `Kampf beginnt: ${payload.name || 'Kampf'}` })
-        set({ combatResult: null }) // Clear any previous combat result
         break
       }
       case 'combat_end':

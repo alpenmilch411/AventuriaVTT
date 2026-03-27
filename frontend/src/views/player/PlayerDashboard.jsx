@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   BookOpen, Backpack, Swords, Sparkles, User, Bell, Gift,
@@ -85,16 +85,18 @@ export default function PlayerDashboard() {
     }
   }, [])
 
-  // Auto-switch to combat tab when combat starts
+  // Auto-switch to combat tab when combat starts (guard with ref to prevent re-trigger loops)
+  const prevCombatActive = React.useRef(false)
   useEffect(() => {
-    if (combatActive && activeTab !== 'combat') setActiveTab('combat')
+    if (combatActive && !prevCombatActive.current) setActiveTab('combat')
+    prevCombatActive.current = combatActive
   }, [combatActive])
 
   // Auto-switch to combat tab only for combat-related dice requests (attack, defense, damage, initiative)
   useEffect(() => {
     const isCombatRequest = pendingDiceRequest && ['attack', 'defense', 'damage', 'initiative'].includes(pendingDiceRequest.type)
     if ((pendingDefense || isCombatRequest) && activeTab !== 'combat') setActiveTab('combat')
-  }, [pendingDefense, pendingDiceRequest])
+  }, [pendingDefense?.id, pendingDiceRequest?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadCharacter = async () => {
     if (!token) return
