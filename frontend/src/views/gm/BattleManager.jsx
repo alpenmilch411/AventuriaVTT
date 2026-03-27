@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Swords, Plus, X, Check, ChevronDown, ChevronUp, Play,
   Shield, Heart, Skull, Dice5, Target, LogOut, Users
 } from 'lucide-react'
 import useCombatStore from '../../stores/combatStore'
 import useSessionStore from '../../stores/sessionStore'
+import useCharacterStore from '../../stores/characterStore'
+import { isArmor } from '../../engine/itemClassification'
+import useAuthStore from '../../stores/authStore'
 import Badge from '../../components/common/Badge'
 import ProgressBar from '../../components/common/ProgressBar'
 import clsx from 'clsx'
@@ -31,6 +34,8 @@ export default function BattleManager({ sendMessage, mapTokens = [], onOpenComba
   const addBattleLogEntry = useCombatStore((s) => s.addBattleLogEntry)
   const endBattle = useCombatStore((s) => s.endBattle)
   const players = useSessionStore((s) => s.players)
+  const allCharacters = useCharacterStore((s) => s.allCharacters)
+  const token = useAuthStore((s) => s.token)
 
   const [phase, setPhase] = useState('idle') // idle | select | initiative | ready
   const [battleName, setBattleName] = useState('')
@@ -38,6 +43,15 @@ export default function BattleManager({ sendMessage, mapTokens = [], onOpenComba
   const [currentBattleId, setCurrentBattleId] = useState(null)
   const [npcIniRolls, setNpcIniRolls] = useState({}) // combatantId → W6 roll
   const [iniRequestsSent, setIniRequestsSent] = useState(false)
+  const [armorTemplates, setArmorTemplates] = useState([])
+
+  useEffect(() => {
+    if (!token) return
+    fetch('/api/databank/armor', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setArmorTemplates(Array.isArray(d) ? d : d.items || []))
+      .catch(() => {})
+  }, [token])
 
   const battleList = Object.values(battles)
   const hasBattles = battleList.length > 0
@@ -50,6 +64,20 @@ export default function BattleManager({ sendMessage, mapTokens = [], onOpenComba
 
   const toggleToken = (id) => setSelectedTokens(prev => ({ ...prev, [id]: !prev[id] }))
   const selectedCount = Object.values(selectedTokens).filter(Boolean).length
+
+  // Compute RS from equipped inventory items for a character (falls back to stored cv.RS/dv.RS)
+  const tplBag = { weaponTemplates: [], armorTemplates, shieldTemplates: [] }
+  const computeRS = (tok, char) => {
+    const inv = char?.basis_inventory || tok.basis_inventory
+    if (inv) {
+      const items = Array.isArray(inv) ? inv : (inv.items || [])
+      const equipped = items.filter(i => i.equipped && isArmor(i, tplBag))
+      if (equipped.length > 0) return equipped.reduce((s, a) => s + (a.rs || 0), 0)
+    }
+    const cv = tok.combat_values || {}
+    const dv = tok.derived_values || tok.stats || {}
+    return cv.RS || dv.RS || 0
+  }
 
   // ── PHASE: Select combatants ──
   const handleProceedToInitiative = () => {
@@ -67,6 +95,7 @@ export default function BattleManager({ sendMessage, mapTokens = [], onOpenComba
       // For creatures/NPCs, use derived_values (which are per-creature)
       const at = primaryWeapon.AT || primaryWeapon.at || dv.AT || 12
       const pa = primaryWeapon.PA || primaryWeapon.pa || dv.PA || 8
+      const char = t.character_id ? allCharacters.find(c => c.id === t.character_id) : null
       addCombatant(id, {
         id: t.id,
         name: t.name,
@@ -78,7 +107,7 @@ export default function BattleManager({ sendMessage, mapTokens = [], onOpenComba
         isNPC: t.entity_type !== 'player',
         lep: t.current_lep || t.max_lep || 30,
         lepMax: t.max_lep || 30,
-        at, pa, aw: dv.AW || 5, rs: cv.RS || dv.RS || 0,
+        at, pa, aw: dv.AW || 5, rs: computeRS(t, char),
         weaponName: t.weaponName || primaryWeapon.name || 'Waffe',
         weaponDamage: t.weaponDamage || primaryWeapon.TP || primaryWeapon.damage || '1W6+4',
         weaponReach: t.weaponReach || primaryWeapon.reach || 'mittel',

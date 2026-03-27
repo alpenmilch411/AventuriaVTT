@@ -217,6 +217,26 @@ const useCharacterStore = create((set, get) => ({
         }
         get().updateCharacterInList(payload.character_id, payload.updates)
         break
+      case 'buff_applied': {
+        // Backend confirmed a buff — add to store
+        const buff = {
+          id: payload.id || payload.buff_id,
+          stat: payload.stat,
+          value: payload.value,
+          expiresAt: payload.expires_at,
+          durationMinutes: payload.duration_minutes,
+          source: payload.source || 'Unbekannt',
+          characterId: payload.character_id,
+          createdAt: payload.applied_at || Date.now(),
+        }
+        get().addBuff(buff)
+        break
+      }
+      case 'buff_removed': {
+        const id = payload.id || payload.buff_id
+        if (id) get().removeBuff(id)
+        break
+      }
       default:
         break
     }

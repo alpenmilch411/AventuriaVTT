@@ -2,51 +2,16 @@ import React, { useState, useCallback, useRef, useEffect } from 'react'
 import {
   Search, Skull, Swords, Shield, ShieldHalf, Package, Sparkles, Star,
   Zap, BookOpen, Plus, Loader2, X, ChevronLeft, ChevronRight, ChevronDown,
-  Pencil, Trash2, Menu, Database, Flame, Clock,
+  Pencil, Trash2, Menu, Database, Flame, Clock, Layers,
 } from 'lucide-react'
 import clsx from 'clsx'
 import useDatenbankStore from '../../stores/datenbankStore'
 import useAuthStore from '../../stores/authStore'
 import CreateEntryModal from './CreateEntryModal'
 import EditEntryModal from './EditEntryModal'
-import DatenbankDetailModal, { CATEGORIES, CAT, CATEGORY_LABEL, CustomBadge } from '../../components/DatenbankDetail'
-
-// ---------------------------------------------------------------------------
-// Subcategory label mapping and field-name per top-level category
-// ---------------------------------------------------------------------------
-
-const SUBCAT_FIELD_LABEL = {
-  creatures:         'Typ',
-  weapons:           'Kampftechnik',
-  items:             'Kategorie',
-  spells:            'Tradition',
-  liturgies:         'Gottheit',
-  special_abilities: 'Kategorie',
-  talents:           'Kategorie',
-  combat_techniques: 'Typ',
-}
-
-const SUBCAT_LABELS = {
-  // Creature types
-  humanoid: 'Humanoid', tier: 'Tier', untot: 'Untot', daemon: 'Dämon',
-  magisch: 'Magisch', feenwesen: 'Feenwesen', elementar: 'Elementar',
-  konstrukt: 'Konstrukt', pflanze: 'Pflanze',
-  // Item categories
-  trank: 'Trank', heilkraut: 'Heilkraut', alchemie: 'Alchemie', munition: 'Munition',
-  werkzeug: 'Werkzeug', licht: 'Licht', proviant: 'Proviant', schatz: 'Schatz',
-  ausruestung: 'Ausrüstung', behaelter: 'Behälter', gift: 'Gift',
-  verbrauchsmaterial: 'Verbrauchsmaterial', unterhaltung: 'Unterhaltung', krankheit: 'Krankheit',
-  // Special ability categories
-  nahkampf: 'Nahkampf', fernkampf: 'Fernkampf', allgemein: 'Allgemein',
-  allgemein_nichtkampf: 'Allgemein (NK)', karmal: 'Karmal',
-  // Talent categories
-  körper: 'Körper', gesellschaft: 'Gesellschaft', natur: 'Natur',
-  wissen: 'Wissen', handwerk: 'Handwerk',
-}
-
-function subcatLabel(val) {
-  return SUBCAT_LABELS[val] || SUBCAT_LABELS[val?.toLowerCase()] || val
-}
+import DatenbankDetailModal, {
+  CATEGORIES, CAT, CATEGORY_LABEL, CustomBadge, subcategoryLabel,
+} from '../../components/DatenbankDetail'
 
 // ---------------------------------------------------------------------------
 // Per-category preview text for list rows
@@ -202,10 +167,17 @@ export default function DatenbankTab() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingEntry, setEditingEntry]   = useState(null)
   const [localSearch, setLocalSearch]     = useState('')
+  const [isAllTab, setIsAllTab]           = useState(false)
   const debounceRef = useRef(null)
+
+  // Search-all state: results grouped by category across all entity types
+  const [globalResults, setGlobalResults] = useState(null) // { catId: items[] } | null
+  const [globalLoading, setGlobalLoading] = useState(false)
+  const globalSearchRef = useRef(null) // track latest search to discard stale results
 
   // Detail modal state
   const [detailEntry, setDetailEntry]   = useState(null)   // list item (has name/id)
+  const [detailCategory, setDetailCategory] = useState(null) // category for cross-search detail
   const [detailData, setDetailData]     = useState(null)   // full fetched data
   const [detailLoading, setDetailLoading] = useState(false)
   const detailCacheRef = useRef({})
@@ -216,31 +188,89 @@ export default function DatenbankTab() {
   useEffect(() => {
     setDetailEntry(null)
     setDetailData(null)
+    setDetailCategory(null)
   }, [category])
+
+  // Search-all: fire parallel requests across all entity types
+  const performGlobalSearch = useCallback(async (query) => {
+    if (!query.trim()) {
+      setGlobalResults(null)
+      return
+    }
+    const token = useAuthStore.getState().token
+    if (!token) return
+
+    const searchId = Date.now()
+    globalSearchRef.current = searchId
+    setGlobalLoading(true)
+
+    try {
+      const catIds = CATEGORIES.map(c => c.id)
+      const results = await Promise.all(
+        catIds.map(catId =>
+          fetch(`/api/databank/${catId}?search=${encodeURIComponent(query.trim())}&page_size=20`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then(r => r.ok ? r.json() : { items: [] })
+            .then(d => ({ catId, items: d.items || [] }))
+            .catch(() => ({ catId, items: [] }))
+        )
+      )
+      // Discard if a newer search has started
+      if (globalSearchRef.current !== searchId) return
+      const grouped = {}
+      for (const { catId, items } of results) {
+        if (items.length > 0) grouped[catId] = items
+      }
+      setGlobalResults(grouped)
+    } finally {
+      if (globalSearchRef.current === searchId) setGlobalLoading(false)
+    }
+  }, [])
 
   const handleSearchChange = useCallback((e) => {
     const val = e.target.value
     setLocalSearch(val)
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => setSearch(val), 300)
-  }, [setSearch])
+    debounceRef.current = setTimeout(() => {
+      // Only search across all categories when "Alle" tab is active
+      if (isAllTab) {
+        performGlobalSearch(val)
+      } else {
+        setSearch(val)
+        setGlobalResults(null)
+      }
+    }, 300)
+  }, [setSearch, performGlobalSearch, isAllTab])
 
   const handleClearSearch = useCallback(() => {
     setLocalSearch('')
     setSearch('')
+    setGlobalResults(null)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
   }, [setSearch])
 
   const handleCategoryClick = useCallback((catId) => {
-    setCategory(catId)
     setLocalSearch('')
+    setGlobalResults(null)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
     setSidebarOpen(false)
+
+    if (catId === 'all') {
+      setIsAllTab(true)
+    } else {
+      setIsAllTab(false)
+      setCategory(catId)
+    }
   }, [setCategory])
 
-  const handleOpenDetail = useCallback(async (entry) => {
+  const handleOpenDetail = useCallback(async (entry, overrideCat) => {
+    const cat = overrideCat || category
     setDetailEntry(entry)
+    setDetailCategory(cat)
     setDetailData(null)
 
-    const cacheKey = `${category}/${entry.id}`
+    const cacheKey = `${cat}/${entry.id}`
     if (detailCacheRef.current[cacheKey]) {
       setDetailData(detailCacheRef.current[cacheKey])
       return
@@ -249,7 +279,7 @@ export default function DatenbankTab() {
     setDetailLoading(true)
     try {
       const token = useAuthStore.getState().token
-      const res = await fetch(`/api/databank/${category}/${entry.id}`, {
+      const res = await fetch(`/api/databank/${cat}/${entry.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
@@ -302,9 +332,23 @@ export default function DatenbankTab() {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-1">
+          {/* "Alle" virtual tab — search across all categories */}
+          <button
+            onClick={() => handleCategoryClick('all')}
+            className={clsx(
+              'w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors',
+              isAllTab
+                ? 'bg-dsa-gold/10 text-dsa-gold border-l-4 border-l-dsa-gold font-medium'
+                : 'text-dsa-parchment-dark border-l-4 border-l-transparent hover:bg-dsa-bg-medium/50 hover:text-dsa-parchment',
+            )}
+          >
+            <Layers className={clsx('w-3.5 h-3.5 flex-shrink-0', isAllTab ? 'text-dsa-gold' : 'text-dsa-parchment-dark/60')} />
+            <span className="flex-1 text-left">Alle</span>
+          </button>
+
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon
-            const isActive = category === cat.id
+            const isActive = !isAllTab && category === cat.id
             const hasSubs = isActive && subcategories.length > 0
             return (
               <div key={cat.id}>
@@ -356,7 +400,7 @@ export default function DatenbankTab() {
                             : 'text-dsa-parchment-dark/60 hover:text-dsa-parchment',
                         )}
                       >
-                        {subcatLabel(value)}
+                        {subcategoryLabel(value)}
                         <span className="ml-1 opacity-40">{count}</span>
                       </button>
                     ))}
@@ -382,10 +426,21 @@ export default function DatenbankTab() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
         <div className="flex items-center gap-2 px-3 py-2 border-b border-dsa-bg-medium bg-dsa-bg-light/20">
-          <activeCat.icon className={clsx('w-4 h-4 shrink-0', activeCat.titleColor)} />
-          <span className={clsx('text-xs font-medium shrink-0', activeCat.titleColor)}>
-            {CATEGORY_LABEL[category]}
-          </span>
+          {isAllTab ? (
+            <>
+              <Layers className="w-4 h-4 shrink-0 text-dsa-gold" />
+              <span className="text-xs font-medium shrink-0 text-dsa-gold">
+                Alle Kategorien
+              </span>
+            </>
+          ) : (
+            <>
+              <activeCat.icon className={clsx('w-4 h-4 shrink-0', activeCat.titleColor)} />
+              <span className={clsx('text-xs font-medium shrink-0', activeCat.titleColor)}>
+                {CATEGORY_LABEL[category]}
+              </span>
+            </>
+          )}
           <div className="w-px h-4 bg-dsa-bg-medium mx-0.5" />
           <div className="relative flex-1 max-w-xs">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/40" />
@@ -393,7 +448,7 @@ export default function DatenbankTab() {
               type="text"
               value={localSearch}
               onChange={handleSearchChange}
-              placeholder="Suchen..."
+              placeholder={isAllTab ? 'Alle Kategorien durchsuchen...' : `${CATEGORY_LABEL[category]} durchsuchen...`}
               className="input-field pl-7 pr-7 py-1 text-xs w-full"
             />
             {localSearch && (
@@ -431,97 +486,156 @@ export default function DatenbankTab() {
             </div>
           )}
 
-          {entries.length === 0 && loading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-7 h-7 animate-spin text-dsa-gold mb-3" />
-              <p className="text-xs text-dsa-parchment-dark">Lade {CATEGORY_LABEL[category]}…</p>
-            </div>
-          ) : entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-              <activeCat.icon className="w-12 h-12 text-dsa-gold/15 mb-4" />
-              <p className={clsx('text-base font-display font-semibold mb-1.5', activeCat.titleColor)}>
-                {searchQuery || customOnly ? 'Keine Treffer' : `Keine ${CATEGORY_LABEL[category]}`}
-              </p>
-              <p className="text-xs text-dsa-parchment-dark/60 max-w-xs">
-                {searchQuery
-                  ? `Keine Einträge für „${searchQuery}" gefunden.`
-                  : customOnly
-                  ? 'Noch keine Spieler-Beiträge in dieser Kategorie.'
-                  : `Noch keine ${CATEGORY_LABEL[category]} in der Datenbank.`}
-              </p>
-              {!searchQuery && !customOnly && (
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  className="btn-secondary mt-4 flex items-center gap-1.5 text-xs"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Ersten Eintrag anlegen
-                </button>
-              )}
-            </div>
-          ) : (
-            <>
-              {(searchQuery || customOnly) && (
-                <p className="text-[10px] text-dsa-parchment-dark/50 px-3 pt-2 pb-1">
-                  {totalEntries} {totalEntries === 1 ? 'Ergebnis' : 'Ergebnisse'}
-                  {searchQuery && <> für „{searchQuery}"</>}
-                </p>
-              )}
-
-              <div className="divide-y divide-dsa-bg-medium/40">
-                {entries.map((entry) => (
-                  <EntryRow
-                    key={entry.id}
-                    entry={entry}
-                    category={category}
-                    onOpenDetail={handleOpenDetail}
-                    onEdit={() => setEditingEntry(entry)}
-                    onDelete={() => handleDelete(entry)}
-                    isOwn={entry.is_custom && entry.created_by_user_id === user?.id}
-                  />
-                ))}
+          {/* ── "Alle" tab: cross-category search ── */}
+          {isAllTab ? (
+            globalLoading ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader2 className="w-7 h-7 animate-spin text-dsa-gold mb-3" />
+                <p className="text-xs text-dsa-parchment-dark">Suche in allen Kategorien…</p>
               </div>
+            ) : !localSearch.trim() ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                <Search className="w-12 h-12 text-dsa-gold/15 mb-4" />
+                <p className="text-base font-display font-semibold mb-1.5 text-dsa-gold">Alle Kategorien</p>
+                <p className="text-xs text-dsa-parchment-dark/60 max-w-xs">
+                  Suchbegriff eingeben, um in allen Kategorien gleichzeitig zu suchen.
+                </p>
+              </div>
+            ) : globalResults && Object.keys(globalResults).length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                <Search className="w-12 h-12 text-dsa-gold/15 mb-4" />
+                <p className="text-base font-display font-semibold mb-1.5 text-dsa-gold">Keine Treffer</p>
+                <p className="text-xs text-dsa-parchment-dark/60 max-w-xs">
+                  Keine Einträge für &bdquo;{localSearch}&ldquo; in allen Kategorien gefunden.
+                </p>
+              </div>
+            ) : globalResults ? (
+              <>
+                <p className="text-[10px] text-dsa-parchment-dark/50 px-3 pt-2 pb-1">
+                  {Object.values(globalResults).reduce((s, arr) => s + arr.length, 0)} Ergebnisse
+                  in {Object.keys(globalResults).length} Kategorien für &bdquo;{localSearch}&ldquo;
+                </p>
+                {CATEGORIES.filter(c => globalResults[c.id]?.length > 0).map(cat => {
+                  const CatIcon = cat.icon
+                  const items = globalResults[cat.id]
+                  return (
+                    <div key={cat.id} className="mb-1">
+                      <div className={clsx('flex items-center gap-2 px-3 py-1.5 bg-dsa-bg-light/10 border-b border-dsa-bg-medium/40', cat.borderAccent)}>
+                        <CatIcon className={clsx('w-3.5 h-3.5', cat.iconColor)} />
+                        <span className={clsx('text-[10px] font-semibold uppercase tracking-wider', cat.titleColor)}>
+                          {cat.label}
+                        </span>
+                        <span className="text-[10px] text-dsa-parchment-dark/40">{items.length}</span>
+                      </div>
+                      <div className="divide-y divide-dsa-bg-medium/40">
+                        {items.map(entry => (
+                          <EntryRow
+                            key={`${cat.id}_${entry.id}`}
+                            entry={entry}
+                            category={cat.id}
+                            onOpenDetail={(e) => handleOpenDetail(e, cat.id)}
+                            onEdit={() => setEditingEntry(entry)}
+                            onDelete={() => handleDelete(entry)}
+                            isOwn={entry.is_custom && entry.created_by_user_id === user?.id}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </>
+            ) : null
+          ) : (
+            /* ── Single-category results (default) ── */
+            entries.length === 0 && loading ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader2 className="w-7 h-7 animate-spin text-dsa-gold mb-3" />
+                <p className="text-xs text-dsa-parchment-dark">Lade {CATEGORY_LABEL[category]}…</p>
+              </div>
+            ) : entries.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                <activeCat.icon className="w-12 h-12 text-dsa-gold/15 mb-4" />
+                <p className={clsx('text-base font-display font-semibold mb-1.5', activeCat.titleColor)}>
+                  {customOnly ? 'Keine Treffer' : `Keine ${CATEGORY_LABEL[category]}`}
+                </p>
+                <p className="text-xs text-dsa-parchment-dark/60 max-w-xs">
+                  {customOnly
+                    ? 'Noch keine Spieler-Beiträge in dieser Kategorie.'
+                    : `Noch keine ${CATEGORY_LABEL[category]} in der Datenbank.`}
+                </p>
+                {!customOnly && (
+                  <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="btn-secondary mt-4 flex items-center gap-1.5 text-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Ersten Eintrag anlegen
+                  </button>
+                )}
+              </div>
+            ) : (
+              <>
+                {customOnly && (
+                  <p className="text-[10px] text-dsa-parchment-dark/50 px-3 pt-2 pb-1">
+                    {totalEntries} {totalEntries === 1 ? 'Ergebnis' : 'Ergebnisse'}
+                  </p>
+                )}
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 py-4 border-t border-dsa-bg-medium/40">
-                  <button
-                    onClick={() => setPage(page - 1)}
-                    disabled={page <= 1}
-                    className="p-1.5 text-dsa-parchment-dark hover:text-dsa-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-dsa-bg-medium rounded"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                      const p = totalPages <= 7 ? i + 1 : i < 3 ? i + 1 : i === 3 ? null : totalPages - 6 + i
-                      if (p === null) return <span key="ellipsis" className="text-dsa-parchment-dark/40 px-1 text-xs">…</span>
-                      return (
-                        <button
-                          key={p}
-                          onClick={() => setPage(p)}
-                          className={clsx(
-                            'w-7 h-7 rounded text-xs transition-colors',
-                            p === page
-                              ? 'bg-dsa-gold text-dsa-bg font-semibold'
-                              : 'text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-medium'
-                          )}
-                        >
-                          {p}
-                        </button>
-                      )
-                    })}
-                  </div>
-                  <button
-                    onClick={() => setPage(page + 1)}
-                    disabled={page >= totalPages}
-                    className="p-1.5 text-dsa-parchment-dark hover:text-dsa-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-dsa-bg-medium rounded"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                <div className="divide-y divide-dsa-bg-medium/40">
+                  {entries.map((entry) => (
+                    <EntryRow
+                      key={entry.id}
+                      entry={entry}
+                      category={category}
+                      onOpenDetail={handleOpenDetail}
+                      onEdit={() => setEditingEntry(entry)}
+                      onDelete={() => handleDelete(entry)}
+                      isOwn={entry.is_custom && entry.created_by_user_id === user?.id}
+                    />
+                  ))}
                 </div>
-              )}
-            </>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 py-4 border-t border-dsa-bg-medium/40">
+                    <button
+                      onClick={() => setPage(page - 1)}
+                      disabled={page <= 1}
+                      className="p-1.5 text-dsa-parchment-dark hover:text-dsa-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-dsa-bg-medium rounded"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                        const p = totalPages <= 7 ? i + 1 : i < 3 ? i + 1 : i === 3 ? null : totalPages - 6 + i
+                        if (p === null) return <span key="ellipsis" className="text-dsa-parchment-dark/40 px-1 text-xs">…</span>
+                        return (
+                          <button
+                            key={p}
+                            onClick={() => setPage(p)}
+                            className={clsx(
+                              'w-7 h-7 rounded text-xs transition-colors',
+                              p === page
+                                ? 'bg-dsa-gold text-dsa-bg font-semibold'
+                                : 'text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-medium'
+                            )}
+                          >
+                            {p}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setPage(page + 1)}
+                      disabled={page >= totalPages}
+                      className="p-1.5 text-dsa-parchment-dark hover:text-dsa-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-dsa-bg-medium rounded"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )
           )}
         </div>
       </div>
@@ -531,7 +645,7 @@ export default function DatenbankTab() {
         <DatenbankDetailModal
           data={detailData?.data || detailData}
           name={detailEntry.name}
-          category={category}
+          category={detailCategory || category}
           loading={detailLoading && !detailData}
           isOwn={detailEntry.is_custom && detailEntry.created_by_user_id === user?.id}
           onClose={handleCloseDetail}

@@ -59,6 +59,7 @@ async def init_db():
             await conn.run_sync(_migrate_rename_special_ability_columns)
             await conn.run_sync(_migrate_add_character_creation_fields)
             await conn.run_sync(_migrate_add_species_extra_columns)
+            await conn.run_sync(_migrate_add_active_buffs_column)
 
 
 def _migrate_add_user_contribution_columns(connection):
@@ -170,6 +171,19 @@ def _migrate_add_species_extra_columns(connection):
             connection.execute(
                 text(f"ALTER TABLE species_templates ADD COLUMN {col_name} {col_type}")
             )
+
+
+def _migrate_add_active_buffs_column(connection):
+    """Add active_buffs JSON column to characters table."""
+    from sqlalchemy import text
+
+    result = connection.execute(text("PRAGMA table_info(characters)"))
+    existing_cols = {row[1] for row in result.fetchall()}
+
+    if "active_buffs" not in existing_cols:
+        connection.execute(
+            text("ALTER TABLE characters ADD COLUMN active_buffs TEXT")
+        )
 
     # Also add optolith_id and source_book to culture_templates and profession_templates
     for table in ["culture_templates", "profession_templates"]:

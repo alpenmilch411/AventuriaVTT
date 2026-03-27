@@ -431,15 +431,10 @@ export default function GMCockpit() {
                   return null
                 })()}
 
-                {quickAction === 'items' && (
-                  <div className="space-y-1.5">
-                    <p className="text-[9px] text-dsa-parchment-dark">Items aus dem Vorrat an ausgewaehlte Spieler geben</p>
-                    <button onClick={() => { setShowLoot({ sourceName: 'Gegenstaende', sourceItems: [], targetPlayerIds: [...selectedPlayerIds] }); setQuickAction(null) }}
-                      className="w-full text-[10px] py-1.5 bg-emerald-900/20 text-emerald-400 rounded-sm hover:bg-emerald-900/30 transition flex items-center justify-center gap-1">
-                      <Gift className="w-3 h-3" /> Beute-Verteilung oeffnen
-                    </button>
-                  </div>
-                )}
+                {quickAction === 'items' && (() => {
+                  if (!showLoot) setTimeout(() => { setShowLoot({ sourceName: 'Gegenstaende', sourceItems: [], targetPlayerIds: [...selectedPlayerIds] }); setQuickAction(null) }, 50)
+                  return null
+                })()}
 
                 {quickAction === 'condition' && (() => {
                   if (!showConditionPopup && selectedPlayerIds.size > 0) setTimeout(() => setShowConditionPopup(true), 50)

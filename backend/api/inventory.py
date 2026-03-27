@@ -87,6 +87,7 @@ class MoveGroupItemRequest(BaseModel):
 class ExchangeItem(BaseModel):
     name: str
     quantity: int = 1
+    template_id: Optional[str] = None
 
 
 class ExchangeMoney(BaseModel):
@@ -162,12 +163,32 @@ async def get_inventory(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Get a character's inventory."""
+    """Get a character's inventory (enriched with template data)."""
     await _verify_character_access(character_id, current_user, db)
     result = await db.execute(
         select(InventoryItem).where(InventoryItem.character_id == character_id)
     )
-    return result.scalars().all()
+    items = result.scalars().all()
+
+    # Enrich items that have a template_id
+    from utils.inventory_enrichment import enrich_inventory_items
+    item_dicts = [
+        {
+            "id": it.id,
+            "character_id": it.character_id,
+            "campaign_id": it.campaign_id,
+            "item_template_id": it.item_template_id,
+            "name": it.name,
+            "quantity": it.quantity,
+            "equipped": it.equipped,
+            "properties": it.properties,
+            "notes": it.notes,
+            "template_id": it.item_template_id,  # alias for enrichment lookup
+        }
+        for it in items
+    ]
+    enriched = await enrich_inventory_items(item_dicts, db)
+    return enriched
 
 
 @router.post("/{character_id}/add", response_model=InventoryItemResponse, status_code=status.HTTP_201_CREATED)
@@ -177,21 +198,35 @@ async def add_item(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Add an item to a character's inventory. Stacks with existing items of same name."""
+    """Add an item to a character's inventory. Stacks with existing items of same template_id or name."""
     await _verify_character_access(character_id, current_user, db)
 
     # Check if item already exists — stack quantities instead of creating duplicates
-    existing_result = await db.execute(
-        select(InventoryItem).where(
-            InventoryItem.character_id == character_id,
-            InventoryItem.name == body.name,
+    # Match by template_id first, fall back to name for legacy data
+    existing = None
+    if body.item_template_id:
+        existing_result = await db.execute(
+            select(InventoryItem).where(
+                InventoryItem.character_id == character_id,
+                InventoryItem.item_template_id == body.item_template_id,
+            )
         )
-    )
-    existing = existing_result.scalar_one_or_none()
+        existing = existing_result.scalar_one_or_none()
+    if not existing:
+        existing_result = await db.execute(
+            select(InventoryItem).where(
+                InventoryItem.character_id == character_id,
+                InventoryItem.name == body.name,
+            )
+        )
+        existing = existing_result.scalar_one_or_none()
     if existing:
         existing.quantity += body.quantity
         if body.properties and not existing.properties:
             existing.properties = body.properties
+        # Backfill template_id on legacy items
+        if body.item_template_id and not existing.item_template_id:
+            existing.item_template_id = body.item_template_id
         await db.commit()
         await db.refresh(existing)
         return existing
@@ -376,7 +411,23 @@ async def get_group_inventory(
         await db.commit()
         await db.refresh(group_inv)
 
-    return group_inv
+    # Enrich group inventory items with template data
+    from utils.inventory_enrichment import enrich_inventory_items
+    raw_items = group_inv.items or []
+    # Add template_id alias for items that use item_template_id
+    items_for_enrichment = []
+    for it in raw_items:
+        d = dict(it) if isinstance(it, dict) else it
+        if d.get("item_template_id") and not d.get("template_id"):
+            d["template_id"] = d["item_template_id"]
+        items_for_enrichment.append(d)
+    enriched_items = await enrich_inventory_items(items_for_enrichment, db)
+
+    return GroupInventoryResponse(
+        id=group_inv.id,
+        campaign_id=group_inv.campaign_id,
+        items=enriched_items,
+    )
 
 
 @router.post("/group/{campaign_id}/move", response_model=dict)
@@ -530,8 +581,10 @@ def _remove_items_from_inventory(inv: dict, items: list[dict], money: Optional[d
 
     for req in items:
         name, qty = req["name"], req["quantity"]
+        tid = req.get("template_id")
         for idx, it in enumerate(item_list):
-            if it.get("name") == name:
+            # Match by template_id first, fall back to name for legacy data
+            if (tid and it.get("template_id") == tid) or it.get("name") == name:
                 if it.get("quantity", 1) <= qty:
                     item_list.pop(idx)
                 else:
@@ -555,14 +608,19 @@ def _add_items_to_inventory(inv: dict, items: list[dict], money: Optional[dict])
 
     for req in items:
         name, qty = req["name"], req["quantity"]
+        tid = req.get("template_id")
         found = False
         for idx, it in enumerate(item_list):
-            if it.get("name") == name:
+            # Match by template_id first, fall back to name for legacy data
+            if (tid and it.get("template_id") == tid) or it.get("name") == name:
                 item_list[idx] = {**it, "quantity": it.get("quantity", 1) + qty}
                 found = True
                 break
         if not found:
-            item_list.append({"name": name, "quantity": qty, "equipped": False})
+            new_item = {k: v for k, v in req.items()}
+            new_item.setdefault("equipped", False)
+            new_item["quantity"] = qty
+            item_list.append(new_item)
 
     if money:
         purse = dict(inv.get("purse", {}))
@@ -615,14 +673,14 @@ async def execute_exchange(
     to_inv = _normalize_inv(to_char.basis_inventory)
 
     # A gives to B
-    from_items_dicts = [{"name": it.name, "quantity": it.quantity} for it in body.from_items]
+    from_items_dicts = [{"name": it.name, "quantity": it.quantity, "template_id": it.template_id} for it in body.from_items]
     from_money_dict = body.from_money
     from_inv = _remove_items_from_inventory(from_inv, from_items_dicts, from_money_dict)
     to_inv = _add_items_to_inventory(to_inv, from_items_dicts, from_money_dict)
 
     # B gives to A (trade only)
     if body.to_items or body.to_money:
-        to_items_dicts = [{"name": it.name, "quantity": it.quantity} for it in body.to_items]
+        to_items_dicts = [{"name": it.name, "quantity": it.quantity, "template_id": it.template_id} for it in body.to_items]
         to_money_dict = body.to_money
         to_inv = _remove_items_from_inventory(to_inv, to_items_dicts, to_money_dict)
         from_inv = _add_items_to_inventory(from_inv, to_items_dicts, to_money_dict)

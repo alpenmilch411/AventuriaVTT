@@ -64,6 +64,10 @@ class Character(Base):
         JSON, nullable=True,
         comment="Active conditions with levels [{name, level}]",
     )
+    active_buffs: Mapped[Optional[list]] = mapped_column(
+        JSON, nullable=True, default=list,
+        comment="Active temporary buffs [{id, stat, value, source, applied_at, expires_at, duration_minutes}]",
+    )
 
     locked_session_id: Mapped[Optional[str]] = mapped_column(
         String(36), ForeignKey("game_sessions.id", ondelete="SET NULL"),

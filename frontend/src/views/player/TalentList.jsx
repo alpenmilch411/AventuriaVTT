@@ -3,7 +3,7 @@ import {
   Send, Check, Clock, HelpCircle, ChevronDown, ChevronUp,
   Flame, Brain, Eye, Crown, Hand, Wind, HeartPulse, Hammer,
   Activity, Users, TreePine, BookOpen, Wrench, ClipboardList,
-  Dice5, X, Shield
+  Dice5, X, Shield, FlaskConical
 } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
@@ -62,6 +62,7 @@ function TalentList({ sendMessage }) {
   const [expandedTalent, setExpandedTalent] = useState(null)
   const [requestedTalents, setRequestedTalents] = useState({})
   const [dbTalents, setDbTalents] = useState([])
+  const [probeItemPrompt, setProbeItemPrompt] = useState(null) // { talent, items: [{ item, bonus }] }
 
   // Load all talents from databank
   useEffect(() => {
@@ -135,8 +136,19 @@ function TalentList({ sendMessage }) {
   const activeCatConfig = CATEGORIES.find(c => c.id === selectedCat)
   const learnedCount = categoryTalents.filter(t => t.fw > 0).length
 
-  const handleRequestProbe = (e, talent) => {
-    e.stopPropagation()
+  // Find inventory items that grant a bonus to a specific talent
+  const findProbeBonusItems = (talentName) => {
+    const rawInv = myCharacter.basis_inventory || myCharacter.campaign_inventory || {}
+    const invItems = Array.isArray(rawInv) ? rawInv : (rawInv.items || [])
+    const normalizedTalent = normName(talentName)
+    return invItems.filter(i => {
+      const pb = i.effects?.probe_bonus
+      if (!pb) return false
+      return normName(pb.talent) === normalizedTalent && (i.quantity || 1) > 0
+    }).map(i => ({ item: i, bonus: i.effects.probe_bonus.value || 1, talent: i.effects.probe_bonus.talent }))
+  }
+
+  const sendProbeRequest = (talent, itemBonus = 0, usedItem = null) => {
     sendMessage?.({
       type: 'probe_request_from_player',
       payload: {
@@ -146,10 +158,11 @@ function TalentList({ sendMessage }) {
         talent_key: talent.key,
         talent_name: talent.name,
         probe: talent.probe,
-        fw: talent.fw,
+        fw: talent.fw + itemBonus,
         attribute_values: talent.probe.map(a => attrs[a] || 0),
         encumbrance: talent.encumbrance,
         be: talent.encumbrance ? be : 0,
+        item_bonus: itemBonus > 0 ? { value: itemBonus, item_name: usedItem?.name } : undefined,
       },
     })
     setRequestedTalents(prev => ({ ...prev, [talent.key]: 'pending' }))
@@ -159,7 +172,40 @@ function TalentList({ sendMessage }) {
         if (next[talent.key] === 'pending') delete next[talent.key]
         return next
       })
-    }, 60000) // 60s timeout — proper cancel clears it earlier
+    }, 60000)
+
+    // Consume item if used
+    if (usedItem && usedItem.consumable !== false) {
+      const rawInv = myCharacter.basis_inventory || []
+      const invObj = Array.isArray(rawInv) ? { items: rawInv } : rawInv
+      const items = [...(invObj.items || [])]
+      const idx = items.findIndex(i => i.name === usedItem.name)
+      if (idx >= 0) {
+        if ((items[idx].quantity || 1) <= 1) items.splice(idx, 1)
+        else items[idx] = { ...items[idx], quantity: (items[idx].quantity || 1) - 1 }
+        const newInv = { ...invObj, items }
+        useCharacterStore.getState().setMyCharacter({ ...myCharacter, basis_inventory: newInv })
+        const authToken = useAuthStore.getState().token
+        if (authToken && myCharacter.id) {
+          fetch(`/api/characters/${myCharacter.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+            body: JSON.stringify({ basis_inventory: newInv }),
+          }).catch(err => console.error('Failed to persist inventory:', err))
+        }
+        sendMessage?.({ type: 'inventory_change', payload: { character_id: myCharacter.id, inventory: newInv } })
+      }
+    }
+  }
+
+  const handleRequestProbe = (e, talent) => {
+    e.stopPropagation()
+    const matchingItems = findProbeBonusItems(talent.name)
+    if (matchingItems.length > 0) {
+      setProbeItemPrompt({ talent, items: matchingItems })
+      return
+    }
+    sendProbeRequest(talent)
   }
 
   const handleCancelProbe = (e, talent) => {
@@ -459,6 +505,59 @@ function TalentList({ sendMessage }) {
           )}
         </div>
       </div>
+
+      {/* Probe item bonus prompt */}
+      {probeItemPrompt && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setProbeItemPrompt(null)}>
+          <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl p-5 w-full max-w-sm space-y-4 animate-fade-in" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-2">
+              <FlaskConical className="w-5 h-5 text-blue-400" />
+              <h3 className="text-sm font-display font-bold text-dsa-parchment">Gegenstand verwenden?</h3>
+            </div>
+            <p className="text-xs text-dsa-parchment-dark">
+              Du hast Gegenstände, die bei der <strong className="text-dsa-parchment">{probeItemPrompt.talent.name}</strong>-Probe helfen:
+            </p>
+            <div className="space-y-2">
+              {probeItemPrompt.items.map(({ item, bonus, talent: talentName }, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    sendProbeRequest(probeItemPrompt.talent, bonus, item)
+                    setProbeItemPrompt(null)
+                  }}
+                  className="w-full text-left px-3 py-2.5 bg-blue-900/15 border border-blue-800/25 rounded hover:border-blue-500/40 transition"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-dsa-parchment font-medium">{item.name}</span>
+                    <span className="text-xs font-mono font-bold text-blue-400">+{bonus} FW</span>
+                  </div>
+                  <p className="text-[10px] text-dsa-parchment-dark mt-0.5">
+                    +{bonus} auf {talentName}
+                    {item.consumable !== false && <span className="text-amber-400 ml-1">(wird verbraucht)</span>}
+                  </p>
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  sendProbeRequest(probeItemPrompt.talent)
+                  setProbeItemPrompt(null)
+                }}
+                className="flex-1 px-3 py-2 text-xs bg-dsa-bg-card border border-dsa-bg-medium rounded text-dsa-parchment-dark hover:text-dsa-parchment transition"
+              >
+                Ohne Gegenstand
+              </button>
+              <button
+                onClick={() => setProbeItemPrompt(null)}
+                className="px-3 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-parchment transition"
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

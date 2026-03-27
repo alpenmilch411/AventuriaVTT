@@ -121,6 +121,61 @@ export const CAT = Object.fromEntries(CATEGORIES.map(c => [c.id, c]))
 export const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map(c => [c.id, c.label]))
 
 // ---------------------------------------------------------------------------
+// Shared subcategory definitions — used by DatenbankTab, DataBrowser, LootPanel
+// ---------------------------------------------------------------------------
+
+/** Item subcategories (DB `category` field values for items table) */
+export const ITEM_SUBCATEGORIES = {
+  trank:              { label: 'Tränke',            icon: '\uD83D\uDC8A' },
+  heilkraut:          { label: 'Heilkräuter',       icon: '\uD83C\uDF3F' },
+  alchemie:           { label: 'Alchemie',          icon: '\u2697\uFE0F' },
+  gift:               { label: 'Gifte',             icon: '\u2620\uFE0F' },
+  munition:           { label: 'Munition',          icon: '\uD83C\uDFF9' },
+  werkzeug:           { label: 'Werkzeug',          icon: '\uD83D\uDD27' },
+  licht:              { label: 'Licht & Feuer',     icon: '\uD83D\uDD25' },
+  proviant:           { label: 'Proviant',          icon: '\uD83C\uDF56' },
+  ausruestung:        { label: 'Ausrüstung',        icon: '\uD83C\uDF92' },
+  behaelter:          { label: 'Behälter',          icon: '\uD83D\uDCE6' },
+  schatz:             { label: 'Schätze',           icon: '\u2728' },
+  unterhaltung:       { label: 'Unterhaltung',      icon: '\uD83C\uDFB5' },
+  verbrauchsmaterial: { label: 'Verbrauchsmaterial', icon: '\uD83E\uDDEA' },
+  krankheit:          { label: 'Krankheit',         icon: '\uD83E\uDE7A' },
+}
+
+/** All subcategory labels — maps lowercase DB values to display strings.
+ *  Superset of DatenbankTab SUBCAT_LABELS + DataBrowser CATEGORY_LABELS. */
+export const SUBCATEGORY_LABELS = {
+  // Creature types
+  humanoid: 'Humanoid', tier: 'Tier', untot: 'Untot', daemon: 'Dämon',
+  magisch: 'Magisch', feenwesen: 'Feenwesen', elementar: 'Elementar',
+  konstrukt: 'Konstrukt', pflanze: 'Pflanze',
+  // Item categories (singular form for subcategory labels in browsing)
+  trank: 'Trank', heilkraut: 'Heilkraut', alchemie: 'Alchemie', gift: 'Gift',
+  munition: 'Munition', werkzeug: 'Werkzeug', licht: 'Licht', proviant: 'Proviant',
+  schatz: 'Schatz', ausruestung: 'Ausrüstung', behaelter: 'Behälter',
+  verbrauchsmaterial: 'Verbrauchsmaterial', unterhaltung: 'Unterhaltung', krankheit: 'Krankheit',
+  // Special ability categories
+  nahkampf: 'Nahkampf', fernkampf: 'Fernkampf', allgemein: 'Allgemein',
+  allgemein_nichtkampf: 'Allgemein (NK)', karmal: 'Karmal', kampf: 'Kampf',
+  // Talent categories
+  'körper': 'Körper', koerper: 'Körper', gesellschaft: 'Gesellschaft',
+  natur: 'Natur', wissen: 'Wissen', handwerk: 'Handwerk',
+  // Weapon combat techniques
+  schwerter: 'Schwerter', stangenwaffen: 'Stangenwaffen', hiebwaffen: 'Hiebwaffen',
+  wurfwaffen: 'Wurfwaffen', 'bögen': 'Bögen', 'armbrüste': 'Armbrüste',
+  dolche: 'Dolche', fechtwaffen: 'Fechtwaffen', kettenwaffen: 'Kettenwaffen',
+  zweihandschwerter: 'Zweihandschwerter', 'äxte': 'Äxte', blasrohre: 'Blasrohre',
+  raufen: 'Raufen', 'zweihandäxte': 'Zweihandäxte',
+  // Equipment meta categories
+  waffe: 'Waffen', ruestung: 'Rüstung',
+}
+
+/** Resolve a DB subcategory value to its display label */
+export function subcategoryLabel(val) {
+  return SUBCATEGORY_LABELS[val] || SUBCATEGORY_LABELS[val?.toLowerCase()] || val
+}
+
+// ---------------------------------------------------------------------------
 // Shared helpers
 // ---------------------------------------------------------------------------
 

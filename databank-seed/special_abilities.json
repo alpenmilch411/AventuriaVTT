@@ -21,7 +21,7 @@
       "Äxte",
       "Hiebwaffen",
       "Zweihandschwerter",
-      "Zweihandäxte",
+      "Zweihandhiebwaffen",
       "Stangenwaffen"
     ],
     "description": "Ein besonders harter Schlag, der mehr Schaden verursacht.",
@@ -50,7 +50,7 @@
       "Äxte",
       "Hiebwaffen",
       "Zweihandschwerter",
-      "Zweihandäxte",
+      "Zweihandhiebwaffen",
       "Stangenwaffen"
     ],
     "description": "Ein noch härterer Schlag mit enormer Wucht.",
@@ -79,7 +79,7 @@
       "Äxte",
       "Hiebwaffen",
       "Zweihandschwerter",
-      "Zweihandäxte",
+      "Zweihandhiebwaffen",
       "Stangenwaffen"
     ],
     "description": "Ein vernichtender Schlag, der selbst Rüstungen spalten kann.",
@@ -188,7 +188,7 @@
     "exclusive_with": [],
     "applicable_techniques": [
       "Hiebwaffen",
-      "Zweihandäxte",
+      "Zweihandhiebwaffen",
       "Zweihandschwerter"
     ],
     "description": "Ein gewaltiger Schlag, der Rüstungen durchbricht.",
@@ -377,7 +377,7 @@
     "exclusive_with": [],
     "applicable_techniques": [
       "Zweihandschwerter",
-      "Zweihandäxte",
+      "Zweihandhiebwaffen",
       "Stangenwaffen"
     ],
     "description": "Ein kreisender Angriff gegen alle Gegner in Reichweite.",
@@ -399,7 +399,7 @@
     "exclusive_with": [],
     "applicable_techniques": [
       "Zweihandschwerter",
-      "Zweihandäxte",
+      "Zweihandhiebwaffen",
       "Stangenwaffen"
     ],
     "description": "Eine verstärkte Blockade mit einer Zweihandwaffe.",

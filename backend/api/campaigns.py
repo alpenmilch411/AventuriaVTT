@@ -938,6 +938,13 @@ async def get_campaign_players_detail(
             char_result = await db.execute(select(Character).where(Character.id == cp.character_id))
             char = char_result.scalar_one_or_none()
             if char:
+                # Enrich basis_inventory with template data
+                enriched_inv = char.basis_inventory
+                try:
+                    from utils.inventory_enrichment import enrich_basis_inventory
+                    enriched_inv = await enrich_basis_inventory(char.basis_inventory, db)
+                except Exception:
+                    pass
                 char_data = {
                     "id": char.id,
                     "name": char.name,
@@ -954,7 +961,8 @@ async def get_campaign_players_detail(
                     "special_abilities": char.special_abilities,
                     "advantages": char.advantages,
                     "disadvantages": char.disadvantages,
-                    "basis_inventory": char.basis_inventory,
+                    "basis_inventory": enriched_inv,
+                    "active_buffs": char.active_buffs or [],
                     "conditions": char.conditions or [],
                     "status": char.status,
                     "total_ap": char.total_ap,

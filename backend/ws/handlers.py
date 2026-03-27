@@ -360,6 +360,87 @@ async def _persist_conditions(character_id: str, conditions: list):
             logger.error("Failed to persist conditions for %s: %s", character_id, e)
 
 
+async def _persist_buffs(character_id: str, buffs: list):
+    """Persist active_buffs to Character.active_buffs in DB."""
+    async with _get_char_lock(character_id):
+        try:
+            from database import async_session
+            from sqlalchemy import select
+            from models.character import Character
+
+            async with async_session() as db:
+                result = await db.execute(select(Character).where(Character.id == character_id))
+                char = result.scalar_one_or_none()
+                if char:
+                    char.active_buffs = buffs
+                    await db.commit()
+                    logger.debug("Persisted buffs for %s: %d active", character_id, len(buffs))
+        except Exception as e:
+            logger.error("Failed to persist buffs for %s: %s", character_id, e)
+
+
+async def _persist_ap_awards(session_code: str, awards: list):
+    """Persist AP awards to the database — create APAward records and update Character totals.
+
+    awards: [{character_id, amount, reason?}, ...]
+    """
+    try:
+        from database import async_session
+        from sqlalchemy import select
+        from models.character import Character
+        from models.session_state import GameSession, APAward
+
+        async with async_session() as db:
+            # Resolve session_id from session_code
+            sess_result = await db.execute(
+                select(GameSession).where(GameSession.session_code == session_code)
+            )
+            session_obj = sess_result.scalar_one_or_none()
+            if not session_obj:
+                logger.error("Cannot persist AP awards — session not found for code %s", session_code)
+                return
+
+            session_id = session_obj.id
+
+            for award in awards:
+                character_id = award.get("character_id")
+                amount = award.get("amount", 0)
+                reason = award.get("reason", "")
+                if not character_id or amount <= 0:
+                    continue
+
+                async with _get_char_lock(character_id):
+                    result = await db.execute(
+                        select(Character).where(Character.id == character_id)
+                    )
+                    char = result.scalar_one_or_none()
+                    if not char:
+                        logger.warning("AP award skipped — character %s not found", character_id)
+                        continue
+
+                    # Create APAward record
+                    db.add(APAward(
+                        session_id=session_id,
+                        character_id=character_id,
+                        amount=amount,
+                        reason=reason,
+                    ))
+
+                    # Update character AP totals
+                    char.total_ap = (char.total_ap or 0) + amount
+                    char.available_ap = (char.available_ap or 0) + amount
+
+                    logger.info(
+                        "AP award: +%d AP to character %s (total=%d, available=%d)",
+                        amount, character_id, char.total_ap, char.available_ap,
+                    )
+
+            await db.commit()
+            logger.info("Persisted %d AP awards for session %s", len(awards), session_code)
+    except Exception as e:
+        logger.error("Failed to persist AP awards for session %s: %s", session_code, e)
+
+
 async def _persist_loot(distributions: list):
     """Persist loot items to character inventories in DB. Stacks with existing items.
 
@@ -384,16 +465,31 @@ async def _persist_loot(distributions: list):
                 async with async_session() as db:
                     for dist in char_dists:
                         item_name = dist.get("item_name", "Unbekannt")
+                        tid = dist.get("template_id")
                         qty = dist.get("quantity", 1)
-                        existing_result = await db.execute(
-                            select(InventoryItem).where(
-                                InventoryItem.character_id == char_id,
-                                InventoryItem.name == item_name,
+                        # Match by template_id first, fall back to name
+                        existing = None
+                        if tid:
+                            existing_result = await db.execute(
+                                select(InventoryItem).where(
+                                    InventoryItem.character_id == char_id,
+                                    InventoryItem.item_template_id == tid,
+                                )
                             )
-                        )
-                        existing = existing_result.scalar_one_or_none()
+                            existing = existing_result.scalar_one_or_none()
+                        if not existing:
+                            existing_result = await db.execute(
+                                select(InventoryItem).where(
+                                    InventoryItem.character_id == char_id,
+                                    InventoryItem.name == item_name,
+                                )
+                            )
+                            existing = existing_result.scalar_one_or_none()
                         if existing:
                             existing.quantity += qty
+                            # Backfill template_id on legacy items
+                            if tid and not existing.item_template_id:
+                                existing.item_template_id = tid
                             continue
                         item = InventoryItem(
                             id=str(uuid.uuid4()),
@@ -401,6 +497,7 @@ async def _persist_loot(distributions: list):
                             name=item_name,
                             quantity=qty,
                             equipped=False,
+                            item_template_id=tid,
                             properties=dist.get("properties"),
                         )
                         db.add(item)
@@ -438,7 +535,10 @@ async def _persist_money_distributions(money_distributions: list):
 
 
 async def _persist_inventory(character_id: str, inventory: dict):
-    """Persist basis_inventory to Character in DB (backup for frontend REST PUT)."""
+    """Persist basis_inventory to Character in DB (backup for frontend REST PUT).
+
+    Expects already-thinned inventory (template_id, quantity, equipped only).
+    """
     async with _get_char_lock(character_id):
         try:
             from database import async_session
@@ -454,6 +554,23 @@ async def _persist_inventory(character_id: str, inventory: dict):
                     logger.debug("Persisted inventory for %s", character_id)
         except Exception as e:
             logger.error("Failed to persist inventory for %s: %s", character_id, e)
+
+
+async def _broadcast_enriched_inventory(session_code: str, event_type: str, payload: dict, from_user: str):
+    """Enrich inventory items with template data and broadcast to the room."""
+    try:
+        from database import async_session
+        from utils.inventory_enrichment import enrich_basis_inventory
+
+        enriched_payload = dict(payload)
+        async with async_session() as db:
+            enriched_payload["inventory"] = await enrich_basis_inventory(payload["inventory"], db)
+        msg = _msg(event_type, enriched_payload, from_user=from_user)
+        await manager.broadcast_to_room(session_code, msg)
+    except Exception as e:
+        logger.error("Failed to enrich inventory for broadcast: %s — sending raw", e)
+        msg = _msg(event_type, payload, from_user=from_user)
+        await manager.broadcast_to_room(session_code, msg)
 
 
 def _is_current_turn(state: dict, user_id: str) -> bool:
@@ -578,7 +695,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     # Player self-updates (item use effects) — persist and broadcast
 
     # Halt gate — block player state mutations while session is halted
-    halt_gated_events = {"vitals_update", "conditions_update", "inventory_change", "combat_log_entry"}
+    halt_gated_events = {"vitals_update", "conditions_update", "inventory_change", "combat_log_entry", "buff_apply", "buff_add", "buff_remove", "buff_edit", "buff_clear_expired"}
     if event_type in halt_gated_events and not _is_gm(session_code, user_id) and manager.is_halted(session_code):
         await manager.send_to_user(user_id, _error("Session is halted — please wait for the GM"))
         return
@@ -643,16 +760,29 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_conditions_{session_code}")
         return
 
-    # Inventory change — broadcast to all and persist as backup
+    # Inventory change — validate, persist thin, broadcast enriched
     if event_type == "inventory_change" and payload.get("character_id"):
-        msg = _msg(event_type, payload, from_user=user_id)
-        await manager.broadcast_to_room(session_code, msg)
-        # Also persist inventory to DB as backup (frontend does REST PUT, but this covers failures)
+        from utils.inventory_enrichment import validate_inventory_payload, thin_basis_inventory
         if payload.get("inventory"):
+            is_valid, err = validate_inventory_payload(payload)
+            if not is_valid:
+                logger.warning("Invalid inventory_change from %s: %s", user_id, err)
+                await manager.send_to_user(user_id, _error(f"Invalid inventory data: {err}"))
+                return
+            # Persist only thin fields
+            thin_inv = thin_basis_inventory(payload["inventory"])
             _safe_create_task(
-                _persist_inventory(payload["character_id"], payload["inventory"]),
+                _persist_inventory(payload["character_id"], thin_inv),
                 name=f"persist_inventory_{payload['character_id'][:8]}",
             )
+            # Enrich before broadcasting
+            _safe_create_task(
+                _broadcast_enriched_inventory(session_code, event_type, payload, user_id),
+                name=f"enrich_broadcast_inv_{payload['character_id'][:8]}",
+            )
+        else:
+            msg = _msg(event_type, payload, from_user=user_id)
+            await manager.broadcast_to_room(session_code, msg)
         logger.info("Player %s broadcast inventory_change for %s", user_id, payload["character_id"])
         return
 
@@ -847,20 +977,116 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
             _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_gm_{event_type}_{session_code}")
         return
 
-    # GM → buff tracking
-    if _is_gm(session_code, user_id) and event_type in ("buff_add", "buff_remove"):
-        msg = _msg(event_type, payload, from_user=user_id)
+    # ---- Buff system (GM + players) ----
+    if event_type in ("buff_apply", "buff_add"):
+        cid = payload.get("character_id") or payload.get("characterId")
+        if not cid:
+            await manager.send_to_user(user_id, _error("buff_apply requires character_id"))
+            return
+        stat = payload.get("stat")
+        value = payload.get("value", 0)
+        source = payload.get("source", "Unbekannt")
+        duration_minutes = payload.get("duration_minutes", 0)
+        now_ms = int(time.time() * 1000)
+        buff = {
+            "id": str(uuid.uuid4()),
+            "stat": stat,
+            "value": value,
+            "source": source,
+            "applied_at": now_ms,
+            "expires_at": now_ms + (duration_minutes * 60 * 1000) if duration_minutes else None,
+            "duration_minutes": duration_minutes,
+        }
+        async with _get_char_lock(cid):
+            char_buffs = state.setdefault("buffs", {}).setdefault(cid, [])
+            # Opportunistically clean expired buffs
+            char_buffs[:] = [b for b in char_buffs if not b.get("expires_at") or b["expires_at"] > now_ms]
+            char_buffs.append(buff)
+            _bump_version(state)
+            _safe_create_task(_persist_buffs(cid, list(char_buffs)), name=f"persist_buffs_{cid[:8]}")
+        msg = _msg("buff_applied", {"character_id": cid, "buff": buff, "state_version": state["state_version"]}, from_user=user_id)
         await manager.broadcast_to_room(session_code, msg)
-        # Track buffs in session state for sync_full
-        char_id = payload.get("character_id") or payload.get("characterId")
-        if char_id:
-            buffs = state.setdefault("buffs", {}).setdefault(char_id, [])
-            if event_type == "buff_add":
-                buffs.append(payload.get("buff", payload))
-            elif event_type == "buff_remove":
-                buff_id = payload.get("buff_id") or payload.get("id")
-                state["buffs"][char_id] = [b for b in buffs if b.get("id") != buff_id]
-        logger.info("GM %s for %s in %s", event_type, char_id, session_code)
+        logger.info("Buff applied to %s by %s: %s %+d (%s, %dmin)", cid, user_id, stat, value, source, duration_minutes)
+        _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_buff_apply_{session_code}")
+        return
+
+    if event_type == "buff_remove":
+        cid = payload.get("character_id") or payload.get("characterId")
+        buff_id = payload.get("buff_id") or payload.get("id")
+        if not cid or not buff_id:
+            await manager.send_to_user(user_id, _error("buff_remove requires character_id and buff_id"))
+            return
+        async with _get_char_lock(cid):
+            char_buffs = state.setdefault("buffs", {}).setdefault(cid, [])
+            state["buffs"][cid] = [b for b in char_buffs if b.get("id") != buff_id]
+            _bump_version(state)
+            _safe_create_task(_persist_buffs(cid, list(state["buffs"][cid])), name=f"persist_buffs_{cid[:8]}")
+        msg = _msg("buff_removed", {"character_id": cid, "buff_id": buff_id, "state_version": state["state_version"]}, from_user=user_id)
+        await manager.broadcast_to_room(session_code, msg)
+        logger.info("Buff %s removed from %s by %s", buff_id, cid, user_id)
+        _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_buff_remove_{session_code}")
+        return
+
+    if event_type == "buff_edit":
+        if not _is_gm(session_code, user_id):
+            await manager.send_to_user(user_id, _error("Only the GM may edit buffs"))
+            return
+        cid = payload.get("character_id") or payload.get("characterId")
+        buff_id = payload.get("buff_id") or payload.get("id")
+        updates = payload.get("updates", {})
+        if not cid or not buff_id:
+            await manager.send_to_user(user_id, _error("buff_edit requires character_id and buff_id"))
+            return
+        updated_buff = None
+        async with _get_char_lock(cid):
+            char_buffs = state.setdefault("buffs", {}).setdefault(cid, [])
+            for buff in char_buffs:
+                if buff.get("id") == buff_id:
+                    if "value" in updates:
+                        buff["value"] = updates["value"]
+                    if "stat" in updates:
+                        buff["stat"] = updates["stat"]
+                    if "duration_minutes" in updates:
+                        buff["duration_minutes"] = updates["duration_minutes"]
+                        # Recalculate expires_at from original applied_at + new duration
+                        if buff.get("applied_at") and updates["duration_minutes"]:
+                            buff["expires_at"] = buff["applied_at"] + (updates["duration_minutes"] * 60 * 1000)
+                        elif not updates["duration_minutes"]:
+                            buff["expires_at"] = None
+                    if "expires_at" in updates and "duration_minutes" not in updates:
+                        buff["expires_at"] = updates["expires_at"]
+                    updated_buff = dict(buff)
+                    break
+            if updated_buff:
+                _bump_version(state)
+                _safe_create_task(_persist_buffs(cid, list(char_buffs)), name=f"persist_buffs_{cid[:8]}")
+        if updated_buff:
+            msg = _msg("buff_edited", {"character_id": cid, "buff": updated_buff, "state_version": state["state_version"]}, from_user=user_id)
+            await manager.broadcast_to_room(session_code, msg)
+            logger.info("Buff %s edited on %s by %s: %s", buff_id, cid, user_id, updates)
+            _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_buff_edit_{session_code}")
+        else:
+            await manager.send_to_user(user_id, _error(f"Buff {buff_id} not found on character {cid}"))
+        return
+
+    if event_type == "buff_clear_expired":
+        cid = payload.get("character_id") or payload.get("characterId")
+        if not cid:
+            await manager.send_to_user(user_id, _error("buff_clear_expired requires character_id"))
+            return
+        now_ms = int(time.time() * 1000)
+        async with _get_char_lock(cid):
+            char_buffs = state.setdefault("buffs", {}).setdefault(cid, [])
+            expired_ids = [b["id"] for b in char_buffs if b.get("expires_at") and b["expires_at"] <= now_ms]
+            if expired_ids:
+                state["buffs"][cid] = [b for b in char_buffs if b["id"] not in set(expired_ids)]
+                _bump_version(state)
+                _safe_create_task(_persist_buffs(cid, list(state["buffs"][cid])), name=f"persist_buffs_{cid[:8]}")
+        if expired_ids:
+            msg = _msg("buff_expired", {"character_id": cid, "expired_ids": expired_ids, "state_version": state["state_version"]}, from_user=user_id)
+            await manager.broadcast_to_room(session_code, msg)
+            logger.info("Cleared %d expired buffs from %s", len(expired_ids), cid)
+            _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_buff_expire_{session_code}")
         return
 
     # GM → all broadcast (generic relay for any GM message not in the handler map)
@@ -1192,6 +1418,12 @@ async def _handle_ap_award(session_code: str, user_id: str, payload: dict, state
             }, from_user=user_id))
     # Also broadcast summary to everyone
     await manager.broadcast_to_room(session_code, msg)
+    # Persist AP awards to the database
+    if awards:
+        _safe_create_task(
+            _persist_ap_awards(session_code, awards),
+            name=f"persist_ap_awards_{session_code}",
+        )
 
 
 async def _handle_quest_update(session_code: str, user_id: str, payload: dict, state: dict):
@@ -1261,12 +1493,19 @@ async def _handle_session_end(session_code: str, user_id: str, payload: dict, st
     """End the session."""
     state["status"] = "ended"
     summary = payload.get("summary", "")
-    ap_awards = payload.get("ap_awards", [])
+    # Frontend sends "awards" (QuestSessionTab) or "ap_awards" (legacy) — accept both
+    ap_awards = payload.get("ap_awards") or payload.get("awards") or []
     msg = _msg(EventType.SESSION_END, {
         "summary": summary,
         "ap_awards": ap_awards,
     }, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
+    # Persist AP awards to the database
+    if ap_awards:
+        _safe_create_task(
+            _persist_ap_awards(session_code, ap_awards),
+            name=f"persist_ap_awards_{session_code}",
+        )
     # Clean up in-memory state after a short delay to allow clients to process
     _session_state.pop(session_code, None)
     # Delete the persisted snapshot — session is over, no need to restore
@@ -1670,6 +1909,11 @@ async def _execute_exchange(session_code: str, gm_user_id: str, payload: dict, s
             to_char.basis_inventory = to_inv
             await db.commit()
 
+            # Enrich inventories before broadcasting (still inside DB session)
+            from utils.inventory_enrichment import enrich_basis_inventory
+            enriched_from_inv = await enrich_basis_inventory(from_inv, db)
+            enriched_to_inv = await enrich_basis_inventory(to_inv, db)
+
         # Broadcast inventory updates to both players
         from_user_id = payload.get("from_user_id") or payload.get("proposer_user_id")
         to_user_id = payload.get("to_user_id") or payload.get("target_user_id")
@@ -1680,7 +1924,7 @@ async def _execute_exchange(session_code: str, gm_user_id: str, payload: dict, s
         if from_user_id:
             await manager.send_to_user(from_user_id, _msg("inventory_update", {
                 "character_id": from_char_id,
-                "inventory": from_inv,
+                "inventory": enriched_from_inv,
                 "reason": f"{exchange_type}_completed",
                 "summary": summary,
             }, from_user=gm_user_id))
@@ -1688,7 +1932,7 @@ async def _execute_exchange(session_code: str, gm_user_id: str, payload: dict, s
         if to_user_id:
             await manager.send_to_user(to_user_id, _msg("inventory_update", {
                 "character_id": to_char_id,
-                "inventory": to_inv,
+                "inventory": enriched_to_inv,
                 "reason": f"{exchange_type}_completed",
                 "summary": summary,
             }, from_user=gm_user_id))
@@ -1696,9 +1940,9 @@ async def _execute_exchange(session_code: str, gm_user_id: str, payload: dict, s
         # Confirm to GM
         await manager.send_to_user(gm_user_id, _msg("inventory_update", {
             "character_id": from_char_id,
-            "from_inventory": from_inv,
+            "from_inventory": enriched_from_inv,
             "to_character_id": to_char_id,
-            "to_inventory": to_inv,
+            "to_inventory": enriched_to_inv,
             "reason": f"{exchange_type}_completed",
         }, from_user=gm_user_id))
 
@@ -1730,9 +1974,11 @@ def _inv_remove(inv, items: list, money) -> dict:
     item_list = list(inv["items"])
     for req in items:
         name = req.get("name", "")
+        tid = req.get("template_id")
         qty = req.get("quantity", 1)
         for idx, it in enumerate(item_list):
-            if it.get("name") == name:
+            # Match by template_id first, fall back to name for legacy data
+            if (tid and it.get("template_id") == tid) or it.get("name") == name:
                 current_qty = it.get("quantity", 1)
                 if current_qty <= qty:
                     item_list.pop(idx)
@@ -1754,15 +2000,21 @@ def _inv_add(inv, items: list, money) -> dict:
     item_list = list(inv["items"])
     for req in items:
         name = req.get("name", "")
+        tid = req.get("template_id")
         qty = req.get("quantity", 1)
         found = False
         for idx, it in enumerate(item_list):
-            if it.get("name") == name:
+            # Match by template_id first, fall back to name for legacy data
+            if (tid and it.get("template_id") == tid) or it.get("name") == name:
                 item_list[idx] = {**it, "quantity": it.get("quantity", 1) + qty}
                 found = True
                 break
         if not found:
-            item_list.append({"name": name, "quantity": qty, "equipped": False})
+            # Preserve all fields from the request (weight, category, template_id, etc.)
+            new_item = {k: v for k, v in req.items()}
+            new_item.setdefault("equipped", False)
+            new_item["quantity"] = qty
+            item_list.append(new_item)
     if money:
         purse = dict(inv.get("purse", {}))
         for d in ("dukaten", "silber", "heller", "kreuzer"):

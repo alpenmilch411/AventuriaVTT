@@ -161,10 +161,10 @@
     "price": 50,
     "stackable": false,
     "max_stack": null,
-    "usable": false,
+    "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": null,
+    "effects": {"probe_bonus": {"talent": "Schlösserknacken", "value": 2}},
     "consumable": false,
     "charges": null,
     "description": "Ein Set feiner Metallhaken zum Öffnen von Schlössern."
@@ -181,7 +181,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"heal_bonus": "+1 auf Heilkunde-Proben"},
+    "effects": {"probe_bonus": {"talent": "Heilkunde Wunden", "value": 1}},
     "consumable": true,
     "charges": 1,
     "description": "Getrocknete Heilkräuter für die Wundversorgung."
@@ -249,7 +249,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": "2 Aktionen",
-    "effects": {"create_fire": true},
+    "effects": {"utility_action": "create_fire", "detail": "Feuer erzeugen (2 Aktionen)"},
     "consumable": false,
     "charges": null,
     "description": "Zum Entzünden von Feuer, Fackeln und Laternen."
@@ -300,7 +300,7 @@
     "usable": false,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"carry_capacity": 40},
+    "effects": {"carry_bonus": 40},
     "consumable": false,
     "charges": null,
     "description": "Ein robuster Lederrucksack zum Tragen von Ausrüstung."
@@ -317,7 +317,7 @@
     "usable": false,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"carry_capacity": 5},
+    "effects": {"carry_bonus": 5},
     "consumable": false,
     "charges": null,
     "description": "Eine kleine Ledertasche am Gürtel für Münzen und Kleinigkeiten."
@@ -334,7 +334,7 @@
     "usable": false,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"warmth_bonus": 1},
+    "effects": {"warmth_bonus": 1, "detail": "Wärme bei Nachtruhe"},
     "consumable": false,
     "charges": null,
     "description": "Eine einfache Wolldecke zum Schlafen im Freien."
@@ -351,7 +351,7 @@
     "usable": false,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"shelter": true, "persons": 2},
+    "effects": {"shelter_persons": 2, "detail": "Schutz vor Witterung für 2 Personen"},
     "consumable": false,
     "charges": null,
     "description": "Ein einfaches Leinenzelt für zwei Personen."
@@ -385,7 +385,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"navigation_bonus": "+2 auf Orientierung"},
+    "effects": {"probe_bonus": {"talent": "Orientierung", "value": 2}},
     "consumable": false,
     "charges": null,
     "description": "Eine Landkarte einer Region, die bei der Orientierung hilft."
@@ -402,7 +402,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"navigation_bonus": "+2 auf Orientierung"},
+    "effects": {"probe_bonus": {"talent": "Orientierung", "value": 2}},
     "consumable": false,
     "charges": null,
     "description": "Ein magnetischer Kompass, der stets nach Norden zeigt."
@@ -419,7 +419,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"perception_bonus": "+4 auf Sinnenschärfe (Sehen) auf Distanz"},
+    "effects": {"probe_bonus": {"talent": "Sinnenschärfe", "value": 4, "applies_to": "Sehen auf Distanz"}},
     "consumable": false,
     "charges": null,
     "description": "Ein optisches Instrument aus Linsen, das entfernte Dinge vergrößert."
@@ -623,7 +623,7 @@
     "usable": false,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"break_bonus": "+4 auf Kraftakt zum Aufbrechen"},
+    "effects": {"probe_bonus": {"talent": "Kraftakt", "value": 4, "applies_to": "Aufbrechen"}},
     "consumable": false,
     "charges": null,
     "description": "Ein schweres Eisenstück zum Aufbrechen von Türen und Kisten."
@@ -637,10 +637,10 @@
     "price": 50,
     "stackable": false,
     "max_stack": null,
-    "usable": false,
+    "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"climbing_bonus": "+2 auf Klettern"},
+    "effects": {"probe_bonus": {"talent": "Klettern", "value": 2}},
     "consumable": false,
     "charges": null,
     "description": "Haken, Seile und Klettergurte für schwierige Aufstiege."
@@ -810,7 +810,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"repair_armor": true, "detail": "+2 auf Metallbearbeitung für Rüstungsreparaturen"},
+    "effects": {"probe_bonus": {"talent": "Metallbearbeitung", "value": 2, "applies_to": "Rüstungsreparatur"}},
     "consumable": false,
     "charges": null,
     "description": "Werkzeug und Ersatzteile zur Reparatur von Rüstungen im Feld."
@@ -895,7 +895,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"courage_bonus": 1, "condition_add": "Berauscht", "condition_level": 1, "duration_hours": 1, "penalty": "-1 Gewandtheit für 1 Stunde", "detail": "+1 Mut, -1 Gewandtheit, Berauscht I für 1 Stunde"},
+    "effects": {"mu_bonus": 1, "duration_minutes": 60, "condition_add": "Berauscht", "condition_level": 1, "penalty": "-1 GE", "detail": "+1 MU, -1 GE, Berauscht I für 1 Stunde"},
     "consumable": true,
     "charges": 1,
     "description": "Hochprozentiger zwergischer Schnaps, macht mutig aber ungeschickt."
@@ -963,7 +963,7 @@
     "usable": false,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"carry_capacity": 30, "requires": "Reittier"},
+    "effects": {"carry_bonus": 30, "requires": "Reittier"},
     "consumable": false,
     "charges": null,
     "description": "Leder-Satteltaschen für ein Reit- oder Packtier."
@@ -980,7 +980,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": "2 Aktionen",
-    "effects": {"restrain": true, "break_dc": "KK-Probe -4"},
+    "effects": {"restraint": true, "escape_difficulty": "KK-Probe -4", "detail": "Ziel muss KK-Probe -4 bestehen um sich zu befreien"},
     "consumable": false,
     "charges": null,
     "description": "Eiserne Handschellen mit Schlüssel."
@@ -1065,7 +1065,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": "1 Aktion",
-    "effects": {"climbing_bonus": "+2 auf Klettern für 1 Stunde"},
+    "effects": {"probe_bonus": {"talent": "Klettern", "value": 2}, "duration_minutes": 60},
     "consumable": true,
     "charges": 1,
     "description": "Eine klebrige Paste für Hände und Füße, die beim Klettern hilft."
@@ -1082,7 +1082,7 @@
     "usable": false,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"silver": true, "detail": "Gilt als Silberwaffe gegen Werwölfe etc."},
+    "effects": {"material": "silver", "effective_against": "Werwölfe, Vampire, bestimmte Dämonen"},
     "consumable": true,
     "charges": 1,
     "description": "Ein Pfeil mit Silberspitze, wirksam gegen Lykanthropen und manche Untote."
@@ -1099,7 +1099,7 @@
     "usable": false,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"poison": true, "detail": "Mit Gift beschichtet, Gift muss separat vorhanden sein"},
+    "effects": {"can_apply_poison": true, "detail": "Gift muss separat aufgetragen werden"},
     "consumable": true,
     "charges": 1,
     "description": "Ein Pfeil mit vergifteter Spitze."
@@ -1252,7 +1252,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"trap_damage": "1W6+2 SP", "immobilize": true, "detail": "GE-Probe -2 um auszulösen"},
+    "effects": {"trap_damage": "1W6+2", "trap_effect": "immobilize", "detail": "GE-Probe -2 um auszuweichen"},
     "consumable": false,
     "charges": null,
     "description": "Eine eiserne Klappfalle zum Fangen von Tieren oder als Sicherung."

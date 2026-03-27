@@ -127,6 +127,7 @@ class CharacterResponse(BaseModel):
     basis_inventory: Optional[Any] = None
     current_vitals: Optional[dict] = None
     conditions: Optional[list] = None
+    active_buffs: Optional[list] = None
     death_record: Optional[dict] = None
     created_at: datetime
 
@@ -334,8 +335,26 @@ async def get_character(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Get full character detail."""
+    """Get full character detail (with enriched inventory)."""
     char = await _get_own_character(character_id, current_user, db)
+
+    # Opportunistically filter expired buffs
+    import time as _time
+    if char.active_buffs:
+        now_ms = int(_time.time() * 1000)
+        active = [b for b in char.active_buffs if not b.get("expires_at") or b["expires_at"] > now_ms]
+        if len(active) != len(char.active_buffs):
+            char.active_buffs = active
+            await db.commit()
+
+    # Enrich basis_inventory before returning
+    from utils.inventory_enrichment import enrich_basis_inventory
+    if char.basis_inventory:
+        enriched = await enrich_basis_inventory(char.basis_inventory, db)
+        # Return enriched without mutating the DB model
+        response = CharacterResponse.model_validate(char)
+        response.basis_inventory = enriched
+        return response
     return char
 
 
@@ -426,6 +445,13 @@ async def update_character(
 ):
     """Update character fields."""
     char = await _get_own_character(character_id, current_user, db)
+
+    if char.locked_session_id is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Charakter ist in einer aktiven Sitzung und kann nicht bearbeitet werden",
+        )
+
     update_data = body.model_dump(exclude_unset=True)
 
     if "status" in update_data:
@@ -455,6 +481,13 @@ async def level_up(
     from engine import leveling
 
     char = await _get_own_character(character_id, current_user, db)
+
+    if char.locked_session_id is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Charakter ist in einer aktiven Sitzung und kann nicht bearbeitet werden",
+        )
+
 
     total_cost = 0
     applied: list[dict] = []
@@ -596,6 +629,12 @@ async def update_vitals(
     if not char:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
 
+    if char.locked_session_id is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Charakter ist in einer aktiven Sitzung — Werte nur über die Sitzung änderbar",
+        )
+
     # Allow owner or GM
     if char.user_id != current_user.id:
         from models.campaign import Campaign, CampaignPlayer
@@ -732,8 +771,12 @@ async def export_character(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Export character as JSON."""
+    """Export character as JSON (with enriched inventory)."""
     char = await _get_own_character(character_id, current_user, db)
+
+    from utils.inventory_enrichment import enrich_basis_inventory
+    enriched_inv = await enrich_basis_inventory(char.basis_inventory, db)
+
     return {
         "format": "aventuria_vtt",
         "version": 1,
@@ -756,6 +799,6 @@ async def export_character(
             "special_abilities": char.special_abilities,
             "advantages": char.advantages,
             "disadvantages": char.disadvantages,
-            "basis_inventory": char.basis_inventory,
+            "basis_inventory": enriched_inv,
         },
     }

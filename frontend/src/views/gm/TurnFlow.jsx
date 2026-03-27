@@ -641,9 +641,13 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
       const cat = (i.category || '').toLowerCase()
       return cat === 'waffe' || cat === 'weapon' || i.equipped === true
     })
-    const otherUsable = invItems.filter(i =>
+    const combatItems = invItems.filter(i =>
       !consumables.includes(i) && !throwables.includes(i) && !poisons.includes(i) && !weapons.includes(i) &&
-      (i.usable || i.usable_in_combat || i.effects)
+      i.usable_in_combat === true
+    )
+    const otherUsable = invItems.filter(i =>
+      !consumables.includes(i) && !throwables.includes(i) && !poisons.includes(i) && !weapons.includes(i) && !combatItems.includes(i) &&
+      (i.usable || i.effects)
     )
 
     const handleSelectItem = (item) => {
@@ -757,6 +761,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
         const updatedInv = Array.isArray(rawInv) ? updatedItems : { ...rawInv, items: updatedItems }
         if (combatant.characterId) {
           useCharacterStore.getState().updateCharacterInList(combatant.characterId, { basis_inventory: updatedInv })
+          sendMessage?.({ type: 'inventory_change', payload: { character_id: combatant.characterId, inventory: updatedInv } })
         }
       }
 
@@ -794,6 +799,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
         const updatedInv = Array.isArray(rawInv) ? updatedItems : { ...rawInv, items: updatedItems }
         if (combatant.characterId) {
           useCharacterStore.getState().updateCharacterInList(combatant.characterId, { basis_inventory: updatedInv })
+          sendMessage?.({ type: 'inventory_change', payload: { character_id: combatant.characterId, inventory: updatedInv } })
         }
       }
 
@@ -959,6 +965,28 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
               </div>
             )}
 
+            {/* Combat-usable items (flagged usable_in_combat but not damage/heal) */}
+            {combatItems.length > 0 && (
+              <div>
+                <h5 className="text-[10px] text-amber-400 uppercase tracking-wider mb-1">Kampfgegenstände</h5>
+                {combatItems.map((item, i) => {
+                  const effect = resolveItemEffect(item)
+                  return (
+                    <button key={i} onClick={() => handleSelectItem(item)}
+                      className="w-full text-left px-3 py-2 bg-amber-900/10 border border-amber-900/20 rounded-sm mb-1 hover:border-amber-500/30 transition">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-xs text-dsa-parchment">{item.name}</span>
+                          {effect.description && <span className="text-[9px] text-amber-400/60 ml-2">{effect.description}</span>}
+                        </div>
+                        <span className="text-[10px] font-mono text-amber-400">{(item.quantity || 1) > 1 ? `${item.quantity}x` : ''}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
             {/* Poisons to apply to weapons */}
             {poisons.length > 0 && (
               <div>
@@ -1024,7 +1052,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
               </div>
             )}
 
-            {consumables.length === 0 && throwables.length === 0 && poisons.length === 0 && weapons.length === 0 && otherUsable.length === 0 && (
+            {consumables.length === 0 && throwables.length === 0 && combatItems.length === 0 && poisons.length === 0 && weapons.length === 0 && otherUsable.length === 0 && (
               <p className="text-xs text-dsa-parchment-dark">Keine verwendbaren Gegenstände im Inventar.</p>
             )}
           </div>

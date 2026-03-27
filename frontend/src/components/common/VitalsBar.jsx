@@ -385,7 +385,7 @@ function VitalsBar({
             const allMelee = useCharacterStore?.getState?.()?.myCharacter?.combat_values?.weapons?.filter(w => !w.ranged) || []
             const allEquippedItems = useCharacterStore?.getState?.()?.myCharacter?.basis_inventory
             const eqItems = Array.isArray(allEquippedItems) ? allEquippedItems : allEquippedItems?.items || []
-            const eqWeaponNames = eqItems.filter(i => i.equipped && /schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|hellebarde|morgenstern|peitsche|keule|saebel|rapier|kriegsaxt|rondrakamm/i.test(i.name)).map(i => i.name)
+            const eqWeaponNames = eqItems.filter(i => i.equipped && allMelee.some(w => i.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0]))).map(i => i.name)
             const secondWeapon = eqWeaponNames.length >= 2 ? allMelee.find(w => pw && !w.name.toLowerCase().includes(pw.name.toLowerCase().split(' ')[0]) && eqWeaponNames.some(n => n.toLowerCase().includes(w.name.toLowerCase().split(' ')[0]))) : null
             const hasBeidhaendig = charSpecials.some(s => /beidh/i.test(s))
             const beidhPenalty = charSpecials.some(s => /beidh.*II|beidh.*2/i.test(s)) ? -2 : hasBeidhaendig ? -4 : 0

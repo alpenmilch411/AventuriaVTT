@@ -284,8 +284,8 @@ export default function PlayerDashboard() {
 
       {/* ── TAB CONTENT ── */}
       <div className="flex-1 overflow-y-auto">
-        {activeTab === 'character' && <CharacterSheet />}
-        {activeTab === 'armory' && <ArmoryTab />}
+        {activeTab === 'character' && <CharacterSheet sendMessage={sendMessage} />}
+        {activeTab === 'armory' && <ArmoryTab sendMessage={sendMessage} />}
         {activeTab === 'talents' && <TalentList sendMessage={sendMessage} />}
         {activeTab === 'inventory' && <InventoryPanel sendMessage={sendMessage} />}
         {activeTab === 'spells' && <SpellBook sendMessage={sendMessage} />}

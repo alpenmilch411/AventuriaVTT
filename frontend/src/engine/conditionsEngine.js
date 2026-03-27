@@ -193,6 +193,27 @@ export const CONDITIONS = {
     removal: 'Endet automatisch nach der ersten Kampfrunde.',
     desc: ['Überrascht: -4 auf alle Kampfwerte in der ersten Kampfrunde. Danach normal handlungsfähig.'],
   },
+  'Verzückung': {
+    levels: 4, category: 'geistig', icon: '🎭',
+    perLevel: { AT: -1, PA: -1, AW: -1, FK: -1, KL: -1, IN: -1 },
+    summary: 'Geistige Entrückung durch Musik, Tanz oder Magie — erschwert alle Proben und Kampfwerte.',
+    source: 'Bannbaladin-Zauber, magische Musik, verzaubernde Tänze.',
+    removal: 'Ende der Wirkungsdauer, erfolgreiche Willenskraft-Probe, körperlicher Schmerz.',
+    desc: [
+      'Verzückung I: -1 auf alle Proben und Kampfwerte. Leicht verträumt.',
+      'Verzückung II: -2 auf alle Proben und Kampfwerte. Deutlich abgelenkt, reagiert verzögert.',
+      'Verzückung III: -3 auf alle Proben und Kampfwerte. Kaum noch ansprechbar.',
+      'Verzückung IV: Handlungsunfähig. Vollständig in Verzückung versunken.',
+    ],
+  },
+  'Bewusstlosigkeit': {
+    levels: 1, category: 'körperlich', icon: '😴',
+    effect: 'incapacitated',
+    summary: 'Bewusstlosigkeit — der Held ist ohnmächtig und völlig wehrlos.',
+    source: 'Liturgie Borons Schlaf, schwere Kopfverletzungen, Betäubungsgifte, LeP auf 0.',
+    removal: 'Natürliches Erwachen nach Wirkungsdauer, Heilmagie, Heilkunde Wunden-Probe.',
+    desc: ['Bewusstlosigkeit: Kann nicht handeln, nicht verteidigen, nicht wahrnehmen. Völlig wehrlos.'],
+  },
 }
 
 /**

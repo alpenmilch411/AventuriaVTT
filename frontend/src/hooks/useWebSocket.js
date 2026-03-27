@@ -180,6 +180,10 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     else if (type === 'buff_remove') {
       useCharacterStore.getState().removeBuff(payload.buff_id)
     }
+    // Backend-confirmed buff lifecycle (from buff_apply flow)
+    else if (type === 'buff_applied' || type === 'buff_removed') {
+      useCharacterStore.getState().handleCharacterMessage(msg)
+    }
 
     // ── Scene content push (GM sends visible scene items to players) ──
     else if (type === 'scene_content_push') {

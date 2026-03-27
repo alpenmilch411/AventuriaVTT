@@ -6,57 +6,35 @@ import {
 import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import Badge from '../../components/common/Badge'
+import { ITEM_SUBCATEGORIES } from '../../components/DatenbankDetail'
 import clsx from 'clsx'
 
 // ---------------------------------------------------------------------------
-// Inventory-matching categories (same as InventoryPanel)
+// Inventory-matching categories — derived from shared ITEM_SUBCATEGORIES
 // ---------------------------------------------------------------------------
 
 const LOOT_CATEGORIES = [
-  { id: 'kampfausruestung', label: 'Kampfausrüstung', icon: '⚔️' },
-  { id: 'heilmittel',       label: 'Tränke & Heilmittel', icon: '💊' },
-  { id: 'kraeuter',         label: 'Kräuter & Zutaten', icon: '🌿' },
-  { id: 'buffs',            label: 'Elixiere', icon: '⚗️' },
-  { id: 'wurfstoffe',       label: 'Wurfstoffe & Alchemie', icon: '💣' },
-  { id: 'munition',         label: 'Munition', icon: '🏹' },
-  { id: 'werkzeug',         label: 'Werkzeug', icon: '🔧' },
-  { id: 'licht',            label: 'Licht & Feuer', icon: '🔥' },
-  { id: 'proviant',         label: 'Proviant', icon: '🍖' },
-  { id: 'besonderes',       label: 'Besonderes', icon: '✨' },
-  { id: 'sonstiges',        label: 'Sonstiges', icon: '📦' },
+  { id: 'weapons',  label: 'Waffen',  icon: '\u2694\uFE0F' },
+  { id: 'armor',    label: 'Rüstung', icon: '\uD83D\uDEE1\uFE0F' },
+  { id: 'shields',  label: 'Schilde', icon: '\uD83D\uDEE1\uFE0F' },
+  ...Object.entries(ITEM_SUBCATEGORIES)
+    .filter(([k]) => k !== 'krankheit') // krankheit is not lootable
+    .map(([id, { label, icon }]) => ({ id, label, icon })),
+  { id: 'sonstiges', label: 'Sonstiges', icon: '\uD83D\uDCE6' },
 ]
 
 function categorizeItem(item) {
-  const n = (item.name || '').toLowerCase()
   const c = (item.category || '').toLowerCase()
-  const t = item._type || ''
+  const t = (item._type || '').toLowerCase()
 
-  // _type from databank endpoint (most reliable)
-  if (t === 'weapons') return 'kampfausruestung'
-  if (t === 'armor' || t === 'shields') return 'kampfausruestung'
+  // _type from databank endpoint (weapons, armor, shields)
+  if (t === 'weapon' || t === 'weapons') return 'weapons'
+  if (t === 'armor') return 'armor'
+  if (t === 'shield' || t === 'shields') return 'shields'
 
-  // Exact DB category values (item_templates.category)
-  if (c === 'trank') return 'heilmittel'
-  if (c === 'heilkraut') return 'kraeuter'
-  if (c === 'munition') return 'munition'
-  if (c === 'werkzeug') return 'werkzeug'
-  if (c === 'licht') return 'licht'
-  if (c === 'proviant') return 'proviant'
-  if (c === 'schatz') return 'besonderes'
-  if (c === 'alchemie') return /leuchtstab/.test(n) ? 'licht' : 'wurfstoffe'
-  if (c === 'gift') return 'wurfstoffe'
-  if (c === 'ausruestung' || c === 'behaelter' || c === 'verbrauchsmaterial') return 'sonstiges'
-
-  // Name-based fallback (mirrors InventoryPanel.categorize())
-  if (/schwert|axt|dolch|bogen|messer|kolben|speer|hammer|armbrust|ruestung|hemd|harnisch|panzer|schild|buckler/.test(n)) return 'kampfausruestung'
-  if (/trank|elixier|weihwasser|gegengift/.test(n)) return 'heilmittel'
-  if (/alraune|kraut|wurz|sansaro|gulmond|tarnele|olgin|ilmen/.test(n)) return 'kraeuter'
-  if (/bombe|donnerball|rauch/.test(n)) return 'wurfstoffe'
-  if (/pfeil|bolzen|kugel|nadel/.test(n)) return 'munition'
-  if (/fackel|laterne|kerze|leuchtstab/.test(n)) return 'licht'
-  if (/proviant|ration/.test(n)) return 'proviant'
-  if (/symbol|amulett|karte|edelstein|schmuck|brief/.test(n)) return 'besonderes'
-  if (/seil|dietrich|kompass|schreibzeug|verbandszeug|kletter/.test(n)) return 'werkzeug'
+  // Use raw DB category directly — matches LOOT_CATEGORIES ids
+  const directCategories = ['trank', 'heilkraut', 'alchemie', 'gift', 'munition', 'werkzeug', 'licht', 'proviant', 'ausruestung', 'behaelter', 'schatz', 'unterhaltung', 'verbrauchsmaterial']
+  if (directCategories.includes(c)) return c
 
   return 'sonstiges'
 }
@@ -149,7 +127,7 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
   const [lootCurrency, setLootCurrency] = useState({ ...EMPTY_PURSE })
 
   // DB browser
-  const [dbCategory, setDbCategory] = useState('kampfausruestung')
+  const [dbCategory, setDbCategory] = useState('weapons')
   const [dbSearch, setDbSearch] = useState('')
   const [dbLoading, setDbLoading] = useState(false)
   const [allDbItems, setAllDbItems] = useState([])
@@ -171,7 +149,7 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
     if (!token) return
     setDbLoading(true)
     const headers = { Authorization: `Bearer ${token}` }
-    const load = (cat) => fetch(`/api/databank/${cat}?per_page=100`, { headers })
+    const load = (cat) => fetch(`/api/databank/${cat}?page_size=200`, { headers })
       .then(r => r.ok ? r.json() : [])
       .then(data => (Array.isArray(data) ? data : (data.items || [])).map(i => ({ ...i, _type: cat })))
       .catch(() => [])
@@ -221,6 +199,8 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
       category: item.category || item._type || '',
       desc: item.description || '',
       weight: item.weight || 0,
+      template_id: item.id || null,
+      _type: item._type || '',
     }])
   }
 
@@ -240,6 +220,12 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
     players.forEach((p, i) => { init[p.id] = splits[i] || { ...EMPTY_PURSE } })
     setMoneyAssignments(init)
     setMoneySplitMode('even')
+    // Auto-assign all items to the single player
+    if (players.length === 1) {
+      const autoAssign = {}
+      lootItems.forEach(item => { autoAssign[item.id] = players[0].id })
+      setItemAssignments(autoAssign)
+    }
     setPhase('distribute')
 
     sendMessage?.({
@@ -273,6 +259,8 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
         quantity: item.quantity,
         weight: item.weight || 0,
         category: item.category || '',
+        template_id: item.template_id || null,
+        _type: item._type || '',
       })
     }
 

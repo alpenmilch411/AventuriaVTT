@@ -147,7 +147,7 @@ export default function NotificationPanel({ sendMessage }) {
 
           // Build a clean summary line
           const summary = notif.type === 'probe_request_from_player'
-            ? `${p.talent_name} proben (FW ${p.fw})`
+            ? `${p.talent_name} proben (FW ${p.fw}${p.item_bonus ? `, +${p.item_bonus.value} durch ${p.item_bonus.item_name}` : ''})`
             : notif.type === 'spell_cast_request'
             ? `${p.spell_name} wirken`
             : notif.type === 'transfer_request'

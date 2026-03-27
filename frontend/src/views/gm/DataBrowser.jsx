@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react'
 import { Search, X, ChevronRight } from 'lucide-react'
 import useAuthStore from '../../stores/authStore'
-import DatenbankDetailModal from '../../components/DatenbankDetail'
+import DatenbankDetailModal, { SUBCATEGORY_LABELS } from '../../components/DatenbankDetail'
 import clsx from 'clsx'
 
 const ENDPOINTS = {
@@ -17,34 +17,6 @@ const ENDPOINTS = {
   special_abilities: { url: '/api/databank/special_abilities', categoryField: 'category',  nameField: 'name', label: 'Sonderfertigkeit',   category: 'special_abilities' },
   items:             { url: '/api/databank/items',             categoryField: 'category',  nameField: 'name', label: 'Gegenstand',         category: 'items' },
   creatures:         { url: '/api/databank/creatures',         categoryField: 'category',  nameField: 'name', label: 'Kreatur',            category: 'creatures' },
-}
-
-const CATEGORY_LABELS = {
-  // Talent categories
-  'körper': 'Körper', 'koerper': 'Körper', 'gesellschaft': 'Gesellschaft',
-  'natur': 'Natur', 'wissen': 'Wissen', 'handwerk': 'Handwerk',
-  // Combat technique categories
-  'nahkampf': 'Nahkampf', 'fernkampf': 'Fernkampf',
-  // Special ability categories
-  'kampf': 'Kampf', 'allgemein': 'Allgemein', 'allgemein_nichtkampf': 'Allgemein (NK)',
-  'karmal': 'Karmal',
-  // Item categories
-  'trank': 'Trank', 'heilkraut': 'Heilkraut', 'alchemie': 'Alchemie',
-  'munition': 'Munition', 'werkzeug': 'Werkzeug', 'licht': 'Licht',
-  'proviant': 'Proviant', 'schatz': 'Schatz', 'ausruestung': 'Ausrüstung',
-  'behaelter': 'Behälter', 'gift': 'Gift', 'verbrauchsmaterial': 'Verbrauchsmaterial',
-  'unterhaltung': 'Unterhaltung', 'krankheit': 'Krankheit',
-  'waffe': 'Waffen', 'ruestung': 'Rüstung',
-  // Creature types
-  'humanoid': 'Humanoid', 'tier': 'Tier', 'untot': 'Untot', 'daemon': 'Dämon',
-  'magisch': 'Magisch', 'feenwesen': 'Feenwesen', 'elementar': 'Elementar',
-  'konstrukt': 'Konstrukt', 'pflanze': 'Pflanze',
-  // Weapon combat techniques (stored capitalized — mapped lowercase for lookup)
-  'schwerter': 'Schwerter', 'stangenwaffen': 'Stangenwaffen', 'hiebwaffen': 'Hiebwaffen',
-  'wurfwaffen': 'Wurfwaffen', 'bögen': 'Bögen', 'armbrüste': 'Armbrüste',
-  'dolche': 'Dolche', 'fechtwaffen': 'Fechtwaffen', 'kettenwaffen': 'Kettenwaffen',
-  'zweihandschwerter': 'Zweihandschwerter', 'äxte': 'Äxte', 'blasrohre': 'Blasrohre',
-  'raufen': 'Raufen', 'zweihandäxte': 'Zweihandäxte',
 }
 
 export default function DataBrowser({ type, onSelect, onClose, title }) {
@@ -64,7 +36,7 @@ export default function DataBrowser({ type, onSelect, onClose, title }) {
 
   useEffect(() => {
     if (!token || !config) return
-    fetch(config.url, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${config.url}?page_size=200`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : [])
       .then(d => { setItems(Array.isArray(d) ? d : d.items || []); setLoading(false) })
       .catch(() => setLoading(false))
@@ -167,7 +139,7 @@ export default function DataBrowser({ type, onSelect, onClose, title }) {
                   <button key={cat} onClick={() => setSelectedCategory(cat)}
                     className={clsx('w-full text-left px-2 py-1.5 text-[10px] transition border-b border-dsa-bg-medium/30',
                       selectedCategory === cat ? 'bg-dsa-gold/10 text-dsa-gold font-bold' : 'text-dsa-parchment-dark hover:text-dsa-parchment')}>
-                    {CATEGORY_LABELS[cat] || cat} ({categories[cat].length})
+                    {SUBCATEGORY_LABELS[cat] || cat} ({categories[cat].length})
                   </button>
                 ))}
               </div>

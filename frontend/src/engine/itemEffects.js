@@ -9,12 +9,13 @@
  *   // result = { type, description, actions: [...] }
  *
  * Action types returned:
- *   { type: 'heal',      target, formula, roll? }
- *   { type: 'restore',   target, resource: 'asp'|'kap', formula }
- *   { type: 'damage',    target, formula, damageType }
- *   { type: 'buff',      target, stat, value, durationMinutes }
- *   { type: 'condition',  target, condition, action: 'add'|'remove', level? }
- *   { type: 'utility',   description }
+ *   { type: 'heal',        target, formula, roll? }
+ *   { type: 'restore',     target, resource: 'asp'|'kap', formula }
+ *   { type: 'damage',      target, formula, damageType }
+ *   { type: 'buff',        target, stat, value, durationMinutes }
+ *   { type: 'condition',   target, condition, action: 'add'|'remove', level? }
+ *   { type: 'probe_bonus', talent, value }
+ *   { type: 'utility',     description }
  */
 
 // Dice formula roller: "1W6+2" → random number
@@ -38,12 +39,19 @@ export function rollFormula(formula) {
 
 /**
  * Classify an item into an effect category based on its effects object.
- * Returns: 'heal' | 'restore' | 'damage' | 'buff' | 'condition' | 'poison' | 'utility' | 'none'
+ * Returns: 'heal' | 'restore' | 'damage' | 'buff' | 'condition' | 'poison' | 'probe_bonus' | 'utility' | 'none'
  */
 export function classifyItem(effects) {
   if (!effects) return 'none'
+  if (effects.probe_bonus) return 'probe_bonus'
+  if (effects.condition_remove) return 'condition'
+  if (effects.heal_per_rest) return 'buff'
+  if (effects.restraint || effects.trap_damage) return 'utility'
+  if (effects.carry_bonus || effects.shelter_persons || effects.warmth_bonus) return 'utility'
+  if (effects.utility_action) return 'utility'
+  if (effects.material) return 'utility'
   if (effects.heal_lep) return 'heal'
-  if (effects.restore_asp || effects.asp_restore) return 'restore'
+  if (effects.restore_asp || effects.asp_restore || effects.restore_kap || effects.kap_restore) return 'restore'
   if (effects.fire_damage || effects.holy_damage) return 'damage'
   if (effects.stun_damage || effects.smoke_cloud) return 'damage' // combat throwables
   if (effects.type === 'gift') return 'poison'
@@ -71,8 +79,12 @@ export function needsRoll(effects) {
   if (!effects) return false
   if (effects.heal_lep && typeof effects.heal_lep === 'string' && effects.heal_lep.includes('W')) return true
   if (effects.restore_asp && typeof effects.restore_asp === 'string' && effects.restore_asp.includes('W')) return true
+  if (effects.asp_restore && typeof effects.asp_restore === 'string' && effects.asp_restore.includes('W')) return true
+  if (effects.restore_kap && typeof effects.restore_kap === 'string' && effects.restore_kap.includes('W')) return true
+  if (effects.kap_restore && typeof effects.kap_restore === 'string' && effects.kap_restore.includes('W')) return true
   if (effects.fire_damage && typeof effects.fire_damage === 'string' && effects.fire_damage.includes('W')) return true
   if (effects.holy_damage && typeof effects.holy_damage === 'string' && effects.holy_damage.includes('W')) return true
+  if (effects.trap_damage && typeof effects.trap_damage === 'string' && effects.trap_damage.includes('W')) return true
   return false
 }
 
@@ -107,6 +119,15 @@ export function resolveItemEffect(item) {
   }
 
   switch (cls) {
+    case 'probe_bonus': {
+      const pb = effects.probe_bonus
+      result.description = `${item.name}: +${pb.value} auf ${pb.talent}`
+      if (pb.applies_to) result.description += ` (${pb.applies_to})`
+      result.effectSummary = `+${pb.value} ${pb.talent}`
+      result.steps = [{ type: 'probe_bonus', talent: pb.talent, value: pb.value }]
+      break
+    }
+
     case 'heal': {
       const formula = effects.heal_lep
       result.diceFormula = formula
@@ -176,6 +197,13 @@ export function resolveItemEffect(item) {
     }
 
     case 'buff': {
+      if (effects.heal_per_rest) {
+        const days = effects.duration_days || 1
+        result.description = `${item.name}: +${effects.heal_per_rest} LeP-Regeneration pro Nacht für ${days} Tage`
+        result.effectSummary = `+${effects.heal_per_rest} LeP/Nacht`
+        result.steps = [{ type: 'buff', buffs: [`+${effects.heal_per_rest} LeP-Regen`], durationMinutes: days * 24 * 60 }]
+        break
+      }
       const buffs = []
       if (effects.ge_bonus) buffs.push(`+${effects.ge_bonus} GE`)
       if (effects.kk_bonus) buffs.push(`+${effects.kk_bonus} KK`)
@@ -193,6 +221,13 @@ export function resolveItemEffect(item) {
     }
 
     case 'condition': {
+      if (effects.condition_remove) {
+        const cr = effects.condition_remove
+        result.description = `${item.name}: Entfernt ${cr.levels || 1} Stufe ${cr.condition}`
+        result.steps = [{ type: 'condition', condition: cr.condition, action: 'remove', level: cr.levels || 1 }]
+        result.effectSummary = result.description
+        break
+      }
       if (effects.pain_relief) result.description = `${item.name}: Entfernt 1 Stufe Schmerz`
       else if (effects.remove_betaeubung) result.description = `${item.name}: Entfernt ${effects.remove_betaeubung} Stufe Betäubung`
       else if (effects.cure_poison) result.description = `${item.name}: ${effects.bonus || '+4 auf Zähigkeitsprobe gegen Gift'}`
@@ -294,17 +329,27 @@ export function applyActions(actions, sendMessage, updateCombatant, context) {
       }
 
       case 'buff': {
-        // Buffs are tracked as temporary conditions
-        sendMessage?.({
-          type: 'conditions_update',
-          payload: {
-            character_id: action.target,
-            condition: `${action.stat} +${action.value}`,
-            action: 'add',
-            temporary: true,
-            duration_minutes: action.durationMinutes,
-          },
-        })
+        // Parse buff entries: "+2 KK", "+1 GE", etc.
+        for (const buff of (action.buffs || [])) {
+          const match = buff.match(/\+?(-?\d+)\s*(\w+)/)
+          if (match) {
+            sendMessage?.({
+              type: 'buff_apply',
+              payload: {
+                character_id: context.characterId,
+                stat: match[2],
+                value: parseInt(match[1]),
+                source: context.itemName || 'Buff',
+                duration_minutes: action.durationMinutes || 60,
+              },
+            })
+          }
+        }
+        break
+      }
+
+      case 'probe_bonus': {
+        // Display only — the actual probe is handled separately by the GM
         break
       }
 

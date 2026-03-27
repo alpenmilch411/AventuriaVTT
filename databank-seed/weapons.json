@@ -249,6 +249,7 @@
     "reload_time": null,
     "ammunition": null,
     "availability": "überall",
+    "is_focus": true,
     "description": "Ein einfacher Holzstab, der als Wanderstock und Waffe dient."
   },
   {
@@ -396,13 +397,14 @@
     "reload_time": null,
     "ammunition": null,
     "availability": "häufig",
+    "is_focus": true,
     "description": "Ein verstärkter Stab für den Kampf, oft von Magiern und Mönchen verwendet."
   },
   {
     "id": "streitaxt_zweihand",
     "name": "Streitaxt (Zweihand)",
     "icon_id": "weapon_greataxe",
-    "combat_technique": "Zweihandäxte",
+    "combat_technique": "Zweihandhiebwaffen",
     "damage": "2W6+4",
     "at_mod": 0,
     "pa_mod": -2,

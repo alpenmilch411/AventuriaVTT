@@ -11,7 +11,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"heal_bonus": "+2 auf Heilkunde-Proben", "alchemy_ingredient": true},
+    "effects": {"probe_bonus": {"talent": "Heilkunde Wunden", "value": 2}, "alchemy_ingredient": true},
     "consumable": true,
     "charges": 1,
     "description": "Eine seltene Wurzel mit menschenähnlicher Form, die in der Heilkunde und Alchimie verwendet wird."
@@ -45,7 +45,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"antitoxin": true, "detail": "+2 auf ZK-Probe gegen Gift"},
+    "effects": {"probe_bonus": {"talent": "Zähigkeit", "value": 2, "applies_to": "Gift"}, "consumable_on_use": true},
     "consumable": true,
     "charges": 1,
     "description": "Ein bitteres Kraut, das bei der Entgiftung hilft."
@@ -62,7 +62,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"fever_reduction": true, "detail": "+1 auf Heilkunde Krankheiten bei Fieber"},
+    "effects": {"probe_bonus": {"talent": "Heilkunde Krankheiten", "value": 1}},
     "consumable": true,
     "charges": 1,
     "description": "Ein Schilfgewächs, das Fieber senkt."
@@ -96,7 +96,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"anti_nausea": true, "detail": "Hilft gegen Übelkeit und Seekrankheit"},
+    "effects": {"condition_remove": {"condition": "Übelkeit", "levels": 1}, "detail": "Hilft gegen Übelkeit und Seekrankheit"},
     "consumable": true,
     "charges": 1,
     "description": "Ein Kraut gegen Übelkeit, beliebt bei Seefahrern."
@@ -113,7 +113,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"regeneration_bonus": "+1 LeP-Regeneration pro Nacht", "duration": "3 Tage"},
+    "effects": {"heal_per_rest": 1, "duration_days": 3, "detail": "+1 LeP-Regeneration pro Nacht für 3 Tage"},
     "consumable": true,
     "charges": 1,
     "description": "Eine Wurzel, die die natürliche Heilung beschleunigt."
@@ -130,7 +130,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"antidote_ingredient": true, "detail": "Wichtige Zutat für Gegengifte"},
+    "effects": {"alchemy_ingredient": true, "crafting_type": "antidote", "detail": "Wichtige Zutat für Gegengifte"},
     "consumable": true,
     "charges": 1,
     "description": "Eine Pflanze, deren Blätter in vielen Gegengiften verwendet werden."
@@ -164,7 +164,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"wound_care": true, "detail": "+1 auf Heilkunde Wunden, beschleunigt Wundheilung"},
+    "effects": {"probe_bonus": {"talent": "Heilkunde Wunden", "value": 1}},
     "consumable": true,
     "charges": 1,
     "description": "Baumharz mit antiseptischen Eigenschaften für die Wundpflege."
@@ -334,7 +334,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"bleeding_stop": true, "detail": "Stoppt Blutungen bei äußeren Wunden"},
+    "effects": {"condition_remove": {"condition": "Blutend", "levels": 1}},
     "consumable": true,
     "charges": 1,
     "description": "Ein Blatt, das Blutungen stillt wenn auf die Wunde gepresst."
@@ -351,7 +351,7 @@
     "usable": true,
     "usable_in_combat": false,
     "use_action_cost": null,
-    "effects": {"anti_infection": true, "detail": "+2 auf Heilkunde Krankheiten gegen Wundinfektionen"},
+    "effects": {"probe_bonus": {"talent": "Heilkunde Krankheiten", "value": 2, "applies_to": "Wundinfektionen"}},
     "consumable": true,
     "charges": 1,
     "description": "Eine Wurzel mit starker antiseptischer Wirkung gegen Wundinfektionen."

@@ -75,6 +75,16 @@ class EventType(str, Enum):
     ACTION_DECLINED = "action_declined"
     ITEM_TRANSFERRED = "item_transferred"
 
+    # Buffs
+    BUFF_APPLY = "buff_apply"
+    BUFF_REMOVE = "buff_remove"
+    BUFF_APPLIED = "buff_applied"
+    BUFF_REMOVED = "buff_removed"
+    BUFF_EDIT = "buff_edit"
+    BUFF_EDITED = "buff_edited"
+    BUFF_CLEAR_EXPIRED = "buff_clear_expired"
+    BUFF_EXPIRED = "buff_expired"
+
     # Loot
     LOOT_DISPLAY = "loot_display"
     LOOT_DISTRIBUTE = "loot_distribute"

@@ -12,7 +12,7 @@ import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import Badge from '../../components/common/Badge'
 import Modal from '../../components/common/Modal'
-import DatenbankDetailModal from '../../components/DatenbankDetail'
+import DatenbankDetailModal, { ITEM_SUBCATEGORIES } from '../../components/DatenbankDetail'
 
 // Databank categories to search when looking up an item by name
 const DB_SEARCH_CATS = ['items', 'weapons', 'armor', 'shields']
@@ -37,83 +37,77 @@ async function lookupItemInDatabank(name, token) {
   return null
 }
 
-// ── Item knowledge base ──
-const ITEM_INFO = {
-  'streitaxt': { desc: 'Eine schwere Kampfaxt. Beliebt bei Zwergen und Kriegern.', category: 'Waffe', effect: 'Schaden: 1W6+5, Reichweite: mittel', actionCost: '1 Aktion zum Wechseln' },
-  'buckler': { desc: 'Ein kleiner Faustschild aus Metall.', category: 'Schild', effect: '+1 Parade, -1 Attacke', actionCost: '1 Aktion zum Anlegen' },
-  'kettenhemd': { desc: 'Rüstung aus verflochtenen Metallringen.', category: 'Rüstung', effect: 'RS 4, BE 3', actionCost: 'Mehrere Minuten zum An-/Ablegen' },
-  'proviant': { desc: 'Trockenfleisch, Brot und Dörrobst. Reicht für einen Tag.', category: 'Verbrauchsgut', effect: 'Versorgt 1 Person für 1 Tag', actionCost: 'Freie Aktion' },
-  'schlafsack': { desc: 'Warmer Schlafsack aus Wolle.', category: 'Ausrüstung', effect: 'Erholsame Rast in der Wildnis', actionCost: 'Außerhalb des Kampfes' },
-  'seil': { desc: 'Stabiles Hanfseil, 10 Schritt lang.', category: 'Werkzeug', effect: 'Hilft bei Klettern, Fesseln, Sichern', actionCost: '1 Aktion' },
-  'silbertaler': { desc: 'Gängige Währung in Aventurien.', category: 'Geld', effect: null, actionCost: 'Freie Aktion' },
-  'magierstab': { desc: 'Geweihter Magierstab — Nahkampfwaffe und Zauberfokus.', category: 'Waffe & Fokus', effect: 'Schaden: 1W6+2, Reichweite: lang', actionCost: '1 Aktion zum Wechseln' },
-  'elfische reiserobe': { desc: 'Leichte, robuste Robe elfischer Machart.', category: 'Rüstung', effect: 'RS 1, BE 0', actionCost: 'Mehrere Minuten' },
-  'schreibzeug': { desc: 'Tintenfass, Federkiel und Pergament.', category: 'Werkzeug', effect: 'Schreiben und Zeichnen', actionCost: 'Außerhalb des Kampfes' },
-  'heiltrank': { desc: 'Alchemistischer Trank der Wunden heilt.', category: 'Trank', effect: 'Heilt 1W6+2 Lebenspunkte', actionCost: '1 Aktion' },
-  'alraune': { desc: 'Seltene Wurzel mit magischen Eigenschaften.', category: 'Alchemie-Zutat', effect: 'Zutat für Tränke', actionCost: 'Außerhalb des Kampfes' },
-  'streitkolben': { desc: 'Wuchtwaffe mit schwerem Metallkopf.', category: 'Waffe', effect: 'Schaden: 1W6+4, Reichweite: kurz', actionCost: '1 Aktion zum Wechseln' },
-  'lederharnisch': { desc: 'Leichte Rüstung aus gehärtetem Leder.', category: 'Rüstung', effect: 'RS 3, BE 2', actionCost: 'Mehrere Minuten' },
-  'heilbeutel': { desc: 'Bandagen, Kräuter und medizinische Instrumente.', category: 'Werkzeug', effect: 'Erforderlich für Heilkunde Wunden', actionCost: '1 Aktion' },
-  'heilkraeuter': { desc: 'Getrocknete Kräuter mit heilender Wirkung.', category: 'Heilmittel', effect: '+1 auf Regeneration bei Rast', actionCost: '1 Aktion' },
-  'langbogen': { desc: 'Kraftvoller Bogen für weite Distanzen.', category: 'Fernkampfwaffe', effect: 'Schaden: 1W6+4', actionCost: '1 Aktion zum Wechseln' },
-  'jagdmesser': { desc: 'Vielseitiges Messer für Jagd und Nahkampf.', category: 'Waffe', effect: 'Schaden: 1W6+1, Reichweite: kurz', actionCost: 'Freie Aktion (Schnellziehen)' },
-  'lederkleidung': { desc: 'Robuste Kleidung aus weichem Leder.', category: 'Rüstung', effect: 'RS 1, BE 0', actionCost: 'Mehrere Minuten' },
-  'pfeile': { desc: 'Pfeile mit Metallspitze für Bögen.', category: 'Munition', effect: '1 Pfeil pro Schuss verbraucht', actionCost: 'Im Schuss enthalten' },
-  'feuerstahl': { desc: 'Feuerstein und Stahl zum Entzünden.', category: 'Werkzeug', effect: 'Feuer machen', actionCost: '1 Aktion' },
-  'fackel': { desc: 'In Pech getränkter Holzstab, brennt ~1 Stunde.', category: 'Lichtquelle', effect: 'Beleuchtet 10 Schritt, 1 Stunde', actionCost: '1 Aktion zum Entzünden' },
+// Categorize an inventory item — aligned with LootPanel's categorizeItem().
+// Uses enriched `_type` and raw DB `category` to match INVENTORY_CATEGORIES ids.
+function categorizeItem(item) {
+  const c = (item.category || '').toLowerCase()
+  const t = (item._type || '').toLowerCase()
+
+  // _type from databank enrichment (weapons, armor, shields)
+  if (t === 'weapon' || t === 'weapons') return 'weapons'
+  if (t === 'armor') return 'armor'
+  if (t === 'shield' || t === 'shields') return 'shields'
+
+  // Use raw DB category directly — matches INVENTORY_CATEGORIES ids
+  const directCategories = ['trank', 'heilkraut', 'alchemie', 'gift', 'munition', 'werkzeug', 'licht', 'proviant', 'ausruestung', 'behaelter', 'schatz', 'unterhaltung', 'verbrauchsmaterial']
+  if (directCategories.includes(c)) return c
+
+  return 'sonstiges'
 }
 
-function lookupItemInfo(name) {
-  const lower = name.toLowerCase()
-  for (const [key, info] of Object.entries(ITEM_INFO)) {
-    if (lower.includes(key)) return info
-  }
-  return null
-}
+// Icon based on enriched _type and category fields
+function getItemIcon(item) {
+  const t = (item._type || '').toLowerCase()
+  const cat = (item.category || '').toLowerCase()
 
-function getItemIcon(name) {
-  const n = name.toLowerCase()
-  if (n.includes('trank') || n.includes('elixier')) return FlaskConical
-  if (n.includes('schwert') || n.includes('axt') || n.includes('dolch') || n.includes('bogen') || n.includes('messer') || n.includes('stab') || n.includes('kolben')) return Swords
-  if (n.includes('ruestung') || n.includes('hemd') || n.includes('harnisch') || n.includes('schild') || n.includes('buckler') || n.includes('robe') || n.includes('kleidung')) return Shield
+  if (t === 'weapon' || t === 'weapons') return Swords
+  if (t === 'armor' || t === 'shield' || t === 'shields') return Shield
+  if (cat === 'trank' || cat === 'heilkraut') return FlaskConical
+  if (cat === 'proviant') return Apple
+  if (cat === 'licht') return Flame
+  if (cat === 'werkzeug') return Compass
+  if (cat === 'munition') return Swords
+  if (cat === 'gift' || cat === 'alchemie') return FlaskConical
+  if (cat === 'schatz') return Gem
+  // Fallback for unenriched items
+  const n = (typeof item === 'string' ? item : item.name || '').toLowerCase()
   if (n.includes('silber') || n.includes('gold') || n.includes('dukaten')) return Gem
-  if (n.includes('proviant') || n.includes('ration')) return Apple
-  if (n.includes('fackel') || n.includes('feuer') || n.includes('laterne')) return Flame
-  if (n.includes('seil') || n.includes('kompass')) return Compass
-  if (n.includes('schlafsack') || n.includes('zelt')) return Tent
-  if (n.includes('kraeuter') || n.includes('alraune') || n.includes('heilbeutel')) return HelpCircle
   return Package
 }
 
-function getCategoryColor(info) {
-  if (!info) return 'text-dsa-parchment-dark'
-  const c = info.category.toLowerCase()
-  if (c.includes('waffe') || c.includes('fokus')) return 'text-red-400'
-  if (c.includes('ruestung') || c.includes('schild')) return 'text-blue-400'
-  if (c.includes('trank') || c.includes('heilmittel')) return 'text-green-400'
-  if (c.includes('geld')) return 'text-dsa-gold'
-  if (c.includes('munition') || c.includes('verbrauch')) return 'text-orange-400'
-  if (c.includes('alchemie')) return 'text-purple-400'
+// Color based on enriched _type and category fields
+function getCategoryColor(item) {
+  const t = (item._type || '').toLowerCase()
+  const cat = (item.category || '').toLowerCase()
+
+  if (t === 'weapon' || t === 'weapons') return 'text-red-400'
+  if (t === 'armor' || t === 'shield' || t === 'shields') return 'text-blue-400'
+  if (cat === 'trank' || cat === 'heilkraut') return 'text-green-400'
+  if (cat === 'gift') return 'text-red-400'
+  if (cat === 'alchemie') return 'text-purple-400'
+  if (cat === 'munition' || cat === 'verbrauchsmaterial') return 'text-orange-400'
+  if (cat === 'schatz') return 'text-dsa-gold'
   return 'text-dsa-parchment-dark'
 }
 
-// Determine which actions are available for an item
+// Determine which actions are available for an item using enriched fields
 function getAvailableActions(item, inventory, specialAbilities) {
-  const info = lookupItemInfo(item.name)
-  const cat = (info?.category || '').toLowerCase()
-  const n = (item.name || '').toLowerCase()
+  const t = (item._type || '').toLowerCase()
   const actions = []
 
-  const isWeapon = cat.includes('waffe') || cat.includes('fokus') || cat.includes('fernkampf')
-  const isArmor = cat.includes('ruestung')
-  const isShield = cat.includes('schild')
+  const isWeapon = t === 'weapon' || t === 'weapons'
+  const isArmor = t === 'armor'
+  const isShield = t === 'shield' || t === 'shields'
   const isEquippable = isWeapon || isArmor || isShield
-  const isConsumable = cat.includes('trank') || cat.includes('heilmittel') || cat.includes('verbrauch') || cat.includes('lichtquelle')
-  const isTool = cat.includes('werkzeug')
   const hasSchnellziehen = (specialAbilities || []).some(sf => sf.toLowerCase().includes('schnellziehen'))
+  const eff = item.effects || {}
+  const hasProbeBonusOnly = !!eff.probe_bonus
+  const hasCombatDamageOnly = item.usable_in_combat && (eff.fire_damage || eff.holy_damage || eff.smoke_cloud || eff.stun_damage)
+  const isUsable = !hasProbeBonusOnly && !hasCombatDamageOnly && (item.usable === true || item.usable_in_combat === true)
 
-  // Use/consume
-  if (isConsumable || isTool) {
+  // Use/consume — enriched items carry usable / usable_in_combat flags
+  // Excluded: combat damage items (used via TurnFlow) and probe bonus items (auto-offered during probes)
+  if (isUsable) {
     actions.push({ id: 'use', label: 'Benutzen', icon: FlaskConical, desc: 'Den Gegenstand einsetzen oder verbrauchen' })
   }
 
@@ -137,8 +131,8 @@ function getAvailableActions(item, inventory, specialAbilities) {
       if (isWeapon) {
         // Check what's currently equipped in this slot
         const currentWeapon = inventory.filter(i => i.equipped && i.name !== item.name).find(i => {
-          const ci = lookupItemInfo(i.name)
-          return ci && (ci.category.toLowerCase().includes('waffe') || ci.category.toLowerCase().includes('fokus') || ci.category.toLowerCase().includes('fernkampf'))
+          const iType = (i._type || '').toLowerCase()
+          return iType === 'weapon' || iType === 'weapons'
         })
         const cost = hasSchnellziehen ? 'Freie Aktion (Schnellziehen)' : '1 Aktion'
         actions.push({
@@ -334,7 +328,12 @@ function InventoryPanel({ sendMessage }) {
     if (result) {
       setDbDetail(result)
     } else {
-      setDbDetail({ name: item.name, data: {}, category: 'items' })
+      // Build fallback from local inventory data
+      const fallback = {}
+      if (item.weight) fallback.weight = item.weight
+      if (item.category) fallback.category = item.category
+      if (item.effects && Object.keys(item.effects).length > 0) fallback.effects = item.effects
+      setDbDetail({ name: item.name, data: fallback, category: 'items' })
     }
   }
 
@@ -353,47 +352,13 @@ function InventoryPanel({ sendMessage }) {
       const n = (i.name || '').toLowerCase()
       return !i.equipped && !(n.includes('silber') || n.includes('dukaten') || n.includes('heller') || n.includes('kreuzer'))
     })
-    const categorize = (item) => {
-      const n = (item.name || '').toLowerCase()
-      const eff = item.effects || {}
-      const dbCat = (item.category || '').toLowerCase()
-      if (dbCat === 'weapons' || dbCat === 'weapon' || dbCat === 'armor' || dbCat === 'shields' || dbCat === 'shield') return 'kampfausruestung'
-      if (dbCat === 'trank' || dbCat === 'potion') return 'heilmittel'
-      if (dbCat === 'heilkraut') return 'kraeuter'
-      if (dbCat === 'alchemie') return /leuchtstab/.test(n) ? 'licht' : 'wurfstoffe'
-      if (dbCat === 'munition') return 'munition'
-      if (dbCat === 'werkzeug' || dbCat === 'tool') return 'werkzeug'
-      if (dbCat === 'licht' || dbCat === 'torch') return 'licht'
-      if (dbCat === 'proviant') return 'proviant'
-      if (dbCat === 'schatz') return 'besonderes'
-      if (dbCat === 'gift') return 'wurfstoffe'
-      if (dbCat === 'ausruestung' || dbCat === 'clothing') return 'sonstiges'
-      if (dbCat === 'behaelter' || dbCat === 'container') return 'sonstiges'
-      if (dbCat === 'verbrauchsmaterial' || dbCat === 'bandage') return 'werkzeug'
-      if (dbCat === 'unterhaltung') return 'sonstiges'
-      if (dbCat === 'krankheit') return 'sonstiges'
-      if (dbCat === 'rope') return 'werkzeug'
-      if (dbCat === 'item' || dbCat === 'misc') return 'sonstiges'
-      if (item.type === 'weapon' || item.type === 'armor' || item.type === 'helm' || item.type === 'shield') return 'kampfausruestung'
-      if (/schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|armbrust|ruestung|hemd|harnisch|panzer|schild|buckler|helm/i.test(n)) return 'kampfausruestung'
-      if (eff.heal_lep || eff.restore_asp || eff.cure_poison || eff.cure_disease || n.includes('trank') || n.includes('elixier') || n.includes('weihwasser') || n.includes('fieber')) return 'heilmittel'
-      if (n.includes('alraune') || n.includes('kraut') || n.includes('wurz') || n.includes('blatt') || n.includes('sansaro') || n.includes('gulmond') || n.includes('tarnele') || n.includes('olgin') || n.includes('ilmen') || eff.heal_bonus || eff.asp_restore || eff.antitoxin || eff.bleeding_stop || eff.anti_infection) return 'kraeuter'
-      if (eff.fire_damage || eff.stun_damage || eff.smoke_cloud || n.includes('bombe') || n.includes('donnerball') || n.includes('rauch')) return 'wurfstoffe'
-      if (n.includes('seil') || n.includes('dietrich') || n.includes('fernglas') || n.includes('kompass') || n.includes('schreibzeug') || n.includes('verbandszeug') || n.includes('falle') || n.includes('kletter') || eff.climbing_bonus || eff.perception_bonus || eff.trap_damage) return 'werkzeug'
-      if (n.includes('pfeil') || n.includes('bolzen') || n.includes('kugel') || n.includes('nadel') || item.type === 'ammo') return 'munition'
-      if (n.includes('fackel') || n.includes('laterne') || n.includes('kerze') || eff.light_radius) return 'licht'
-      if (n.includes('proviant') || n.includes('ration') || item.type === 'proviant') return 'proviant'
-      if (n.includes('symbol') || n.includes('amulett') || n.includes('brief') || n.includes('karte')) return 'besonderes'
-      if (eff.ge_bonus || eff.kk_bonus || eff.mu_bonus || eff.nightvision || eff.invisibility || eff.courage_bonus) return 'buffs'
-      return 'sonstiges'
-    }
     const cats = {}
     for (const item of others) {
-      const cat = categorize(item)
+      const cat = categorizeItem(item)
       if (!cats[cat]) cats[cat] = []
       cats[cat].push(item)
     }
-    const CATEGORIES_ORDER = ['heilmittel', 'kampfausruestung', 'kraeuter', 'buffs', 'wurfstoffe', 'munition', 'werkzeug', 'licht', 'proviant', 'besonderes', 'sonstiges']
+    const CATEGORIES_ORDER = ['weapons', 'armor', 'shields', 'trank', 'heilkraut', 'alchemie', 'gift', 'munition', 'werkzeug', 'licht', 'proviant', 'ausruestung', 'behaelter', 'schatz', 'unterhaltung', 'verbrauchsmaterial', 'sonstiges']
     const first = CATEGORIES_ORDER.find(c => (cats[c] || []).length > 0)
     if (first) setOpenCategory(first)
   }, [otherItemsCount])
@@ -421,68 +386,21 @@ function InventoryPanel({ sendMessage }) {
   })
 
   // Categorize items (excluding equipped + money which have their own sections)
-  const categorize = (item) => {
-    const n = (item.name || '').toLowerCase()
-    const eff = item.effects || {}
-    const dbCat = (item.category || '').toLowerCase()
-    if (dbCat === 'weapons' || dbCat === 'weapon' || dbCat === 'armor' || dbCat === 'shields' || dbCat === 'shield') return 'kampfausruestung'
-    if (dbCat === 'trank' || dbCat === 'potion') return 'heilmittel'
-    if (dbCat === 'heilkraut') return 'kraeuter'
-    if (dbCat === 'alchemie') return /leuchtstab/.test(n) ? 'licht' : 'wurfstoffe'
-    if (dbCat === 'munition') return 'munition'
-    if (dbCat === 'werkzeug' || dbCat === 'tool') return 'werkzeug'
-    if (dbCat === 'licht' || dbCat === 'torch') return 'licht'
-    if (dbCat === 'proviant') return 'proviant'
-    if (dbCat === 'schatz') return 'besonderes'
-    if (dbCat === 'gift') return 'wurfstoffe'
-    if (dbCat === 'ausruestung' || dbCat === 'clothing') return 'sonstiges'
-    if (dbCat === 'behaelter' || dbCat === 'container') return 'sonstiges'
-    if (dbCat === 'verbrauchsmaterial' || dbCat === 'bandage') return 'werkzeug'
-    if (dbCat === 'unterhaltung') return 'sonstiges'
-    if (dbCat === 'krankheit') return 'sonstiges'
-    if (dbCat === 'rope') return 'werkzeug'
-    if (dbCat === 'item' || dbCat === 'misc') return 'sonstiges'
-    // Combat gear → shown in Ausrüstung tab, not here
-    if (item.type === 'weapon' || item.type === 'armor' || item.type === 'helm' || item.type === 'shield') return 'kampfausruestung'
-    if (/schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|armbrust|ruestung|hemd|harnisch|panzer|schild|buckler|helm/i.test(n)) return 'kampfausruestung'
-    // Potions & healing
-    if (eff.heal_lep || eff.restore_asp || eff.cure_poison || eff.cure_disease || n.includes('trank') || n.includes('elixier') || n.includes('weihwasser') || n.includes('fieber')) return 'heilmittel'
-    // Herbs & alchemy ingredients
-    if (n.includes('alraune') || n.includes('kraut') || n.includes('wurz') || n.includes('blatt') || n.includes('sansaro') || n.includes('gulmond') || n.includes('tarnele') || n.includes('olgin') || n.includes('ilmen') || eff.heal_bonus || eff.asp_restore || eff.antitoxin || eff.bleeding_stop || eff.anti_infection) return 'kraeuter'
-    // Throwables & alchemy weapons
-    if (eff.fire_damage || eff.stun_damage || eff.smoke_cloud || n.includes('bombe') || n.includes('donnerball') || n.includes('rauch')) return 'wurfstoffe'
-    // Tools
-    if (n.includes('seil') || n.includes('dietrich') || n.includes('fernglas') || n.includes('kompass') || n.includes('schreibzeug') || n.includes('verbandszeug') || n.includes('falle') || n.includes('kletter') || eff.climbing_bonus || eff.perception_bonus || eff.trap_damage) return 'werkzeug'
-    // Ammo
-    if (n.includes('pfeil') || n.includes('bolzen') || n.includes('kugel') || n.includes('nadel') || item.type === 'ammo') return 'munition'
-    // Light & camping
-    if (n.includes('fackel') || n.includes('laterne') || n.includes('kerze') || eff.light_radius) return 'licht'
-    // Food
-    if (n.includes('proviant') || n.includes('ration') || item.type === 'proviant') return 'proviant'
-    // Special/quest items
-    if (n.includes('symbol') || n.includes('amulett') || n.includes('brief') || n.includes('karte')) return 'besonderes'
-    // Buff items
-    if (eff.ge_bonus || eff.kk_bonus || eff.mu_bonus || eff.nightvision || eff.invisibility || eff.courage_bonus) return 'buffs'
-    return 'sonstiges'
-  }
+  // Uses module-level categorizeItem() — DB category + effects, no regex on names.
 
   const CATEGORIES = [
-    { id: 'kampfausruestung', label: 'Waffen, Rüstung & Schilde', icon: '⚔️', desc: 'Kampfausrüstung — Anlegen und Wechseln im Ausrüstung-Tab' },
-    { id: 'heilmittel', label: 'Tränke & Heilmittel', icon: '💊', desc: 'Heiltränke, Gegengifte und medizinische Versorgung' },
-    { id: 'kraeuter', label: 'Kräuter & Zutaten', icon: '🌿', desc: 'Heilkräuter, Alchemiezutaten und natürliche Heilmittel' },
-    { id: 'buffs', label: 'Elixiere & Stärkungsmittel', icon: '⚗️', desc: 'Temporäre Stärkungen für Eigenschaften und Fähigkeiten' },
-    { id: 'wurfstoffe', label: 'Wurfstoffe & Alchemie', icon: '💣', desc: 'Brandbomben, Raucherbomben und andere Wurfgeschosse' },
-    { id: 'munition', label: 'Munition', icon: '🏹', desc: 'Pfeile, Bolzen und andere Geschosse' },
-    { id: 'werkzeug', label: 'Werkzeug & Hilfsmittel', icon: '🔧', desc: 'Seil, Dietriche, Kletterausrüstung und Werkzeuge' },
-    { id: 'licht', label: 'Licht & Feuer', icon: '🔥', desc: 'Fackeln, Laternen und Lichtquellen' },
-    { id: 'proviant', label: 'Proviant', icon: '🍖', desc: 'Nahrung und Trinkwasser für die Reise' },
-    { id: 'besonderes', label: 'Besondere Gegenstände', icon: '✨', desc: 'Religiöse Symbole, Karten und besondere Fundstücke' },
-    { id: 'sonstiges', label: 'Sonstiges', icon: '📦', desc: 'Weitere Gegenstände' },
+    { id: 'weapons',  label: 'Waffen',  icon: '\u2694\uFE0F' },
+    { id: 'armor',    label: 'Rüstung', icon: '\uD83D\uDEE1\uFE0F' },
+    { id: 'shields',  label: 'Schilde', icon: '\uD83D\uDEE1\uFE0F' },
+    ...Object.entries(ITEM_SUBCATEGORIES)
+      .filter(([k]) => k !== 'krankheit')
+      .map(([id, { label, icon }]) => ({ id, label, icon })),
+    { id: 'sonstiges', label: 'Sonstiges', icon: '\uD83D\uDCE6' },
   ]
 
   const categorizedItems = {}
   for (const item of otherItems) {
-    const cat = categorize(item)
+    const cat = categorizeItem(item)
     if (!categorizedItems[cat]) categorizedItems[cat] = []
     categorizedItems[cat].push(item)
   }
@@ -537,7 +455,6 @@ function InventoryPanel({ sendMessage }) {
     }
 
     // For other actions (drop, transfer), send to GM
-    const info = lookupItemInfo(item.name)
     const ACTION_LABELS = { use: 'Benutzen', equip: 'Anlegen', unequip: 'Ablegen', transfer: 'Übergeben', drop: 'Fallen lassen' }
     sendMessage?.({
       type: 'action_request',
@@ -875,10 +792,9 @@ function InventoryPanel({ sendMessage }) {
   }
 
   const renderItemCard = (item, i, showActions = true) => {
-    const Icon = getItemIcon(item.name)
-    const info = lookupItemInfo(item.name)
+    const Icon = getItemIcon(item)
     const isExpanded = expandedItem === `${item.name}_${i}`
-    const catColor = getCategoryColor(info)
+    const catColor = getCategoryColor(item)
     const actions = showActions ? getAvailableActions(item, inventory, myCharacter?.special_abilities) : []
 
     return (
@@ -900,7 +816,7 @@ function InventoryPanel({ sendMessage }) {
                 <Badge variant="default" size="sm">x{item.quantity || 1}</Badge>
                 {item.equipped && <Badge variant="gold" size="sm">Angelegt</Badge>}
               </div>
-              {info && <p className="text-[10px] text-dsa-parchment-dark/60 mt-0.5">{info.category}</p>}
+              {item.category && <p className="text-[10px] text-dsa-parchment-dark/60 mt-0.5">{item.category}</p>}
             </div>
           </button>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -916,21 +832,18 @@ function InventoryPanel({ sendMessage }) {
 
         {isExpanded && (
           <div className="px-4 pb-4 border-t border-dsa-bg-medium pt-3 space-y-3">
-            {info ? (
-              <p className="text-sm text-dsa-parchment/70 leading-relaxed">{info.desc}</p>
+            {item.description ? (
+              <p className="text-sm text-dsa-parchment/70 leading-relaxed">{item.description}</p>
             ) : (
               <p className="text-sm text-dsa-parchment-dark italic">Keine Beschreibung verfügbar.</p>
             )}
 
-            {info?.effect && (
-              <div className="bg-dsa-bg rounded-sm border border-dsa-bg-medium px-3 py-2 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] text-dsa-parchment-dark uppercase tracking-wider">Wirkung: </span>
-                  <span className="text-xs text-dsa-parchment">{info.effect}</span>
-                </div>
-                {info.actionCost && (
-                  <Badge variant="default" size="sm">{info.actionCost}</Badge>
-                )}
+            {item.effects && Object.keys(item.effects).length > 0 && (
+              <div className="bg-dsa-bg rounded-sm border border-dsa-bg-medium px-3 py-2">
+                <span className="text-[10px] text-dsa-parchment-dark uppercase tracking-wider">Wirkung: </span>
+                <span className="text-xs text-dsa-parchment">
+                  {Object.entries(item.effects).filter(([k]) => k !== 'detail').map(([k, v]) => typeof v === 'boolean' ? k.replace(/_/g, ' ') : `${k.replace(/_/g,' ')}: ${v}`).join(', ')}
+                </span>
               </div>
             )}
 
@@ -1080,9 +993,14 @@ function InventoryPanel({ sendMessage }) {
                       <div className="col-span-2 text-center"></div>
                     </div>
                     {catItems.map((item, i) => {
-                      const info = lookupItemInfo(item.name)
-                      const effectStr = item.effects ? Object.entries(item.effects).filter(([k]) => k !== 'detail').map(([k, v]) => typeof v === 'boolean' ? k.replace(/_/g, ' ') : `${k.replace(/_/g,' ')}: ${v}`).join(', ') : (info?.effect || '')
-                      const isConsumable = !!(item.effects || info?.effect)
+                      const resolved = resolveItemEffect(item)
+                      const effectDesc = resolved.category === 'probe_bonus' ? resolved.effectSummary
+                        : resolved.diceFormula ? `${resolved.diceFormula} ${resolved.category === 'heal' ? 'LeP' : resolved.category === 'restore' ? 'AsP' : resolved.category === 'damage' ? 'SP' : ''}`
+                        : resolved.effectSummary || ''
+                      const pb = item.effects?.probe_bonus
+                      const isCombatOnly = item.usable_in_combat && (resolved.category === 'damage' || resolved.steps?.some(s => s.type === 'smoke' || s.type === 'stun'))
+                      const isProbeOnly = !!pb
+                      const isUsable = !isCombatOnly && !isProbeOnly && (item.usable === true || item.usable_in_combat === true || !!(item.effects && Object.keys(item.effects).length > 0))
                       return (
                         <div key={i} className="grid grid-cols-12 gap-1 px-3 py-1 hover:bg-dsa-bg-light/10 transition items-center border-t border-dsa-bg-medium/20">
                           <button
@@ -1090,13 +1008,29 @@ function InventoryPanel({ sendMessage }) {
                             className="col-span-4 flex items-center gap-1.5 min-w-0 text-left group"
                           >
                             <span className="text-xs">{getItemEmoji(item.name)}</span>
-                            <span className="text-[11px] text-dsa-parchment group-hover:text-dsa-gold transition-colors truncate">{item.name}</span>
+                            <div className="min-w-0">
+                              <span className="text-[11px] text-dsa-parchment group-hover:text-dsa-gold transition-colors truncate block">{item.name}</span>
+                              <div className="flex items-center gap-1 flex-wrap">
+                                {item.usable_in_combat && (
+                                  <span className="text-[8px] px-1 py-px rounded bg-red-900/30 text-red-400 border border-red-800/20 leading-tight">Kampf</span>
+                                )}
+                                {pb && (
+                                  <span className="text-[8px] px-1 py-px rounded bg-blue-900/30 text-blue-400 border border-blue-800/20 leading-tight">Probe: {pb.talent}</span>
+                                )}
+                                {item.consumable && (
+                                  <span className="text-[8px] px-1 py-px rounded bg-amber-900/30 text-amber-400 border border-amber-800/20 leading-tight">Verbrauch</span>
+                                )}
+                                {item.usable && !item.usable_in_combat && !pb && !item.consumable && (
+                                  <span className="text-[8px] px-1 py-px rounded bg-dsa-bg-medium text-dsa-parchment-dark border border-dsa-bg-light/20 leading-tight">Nutzbar</span>
+                                )}
+                              </div>
+                            </div>
                           </button>
                           <div className="col-span-1 text-center text-[11px] font-mono text-dsa-parchment">{item.quantity || 1}</div>
                           <div className="col-span-1 text-center text-[10px] font-mono text-dsa-parchment-dark/50">{item.weight ? ((item.weight * (item.quantity || 1)) === item.weight ? `${item.weight}` : `${(item.weight * (item.quantity || 1)).toFixed(1)}`) : '\u2014'}</div>
-                          <div className="col-span-4 text-[10px] text-dsa-parchment-dark truncate">{effectStr.slice(0, 50)}</div>
+                          <div className="col-span-4 text-[10px] text-dsa-parchment-dark truncate">{effectDesc.slice(0, 60)}</div>
                           <div className="col-span-2 flex items-center justify-end gap-0.5">
-                            {isConsumable && (
+                            {isUsable && (
                               <button onClick={() => openActionModal(item, { id: 'use', label: 'Benutzen' })}
                                 className="text-[8px] px-1 py-0.5 bg-dsa-gold/10 text-dsa-gold rounded hover:bg-dsa-gold/20 transition">
                                 Nutzen
@@ -1156,18 +1090,17 @@ function InventoryPanel({ sendMessage }) {
       >
         {actionModal && (() => {
           const { item, action, quantity, maxQuantity } = actionModal
-          const info = lookupItemInfo(item.name)
 
           return (
             <div className="space-y-4">
               {/* What */}
               <div className="bg-dsa-bg rounded border border-dsa-bg-medium p-4 flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-sm bg-dsa-bg-light flex items-center justify-center ${getCategoryColor(info)}`}>
+                <div className={`w-10 h-10 rounded-sm bg-dsa-bg-light flex items-center justify-center ${getCategoryColor(item)}`}>
                   <Package className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="text-sm font-semibold text-dsa-parchment">{item.name}</div>
-                  {info && <div className="text-[10px] text-dsa-parchment-dark">{info.category}</div>}
+                  {item.category && <div className="text-[10px] text-dsa-parchment-dark">{item.category}</div>}
                 </div>
               </div>
 
@@ -1178,7 +1111,7 @@ function InventoryPanel({ sendMessage }) {
                   {action.icon ? <action.icon className="w-4 h-4 text-dsa-gold" /> : <Package className="w-4 h-4 text-dsa-gold" />}
                   <span className="text-sm text-dsa-parchment font-medium">{action.label}</span>
                   <Badge variant="default" size="sm" className="ml-auto">
-                    {action.actionCostOverride || info?.actionCost || '1 Aktion'}
+                    {action.actionCostOverride || '1 Aktion'}
                   </Badge>
                 </div>
                 {action.desc && <p className="text-xs text-dsa-parchment/60 mt-1">{action.desc}</p>}

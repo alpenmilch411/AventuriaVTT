@@ -106,14 +106,27 @@
     "optolith_id": "P_6",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
+    "combat_techniques": {
+      "Raufen": 6,
+      "Dolche": 6
+    },
+    "skills": {
+      "Heilkunde Wunden": 8,
+      "Heilkunde Krankheiten": 6,
+      "Heilkunde Gift": 6,
+      "Pflanzenkunde": 6,
+      "Alchimie": 4,
+      "Menschenkenntnis": 2,
+      "Überreden": 2,
+      "Sinnesschärfe": 2,
+      "Rechnen": 2
+    },
     "special_abilities": [],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Heiler.",
-    "ap_cost": 0,
+    "description": "Der Heiler versorgt Verwundete und Kranke mit seinem Wissen über Kräuter und Medizin.",
+    "ap_cost": 120,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -146,17 +159,33 @@
     "optolith_id": "P_8",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Bögen": 12,
+      "Dolche": 8,
+      "Wurfwaffen": 8,
+      "Raufen": 6
+    },
+    "skills": {
+      "Fährtensuchen": 6,
+      "Orientierung": 4,
+      "Schleichen": 4,
+      "Sinnesschärfe": 4,
+      "Tierkunde": 4,
+      "Pflanzenkunde": 4,
+      "Wildnisleben": 6,
+      "Körperbeherrschung": 2,
+      "Klettern": 2
+    },
+    "special_abilities": ["Scharfschütze"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Jäger.",
-    "ap_cost": 0,
+    "description": "Der Jäger lebt von der Jagd und kennt die Wildnis wie seine Westentasche.",
+    "ap_cost": 155,
     "compatible_species": [
       "Mensch",
-      "Halbelf"
+      "Halbelf",
+      "Elf"
     ]
   },
   {
@@ -166,17 +195,32 @@
     "optolith_id": "P_9",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Schwerter": 12,
+      "Stangenwaffen": 10,
+      "Raufen": 8,
+      "Dolche": 8
+    },
+    "skills": {
+      "Einschüchtern": 4,
+      "Körperbeherrschung": 4,
+      "Kraftakt": 6,
+      "Selbstbeherrschung": 4,
+      "Sinnesschärfe": 4,
+      "Kriegskunst": 4,
+      "Orientierung": 2,
+      "Wildnisleben": 2
+    },
+    "special_abilities": ["Wuchtschlag I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Krieger.",
-    "ap_cost": 0,
+    "description": "Der Krieger ist ein ausgebildeter Kämpfer, der sein Handwerk in der Armee oder einer Kriegerschule erlernt hat.",
+    "ap_cost": 175,
     "compatible_species": [
       "Mensch",
-      "Halbelf"
+      "Halbelf",
+      "Zwerg"
     ]
   },
   {
@@ -246,17 +290,32 @@
     "optolith_id": "P_13",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Schwerter": 10,
+      "Armbrüste": 8,
+      "Raufen": 8,
+      "Dolche": 8
+    },
+    "skills": {
+      "Einschüchtern": 4,
+      "Körperbeherrschung": 2,
+      "Kraftakt": 4,
+      "Zechen": 4,
+      "Orientierung": 2,
+      "Wildnisleben": 2,
+      "Handel": 2,
+      "Menschenkenntnis": 2
+    },
+    "special_abilities": ["Wuchtschlag I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Söldner.",
-    "ap_cost": 0,
+    "description": "Der Söldner kämpft für Sold und ist im Umgang mit verschiedenen Waffen geschult.",
+    "ap_cost": 130,
     "compatible_species": [
       "Mensch",
-      "Halbelf"
+      "Halbelf",
+      "Zwerg"
     ]
   },
   {
@@ -306,14 +365,29 @@
     "optolith_id": "P_16",
     "requires_magic": false,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Dolche": 10,
+      "Raufen": 8,
+      "Wurfwaffen": 6
+    },
+    "skills": {
+      "Gassenwissen": 6,
+      "Schleichen": 6,
+      "Taschendiebstahl": 6,
+      "Verbergen": 4,
+      "Sinnesschärfe": 4,
+      "Körperbeherrschung": 4,
+      "Klettern": 4,
+      "Menschenkenntnis": 2,
+      "Überreden": 2,
+      "Schlösserknacken": 4
+    },
+    "special_abilities": ["Finte I"],
     "spells": {},
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Streuner.",
-    "ap_cost": 0,
+    "description": "Der Streuner lebt von seiner Geschicklichkeit und seinem Witz in den Gassen der Städte.",
+    "ap_cost": 140,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -364,16 +438,36 @@
     "name": "Katzenhexer",
     "name_f": "Katzenhexe",
     "optolith_id": "P_19",
-    "requires_magic": false,
+    "requires_magic": true,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
-    "spells": {},
+    "combat_techniques": {
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Einschüchtern": 2,
+      "Körperbeherrschung": 4,
+      "Sinnesschärfe": 4,
+      "Überreden": 4,
+      "Betören": 4,
+      "Tierkunde": 4,
+      "Pflanzenkunde": 4,
+      "Magiekunde": 4,
+      "Sagen & Legenden": 2
+    },
+    "special_abilities": ["Tradition (Hexe)"],
+    "spells": {
+      "Balsam Salabunde": 6,
+      "Hexenkrallen": 6,
+      "Tiergestalt": 4,
+      "Adlerauge": 4,
+      "Odem Arcanum": 4,
+      "Blitz dich find": 4
+    },
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Katzenhexer.",
-    "ap_cost": 0,
+    "description": "Die Katzenhexe ist eine Hexe mit einem Katzenfamiliarus, geschickt und unberechenbar.",
+    "ap_cost": 280,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -384,7 +478,7 @@
     "name": "Krötenhexer",
     "name_f": "Krötenhexe",
     "optolith_id": "P_20",
-    "requires_magic": false,
+    "requires_magic": true,
     "requires_blessed": false,
     "combat_techniques": {},
     "skills": {},
@@ -404,7 +498,7 @@
     "name": "Rabenhexer",
     "name_f": "Rabenhexe",
     "optolith_id": "P_21",
-    "requires_magic": false,
+    "requires_magic": true,
     "requires_blessed": false,
     "combat_techniques": {},
     "skills": {},
@@ -444,19 +538,43 @@
     "name": "Graumagier",
     "name_f": "Graumagierin",
     "optolith_id": "P_23",
-    "requires_magic": false,
+    "requires_magic": true,
     "requires_blessed": false,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
-    "spells": {},
+    "combat_techniques": {
+      "Stangenwaffen": 8,
+      "Dolche": 6,
+      "Raufen": 6
+    },
+    "skills": {
+      "Magiekunde": 8,
+      "Sagen & Legenden": 4,
+      "Rechnen": 4,
+      "Sternkunde": 2,
+      "Alchimie": 4,
+      "Geschichtswissen": 2,
+      "Sinnesschärfe": 2,
+      "Willenskraft": 4,
+      "Selbstbeherrschung": 2
+    },
+    "special_abilities": ["Tradition (Gildenmagie)", "Zauber verbreiten"],
+    "spells": {
+      "Ignifaxius": 8,
+      "Fulminictus": 6,
+      "Balsam Salabunde": 6,
+      "Gardianum": 6,
+      "Odem Arcanum": 4,
+      "Flim Flam": 4,
+      "Horriphobus": 4,
+      "Paralysis": 4
+    },
     "liturgies": {},
     "source_book": "Grundregelwerk",
-    "description": "Profession: Graumagier.",
-    "ap_cost": 0,
+    "description": "Der Graumagier ist ein Gildenmagier, der keiner Akademie-Tradition fest zugeordnet ist und sich auf vielseitige Magie spezialisiert.",
+    "ap_cost": 294,
     "compatible_species": [
       "Mensch",
-      "Halbelf"
+      "Halbelf",
+      "Elf"
     ]
   },
   {
@@ -464,7 +582,7 @@
     "name": "Schwarzmagier",
     "name_f": "Schwarzmagierin",
     "optolith_id": "P_24",
-    "requires_magic": false,
+    "requires_magic": true,
     "requires_blessed": false,
     "combat_techniques": {},
     "skills": {},
@@ -484,7 +602,7 @@
     "name": "Weißmagier",
     "name_f": "Weißmagierin",
     "optolith_id": "P_25",
-    "requires_magic": false,
+    "requires_magic": true,
     "requires_blessed": false,
     "combat_techniques": {},
     "skills": {},
@@ -546,14 +664,33 @@
     "optolith_id": "P_28",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Hiebwaffen": 8,
+      "Raufen": 6
+    },
+    "skills": {
+      "Heilkunde Wunden": 6,
+      "Heilkunde Krankheiten": 6,
+      "Heilkunde Gift": 4,
+      "Pflanzenkunde": 6,
+      "Götter & Kulte": 6,
+      "Überreden": 4,
+      "Willenskraft": 4,
+      "Menschenkenntnis": 2,
+      "Tierkunde": 2
+    },
+    "special_abilities": ["Tradition (Perainekirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Balsam": 8,
+      "Heiliger Beistand": 6,
+      "Blendstrahl": 4,
+      "Friedvolle Aura": 4,
+      "Klarheit des Körpers": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Perainegeweihter.",
-    "ap_cost": 0,
+    "description": "Der Perainegeweihte dient der Göttin des Ackerbaus und der Heilkunde und widmet sich der Pflege von Kranken und Verwundeten.",
+    "ap_cost": 240,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -586,14 +723,33 @@
     "optolith_id": "P_30",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Schwerter": 8,
+      "Raufen": 6
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Rechtskunde": 6,
+      "Geschichtswissen": 4,
+      "Einschüchtern": 4,
+      "Willenskraft": 4,
+      "Menschenkenntnis": 4,
+      "Überreden": 4,
+      "Etikette": 2,
+      "Selbstbeherrschung": 2
+    },
+    "special_abilities": ["Tradition (Praioskirche)"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Bannstrahl": 8,
+      "Blendstrahl": 6,
+      "Heiliger Beistand": 6,
+      "Friedvolle Aura": 4,
+      "Schutz der Wehrlosen": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Praiosgeweihter.",
-    "ap_cost": 0,
+    "description": "Der Praiosgeweihte dient dem Sonnengott Praios und setzt sich für Ordnung, Recht und Wahrheit ein.",
+    "ap_cost": 248,
     "compatible_species": [
       "Mensch",
       "Halbelf"
@@ -606,14 +762,32 @@
     "optolith_id": "P_31",
     "requires_magic": false,
     "requires_blessed": true,
-    "combat_techniques": {},
-    "skills": {},
-    "special_abilities": [],
+    "combat_techniques": {
+      "Schwerter": 12,
+      "Schilde": 8,
+      "Raufen": 8
+    },
+    "skills": {
+      "Götter & Kulte": 6,
+      "Kriegskunst": 6,
+      "Einschüchtern": 4,
+      "Kraftakt": 4,
+      "Körperbeherrschung": 4,
+      "Willenskraft": 4,
+      "Selbstbeherrschung": 2,
+      "Etikette": 2
+    },
+    "special_abilities": ["Tradition (Rondrakirche)", "Wuchtschlag I"],
     "spells": {},
-    "liturgies": {},
+    "liturgies": {
+      "Heiliger Beistand": 6,
+      "Donnerkeil": 6,
+      "Waffe des Göttlichen": 4,
+      "Schutz der Wehrlosen": 4
+    },
     "source_book": "Grundregelwerk",
-    "description": "Profession: Rondrageweihter.",
-    "ap_cost": 0,
+    "description": "Der Rondrageweihte dient der Göttin des Kampfes und der Ehre. Er ist zugleich Priester und Krieger.",
+    "ap_cost": 260,
     "compatible_species": [
       "Mensch",
       "Halbelf"

@@ -131,20 +131,104 @@ def _load_json(filepath: Path) -> List[dict]:
     return data
 
 
+# ---------------------------------------------------------------------------
+# Seed record validation
+# ---------------------------------------------------------------------------
+REQUIRED_FIELDS: Dict[str, List[str]] = {
+    "weapons": ["id", "name", "combat_technique", "damage"],
+    "armor": ["id", "name", "rs", "be"],
+    "shields": ["id", "name", "pa_mod"],
+    "items": ["id", "name", "category"],
+    "spells": ["id", "name", "probe", "asp_cost"],
+    "liturgies": ["id", "name", "probe", "kap_cost"],
+    "talents": ["id", "name", "category", "probe"],
+    "special_abilities": ["id", "name", "category", "ap_cost"],
+    "creatures": ["id", "name", "attributes", "combat_values", "attacks"],
+    "species": ["id", "name", "lep_base"],
+    "cultures": ["id", "name"],
+    "professions": ["id", "name"],
+}
+
+# Map JSON filenames to validation entity types
+_FILE_TO_ENTITY: Dict[str, str] = {
+    "weapons.json": "weapons",
+    "armor.json": "armor",
+    "shields.json": "shields",
+    "items.json": "items",
+    "herbs_potions.json": "items",
+    "poisons_diseases.json": "items",
+    "spells.json": "spells",
+    "liturgies.json": "liturgies",
+    "talents.json": "talents",
+    "special_abilities.json": "special_abilities",
+    "creatures.json": "creatures",
+    "species.json": "species",
+    "cultures.json": "cultures",
+    "professions.json": "professions",
+}
+
+
+def _validate_record(entity_type: str, record: dict) -> List[str]:
+    """Validate a single seed record. Returns list of warning messages."""
+    warnings = []
+    required = REQUIRED_FIELDS.get(entity_type, [])
+    record_id = record.get("id", "<unknown>")
+    for field in required:
+        val = record.get(field)
+        if val is None or val == "":
+            warnings.append(f"[{entity_type}] {record_id}: missing required field '{field}'")
+    return warnings
+
+
+def _validate_cross_references(session: Session, all_records: Dict[str, List[dict]]) -> List[str]:
+    """Cross-reference validation after all upserts. Returns list of warnings."""
+    warnings = []
+
+    # Collect all known combat technique names from the DB
+    technique_names: Set[str] = set()
+    for t in session.query(CombatTechniqueTemplate).all():
+        technique_names.add(t.name)
+
+    # Check weapon combat_technique references
+    for rec in all_records.get("weapons.json", []):
+        ct = rec.get("combat_technique")
+        if ct and ct not in technique_names:
+            warnings.append(
+                f"[xref] weapon '{rec.get('id')}': combat_technique '{ct}' not found in CombatTechniqueTemplate"
+            )
+
+    # Check SA applicable_techniques references
+    for rec in all_records.get("special_abilities.json", []):
+        for tech in (rec.get("applicable_techniques") or []):
+            if tech not in technique_names:
+                warnings.append(
+                    f"[xref] SA '{rec.get('id')}': applicable_technique '{tech}' not found in CombatTechniqueTemplate"
+                )
+
+    return warnings
+
+
 def _model_columns(model: type) -> Set[str]:
     """Return the set of column names for a SQLAlchemy model."""
     mapper = inspect(model)
     return {col.key for col in mapper.column_attrs}
 
 
-def _upsert_batch(session: Session, model: type, records: List[dict]) -> int:
-    """Insert-or-update records. Works with SQLite (merge-based)."""
+def _upsert_batch(session: Session, model: type, records: List[dict], entity_type: Optional[str] = None) -> int:
+    """Insert-or-update records. Works with SQLite (merge-based).
+    If entity_type is given, validates each record and logs warnings.
+    """
     if not records:
         return 0
 
     valid_cols = _model_columns(model)
     count = 0
     for rec in records:
+        # Validate before upsert
+        if entity_type:
+            for w in _validate_record(entity_type, rec):
+                log.warning("  VALIDATION: %s", w)
+
         row = {k: v for k, v in rec.items() if k in valid_cols}
         record_id = row.get("id")
         if record_id is None:
@@ -199,7 +283,7 @@ def _seed_combat_techniques(session: Session):
     techniques = [
         # Nahkampf (Melee)
         {"id": "kt_dolche", "name": "Dolche", "category": "nahkampf", "primary_attribute": ["GE"], "improvement_cost": "B", "can_parry": True, "parry_restrictions": "Kann nicht gegen Kettenwaffen, Stangenwaffen, Zweihandhiebwaffen und Zweihandschwerter parieren"},
-        {"id": "kt_faecher", "name": "Faecher", "category": "nahkampf", "primary_attribute": ["GE"], "improvement_cost": "C", "can_parry": True},
+        {"id": "kt_faecher", "name": "Fächer", "category": "nahkampf", "primary_attribute": ["GE"], "improvement_cost": "C", "can_parry": True},
         {"id": "kt_fechtwaffen", "name": "Fechtwaffen", "category": "nahkampf", "primary_attribute": ["GE"], "improvement_cost": "C", "can_parry": True, "parry_restrictions": "Kann nicht gegen Kettenwaffen, Stangenwaffen, Zweihandhiebwaffen und Zweihandschwerter parieren", "special_rules": "Verteidigungsproben gegen Fechtwaffen erhalten -1"},
         {"id": "kt_hiebwaffen", "name": "Hiebwaffen", "category": "nahkampf", "primary_attribute": ["KK"], "improvement_cost": "C", "can_parry": True},
         {"id": "kt_kettenwaffen", "name": "Kettenwaffen", "category": "nahkampf", "primary_attribute": ["KK"], "improvement_cost": "C", "can_parry": False, "parry_restrictions": "Keine Parade moeglich"},
@@ -208,16 +292,16 @@ def _seed_combat_techniques(session: Session):
         {"id": "kt_raufen", "name": "Raufen", "category": "nahkampf", "primary_attribute": ["GE", "KK"], "improvement_cost": "B", "can_parry": True},
         {"id": "kt_schilde", "name": "Schilde", "category": "nahkampf", "primary_attribute": ["KK"], "improvement_cost": "C", "can_parry": True, "special_rules": "Schilde als Waffen nutzen"},
         {"id": "kt_schwerter", "name": "Schwerter", "category": "nahkampf", "primary_attribute": ["GE", "KK"], "improvement_cost": "C", "can_parry": True},
-        {"id": "kt_spiesswaffen", "name": "Spiesswaffen", "category": "nahkampf", "primary_attribute": ["KK", "GE"], "improvement_cost": "B", "can_parry": True},
+        {"id": "kt_spiesswaffen", "name": "Spießwaffen", "category": "nahkampf", "primary_attribute": ["KK", "GE"], "improvement_cost": "B", "can_parry": True},
         {"id": "kt_stangenwaffen", "name": "Stangenwaffen", "category": "nahkampf", "primary_attribute": ["GE", "KK"], "improvement_cost": "C", "can_parry": True},
         {"id": "kt_zweihandhiebwaffen", "name": "Zweihandhiebwaffen", "category": "nahkampf", "primary_attribute": ["KK"], "improvement_cost": "C", "can_parry": True},
         {"id": "kt_zweihandschwerter", "name": "Zweihandschwerter", "category": "nahkampf", "primary_attribute": ["KK"], "improvement_cost": "C", "can_parry": True},
         # Alternative names used in our weapon DB
-        {"id": "kt_aexte", "name": "Aexte", "category": "nahkampf", "primary_attribute": ["KK"], "improvement_cost": "C", "can_parry": True},
+        {"id": "kt_aexte", "name": "Äxte", "category": "nahkampf", "primary_attribute": ["KK"], "improvement_cost": "C", "can_parry": True},
         # Fernkampf (Ranged)
-        {"id": "kt_armbrueste", "name": "Armbrueste", "category": "fernkampf", "primary_attribute": ["FF"], "improvement_cost": "B", "can_parry": False},
+        {"id": "kt_armbrueste", "name": "Armbrüste", "category": "fernkampf", "primary_attribute": ["FF"], "improvement_cost": "B", "can_parry": False},
         {"id": "kt_blasrohre", "name": "Blasrohre", "category": "fernkampf", "primary_attribute": ["FF"], "improvement_cost": "B", "can_parry": False},
-        {"id": "kt_boegen", "name": "Boegen", "category": "fernkampf", "primary_attribute": ["FF"], "improvement_cost": "C", "can_parry": False},
+        {"id": "kt_boegen", "name": "Bögen", "category": "fernkampf", "primary_attribute": ["FF"], "improvement_cost": "C", "can_parry": False},
         {"id": "kt_diskusse", "name": "Diskusse", "category": "fernkampf", "primary_attribute": ["FF"], "improvement_cost": "B", "can_parry": False},
         {"id": "kt_schleudern", "name": "Schleudern", "category": "fernkampf", "primary_attribute": ["FF"], "improvement_cost": "B", "can_parry": False},
         {"id": "kt_wurfwaffen", "name": "Wurfwaffen", "category": "fernkampf", "primary_attribute": ["FF"], "improvement_cost": "B", "can_parry": False},
@@ -226,9 +310,12 @@ def _seed_combat_techniques(session: Session):
     for tech_data in techniques:
         existing = session.query(CombatTechniqueTemplate).filter_by(id=tech_data["id"]).first()
         if existing:
-            continue
-        tech = CombatTechniqueTemplate(**tech_data)
-        session.add(tech)
+            for k, v in tech_data.items():
+                if k != "id":
+                    setattr(existing, k, v)
+        else:
+            tech = CombatTechniqueTemplate(**tech_data)
+            session.add(tech)
     log.info("  Seeded %d combat techniques", len(techniques))
 
 
@@ -318,13 +405,14 @@ def _create_test_characters(session: Session, user_ids: Dict[str, str]):
             "advantages": ["Zäher Hund", "Hohe Zähigkeit"],
             "disadvantages": ["Jähzorn", "Goldgier"],
             "basis_inventory": [
-                {"name": "Streitaxt", "quantity": 1, "weight": 1.5, "equipped": True},
-                {"name": "Buckler", "quantity": 1, "weight": 0.5, "equipped": True},
-                {"name": "Kettenhemd", "quantity": 1, "weight": 8.0, "equipped": True},
-                {"name": "Proviant (7 Tage)", "quantity": 1, "weight": 2.0},
-                {"name": "Schlafsack", "quantity": 1, "weight": 1.0},
-                {"name": "Seil (10 Schritt)", "quantity": 1, "weight": 1.0},
-                {"name": "Silbertaler", "quantity": 47, "weight": 0.3},
+                {"name": "Streitaxt", "template_id": "streitaxt", "quantity": 1, "weight": 1.5, "equipped": True},
+                {"name": "Buckler", "template_id": "faust_buckler", "quantity": 1, "weight": 0.5, "equipped": True},
+                {"name": "Kettenhemd", "template_id": "kettenhemd", "quantity": 1, "weight": 8.0, "equipped": True},
+                {"name": "Proviant (7 Tage)", "template_id": "proviant_tag", "quantity": 7, "weight": 2.0},
+                {"name": "Schlafsack", "template_id": "schlafsack", "quantity": 1, "weight": 1.0},
+                {"name": "Seil (10 Schritt)", "template_id": "seil", "quantity": 1, "weight": 1.0},
+                {"name": "Silbertaler", "template_id": "silbermuenze", "quantity": 47, "weight": 0.3},
+                {"name": "Elixier der Stärke", "template_id": "elixier_der_staerke", "quantity": 3, "weight": 0.2},
             ],
         },
         {
@@ -349,12 +437,12 @@ def _create_test_characters(session: Session, user_ids: Dict[str, str]):
             "advantages": ["Gutaussehend", "Zauberer"],
             "disadvantages": ["Neugier", "Körperliche Auffälligkeit (spitze Ohren)"],
             "basis_inventory": [
-                {"name": "Magierstab (Geweiht)", "quantity": 1, "weight": 1.5, "equipped": True},
-                {"name": "Elfische Reiserobe", "quantity": 1, "weight": 0.5, "equipped": True},
-                {"name": "Schreibzeug", "quantity": 1, "weight": 0.3},
-                {"name": "Heiltrank (schwach)", "quantity": 2, "weight": 0.1},
-                {"name": "Alraune (getrocknet)", "quantity": 1, "weight": 0.1},
-                {"name": "Silbertaler", "quantity": 35, "weight": 0.2},
+                {"name": "Magierstab (Geweiht)", "template_id": "kampfstab_waffe", "quantity": 1, "weight": 1.5, "equipped": True},
+                {"name": "Elfische Reiserobe", "template_id": "tuchruestung", "quantity": 1, "weight": 0.5, "equipped": True},
+                {"name": "Schreibzeug", "template_id": "schreibzeug", "quantity": 1, "weight": 0.3},
+                {"name": "Heiltrank (schwach)", "template_id": "heiltrank_klein", "quantity": 2, "weight": 0.1},
+                {"name": "Alraune (getrocknet)", "template_id": "alraune", "quantity": 1, "weight": 0.1},
+                {"name": "Silbertaler", "template_id": "silbermuenze", "quantity": 35, "weight": 0.2},
             ],
         },
         {
@@ -370,7 +458,7 @@ def _create_test_characters(session: Session, user_ids: Dict[str, str]):
             "bio": "Thorben dient der Göttin Peraine und wandert durch das Land, um Kranke zu heilen und den Schwachen beizustehen.",
             "attributes": {"MU": 12, "KL": 14, "IN": 13, "CH": 14, "FF": 11, "GE": 11, "KO": 13, "KK": 11},
             "derived_values": {"LeP_max": 28, "AsP_max": 0, "KaP_max": 28, "INI_basis": 9, "GS": 8, "AW": 5, "SK": 2, "ZK": 2, "Schip": 3},
-            "combat_values": {"weapons": [{"name": "Streitkolben", "technique": "Hiebwaffen", "AT": 12, "PA": 8, "TP": "1W6+4", "reach": "kurz"}], "RS": 3, "BE": 2},
+            "combat_values": {"weapons": [{"name": "Streitkolben", "technique": "Hiebwaffen", "AT": 12, "PA": 8, "TP": "1W6+4", "reach": "mittel"}], "RS": 3, "BE": 2},
             "combat_techniques": {"Hiebwaffen": 12, "Schilde": 8, "Raufen": 6},
             "talents": {"heilkunde_wunden": 10, "heilkunde_krankheiten": 8, "heilkunde_gift": 6, "pflanzenkunde": 8, "goetter_und_kulte": 10, "ueberreden": 6, "willenskraft": 8, "menschenkenntnis": 6},
             "spells": {},
@@ -379,11 +467,11 @@ def _create_test_characters(session: Session, user_ids: Dict[str, str]):
             "advantages": ["Geweihter", "Hohe Karmalkraft I"],
             "disadvantages": ["Prinzipientreue", "Mitleid"],
             "basis_inventory": [
-                {"name": "Streitkolben", "quantity": 1, "weight": 1.0, "equipped": True},
-                {"name": "Lederharnisch", "quantity": 1, "weight": 5.0, "equipped": True},
-                {"name": "Peraine-Heilbeutel", "quantity": 1, "weight": 0.5},
-                {"name": "Heilkräuter (verschiedene)", "quantity": 5, "weight": 0.2},
-                {"name": "Silbertaler", "quantity": 20, "weight": 0.1},
+                {"name": "Streitkolben", "template_id": "streitkolben", "quantity": 1, "weight": 1.0, "equipped": True},
+                {"name": "Lederharnisch", "template_id": "lederruestung", "quantity": 1, "weight": 5.0, "equipped": True},
+                {"name": "Peraine-Heilbeutel", "template_id": "verbandszeug", "quantity": 1, "weight": 0.5},
+                {"name": "Heilkräuter (verschiedene)", "template_id": "heilkraeuterpaeckchen", "quantity": 5, "weight": 0.2},
+                {"name": "Silbertaler", "template_id": "silbermuenze", "quantity": 20, "weight": 0.1},
             ],
         },
         {
@@ -411,14 +499,14 @@ def _create_test_characters(session: Session, user_ids: Dict[str, str]):
             "advantages": ["Fuchssinn", "Dunkelsicht"],
             "disadvantages": ["Neugier", "Platzangst"],
             "basis_inventory": [
-                {"name": "Langbogen", "quantity": 1, "weight": 0.5, "equipped": True},
-                {"name": "Jagdmesser", "quantity": 1, "weight": 0.3, "equipped": True},
-                {"name": "Lederkleidung", "quantity": 1, "weight": 2.0, "equipped": True},
-                {"name": "Pfeile", "quantity": 40, "weight": 1.0},
-                {"name": "Seil (10 Schritt)", "quantity": 1, "weight": 1.0},
-                {"name": "Feuerstahl", "quantity": 1, "weight": 0.1},
-                {"name": "Proviant (5 Tage)", "quantity": 1, "weight": 1.5},
-                {"name": "Silbertaler", "quantity": 25, "weight": 0.15},
+                {"name": "Langbogen", "template_id": "langbogen", "quantity": 1, "weight": 0.5, "equipped": True},
+                {"name": "Jagdmesser", "template_id": "dolch", "quantity": 1, "weight": 0.3, "equipped": True},
+                {"name": "Lederkleidung", "template_id": "tuchruestung", "quantity": 1, "weight": 2.0, "equipped": True},
+                {"name": "Pfeile", "template_id": "pfeil", "quantity": 40, "weight": 1.0},
+                {"name": "Seil (10 Schritt)", "template_id": "seil", "quantity": 1, "weight": 1.0},
+                {"name": "Feuerstahl", "template_id": "feuerstein_stahl", "quantity": 1, "weight": 0.1},
+                {"name": "Proviant (5 Tage)", "template_id": "proviant_tag", "quantity": 5, "weight": 1.5},
+                {"name": "Silbertaler", "template_id": "silbermuenze", "quantity": 25, "weight": 0.15},
             ],
         },
     ]
@@ -554,8 +642,13 @@ def seed(database_url: Optional[str] = None) -> Dict[str, int]:
             conn.commit()
 
     results: Dict[str, int] = {}
+    all_records: Dict[str, List[dict]] = {}
 
     with Session(engine) as session:
+        # Seed combat techniques first (needed for cross-ref validation)
+        log.info("Seeding combat techniques...")
+        _seed_combat_techniques(session)
+
         # Seed databank
         for filename, (model, _json_cols) in SEED_MAP.items():
             filepath = SEED_DIR / filename
@@ -565,16 +658,24 @@ def seed(database_url: Optional[str] = None) -> Dict[str, int]:
                 continue
 
             records = _load_json(filepath)
+            all_records[filename] = records
+            entity_type = _FILE_TO_ENTITY.get(filename)
             log.info("Upserting %d records from %s into %s ...",
                      len(records), filename, model.__tablename__)
 
-            count = _upsert_batch(session, model, records)
+            count = _upsert_batch(session, model, records, entity_type=entity_type)
             results[filename] = count
             log.info("  -> %d rows affected", count)
 
-        # Seed combat techniques (from DSA Regel-Wiki)
-        log.info("Seeding combat techniques...")
-        _seed_combat_techniques(session)
+        # Cross-reference validation
+        log.info("Running cross-reference validation...")
+        xref_warnings = _validate_cross_references(session, all_records)
+        if xref_warnings:
+            for w in xref_warnings:
+                log.warning("  XREF: %s", w)
+            log.warning("  %d cross-reference issue(s) found", len(xref_warnings))
+        else:
+            log.info("  All cross-references OK")
 
         # Seed wiki pages
         log.info("Seeding wiki pages...")

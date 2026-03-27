@@ -1,22 +1,38 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { User, MessageSquare, Heart, Sparkles, Sun, Shield, ShieldAlert, Swords, Footprints, Plus, Minus, Send, Star, Flame, Brain, Eye, Crown, Hand, Wind, HeartPulse, Hammer, AlertTriangle, Crosshair, Gauge, Timer, ChevronRight, ChevronDown, X, Info, HelpCircle, BookOpen } from 'lucide-react'
+import { User, MessageSquare, Heart, Sparkles, Sun, Shield, ShieldAlert, Swords, Footprints, Plus, Minus, Send, Star, Flame, Brain, Eye, Crown, Hand, Wind, HeartPulse, Hammer, AlertTriangle, Crosshair, Gauge, Timer, ChevronRight, ChevronDown, X, Info, HelpCircle, BookOpen, Clock, Pencil, Check } from 'lucide-react'
 import useSessionStore from '../../stores/sessionStore'
 import useCharacterStore from '../../stores/characterStore'
 import useAuthStore from '../../stores/authStore'
 import { getConditions, getVitalsFrom, getMaxVitals } from '../../utils/safeData'
 import { getConditionModifier, getConditionModifierGross, CONDITIONS as CONDITIONS_REF } from '../../engine/conditionsEngine'
+import { computeCombatStats } from '../../engine/combatComputation'
 import { COMBAT_SPECIAL_ABILITIES } from '../../engine/weaponProperties'
+import { isBuffActive } from '../../engine/buffSystem'
 import ProgressBar from '../../components/common/ProgressBar'
 import Badge from '../../components/common/Badge'
+import ActiveBuffs from '../../components/common/ActiveBuffs'
 import Modal from '../../components/common/Modal'
 import clsx from 'clsx'
 
 function PlayerOverview({ sendMessage, gmControls }) {
   const players = useSessionStore((s) => s.players)
   const allCharacters = useCharacterStore((s) => s.allCharacters)
+  const token = useAuthStore((s) => s.token)
 
   const [selectedPlayer, setSelectedPlayer] = useState(null)
+
+  // Load databank templates once for combat stat computation (shared across all player views)
+  const [databankTemplates, setDatabankTemplates] = useState({ combatTechTemplates: [], armorTemplates: [], shieldTemplates: [], weaponTemplates: [] })
+  useEffect(() => {
+    if (!token) return
+    const h = { Authorization: `Bearer ${token}` }
+    const load = (path) => fetch(`/api/databank/${path}`, { headers: h })
+      .then(r => r.ok ? r.json() : []).then(d => Array.isArray(d) ? d : d.items || [])
+      .catch(() => [])
+    Promise.all([load('combat_techniques'), load('armor'), load('shields'), load('weapons')])
+      .then(([ct, ar, sh, wp]) => setDatabankTemplates({ combatTechTemplates: ct, armorTemplates: ar, shieldTemplates: sh, weaponTemplates: wp }))
+  }, [token])
 
   // All players who have joined — merge with character data, connected first
   const allPlayers = players
@@ -69,6 +85,7 @@ function PlayerOverview({ sendMessage, gmControls }) {
             sendMessage={sendMessage}
             gmControls={gmControls}
             onClose={() => setSelectedPlayer(null)}
+            databankTemplates={databankTemplates}
           />
         )}
       </Modal>
@@ -82,6 +99,8 @@ function PlayerCard({ player, onClick }) {
   const char = player.character || {}
   const v = player.vitals
   const mv = player.maxVitals
+  const allBuffs = useCharacterStore((s) => s.activeBuffs)
+  const charBuffs = allBuffs.filter(b => b.characterId === player.characterId && isBuffActive(b))
   const lepPct = mv.lepMax > 0 ? v.lep / mv.lepMax : 1
   const isCritical = lepPct < 0.25
   const isOnline = !!player.connected
@@ -152,6 +171,22 @@ function PlayerCard({ player, onClick }) {
               </span>
             )
           })}
+        </div>
+      )}
+
+      {charBuffs.length > 0 && (
+        <div className="flex flex-wrap gap-0.5 mt-1">
+          {charBuffs.map(b => (
+            <span key={b.id} className={clsx(
+              'text-[8px] px-1 py-0.5 rounded border inline-flex items-center gap-0.5',
+              (b.value || 0) > 0
+                ? 'bg-dsa-gold/10 border-dsa-gold/30 text-dsa-gold'
+                : 'bg-dsa-mana/10 border-dsa-mana/30 text-dsa-mana',
+            )}>
+              <Sparkles className="w-2 h-2" />
+              {b.value > 0 ? '+' : ''}{b.value} {b.stat}
+            </span>
+          ))}
         </div>
       )}
     </div>
@@ -345,14 +380,19 @@ function DetailStatCell({ label, val, icon: Icon, iconCls, conditions, statKey, 
 
 // ── Full detail view — GM's deep reference + quick actions ──
 
-function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
+function PlayerDetailView({ player, sendMessage, gmControls, onClose, databankTemplates }) {
   const char = player.character || {}
   const v = player.vitals
   const mv = player.maxVitals
   const attrs = char.attributes || {}
   const dv = char.derived_values || {}
-  const cv = char.combat_values || {}
   const conditions = player.conditions || []
+  const allBuffs = useCharacterStore((s) => s.activeBuffs)
+  const charBuffs = allBuffs.filter(b => b.characterId === player.characterId)
+
+  // Compute combat stats using the same pure function as the player-side hook
+  const charWithConditions = { ...char, conditions }
+  const computed = computeCombatStats(charWithConditions, databankTemplates || {}, charBuffs) || {}
   const isOnline = !!player.connected
   const sfs = char.special_abilities || []
   const advantages = char.advantages || []
@@ -365,6 +405,7 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
   const [sfPopup, setSfPopup] = useState(null)
   const [sfTemplates, setSfTemplates] = useState([])
   const [sfTemplatesLoaded, setSfTemplatesLoaded] = useState(false)
+  const armorTemplates = databankTemplates?.armorTemplates || []
 
   const token = useAuthStore((s) => s.token)
 
@@ -468,22 +509,22 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
     return results
   }
 
-  // Compute BE from armor
-  const rawBE = equippedArmor.reduce((s, a) => s + (a.be || 0), 0)
+  // Compute BE from armor (with template fallback for items without inline rs/be)
+  const matchArmorTpl = (name) => armorTemplates.find(t => name.toLowerCase().includes(t.name.toLowerCase().split(' ')[0]) || t.name.toLowerCase().includes(name.toLowerCase().split(' ')[0]))
+  const rawBE = equippedArmor.reduce((s, a) => s + (a.be ?? matchArmorTpl(a.name)?.be ?? 0), 0)
   const beRed = sfs.some(s => /stungsgew.*II/i.test(s)) ? 2 : sfs.some(s => /stungsgew/i.test(s)) ? 1 : 0
   const effBE = Math.max(0, rawBE - beRed)
-  const computedRS = equippedArmor.reduce((s, a) => s + (a.rs || 0), 0)
+  const computedRS = equippedArmor.reduce((s, a) => s + (a.rs ?? matchArmorTpl(a.name)?.rs ?? 0), 0)
 
-  // Resolve combat values — prefer cv/dv from backend, fall back to computed
-  const resolveVal = (key) => cv[key] ?? dv[key] ?? dv[`${key}_basis`] ?? null
-  const combatAT = resolveVal('AT')
-  const combatPA = resolveVal('PA')
-  const combatFK = resolveVal('FK')
-  const combatAW = resolveVal('AW')
-  const combatINI = dv.INI_basis ?? resolveVal('INI')
-  const combatGS = dv.GS ?? resolveVal('GS')
-  const rs = computedRS || dv.RS || 0
-  const be = effBE || dv.BE || 0
+  // Combat values from shared computation (same formulas as player-side useCombatValues)
+  const combatAT = computed.at ?? 0
+  const combatPA = computed.pa ?? 0
+  const combatFK = computed.fk
+  const combatAW = computed.aw ?? 0
+  const combatINI = computed.ini ?? 0
+  const combatGS = computed.gs ?? 0
+  const rs = computed.rs ?? (computedRS || dv.RS || 0)
+  const be = computed.be ?? (effBE || dv.BE || 0)
 
   // Effective val quality interpretation
   const valInterpret = (val) => {
@@ -840,6 +881,9 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
         </div>
       </div>
 
+      {/* ── Active Buffs + GM Controls ── */}
+      <GmBuffPanel characterId={player.characterId} charBuffs={charBuffs} sendMessage={sendMessage} />
+
       {/* ── Vorteile & Nachteile ── */}
       {((Array.isArray(advantages) ? advantages.length : Object.keys(advantages).length) > 0 || (Array.isArray(disadvantages) ? disadvantages.length : Object.keys(disadvantages).length) > 0) && (
         <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden">
@@ -1051,6 +1095,187 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose }) {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+// ── GM Buff Management Panel (inline, not a modal) ──
+const BUFF_STATS = ['MU', 'KL', 'IN', 'CH', 'FF', 'GE', 'KO', 'KK', 'AT', 'PA', 'AW', 'FK', 'INI', 'GS', 'RS']
+
+function GmBuffPanel({ characterId, charBuffs, sendMessage }) {
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [editingBuff, setEditingBuff] = useState(null) // buff object being edited
+  const [formStat, setFormStat] = useState('KK')
+  const [formValue, setFormValue] = useState('2')
+  const [formDuration, setFormDuration] = useState('60')
+  const [formSource, setFormSource] = useState('')
+
+  const resetForm = () => {
+    setFormStat('KK')
+    setFormValue('2')
+    setFormDuration('60')
+    setFormSource('')
+    setShowAddForm(false)
+    setEditingBuff(null)
+  }
+
+  const handleAdd = () => {
+    const val = parseInt(formValue)
+    const dur = parseInt(formDuration)
+    if (isNaN(val) || val === 0 || isNaN(dur) || dur <= 0) return
+    sendMessage?.({
+      type: 'buff_apply',
+      payload: {
+        character_id: characterId,
+        stat: formStat,
+        value: val,
+        source: formSource.trim() || 'GM',
+        duration_minutes: dur,
+      },
+    })
+    resetForm()
+  }
+
+  const handleEdit = () => {
+    if (!editingBuff) return
+    const val = parseInt(formValue)
+    const dur = parseInt(formDuration)
+    if (isNaN(val) || val === 0 || isNaN(dur) || dur <= 0) return
+    // Remove old buff, apply new one
+    sendMessage?.({
+      type: 'buff_remove',
+      payload: { character_id: characterId, buff_id: editingBuff.id },
+    })
+    sendMessage?.({
+      type: 'buff_apply',
+      payload: {
+        character_id: characterId,
+        stat: formStat,
+        value: val,
+        source: formSource.trim() || editingBuff.source || 'GM',
+        duration_minutes: dur,
+      },
+    })
+    resetForm()
+  }
+
+  const handleRemove = (buffId) => {
+    sendMessage?.({
+      type: 'buff_remove',
+      payload: { character_id: characterId, buff_id: buffId },
+    })
+  }
+
+  const startEdit = (buff) => {
+    setEditingBuff(buff)
+    setFormStat(buff.stat)
+    setFormValue(String(buff.value))
+    // Compute remaining minutes
+    const remainMin = Math.max(1, Math.round((buff.expiresAt - Date.now()) / 60000))
+    setFormDuration(String(remainMin))
+    setFormSource(buff.source || '')
+    setShowAddForm(true)
+  }
+
+  return (
+    <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-dsa-bg-medium/50 bg-dsa-gold/10">
+        <Sparkles className="w-4 h-4 text-dsa-gold" />
+        <span className="text-xs font-bold uppercase tracking-wider text-dsa-gold">Aktive Effekte</span>
+        <span className="text-[10px] font-mono text-dsa-parchment-dark/40">{charBuffs.length}</span>
+        <button
+          onClick={() => { if (showAddForm && !editingBuff) resetForm(); else { setEditingBuff(null); setShowAddForm(true) } }}
+          className="ml-auto text-dsa-gold/60 hover:text-dsa-gold transition-colors"
+          title="Buff hinzufuegen"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="p-2.5 space-y-2">
+        {/* Active buffs with edit/remove controls */}
+        {charBuffs.length > 0 ? (
+          <ActiveBuffs
+            characterId={characterId}
+            detailed
+            sendMessage={sendMessage}
+            onRemove={handleRemove}
+            onEdit={startEdit}
+          />
+        ) : !showAddForm && (
+          <p className="text-xs text-dsa-parchment-dark/40 italic py-1 text-center">Keine aktiven Effekte</p>
+        )}
+
+        {/* Inline add/edit form */}
+        {showAddForm && (
+          <div className="border border-dsa-gold/20 rounded-sm p-2.5 bg-dsa-gold/5 space-y-2">
+            <div className="text-[10px] text-dsa-gold font-bold uppercase tracking-wider">
+              {editingBuff ? 'Effekt bearbeiten' : 'Neuer Effekt'}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {/* Stat selector */}
+              <div>
+                <label className="text-[9px] text-dsa-parchment-dark/60 uppercase">Wert</label>
+                <select
+                  value={formStat}
+                  onChange={(e) => setFormStat(e.target.value)}
+                  className="w-full mt-0.5 text-xs bg-dsa-bg border border-dsa-bg-medium rounded-sm px-2 py-1 text-dsa-parchment focus:border-dsa-gold/50 outline-none"
+                >
+                  {BUFF_STATS.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              {/* Value */}
+              <div>
+                <label className="text-[9px] text-dsa-parchment-dark/60 uppercase">Modifikator</label>
+                <input
+                  type="number"
+                  value={formValue}
+                  onChange={(e) => setFormValue(e.target.value)}
+                  className="w-full mt-0.5 text-xs bg-dsa-bg border border-dsa-bg-medium rounded-sm px-2 py-1 text-dsa-parchment font-mono focus:border-dsa-gold/50 outline-none"
+                  placeholder="+2"
+                />
+              </div>
+              {/* Duration */}
+              <div>
+                <label className="text-[9px] text-dsa-parchment-dark/60 uppercase">Dauer (Min)</label>
+                <input
+                  type="number"
+                  value={formDuration}
+                  onChange={(e) => setFormDuration(e.target.value)}
+                  min="1"
+                  className="w-full mt-0.5 text-xs bg-dsa-bg border border-dsa-bg-medium rounded-sm px-2 py-1 text-dsa-parchment font-mono focus:border-dsa-gold/50 outline-none"
+                  placeholder="60"
+                />
+              </div>
+              {/* Source */}
+              <div>
+                <label className="text-[9px] text-dsa-parchment-dark/60 uppercase">Quelle</label>
+                <input
+                  type="text"
+                  value={formSource}
+                  onChange={(e) => setFormSource(e.target.value)}
+                  className="w-full mt-0.5 text-xs bg-dsa-bg border border-dsa-bg-medium rounded-sm px-2 py-1 text-dsa-parchment focus:border-dsa-gold/50 outline-none"
+                  placeholder="z.B. Elixier der Staerke"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={editingBuff ? handleEdit : handleAdd}
+                className="flex items-center gap-1 px-3 py-1 text-[10px] font-bold text-dsa-bg bg-dsa-gold rounded-sm hover:bg-dsa-gold/80 transition-colors"
+              >
+                <Check className="w-3 h-3" />
+                {editingBuff ? 'Speichern' : 'Hinzufuegen'}
+              </button>
+              <button
+                onClick={resetForm}
+                className="text-[10px] text-dsa-parchment-dark/60 hover:text-dsa-parchment"
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

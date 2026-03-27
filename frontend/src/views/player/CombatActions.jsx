@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import useCombatStore from '../../stores/combatStore'
 import useCharacterStore from '../../stores/characterStore'
+import useCombatValues from '../../hooks/useCombatValues'
 import { getConditionModifier } from '../../engine/conditionsEngine'
 import InitiativeBar from '../../components/common/InitiativeBar'
 import ProgressBar from '../../components/common/ProgressBar'
@@ -39,48 +40,8 @@ function CombatActions({ sendMessage }) {
   const conditions = useCharacterStore((s) => s.myCharacter?.conditions || [])
   const vitals = getVitals()
 
-  // Dynamic combat values (not stale backend data)
-  const dynCombat = (() => {
-    if (!myCharacter) return { pa: 0, aw: 0 }
-    const cv = myCharacter.combat_values || {}
-    const dv = myCharacter.derived_values || {}
-    const attrs = myCharacter.attributes || {}
-    const specials = myCharacter.special_abilities || []
-    const charCT = myCharacter.combat_techniques || {}
-    const weapons = cv.weapons || []
-    const rawInv = myCharacter.basis_inventory || []
-    const items = Array.isArray(rawInv) ? rawInv : (rawInv.items || [])
-
-    // BE from equipped armor
-    const isArmor = n => /ruestung|hemd|harnisch|panzer|gambeson|wams|platte|kleidung|robe|pelz|knochen|schienen|helm/i.test(n)
-    const isShield = n => /schild|buckler/i.test(n)
-    const eqArmor = items.filter(i => isArmor(i.name) && i.equipped)
-    const eqShield = items.find(i => isShield(i.name) && i.equipped)
-    const computedBE = eqArmor.reduce((s, a) => s + (a.be || 0), 0)
-    const beRed = specials.some(s => /stungsgew.*II/i.test(s)) ? 2 : specials.some(s => /stungsgew/i.test(s)) ? 1 : 0
-    const effBE = Math.max(0, computedBE - beRed)
-    const shieldPA = eqShield ? (eqShield.pa_mod || 0) : 0
-
-    // KTW lookup (learned or base 6)
-    const normN = s => s.toLowerCase().replace(/[\u00e4\u00f6\u00fc\u00df]/g, m => ({ '\u00e4':'ae','\u00f6':'oe','\u00fc':'ue','\u00df':'ss' }[m]||m))
-    const getKTW = (tech) => {
-      if (!tech) return 6
-      for (const [tn, ktw] of Object.entries(charCT)) { if (normN(tn) === normN(tech) || tn.toLowerCase() === tech.toLowerCase()) return ktw }
-      return 6
-    }
-
-    // Primary melee weapon (equipped)
-    const isWeapon = n => /schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|hellebarde|morgenstern|peitsche|keule|saebel|rapier|kriegsaxt|wurfaxt|armbrust|schleuder|rondrakamm/i.test(n)
-    const eqWeapons = items.filter(i => isWeapon(i.name) && i.equipped)
-    let primaryW = null
-    for (const inv of eqWeapons) { const m = weapons.find(w => inv.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0])); if (m && !m.ranged) { primaryW = m; break } }
-
-    // Apply condition modifiers (Schmerz, Belastung, Furcht, etc.)
-    const conds = conditions
-    const pa = primaryW ? Math.floor(getKTW(primaryW.technique) / 2) + (primaryW.pa_mod || 0) + shieldPA - effBE + getConditionModifier(conds, 'PA') : 0
-    const aw = Math.max(0, (dv.AW || 0) - effBE + getConditionModifier(conds, 'AW'))
-    return { pa, aw }
-  })()
+  const combatValues = useCombatValues()
+  const dynCombat = { pa: combatValues?.pa ?? 0, aw: combatValues?.aw ?? 0 }
 
   const [selectedDefense, setSelectedDefense] = useState(null)
   const [useSchip, setUseSchip] = useState(false)

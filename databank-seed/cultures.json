@@ -7,7 +7,15 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Fährtensuchen": 1,
+      "Orientierung": 1,
+      "Pflanzenkunde": 1,
+      "Tierkunde": 1,
+      "Wildnisleben": 1,
+      "Holzbearbeitung": 1,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Garethi",
@@ -16,8 +24,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Andergaster.",
-    "ap_cost": 0
+    "description": "Kultur der Andergaster. Ein raues Grenzlandvolk im Norden des Mittelreichs.",
+    "ap_cost": 15
   },
   {
     "id": "culture_aranier",
@@ -91,17 +99,31 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Etikette": 2,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Handel": 1,
+      "Rechnen": 1,
+      "Rechtskunde": 1,
+      "Götter & Kulte": 1,
+      "Geschichtswissen": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Horasier.",
-    "ap_cost": 0
+    "description": "Kultur der Horasier. Bewohner des Horasreichs, bekannt für Eleganz und Bildung.",
+    "ap_cost": 22
   },
   {
     "id": "culture_maraskaner",
@@ -151,17 +173,32 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Etikette": 1,
+      "Gassenwissen": 1,
+      "Götter & Kulte": 1,
+      "Menschenkenntnis": 1,
+      "Überreden": 1,
+      "Handel": 1,
+      "Rechnen": 1,
+      "Rechtskunde": 1,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Garethi",
         "level": 4
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Kusliker Zeichen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Mittelreicher.",
-    "ap_cost": 0
+    "description": "Kultur der Mittelreicher. Die verbreitetste Kultur Aventuriens, geprägt von den Zwölfgöttern und dem Kaiserreich.",
+    "ap_cost": 19
   },
   {
     "id": "culture_mohas",
@@ -190,17 +227,29 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Fährtensuchen": 1,
+      "Orientierung": 1,
+      "Tierkunde": 1,
+      "Wildnisleben": 2,
+      "Pflanzenkunde": 1,
+      "Sagen & Legenden": 1,
+      "Körperbeherrschung": 1
+    },
     "languages": [
       {
         "name": "Nujuka",
         "level": 4
+      },
+      {
+        "name": "Garethi",
+        "level": 2
       }
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Nivesen.",
-    "ap_cost": 0
+    "description": "Kultur der Nivesen. Ein Nomadenvolk der nördlichen Eiswüsten.",
+    "ap_cost": 17
   },
   {
     "id": "culture_norbarden",
@@ -269,7 +318,15 @@
     "compatible_species": [
       "Mensch"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Einschüchtern": 1,
+      "Orientierung": 1,
+      "Reiten": 2,
+      "Wildnisleben": 1,
+      "Götter & Kulte": 1,
+      "Sagen & Legenden": 1,
+      "Kriegskunst": 1
+    },
     "languages": [
       {
         "name": "Tulamidya",
@@ -278,8 +335,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Novadis.",
-    "ap_cost": 0
+    "description": "Kultur der Novadis. Wüstennomaden der Khôm, gläubige Rastullah-Anhänger.",
+    "ap_cost": 17
   },
   {
     "id": "culture_suedaventurier",
@@ -329,17 +386,30 @@
       "Mensch",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Einschüchtern": 1,
+      "Körperbeherrschung": 1,
+      "Kraftakt": 1,
+      "Schwimmen": 1,
+      "Zechen": 1,
+      "Boote & Schiffe": 1,
+      "Geographie": 1,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Thorwalsch",
         "level": 4
+      },
+      {
+        "name": "Garethi",
+        "level": 2
       }
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Thorwaler.",
-    "ap_cost": 0
+    "description": "Kultur der Thorwaler. Seefahrendes Nordvolk, bekannt für Mut und Kampfeslust.",
+    "ap_cost": 18
   },
   {
     "id": "culture_zyklopaeer",
@@ -369,7 +439,16 @@
       "Elf",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Körperbeherrschung": 1,
+      "Sinnesschärfe": 1,
+      "Musizieren": 1,
+      "Pflanzenkunde": 1,
+      "Tierkunde": 1,
+      "Wildnisleben": 1,
+      "Sagen & Legenden": 1,
+      "Sternkunde": 1
+    },
     "languages": [
       {
         "name": "Isdira",
@@ -378,8 +457,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Auelfen.",
-    "ap_cost": 0
+    "description": "Kultur der Auelfen. Waldbewohnende Elfen, die in Einklang mit der Natur leben.",
+    "ap_cost": 21
   },
   {
     "id": "culture_firnelfen",
@@ -408,7 +487,16 @@
       "Elf",
       "Halbelf"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Klettern": 1,
+      "Körperbeherrschung": 1,
+      "Schleichen": 1,
+      "Sinnesschärfe": 1,
+      "Pflanzenkunde": 1,
+      "Tierkunde": 1,
+      "Wildnisleben": 1,
+      "Holzbearbeitung": 1
+    },
     "languages": [
       {
         "name": "Isdira",
@@ -417,8 +505,8 @@
     ],
     "scripts": [],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Waldelfen.",
-    "ap_cost": 0
+    "description": "Kultur der Waldelfen. Zurückgezogen in den tiefen Wäldern lebende Elfen.",
+    "ap_cost": 19
   },
   {
     "id": "culture_ambosszwerge",
@@ -427,7 +515,16 @@
     "compatible_species": [
       "Zwerg"
     ],
-    "skill_bonuses": {},
+    "skill_bonuses": {
+      "Kraftakt": 1,
+      "Selbstbeherrschung": 1,
+      "Zechen": 1,
+      "Mechanik": 1,
+      "Metallbearbeitung": 2,
+      "Steinbearbeitung": 1,
+      "Handel": 1,
+      "Sagen & Legenden": 1
+    },
     "languages": [
       {
         "name": "Rogolan",
@@ -438,10 +535,15 @@
         "level": 3
       }
     ],
-    "scripts": [],
+    "scripts": [
+      {
+        "name": "Rogolan-Runen",
+        "ap_cost": 2
+      }
+    ],
     "source_book": "Grundregelwerk",
-    "description": "Kultur der Ambosszwerge.",
-    "ap_cost": 0
+    "description": "Kultur der Ambosszwerge. Tief in den Bergen lebende Zwerge, Meister der Schmiedekunst.",
+    "ap_cost": 22
   },
   {
     "id": "culture_brillantzwerge",

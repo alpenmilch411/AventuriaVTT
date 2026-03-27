@@ -7,15 +7,9 @@ import useCharacterStore from '../../stores/characterStore'
 import useAuthStore from '../../stores/authStore'
 import useCombatValues from '../../hooks/useCombatValues'
 import { COMBAT_SPECIAL_ABILITIES } from '../../engine/weaponProperties'
+import { findTemplate, isWeapon as isWeaponItem, isArmor as isArmorItem, isShield as isShieldItem, isHelm as isHelmItem, isFocus as isFocusItem } from '../../engine/itemClassification'
 import Badge from '../../components/common/Badge'
 import clsx from 'clsx'
-
-// ── Classifiers ──
-const isWeaponItem = n => /schwert|axt|dolch|bogen|messer|stab|kolben|speer|hammer|hellebarde|morgenstern|peitsche|keule|saebel|rapier|kriegsaxt|wurfaxt|armbrust|schleuder|rondrakamm/i.test(n)
-const isArmorItem = n => /ruestung|hemd|harnisch|panzer|gambeson|wams|platte|kleidung|robe|pelz|knochen|schienen/i.test(n)
-const isShieldItem = n => /schild|buckler/i.test(n)
-const isHelmItem = n => /helm/i.test(n)
-const isFocusItem = n => /magierstab|zauberstab|kristallkugel|magier|fokus/i.test(n)
 
 // ── Visual Maps ──
 const DMG_ICON = { schnitt: '\u2694\uFE0F', stich: '\uD83D\uDDE1\uFE0F', stumpf: '\uD83D\uDD28', feuer: '\uD83D\uDD25', heilig: '\u2728' }
@@ -121,7 +115,7 @@ function DetailPopup({ title, children, onClose, accentClass }) {
   )
 }
 
-function ArmoryTab() {
+function ArmoryTab({ sendMessage }) {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const setMyCharacter = useCharacterStore((s) => s.setMyCharacter)
   const getVitals = useCharacterStore((s) => s.getVitals)
@@ -151,8 +145,19 @@ function ArmoryTab() {
     })
   }, [token])
 
-  const matchArmor = (name) => armorTemplates.find(t => name.toLowerCase().includes(t.name.toLowerCase().split(' ')[0]) || t.name.toLowerCase().includes(name.toLowerCase().split(' ')[0]))
-  const matchShield = (name) => shieldTemplates.find(t => name.toLowerCase().includes(t.name.toLowerCase().split('/')[0].trim()) || t.name.toLowerCase().includes(name.toLowerCase().split(' ')[0]))
+  const tplBag = { weaponTemplates, armorTemplates, shieldTemplates }
+
+  // Template lookup helpers (by template_id first, name fallback)
+  const tplFor = (item) => findTemplate(item, tplBag)
+  const matchArmor = (name) => { const r = findTemplate({ name }, tplBag); return r?.type === 'armor' ? r.template : null }
+  const matchShield = (name) => { const r = findTemplate({ name }, tplBag); return r?.type === 'shield' ? r.template : null }
+
+  // Item classification via DB templates
+  const classifyWeapon = (item) => isWeaponItem(typeof item === 'string' ? { name: item } : item, tplBag)
+  const classifyArmor = (item) => isArmorItem(typeof item === 'string' ? { name: item } : item, tplBag)
+  const classifyShield = (item) => isShieldItem(typeof item === 'string' ? { name: item } : item, tplBag)
+  const classifyHelm = (item) => isHelmItem(typeof item === 'string' ? { name: item } : item, tplBag)
+  const classifyFocus = (item) => isFocusItem(typeof item === 'string' ? { name: item } : item, tplBag)
 
   const showError = (msg, e) => {
     const rect = e?.currentTarget?.getBoundingClientRect?.()
@@ -185,43 +190,43 @@ function ArmoryTab() {
 
     if (equipping) {
       // Armor: only one body armor at a time — block if another equipped
-      if (isArmorItem(n) && !isHelmItem(n)) {
-        const existing = allItems.find(i => i.name !== n && isArmorItem(i.name) && !isHelmItem(i.name) && i.equipped)
+      if (classifyArmor(n) && !classifyHelm(n)) {
+        const existing = allItems.find(i => i.name !== n && classifyArmor(i.name) && !classifyHelm(i.name) && i.equipped)
         if (existing) { showError(`Bereits eine Rüstung angelegt (${existing.name}). Lege diese zuerst ab.`, e); return }
       }
       // Helm: only one
-      if (isHelmItem(n)) {
-        const existing = allItems.find(i => i.name !== n && isHelmItem(i.name) && i.equipped)
+      if (classifyHelm(n)) {
+        const existing = allItems.find(i => i.name !== n && classifyHelm(i.name) && i.equipped)
         if (existing) { showError(`Bereits ein Helm angelegt (${existing.name}). Lege diesen zuerst ab.`, e); return }
       }
       // Shield rules
-      if (isShieldItem(n)) {
-        const existing = allItems.find(i => i.name !== n && isShieldItem(i.name) && i.equipped)
+      if (classifyShield(n)) {
+        const existing = allItems.find(i => i.name !== n && classifyShield(i.name) && i.equipped)
         if (existing) { showError(`Bereits ein Schild angelegt (${existing.name}). Lege diesen zuerst ab.`, e); return }
         // Shield + 2H weapon conflict
         const equipped2H = allItems.find(i => {
-          if (!isWeaponItem(i.name) || !i.equipped) return false
+          if (!classifyWeapon(i.name) || !i.equipped) return false
           const wm = (cv.weapons || []).find(w => i.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0]))
           const wt = weaponTemplates.find(t => i.name.toLowerCase().includes(t.name.toLowerCase().split(' ')[0]))
           return wm?.two_handed || wt?.two_handed
         })
         if (equipped2H) { showError(`${equipped2H.name} ist zweihändig — kein Schild möglich. Lege die Waffe zuerst ab.`, e); return }
         // Shield + dual-wield conflict: if 2 melee weapons equipped, off-hand is occupied
-        const equippedMelee = allItems.filter(i => isWeaponItem(i.name) && i.equipped).filter(i => {
+        const equippedMelee = allItems.filter(i => classifyWeapon(i.name) && i.equipped).filter(i => {
           const wm = (cv.weapons || []).find(w => i.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0]))
           return wm && !wm.ranged
         })
         if (equippedMelee.length >= 2) { showError(`Beide Hände belegt (${equippedMelee.map(i=>i.name).join(' + ')}). Lege eine Waffe ab um den Schild anzulegen.`, e); return }
       }
       // Weapon rules
-      if (isWeaponItem(n)) {
+      if (classifyWeapon(n)) {
         const wm = (cv.weapons || []).find(w => n.toLowerCase().includes(w.name.toLowerCase().split(' ')[0]))
         const wt = weaponTemplates.find(t => n.toLowerCase().includes(t.name.toLowerCase().split(' ')[0]))
         const isTwoHanded = wm?.two_handed || wt?.two_handed
         const isRanged = wm?.ranged || false
         const hasBeidhaendigSF = (myCharacter.special_abilities || []).some(s => /[Bb]eidh/i.test(s))
-        const equippedShieldItem = allItems.find(i => isShieldItem(i.name) && i.equipped)
-        const equippedWeapons = allItems.filter(i => i.name !== n && isWeaponItem(i.name) && i.equipped)
+        const equippedShieldItem = allItems.find(i => classifyShield(i.name) && i.equipped)
+        const equippedWeapons = allItems.filter(i => i.name !== n && classifyWeapon(i.name) && i.equipped)
         const equippedMeleeWeapons = equippedWeapons.filter(i => {
           const wm2 = (cv.weapons || []).find(w => i.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0]))
           return wm2 && !wm2.ranged
@@ -292,6 +297,7 @@ function ArmoryTab() {
         body: JSON.stringify({ basis_inventory: newInv }),
       }).catch(err => console.error('Failed to persist inventory:', err))
     }
+    sendMessage?.({ type: 'inventory_change', payload: { character_id: myCharacter.id, inventory: newInv } })
   }
 
   if (!myCharacter) return <div className="text-center py-8 text-dsa-parchment-dark text-sm">Kein Charakter geladen.</div>
@@ -313,23 +319,35 @@ function ArmoryTab() {
   const tradition = specials.find(s => /^Tradition\s*\(/i.test(s))
   const traditionName = tradition ? tradition.replace(/^Tradition\s*\(\s*/, '').replace(/\)\s*$/, '') : null
 
-  const meleeWeapons = weapons.filter(w => !w.ranged)
-  const rangedWeapons = weapons.filter(w => w.ranged)
+  // Inventory weapons not yet in cv.weapons — synthesize from weapon templates
+  const invOnlyWeapons = items.filter(i => classifyWeapon(i.name) && !weapons.some(w => i.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0]))).map(i => {
+    const result = tplFor(i)
+    const tpl = result?.type === 'weapon' ? result.template : null
+    return tpl ? {
+      name: i.name, technique: tpl.technique || tpl.combat_technique || '?',
+      at_mod: 0, pa_mod: 0, TP: tpl.damage || tpl.TP || '1W6', ranged: tpl.ranged || false,
+      reach: tpl.reach, two_handed: tpl.two_handed || false, properties: tpl.properties || [],
+      fromInventory: true,
+    } : null
+  }).filter(Boolean)
+
+  const meleeWeapons = [...weapons.filter(w => !w.ranged), ...invOnlyWeapons.filter(w => !w.ranged)]
+  const rangedWeapons = [...weapons.filter(w => w.ranged), ...invOnlyWeapons.filter(w => w.ranged)]
   const ammoItems = items.filter(i => /pfeil|bolzen|kugel|nadel|munition/i.test(i.name))
   const hasMelee = meleeWeapons.length > 0
   const hasRanged = rangedWeapons.length > 0
-  const hasArmor = items.some(i => isArmorItem(i.name) || isHelmItem(i.name) || isShieldItem(i.name))
-  const focusItem = items.find(i => isFocusItem(i.name))
+  const hasArmor = items.some(i => classifyArmor(i.name) || classifyHelm(i.name) || classifyShield(i.name))
+  const focusItem = items.find(i => classifyFocus(i.name))
   const focusWeapon = focusItem ? weapons.find(w => focusItem.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0])) : null
   const showRangedFirst = rangedWeapons.length > meleeWeapons.length
 
   // Computed combat values
-  const equippedArmor = items.filter(i => (isArmorItem(i.name) || isHelmItem(i.name)) && i.equipped)
-  const equippedShield = items.find(i => isShieldItem(i.name) && i.equipped)
+  const equippedArmor = items.filter(i => (classifyArmor(i.name) || classifyHelm(i.name)) && i.equipped)
+  const equippedShield = items.find(i => classifyShield(i.name) && i.equipped)
 
   // Dual-wield detection (after equippedShield is defined)
   const hasBeidhaendig = specials.some(s => /beidh/i.test(s))
-  const equippedMeleeWeapons = items.filter(i => isWeaponItem(i.name) && i.equipped).map(inv => {
+  const equippedMeleeWeapons = items.filter(i => classifyWeapon(i.name) && i.equipped).map(inv => {
     const m = meleeWeapons.find(w => inv.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0]))
     return m ? { inv, weapon: m } : null
   }).filter(Boolean).filter(e => !e.weapon.ranged)
@@ -337,11 +355,11 @@ function ArmoryTab() {
   const effectiveMainHand = isDualWielding
     ? (mainHandWeapon && equippedMeleeWeapons.some(e => e.weapon.name === mainHandWeapon) ? mainHandWeapon : equippedMeleeWeapons[0]?.weapon.name)
     : equippedMeleeWeapons[0]?.weapon.name || null
-  const shieldTpl = equippedShield ? matchShield(equippedShield.name) : null
+  const shieldTpl = equippedShield ? tplFor(equippedShield)?.template : null
   const shieldPA = equippedShield ? (equippedShield.pa_mod ?? shieldTpl?.pa_mod ?? 0) : 0
   const shieldAT = equippedShield ? (equippedShield.at_mod ?? shieldTpl?.at_mod ?? 0) : 0
-  const computedRS = equippedArmor.reduce((s, a) => s + (a.rs ?? matchArmor(a.name)?.rs ?? 0), 0)
-  const computedBE = equippedArmor.reduce((s, a) => s + (a.be ?? matchArmor(a.name)?.be ?? 0), 0)
+  const computedRS = equippedArmor.reduce((s, a) => s + (a.rs ?? tplFor(a)?.template?.rs ?? 0), 0)
+  const computedBE = equippedArmor.reduce((s, a) => s + (a.be ?? tplFor(a)?.template?.be ?? 0), 0)
   const beRed = specials.some(s => /stungsgew.*II/i.test(s)) ? 2 : specials.some(s => /stungsgew/i.test(s)) ? 1 : 0
   const effBE = Math.max(0, computedBE - beRed)
 
@@ -376,14 +394,14 @@ function ArmoryTab() {
     return kt ? { ktw: kt.ktw, learned: kt.learned } : { ktw: 6, learned: false }
   }
 
-  // Primary weapons (equipped)
-  const equippedWeaponItems = items.filter(i => isWeaponItem(i.name) && i.equipped)
+  // Primary weapons (equipped) — searches all weapons including inventory-synthesized
+  const equippedWeaponItems = items.filter(i => classifyWeapon(i.name) && i.equipped)
   const primaryWeapon = (() => {
-    for (const inv of equippedWeaponItems) { const m = weapons.find(w => inv.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0])); if (m && !m.ranged) return m }
+    for (const inv of equippedWeaponItems) { const m = meleeWeapons.find(w => inv.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0])); if (m) return m }
     return null
   })()
   const primaryRanged = (() => {
-    for (const inv of equippedWeaponItems) { const m = weapons.find(w => inv.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0])); if (m && m.ranged) return m }
+    for (const inv of equippedWeaponItems) { const m = rangedWeapons.find(w => inv.name.toLowerCase().includes(w.name.toLowerCase().split(' ')[0])); if (m) return m }
     return null
   })()
 
@@ -404,7 +422,7 @@ function ArmoryTab() {
       return n === wNameLow || n.includes(wFirst) || wNameLow.includes(n.split(' ')[0])
     })
     const isEq = inv?.equipped !== false
-    const isFocus = inv && isFocusItem(inv.name)
+    const isFocus = inv && classifyFocus(inv.name)
 
     return (
       <div className={clsx(
@@ -634,7 +652,7 @@ function ArmoryTab() {
             <div className="p-2 space-y-1.5">
               {/* Ruestung */}
               {(() => {
-                const armorItems = items.filter(i => isArmorItem(i.name) || isHelmItem(i.name))
+                const armorItems = items.filter(i => classifyArmor(i.name) || classifyHelm(i.name))
                 if (armorItems.length === 0) return null
                 return armorItems.map((a, i) => {
                   const tpl = matchArmor(a.name)
@@ -643,7 +661,7 @@ function ArmoryTab() {
                       <EquipSlot equipped={a.equipped} onClick={e => { e.stopPropagation(); toggleEquip(a.name, e) }} />
                       <span className="text-xs flex-1 font-medium text-dsa-parchment truncate">
                         {a.name}
-                        {isHelmItem(a.name) && <span className="ml-1 text-[9px] text-dsa-parchment-dark bg-dsa-bg-medium px-1 py-px rounded-sm uppercase font-bold">Helm</span>}
+                        {classifyHelm(a.name) && <span className="ml-1 text-[9px] text-dsa-parchment-dark bg-dsa-bg-medium px-1 py-px rounded-sm uppercase font-bold">Helm</span>}
                       </span>
                       <span className="w-10 text-center text-[10px] font-mono font-bold text-dsa-gold">{a.rs??tpl?.rs??'\u2014'}</span>
                       <span className="w-10 text-center text-[10px] font-mono text-amber-400/60">{a.be??tpl?.be??'\u2014'}</span>
@@ -655,7 +673,7 @@ function ArmoryTab() {
 
               {/* Schilde */}
               {(() => {
-                const shieldItems = items.filter(i => isShieldItem(i.name))
+                const shieldItems = items.filter(i => classifyShield(i.name))
                 if (shieldItems.length === 0) return null
                 return shieldItems.map((a, i) => {
                   const tpl = matchShield(a.name)
@@ -1068,7 +1086,7 @@ function ArmoryTab() {
           const tpl = matchArmor(item.name)
           const rs = item.rs ?? tpl?.rs ?? 0
           const be = item.be ?? tpl?.be ?? 0
-          const isHelm = isHelmItem(item.name)
+          const isHelm = classifyHelm(item.name)
           return (
             <DetailPopup title={item.name} onClose={() => setDetailPopup(null)} accentClass="bg-dsa-gold/10">
               <div className="space-y-3">

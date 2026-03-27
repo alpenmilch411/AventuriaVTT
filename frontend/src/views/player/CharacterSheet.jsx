@@ -3,6 +3,8 @@ import { Shield, Swords, Heart, Sparkles, Star, Info, Eye, HelpCircle, Flame, Br
 import useCharacterStore from '../../stores/characterStore'
 import useAuthStore from '../../stores/authStore'
 import { getConditionModifier, CONDITIONS } from '../../engine/conditionsEngine'
+import { isBuffActive } from '../../engine/buffSystem'
+import ActiveBuffs from '../../components/common/ActiveBuffs'
 import Badge from '../../components/common/Badge'
 import clsx from 'clsx'
 
@@ -112,10 +114,11 @@ function Tip({ text }) {
   )
 }
 
-function CharacterSheet() {
+function CharacterSheet({ sendMessage }) {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getAttributes = useCharacterStore((s) => s.getAttributes)
   const getVitals = useCharacterStore((s) => s.getVitals)
+  const activeBuffs = useCharacterStore((s) => s.activeBuffs)
   const token = useAuthStore((s) => s.token)
   const [sfTemplates, setSfTemplates] = useState([])
   const [sfPopup, setSfPopup] = useState(null) // sf name string
@@ -263,6 +266,24 @@ function CharacterSheet() {
           </div>
         </div>
       </div>
+
+      {/* ━━ Active Buffs ━━ */}
+      {(() => {
+        const charBuffs = activeBuffs.filter(b => b.characterId === myCharacter?.id && isBuffActive(b))
+        if (charBuffs.length === 0) return null
+        return (
+          <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-dsa-bg-medium/50 bg-dsa-gold/10">
+              <Sparkles className="w-4 h-4 text-dsa-gold" />
+              <span className="text-xs font-bold uppercase tracking-wider text-dsa-gold">Aktive Effekte</span>
+              <span className="text-[10px] font-mono text-dsa-parchment-dark/40">{charBuffs.length}</span>
+            </div>
+            <div className="p-2.5">
+              <ActiveBuffs characterId={myCharacter?.id} detailed sendMessage={sendMessage} />
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ━━ ROW 3: Sonderfertigkeiten (always 4 cols, clickable) ━━ */}
       {sfs.length > 0 ? (
