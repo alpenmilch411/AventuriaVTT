@@ -374,24 +374,112 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
       setNachteile(nList)
     }
 
-    // Attribute upgrades: difference between stored attributes and base (species + free points)
-    // We'll compute this after a tick so species base is resolved
+    // Defer skipResetRef so reset-effects don't fire on this cycle
     setTimeout(() => {
       skipResetRef.current = false
     }, 0)
   }, [editCharacter, speciesAll, culturesAll, professionsAll])
 
+  // ── Edit mode: compute upgrades after base values stabilize ──
+  const editUpgradesComputedRef = useRef(false)
+  useEffect(() => {
+    if (!editCharacter || !editPopulatedRef.current || editUpgradesComputedRef.current) return
+    if (!species || !profession) return // wait for base values to resolve
+
+    editUpgradesComputedRef.current = true
+
+    // Attribute upgrades = stored attributes minus species base
+    const storedAttrs = editCharacter.attributes || {}
+    const upgrades = {}
+    for (const k of ATTR_KEYS) {
+      const stored = storedAttrs[k] || 8
+      const base = baseAttributes[k] || 8
+      const diff = stored - base
+      if (diff !== 0) upgrades[k] = diff
+    }
+    setAttrUpgrades(upgrades)
+
+    // Talent upgrades = stored talents minus culture+profession base
+    const storedTalents = editCharacter.talents || {}
+    const tUpgrades = {}
+    for (const [k, v] of Object.entries(storedTalents)) {
+      const base = baseSkills[k] || 0
+      const diff = v - base
+      if (diff > 0) tUpgrades[k] = diff
+    }
+    setTalentUpgrades(tUpgrades)
+
+    // KT upgrades = stored combat techniques minus profession base
+    const storedKT = editCharacter.combat_techniques || {}
+    const ktUpg = {}
+    const splits = {}
+    for (const [k, v] of Object.entries(storedKT)) {
+      const val = typeof v === 'number' ? v : v?.ktw || 6
+      const base = baseKT[k] || 6
+      const diff = val - base
+      if (diff > 0) ktUpg[k] = diff
+      if (typeof v === 'object' && v.at != null && v.pa != null) {
+        splits[k] = { at: v.at, pa: v.pa }
+      }
+    }
+    setKtUpgrades(ktUpg)
+    if (Object.keys(splits).length > 0) setAtPaSplits(splits)
+
+    // Spells & liturgies
+    if (editCharacter.spells && Object.keys(editCharacter.spells).length > 0) {
+      setSelectedSpells(editCharacter.spells)
+    }
+    if (editCharacter.liturgies && Object.keys(editCharacter.liturgies).length > 0) {
+      setSelectedLiturgies(editCharacter.liturgies)
+    }
+
+    // Special abilities (subtract profession-granted ones)
+    if (editCharacter.special_abilities) {
+      const profSAs = new Set(profession?.special_abilities || [])
+      const purchased = editCharacter.special_abilities
+        .filter(sa => !profSAs.has(sa))
+        .map(sa => {
+          const tmpl = specialAbilitiesAll.find(t => t.name === sa)
+          return { name: sa, ap_cost: tmpl?.ap_cost || 0 }
+        })
+      if (purchased.length > 0) setPurchasedSAs(purchased)
+    }
+
+    // Profession variant
+    if (editCharacter.profession_variant && profession?.variants) {
+      const matchedVar = profession.variants.find(v => v.name === editCharacter.profession_variant)
+      if (matchedVar) setProfessionVariant(matchedVar)
+    }
+
+    // Species variant
+    if (editCharacter.species_variant && species?.variants) {
+      const matchedVar = species.variants.find(v => v.name === editCharacter.species_variant)
+      if (matchedVar) setSpeciesVariant(matchedVar)
+    }
+  }, [editCharacter, species, profession, baseAttributes, baseSkills, baseKT, specialAbilitiesAll])
+
   // ── Derived data ──
   const gradeData = grade ? ERFAHRUNGSGRADE[grade] : null
   const freeAttrPoints = species?.free_attribute_points ?? 7
 
-  // Base attributes = species base + species attribute_adjustments + free points
+  // Base attributes = species base + fixed species attribute adjustments + free points
   const baseAttributes = useMemo(() => {
     const specBase = species?.base_attributes || {}
     const base = ATTR_KEYS.reduce((o, k) => ({ ...o, [k]: specBase[k] ?? 8 }), {})
     // Species racial attribute adjustments (e.g. Elf: IN+1/GE+1, Zwerg: KO+1/KK+1)
-    for (const [k, v] of Object.entries(species?.attribute_adjustments || {})) {
-      if (ATTR_KEYS.includes(k)) base[k] = (base[k] || 8) + v
+    const adjustments = species?.attribute_adjustments || []
+    if (Array.isArray(adjustments)) {
+      // Array format: [{attr:"IN", value:1}, {choice:true, ...}]
+      for (const adj of adjustments) {
+        if (!adj.choice && adj.attr && ATTR_KEYS.includes(adj.attr)) {
+          base[adj.attr] = (base[adj.attr] || 8) + (adj.value || 0)
+        }
+      }
+    } else if (typeof adjustments === 'object') {
+      // Dict format fallback: {IN: 1, GE: 1}
+      for (const [k, v] of Object.entries(adjustments)) {
+        if (ATTR_KEYS.includes(k)) base[k] = (base[k] || 8) + v
+      }
     }
     for (const [k, v] of Object.entries(speciesFreePoints)) {
       base[k] = (base[k] || 8) + v
@@ -482,9 +570,13 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
   // Species free points total used
   const speciesFreeUsed = Object.values(speciesFreePoints).reduce((s, v) => s + v, 0)
 
-  // Magic/blessed flags
-  const isMagic = species?.magic_capable || false
-  const isBlessed = species?.blessed_capable || false
+  // Species-level flags for profession filtering
+  const speciesMagicCapable = species?.magic_capable || false
+  const speciesBlessedCapable = species?.blessed_capable || false
+
+  // Character-level magic/blessed: determined by profession (not species)
+  const isMagic = profession?.requires_magic || (!!profession?.spells && Object.keys(profession.spells).length > 0)
+  const isBlessed = profession?.requires_blessed || (!!profession?.liturgies && Object.keys(profession.liturgies).length > 0)
 
   // ── AP Computation ──
   const apBudget = useMemo(() => {
@@ -699,11 +791,13 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
 
   // Reset profession variant when profession changes
   useEffect(() => {
+    if (skipResetRef.current) return
     setProfessionVariant(null)
   }, [profession])
 
   // Auto-populate spells/liturgies when profession changes
   useEffect(() => {
+    if (skipResetRef.current) return
     if (profession?.spells) {
       setSelectedSpells({ ...profession.spells })
     } else {
@@ -826,11 +920,11 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     return professionsAll.filter(p => {
       const compat = p.compatible_species || []
       if (compat.length > 0 && !compat.includes(species.name)) return false
-      if (p.requires_magic && !isMagic) return false
-      if (p.requires_blessed && !isBlessed) return false
+      if (p.requires_magic && !speciesMagicCapable) return false
+      if (p.requires_blessed && !speciesBlessedCapable) return false
       return true
     })
-  }, [species, isMagic, isBlessed, professionsAll])
+  }, [species, speciesMagicCapable, speciesBlessedCapable, professionsAll])
 
   // ────────────────────────────────────────────────────────────────────────
   // Render steps

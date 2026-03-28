@@ -187,8 +187,8 @@ class CharacterResponse(BaseModel):
     spells: Optional[dict] = None
     liturgies: Optional[dict] = None
     special_abilities: Optional[list] = None
-    advantages: Optional[list] = None
-    disadvantages: Optional[list] = None
+    advantages: Optional[Any] = None
+    disadvantages: Optional[Any] = None
     languages: Optional[list] = None
     basis_inventory: Optional[Any] = None
     current_vitals: Optional[dict] = None
@@ -442,7 +442,7 @@ async def create_character(
     return char
 
 
-@router.post("/import", response_model=CharacterResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/import", status_code=status.HTTP_201_CREATED)
 async def import_character(
     request: Request,
     current_user: User = Depends(get_current_user),
@@ -495,29 +495,76 @@ async def import_character(
             "talents": data.get("talents", {}),
         }
 
+    # Validate inventory template_ids — strip invalid ones with warnings
+    basis_inventory = parsed.get("basis_inventory")
+    if basis_inventory and isinstance(basis_inventory, dict):
+        raw_items = basis_inventory.get("items", [])
+        if raw_items:
+            template_ids = {it.get("template_id") for it in raw_items if it.get("template_id")}
+            if template_ids:
+                from models.databank import WeaponTemplate, ArmorTemplate, ShieldTemplate, ItemTemplate
+                valid_ids: set[str] = set()
+                for model_cls in (WeaponTemplate, ArmorTemplate, ShieldTemplate, ItemTemplate):
+                    remaining = template_ids - valid_ids
+                    if not remaining:
+                        break
+                    result = await db.execute(
+                        select(model_cls.id).where(model_cls.id.in_(remaining))
+                    )
+                    valid_ids.update(row[0] for row in result.all())
+                invalid_ids = template_ids - valid_ids
+                if invalid_ids:
+                    warnings.append(f"Stripped {len(invalid_ids)} unknown inventory template(s): {', '.join(sorted(invalid_ids)[:5])}")
+                    basis_inventory = {
+                        **basis_inventory,
+                        "items": [it for it in raw_items if it.get("template_id") in valid_ids or not it.get("template_id")],
+                    }
+
     char = Character(
         user_id=current_user.id,
         name=parsed.get("name", "Imported Character"),
         species=parsed.get("species"),
+        species_variant=parsed.get("species_variant"),
         profession=parsed.get("profession"),
+        profession_variant=parsed.get("profession_variant"),
         culture=parsed.get("culture"),
         experience_grade=parsed.get("experience_grade"),
         total_ap=parsed.get("total_ap", 0),
         available_ap=parsed.get("available_ap", 0),
+        portrait_url=parsed.get("portrait_url"),
+        bio=parsed.get("bio"),
         attributes=parsed.get("attributes"),
         derived_values=parsed.get("derived_values"),
         combat_values=parsed.get("combat_values"),
+        combat_techniques=parsed.get("combat_techniques"),
         talents=parsed.get("talents"),
         spells=parsed.get("spells"),
         liturgies=parsed.get("liturgies"),
         special_abilities=parsed.get("special_abilities"),
         advantages=parsed.get("advantages"),
         disadvantages=parsed.get("disadvantages"),
+        languages=parsed.get("languages"),
+        basis_inventory=basis_inventory,
+        current_vitals=parsed.get("current_vitals"),
     )
     db.add(char)
     await db.commit()
     await db.refresh(char)
-    return char
+
+    result = {
+        "id": char.id,
+        "user_id": char.user_id,
+        "name": char.name,
+        "species": char.species,
+        "profession": char.profession,
+        "status": char.status,
+        "total_ap": char.total_ap,
+        "available_ap": char.available_ap,
+        "created_at": char.created_at.isoformat() if char.created_at else None,
+    }
+    if warnings:
+        result["warnings"] = warnings
+    return result
 
 
 @router.put("/{character_id}", response_model=CharacterResponse)
@@ -929,6 +976,30 @@ async def quick_template(
     }
     total_ap = ap_table.get(body.experience_grade or "erfahren", 1100)
 
+    # Compute derived values from template attributes
+    attrs = template.get("attributes", {})
+    base_derived = template.get("derived_values") or {}
+    # Set species defaults for Mensch
+    base_derived.setdefault("lep_base", 5)
+    base_derived.setdefault("GS", 8)
+    base_derived.setdefault("SK_modifier", -5)
+    base_derived.setdefault("ZK_modifier", -5)
+    base_derived.setdefault("SchiP", 3)
+    derived = _recompute_derived(
+        attrs,
+        template.get("spells", {}),
+        template.get("liturgies", {}),
+        base_derived,
+    )
+
+    # Initialize current_vitals to max values
+    current_vitals = {
+        "lep": derived.get("LeP_max", 0),
+        "asp": derived.get("AsP_max", 0),
+        "kap": derived.get("KaP_max", 0),
+        "schip": derived.get("SchiP", 3),
+    }
+
     char = Character(
         user_id=current_user.id,
         name=body.name,
@@ -939,13 +1010,14 @@ async def quick_template(
         total_ap=total_ap,
         available_ap=0,
         creation_finalized=True,
-        attributes=template.get("attributes"),
-        derived_values=template.get("derived_values"),
+        attributes=attrs,
+        derived_values=derived,
         combat_values=template.get("combat_values"),
         talents=template.get("talents"),
         spells=template.get("spells"),
         liturgies=template.get("liturgies"),
         special_abilities=template.get("special_abilities"),
+        current_vitals=current_vitals,
     )
     db.add(char)
     await db.commit()
@@ -967,26 +1039,32 @@ async def export_character(
 
     return {
         "format": "aventuria_vtt",
-        "version": 1,
+        "version": 2,
         "character": {
             "name": char.name,
             "species": char.species,
+            "species_variant": char.species_variant,
             "profession": char.profession,
+            "profession_variant": char.profession_variant,
             "culture": char.culture,
             "experience_grade": char.experience_grade,
             "total_ap": char.total_ap,
             "available_ap": char.available_ap,
             "status": char.status,
+            "portrait_url": char.portrait_url,
             "bio": char.bio,
             "attributes": char.attributes,
             "derived_values": char.derived_values,
             "combat_values": char.combat_values,
+            "combat_techniques": char.combat_techniques,
             "talents": char.talents,
             "spells": char.spells,
             "liturgies": char.liturgies,
             "special_abilities": char.special_abilities,
             "advantages": char.advantages,
             "disadvantages": char.disadvantages,
+            "languages": char.languages,
             "basis_inventory": enriched_inv,
+            "current_vitals": char.current_vitals,
         },
     }
