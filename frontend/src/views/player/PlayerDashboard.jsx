@@ -23,7 +23,9 @@ import TalentList from './TalentList'
 import CombatActions from './CombatActions'
 import ArmoryTab from './ArmoryTab'
 import TradeTab from './TradeTab'
+import ShopTab from './ShopTab'
 import ProbePopup from './ProbePopup'
+import useShopStore from '../../stores/shopStore'
 import clsx from 'clsx'
 
 const TABS = [
@@ -32,6 +34,7 @@ const TABS = [
   { id: 'talents', label: 'Talente', icon: BookOpen },
   { id: 'inventory', label: 'Inventar', icon: Backpack },
   { id: 'spells', label: 'Magie', icon: Sparkles },
+  { id: 'shop', label: 'Laden', icon: Gift },
   { id: 'trade', label: 'Handel', icon: Handshake },
   { id: 'combat', label: 'Kampf', icon: Swords },
 ]
@@ -96,6 +99,7 @@ export default function PlayerDashboard() {
       useCharacterStore.getState().reset()
       useCampaignStore.getState().reset()
       useMapStore.getState().reset()
+      useShopStore.getState().reset()
     }
   }, [])
 
@@ -217,9 +221,12 @@ export default function PlayerDashboard() {
   }[weather] || Cloud
   const WeatherIcon = weatherIcon
 
-  // Which tabs to show (hide spells if character has no AsP)
+  const shopCount = useShopStore((s) => Object.keys(s.shops).length)
+
+  // Which tabs to show (hide spells if character has no AsP, hide shop if no shops open)
   const visibleTabs = TABS.filter(t => {
     if (t.id === 'spells' && (!vitals.aspMax || vitals.aspMax === 0) && (!vitals.kapMax || vitals.kapMax === 0)) return false
+    if (t.id === 'shop' && shopCount === 0) return false
     return true
   })
 
@@ -400,6 +407,7 @@ export default function PlayerDashboard() {
         {activeTab === 'talents' && <TalentList sendMessage={sendMessage} />}
         {activeTab === 'inventory' && <InventoryPanel sendMessage={sendMessage} />}
         {activeTab === 'spells' && <SpellBook sendMessage={sendMessage} />}
+        {activeTab === 'shop' && <ShopTab sendMessage={sendMessage} />}
         {activeTab === 'trade' && <TradeTab sendMessage={sendMessage} />}
         {activeTab === 'combat' && <CombatActions sendMessage={sendMessage} />}
       </div>

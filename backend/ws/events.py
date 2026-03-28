@@ -106,6 +106,9 @@ class EventType(str, Enum):
     SHOP_SELL = "shop_sell"
     SHOP_STATE = "shop_state"
 
+    # Character lifecycle
+    CHARACTER_DEATH = "character_death"
+
     # Session Control
     SESSION_START = "session_start"
     SESSION_PAUSE = "session_pause"

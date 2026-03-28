@@ -5,7 +5,7 @@ import {
   Bell, Pause, Play, X, Send, Plus, Minus, AlertTriangle,
   Package, ChevronDown, ChevronUp, Search, Trash2, Check, Skull, Star,
   Minimize2, Maximize2, MessageSquare, Gift, Moon, StickyNote, Timer, Coins, Scroll,
-  Sparkles, Sun, ArrowLeft
+  Sparkles, Sun, ArrowLeft, Store
 } from 'lucide-react'
 import useWebSocket from '../../hooks/useWebSocket'
 import { getConditions } from '../../utils/safeData'
@@ -27,6 +27,7 @@ import CombatTracker from './CombatTracker'
 import BattleManager from './BattleManager'
 import LootPanel from './LootPanel'
 import GroupInventoryPanel from './GroupInventoryPanel'
+import ShopCreateModal from './ShopCreateModal'
 import NotificationPanel from './NotificationPanel'
 import ConditionPopup from './ConditionPopup'
 import ProbeSetupPopup from './ProbeSetupPopup'
@@ -91,6 +92,7 @@ export default function GMCockpit() {
     gmNotes, setGmNotes,
     detailPlayer, setDetailPlayer,
     showGroupInventory, setShowGroupInventory,
+    showShopCreate, setShowShopCreate,
   } = popups
 
   const { talentList, creatureList } = useGMDatabank({ showBattleSetup, showProbePopup })
@@ -241,6 +243,10 @@ export default function GMCockpit() {
           <button onClick={() => setShowGroupInventory(true)}
             className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition flex items-center gap-1">
             <Package className="w-3 h-3" /> Inventar
+          </button>
+          <button onClick={() => setShowShopCreate(true)}
+            className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition flex items-center gap-1">
+            <Store className="w-3 h-3" /> Laden
           </button>
           {/* Unified notification bell */}
           {(() => {
@@ -798,6 +804,18 @@ export default function GMCockpit() {
       {/* Campaign Manager */}
       {showCampaignManager && campaign?.id && (
         <CampaignManager campaignId={campaign.id} onClose={() => setShowCampaignManager(false)} />
+      )}
+
+      {/* Shop Create Modal */}
+      {showShopCreate && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowShopCreate(false)}>
+          <div onClick={e => e.stopPropagation()}>
+            <ShopCreateModal
+              sendMessage={sendMessage}
+              onClose={() => setShowShopCreate(false)}
+            />
+          </div>
+        </div>
       )}
 
       {/* Group Inventory */}

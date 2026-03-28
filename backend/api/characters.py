@@ -1068,3 +1068,74 @@ async def export_character(
             "current_vitals": char.current_vitals,
         },
     }
+
+
+# ---------------------------------------------------------------------------
+# Character Death
+# ---------------------------------------------------------------------------
+
+class CharacterDeathRequest(BaseModel):
+    cause_of_death: str = Field(default="Unbekannt", max_length=500)
+
+
+@router.post("/{character_id}/death")
+async def mark_character_dead(
+    character_id: str,
+    body: CharacterDeathRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Mark a character as dead and store memorial data. Owner or GM."""
+    result = await db.execute(
+        select(Character).where(Character.id == character_id)
+    )
+    char = result.scalar_one_or_none()
+    if not char:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
+
+    # Allow owner or any GM (check if user is GM of a campaign this character is in)
+    if char.user_id != current_user.id:
+        from models.campaign import CampaignPlayer, Campaign
+        cp_result = await db.execute(
+            select(CampaignPlayer).where(CampaignPlayer.character_id == character_id)
+        )
+        cp = cp_result.scalar_one_or_none()
+        if cp:
+            cam_result = await db.execute(
+                select(Campaign).where(Campaign.id == cp.campaign_id, Campaign.gm_user_id == current_user.id)
+            )
+            if not cam_result.scalar_one_or_none():
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+    if char.status == "dead":
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Character is already dead")
+
+    # Count sessions played
+    from models.session_state import SessionPlayer
+    sp_result = await db.execute(
+        select(SessionPlayer).where(SessionPlayer.character_id == character_id)
+    )
+    total_sessions = len(sp_result.scalars().all())
+
+    death_record = {
+        "cause_of_death": body.cause_of_death,
+        "death_date": datetime.utcnow().isoformat(),
+        "final_vitals": char.current_vitals,
+        "final_attributes": char.attributes,
+        "total_ap": char.total_ap,
+        "total_sessions_played": total_sessions,
+    }
+
+    char.status = "dead"
+    char.death_record = death_record
+    char.current_vitals = {"lep": 0, "asp": 0, "kap": 0, "schip": 0}
+    await db.commit()
+
+    return {
+        "id": char.id,
+        "name": char.name,
+        "status": "dead",
+        "death_record": death_record,
+    }

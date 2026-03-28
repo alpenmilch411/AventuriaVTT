@@ -5,6 +5,7 @@ import useMapStore from '../stores/mapStore'
 import useCharacterStore from '../stores/characterStore'
 import useCampaignStore from '../stores/campaignStore'
 import useAuthStore from '../stores/authStore'
+import useShopStore from '../stores/shopStore'
 import { createBuff } from '../engine/buffSystem'
 import { classifyItem } from '../engine/itemEffects'
 
@@ -314,6 +315,11 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     // ── Rest (GM → all) ──
     else if (type === 'rest_end') {
       useCampaignStore.getState().setRestResults(payload)
+    }
+
+    // ── Shop state (created/updated/closed/purchase/sale) ──
+    else if (type === 'shop_state') {
+      useShopStore.getState().handleShopState(payload)
     }
 
     // ── Defense request (GM → specific player) ──

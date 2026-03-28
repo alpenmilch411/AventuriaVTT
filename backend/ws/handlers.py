@@ -719,6 +719,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.SESSION_START: _handle_session_start,
         EventType.SESSION_PAUSE: _handle_session_pause,
         EventType.SESSION_END: _handle_session_end,
+        EventType.CHARACTER_DEATH: _handle_character_death,
         EventType.SHOP_CREATE: _handle_shop_create,
         EventType.SHOP_UPDATE: _handle_shop_update,
         EventType.SHOP_CLOSE: _handle_shop_close,
@@ -2686,6 +2687,108 @@ def _inv_add(inv, items: list, money) -> dict:
         inv["purse"] = purse
     inv["items"] = item_list
     return inv
+
+
+# ===================================================================
+# Character death memorial
+# ===================================================================
+
+async def _handle_character_death(session_code: str, user_id: str, payload: dict, state: dict):
+    """GM marks a character as dead.
+    payload: {character_id, cause_of_death?}
+    """
+    character_id = payload.get("character_id")
+    cause = payload.get("cause_of_death", "Unbekannt")
+
+    if not character_id:
+        await manager.send_to_user(user_id, _error("character_id required"))
+        return
+
+    async with _get_char_lock(character_id):
+        from database import async_session
+        from sqlalchemy import select
+        from models.character import Character
+        from models.session_state import SessionPlayer
+
+        async with async_session() as db:
+            result = await db.execute(select(Character).where(Character.id == character_id))
+            char = result.scalar_one_or_none()
+            if not char:
+                await manager.send_to_user(user_id, _error("Charakter nicht gefunden"))
+                return
+
+            if char.status == "dead":
+                await manager.send_to_user(user_id, _error("Charakter ist bereits tot"))
+                return
+
+            char_name = char.name
+
+            # Count sessions played
+            sp_result = await db.execute(
+                select(SessionPlayer).where(SessionPlayer.character_id == character_id)
+            )
+            total_sessions = len(sp_result.scalars().all())
+
+            # Build memorial record
+            death_record = {
+                "cause_of_death": cause,
+                "death_date": datetime.utcnow().isoformat(),
+                "final_vitals": char.current_vitals,
+                "final_attributes": char.attributes,
+                "total_ap": char.total_ap,
+                "total_sessions_played": total_sessions,
+            }
+
+            char.status = "dead"
+            char.death_record = death_record
+            # Zero out vitals
+            char.current_vitals = {"lep": 0, "asp": 0, "kap": 0, "schip": 0}
+            await db.commit()
+
+    # Update in-memory vitals
+    state.setdefault("vitals", {})[character_id] = {"lep": 0, "asp": 0, "kap": 0, "schip": 0}
+
+    # Remove from initiative order if combat is active
+    combat = state.get("combat")
+    if combat:
+        order = combat.get("initiative_order", [])
+        new_order = [
+            c for c in order
+            if (c.get("id") or c.get("characterId") or c.get("character_id")) != character_id
+        ]
+        if len(new_order) != len(order):
+            combat["initiative_order"] = new_order
+            # Remove from combatants dict
+            combat.get("combatants", {}).pop(character_id, None)
+            # Adjust turn index if needed
+            if combat.get("current_turn_index", 0) >= len(new_order):
+                combat["current_turn_index"] = 0
+            # Broadcast updated combat state
+            await manager.broadcast_to_room(session_code, _msg("initiative_update", {
+                "initiative_order": new_order,
+                "current_turn_index": combat.get("current_turn_index", 0),
+                "round": combat.get("round", 1),
+            }))
+
+    _bump_version(state)
+
+    # Broadcast death event
+    await manager.broadcast_to_room(session_code, _msg(EventType.CHARACTER_DEATH, {
+        "character_id": character_id,
+        "name": char_name,
+        "cause_of_death": cause,
+        "death_record": death_record,
+    }))
+
+    # Protokoll entry
+    await _append_session_log(
+        session_code, "system",
+        f"\u2620 {char_name} ist gefallen. {cause}",
+        icon="skull",
+        data={"character_id": character_id, "cause_of_death": cause},
+    )
+    await _snapshot_session_state(session_code)
+    logger.info("Character %s (%s) died in session %s: %s", character_id[:8], char_name, session_code, cause)
 
 
 # ===================================================================

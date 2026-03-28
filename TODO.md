@@ -10,7 +10,7 @@
 
 ## Phase 3: Persistence & Campaign (remaining)
 - [ ] Session recap (AI-generated) — API stub exists
-- [ ] Character death memorial + archive UI — model exists, UI pending
+- [x] Character death memorial — backend: death_record JSON (cause, date, final stats, sessions played), WS handler removes from combat, REST endpoint, Protokoll with skull icon. UI pending.
 - [ ] Inventory carry-over flow at campaign end
 - [x] Character lifecycle state machine UI — 5 states (created/active/resting/retired/dead), status badges, change buttons, visual dimming for retired/dead
 
@@ -20,7 +20,7 @@
 - [ ] AI session recap — backend code exists, needs API key
 
 ## Phase 5: Nice-to-Have
-- [ ] Shop system (NPC merchants) — backend WS handlers in progress
+- [x] Shop system (NPC merchants) — full stack: GM ShopCreateModal (DataBank search, price/stock editing, markup), player ShopTab (buy/sell, money display D/S/H/K), session-scoped WS handlers, DSA5 currency math
 - [x] Weather & environment UI — 8 weather types, time advance controls, player info bar with weather/time display
 - [x] Regeneration & rest workflow — GM rest panel (presets: Kurze Rast 4h / Nachtlager 8h), character checkboxes, server-side healing rolls, player toast with results
 - [ ] Session feedback & voting

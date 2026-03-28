@@ -182,6 +182,22 @@ export default function DatenbankTab() {
   const [isAllTab, setIsAllTab]           = useState(false)
   const debounceRef = useRef(null)
 
+  // Category entry counts (fetched once on mount)
+  const [categoryCounts, setCategoryCounts] = useState({})
+  useEffect(() => {
+    const token = useAuthStore.getState().token
+    if (!token) return
+    const headers = { Authorization: `Bearer ${token}` }
+    Promise.all(
+      CATEGORIES.map(cat =>
+        fetch(`/api/databank/${cat.id}?page_size=1`, { headers })
+          .then(r => r.ok ? r.json() : { total: 0 })
+          .then(d => [cat.id, d.total || 0])
+          .catch(() => [cat.id, 0])
+      )
+    ).then(pairs => setCategoryCounts(Object.fromEntries(pairs)))
+  }, [])
+
   // Search-all state: results grouped by category across all entity types
   const [globalResults, setGlobalResults] = useState(null) // { catId: items[] } | null
   const [globalLoading, setGlobalLoading] = useState(false)
@@ -382,6 +398,11 @@ export default function DatenbankTab() {
                 >
                   <Icon className={clsx('w-3.5 h-3.5 flex-shrink-0', isActive ? cat.titleColor : 'text-dsa-parchment-dark/60')} />
                   <span className="flex-1 text-left">{cat.label}</span>
+                  {categoryCounts[cat.id] > 0 && (
+                    <span className={clsx('text-[9px] font-mono', isActive ? 'text-current opacity-60' : 'text-dsa-parchment-dark/40')}>
+                      {categoryCounts[cat.id].toLocaleString('de-DE')}
+                    </span>
+                  )}
                   {hasSubs && (
                     <ChevronDown className={clsx('w-3 h-3 transition-transform flex-shrink-0', subcatsExpanded ? '' : '-rotate-90')} />
                   )}
