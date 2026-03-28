@@ -66,6 +66,26 @@ async def init_db():
             await conn.run_sync(_migrate_add_improvement_cost_columns)
             await conn.run_sync(_migrate_create_cantrip_blessing_tables)
             await conn.run_sync(_migrate_add_enhancements_property_variants)
+            await conn.run_sync(_migrate_add_character_variant_columns)
+
+
+def _migrate_add_character_variant_columns(connection):
+    """Add species_variant and profession_variant columns to characters table."""
+    from sqlalchemy import text
+
+    result = connection.execute(text("PRAGMA table_info(characters)"))
+    existing_cols = {row[1] for row in result.fetchall()}
+
+    columns_to_add = [
+        ("species_variant", "VARCHAR(128)"),
+        ("profession_variant", "VARCHAR(128)"),
+    ]
+
+    for col_name, col_type in columns_to_add:
+        if col_name not in existing_cols:
+            connection.execute(
+                text(f"ALTER TABLE characters ADD COLUMN {col_name} {col_type}")
+            )
 
 
 def _migrate_add_user_contribution_columns(connection):

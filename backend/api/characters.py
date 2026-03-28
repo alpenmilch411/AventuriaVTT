@@ -59,7 +59,9 @@ def _recompute_derived(attributes: dict, spells: dict, liturgies: dict, existing
 class CharacterCreate(BaseModel):
     name: str
     species: Optional[str] = None
+    species_variant: Optional[str] = None
     profession: Optional[str] = None
+    profession_variant: Optional[str] = None
     culture: Optional[str] = None
     experience_grade: Optional[str] = None
     total_ap: int = 0
@@ -69,6 +71,7 @@ class CharacterCreate(BaseModel):
     attributes: Optional[dict] = None
     derived_values: Optional[dict] = None
     combat_values: Optional[dict] = None
+    combat_techniques: Optional[dict] = None
     talents: Optional[dict] = None
     spells: Optional[dict] = None
     liturgies: Optional[dict] = None
@@ -77,12 +80,15 @@ class CharacterCreate(BaseModel):
     disadvantages: Optional[Any] = None
     languages: Optional[list] = None
     basis_inventory: Optional[dict] = None
+    current_vitals: Optional[dict] = None
 
 
 class CharacterUpdate(BaseModel):
     name: Optional[str] = None
     species: Optional[str] = None
+    species_variant: Optional[str] = None
     profession: Optional[str] = None
+    profession_variant: Optional[str] = None
     culture: Optional[str] = None
     experience_grade: Optional[str] = None
     total_ap: Optional[int] = None
@@ -93,6 +99,7 @@ class CharacterUpdate(BaseModel):
     attributes: Optional[dict] = None
     derived_values: Optional[dict] = None
     combat_values: Optional[dict] = None
+    combat_techniques: Optional[dict] = None
     talents: Optional[dict] = None
     spells: Optional[dict] = None
     liturgies: Optional[dict] = None
@@ -109,7 +116,9 @@ class CharacterResponse(BaseModel):
     user_id: str
     name: str
     species: Optional[str] = None
+    species_variant: Optional[str] = None
     profession: Optional[str] = None
+    profession_variant: Optional[str] = None
     culture: Optional[str] = None
     experience_grade: Optional[str] = None
     total_ap: int
@@ -120,6 +129,7 @@ class CharacterResponse(BaseModel):
     attributes: Optional[dict] = None
     derived_values: Optional[dict] = None
     combat_values: Optional[dict] = None
+    combat_techniques: Optional[dict] = None
     talents: Optional[dict] = None
     spells: Optional[dict] = None
     liturgies: Optional[dict] = None

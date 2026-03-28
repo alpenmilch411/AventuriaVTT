@@ -717,6 +717,14 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     const disadvantages = {}
     for (const n of nachteile) disadvantages[n.name] = { ap: n.ap }
 
+    // Initialize current_vitals to max values
+    const currentVitals = {
+      lep: derivedValues.LeP_max,
+      asp: derivedValues.AsP_max || 0,
+      kap: derivedValues.KaP_max || 0,
+      schip: derivedValues.SchiP || 3,
+    }
+
     const payload = {
       name: name.trim(),
       species: species?.name || null,
@@ -731,6 +739,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
       attributes: finalAttributes,
       derived_values: derivedValues,
       combat_values: { weapons: [] },
+      combat_techniques: combatTechniques,
       talents: skills,
       spells: Object.keys(selectedSpells).length > 0 ? selectedSpells : (isEdit ? editCharacter.spells : {}) || {},
       liturgies: Object.keys(selectedLiturgies).length > 0 ? selectedLiturgies : (isEdit ? editCharacter.liturgies : {}) || {},
@@ -744,6 +753,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
       basis_inventory: profession?.starting_equipment
         ? { items: profession.starting_equipment, purse: profession.starting_money || {} }
         : (isEdit ? editCharacter.basis_inventory : null) || { items: [] },
+      current_vitals: isEdit ? undefined : currentVitals,
     }
 
     try {
