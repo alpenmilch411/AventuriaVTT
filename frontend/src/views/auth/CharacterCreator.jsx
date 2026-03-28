@@ -1,12 +1,13 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import {
   X, ChevronLeft, ChevronRight, Check, AlertTriangle, Loader2,
-  Shield, Plus, Minus, RefreshCw, Search, ChevronDown, ChevronUp,
+  Shield, Plus, Minus, RefreshCw, Search, ChevronDown, ChevronUp, Sparkles,
 } from 'lucide-react'
 import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
 import { TipAbbr } from '../../components/Tooltip'
 import { EXPERIENCE_GRADES as ERFAHRUNGSGRADE, getAttrCost, getUpgradeCost as getSkillCost } from '../../engine/advancementCosts'
+import { composeBackgroundDraft } from '../../engine/backgroundSnippets'
 
 const ATTR_KEYS = ['MU','KL','IN','CH','FF','GE','KO','KK']
 
@@ -806,7 +807,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
   const renderStep = () => {
     switch (step) {
       case 0: return <StepGrade grade={grade} setGrade={setGrade} />
-      case 1: return <StepName name={name} setName={setName} nickname={nickname} setNickname={setNickname} background={background} setBackground={setBackground} />
+      case 1: return <StepName name={name} setName={setName} nickname={nickname} setNickname={setNickname} />
       case 2: return <StepSpecies species={species} setSpecies={setSpecies} speciesVariant={speciesVariant} setSpeciesVariant={setSpeciesVariant} speciesFreePoints={speciesFreePoints} setSpeciesFreePoints={setSpeciesFreePoints} speciesFreeUsed={speciesFreeUsed} freeAttrPoints={freeAttrPoints} gradeData={gradeData} speciesAll={speciesAll} loading={apiLoading.species} error={apiError.species} onRetry={loadSpecies} />
       case 3: return <StepCulture culture={culture} setCulture={setCulture} cultures={filteredCultures} loading={apiLoading.cultures} error={apiError.cultures} onRetry={loadCultures} />
       case 4: return <StepProfession profession={profession} setProfession={setProfession} professionVariant={professionVariant} setProfessionVariant={setProfessionVariant} professions={filteredProfessions} gradeData={gradeData} loading={apiLoading.professions} error={apiError.professions} onRetry={loadProfessions} />
@@ -814,7 +815,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
       case 6: return <StepAttributes baseAttributes={baseAttributes} attrUpgrades={attrUpgrades} setAttrUpgrades={setAttrUpgrades} gradeData={gradeData} apBudget={apBudget} derivedValues={derivedValues} />
       case 7: return <StepTalentsKT baseSkills={baseSkills} talentUpgrades={talentUpgrades} setTalentUpgrades={setTalentUpgrades} baseKT={baseKT} ktUpgrades={ktUpgrades} setKtUpgrades={setKtUpgrades} atPaSplits={atPaSplits} setAtPaSplits={setAtPaSplits} gradeData={gradeData} apBudget={apBudget} isMagic={isMagic} isBlessed={isBlessed} professionSpells={profession?.spells} professionLiturgies={profession?.liturgies} selectedSpells={selectedSpells} setSelectedSpells={setSelectedSpells} selectedLiturgies={selectedLiturgies} setSelectedLiturgies={setSelectedLiturgies} professionSAs={profession?.special_abilities} purchasedSAs={purchasedSAs} setPurchasedSAs={setPurchasedSAs} specialAbilitiesAll={specialAbilitiesAll} loadingSAs={apiLoading.specialAbilities} errorSAs={apiError.specialAbilities} onRetrySAs={loadSpecialAbilities} talentCategories={talentCategories} ktData={ktData} />
       case 8: return <StepDerived derivedValues={derivedValues} derivationBreakdown={derivationBreakdown} isMagic={isMagic} isBlessed={isBlessed} />
-      case 9: return <StepSummary name={name} nickname={nickname} species={species} culture={culture} profession={profession} grade={grade} gradeData={gradeData} finalAttributes={finalAttributes} derivedValues={derivedValues} derivationBreakdown={derivationBreakdown} apBudget={apBudget} vorteile={vorteile} nachteile={nachteile} isMagic={isMagic} isBlessed={isBlessed} submitError={submitError} baseSkills={baseSkills} talentUpgrades={talentUpgrades} talentCategories={talentCategories} baseKT={baseKT} ktUpgrades={ktUpgrades} ktData={ktData} atPaSplits={atPaSplits} selectedSpells={selectedSpells} selectedLiturgies={selectedLiturgies} purchasedSAs={purchasedSAs} />
+      case 9: return <StepSummary name={name} nickname={nickname} species={species} culture={culture} profession={profession} grade={grade} gradeData={gradeData} finalAttributes={finalAttributes} derivedValues={derivedValues} derivationBreakdown={derivationBreakdown} apBudget={apBudget} vorteile={vorteile} nachteile={nachteile} isMagic={isMagic} isBlessed={isBlessed} submitError={submitError} baseSkills={baseSkills} talentUpgrades={talentUpgrades} talentCategories={talentCategories} baseKT={baseKT} ktUpgrades={ktUpgrades} ktData={ktData} atPaSplits={atPaSplits} selectedSpells={selectedSpells} selectedLiturgies={selectedLiturgies} purchasedSAs={purchasedSAs} background={background} setBackground={setBackground} />
       default: return null
     }
   }
@@ -1038,7 +1039,7 @@ function StepGrade({ grade, setGrade }) {
 }
 
 // ── Step 2: Name & Basics ──
-function StepName({ name, setName, nickname, setNickname, background, setBackground }) {
+function StepName({ name, setName, nickname, setNickname }) {
   return (
     <div className="space-y-5">
       <div>
@@ -1065,16 +1066,6 @@ function StepName({ name, setName, nickname, setNickname, background, setBackgro
             onChange={(e) => setNickname(e.target.value)}
             placeholder="Optional"
             className="input-field w-full"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-dsa-parchment mb-1">Hintergrund</label>
-          <textarea
-            value={background}
-            onChange={(e) => setBackground(e.target.value)}
-            placeholder="Hintergrundgeschichte (optional)"
-            rows={4}
-            className="input-field w-full resize-none"
           />
         </div>
       </div>
@@ -2407,6 +2398,7 @@ function StepSummary({
   baseKT, ktUpgrades, ktData, atPaSplits,
   selectedSpells, selectedLiturgies,
   purchasedSAs,
+  background, setBackground,
 }) {
   // Final talent values grouped by category (only FW > 0)
   const talentsByCategory = useMemo(() => {
@@ -2447,6 +2439,37 @@ function StepSummary({
   const spells = selectedSpells || {}
   const liturgies = selectedLiturgies || {}
 
+  // Auto-generated background draft
+  const backgroundDraft = useMemo(() => {
+    return composeBackgroundDraft({
+      species, culture, profession,
+      advantages: vorteile,
+      disadvantages: nachteile,
+      characterName: name,
+    })
+  }, [species, culture, profession, vorteile, nachteile, name])
+
+  // Track whether user has manually edited the background
+  // If background already has content on mount (edit mode), treat as user-edited
+  const userEditedRef = useRef(background.length > 0 && background !== backgroundDraft)
+
+  // Auto-fill background with draft when it changes (unless user has edited)
+  useEffect(() => {
+    if (!userEditedRef.current && backgroundDraft) {
+      setBackground(backgroundDraft)
+    }
+  }, [backgroundDraft, setBackground])
+
+  const handleBackgroundChange = (e) => {
+    userEditedRef.current = true
+    setBackground(e.target.value)
+  }
+
+  const handleResetDraft = () => {
+    userEditedRef.current = false
+    setBackground(backgroundDraft)
+  }
+
   return (
     <div className="space-y-3">
       <div>
@@ -2472,6 +2495,35 @@ function StepSummary({
           <p>Erfahrungsgrad: <span className="text-dsa-parchment">{gradeData?.label}</span></p>
         </div>
       </div>
+
+      {/* Background / Hintergrund */}
+      <SummarySection title="Hintergrundgeschichte" defaultOpen>
+        <div className="space-y-2 pt-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs text-dsa-parchment-dark">
+              <Sparkles className="w-3 h-3 text-dsa-gold" />
+              <span>Automatisch erstellt — frei editierbar</span>
+            </div>
+            {userEditedRef.current && (
+              <button
+                onClick={handleResetDraft}
+                className="flex items-center gap-1 text-xs text-dsa-gold hover:text-dsa-gold/80 transition-colors"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Entwurf zurücksetzen
+              </button>
+            )}
+          </div>
+          <textarea
+            value={background}
+            onChange={handleBackgroundChange}
+            placeholder="Hintergrundgeschichte (optional)"
+            rows={6}
+            className="input-field w-full resize-none text-sm leading-relaxed"
+            style={{ fontFamily: 'Georgia, serif', color: '#e8dcc8' }}
+          />
+        </div>
+      </SummarySection>
 
       {/* Attributes */}
       <SummarySection title="Attribute" defaultOpen>
