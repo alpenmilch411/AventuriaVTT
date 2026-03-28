@@ -46,8 +46,9 @@ def _recompute_derived(attributes: dict, spells: dict, liturgies: dict, existing
 
     is_magic = bool(spells)
     is_blessed = bool(liturgies)
-    result["AsP_max"] = (20 + round((mu + in_ + ch) / 3)) if is_magic else 0
-    result["KaP_max"] = (20 + round((mu + kl + in_) / 3)) if is_blessed else 0
+    import math
+    result["AsP_max"] = (20 + math.ceil((mu + in_ + ch) / 2)) if is_magic else 0
+    result["KaP_max"] = (20 + math.ceil((mu + kl + in_) / 2)) if is_blessed else 0
 
     return result
 

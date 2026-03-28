@@ -534,8 +534,8 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
 
     // Attribute-based parts
     const lepAttr = a.KO * 2
-    const aspAttrPart = Math.round((a.MU + a.IN + a.CH) / 3)
-    const kapAttrPart = Math.round((a.MU + a.KL + a.IN) / 3)
+    const aspAttrPart = Math.ceil((a.MU + a.IN + a.CH) / 2)
+    const kapAttrPart = Math.ceil((a.MU + a.KL + a.IN) / 2)
     const iniBasis = Math.floor((a.MU + a.GE) / 2)
     const awBasis = Math.floor(a.GE / 2)
     const wsBasis = Math.ceil(a.KO / 2)
