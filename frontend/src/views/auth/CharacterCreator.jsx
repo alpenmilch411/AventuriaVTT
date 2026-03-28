@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import {
   X, ChevronLeft, ChevronRight, Check, AlertTriangle, Loader2,
-  Shield, Plus, Minus, RefreshCw, Search,
+  Shield, Plus, Minus, RefreshCw, Search, ChevronDown, ChevronUp,
 } from 'lucide-react'
 import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
@@ -33,6 +33,25 @@ const TALENT_CATEGORY_META = {
   'handwerk':     { label: 'Handwerkstalente',     color: 'text-amber-400',  sf: 'B' },
 }
 const TALENT_CATEGORY_ORDER = ['körper', 'gesellschaft', 'natur', 'wissen', 'handwerk']
+
+// ── Extract total level from advantage/disadvantage names matching a base pattern ──
+function sumAdvantageLevel(names, baseName) {
+  let total = 0
+  const pattern = baseName.toLowerCase()
+  for (const name of names) {
+    const lower = name.toLowerCase()
+    if (lower === pattern || lower.startsWith(pattern + ' ')) {
+      const match = name.match(/\s+(I{1,3}|IV|V)$/i)
+      if (match) {
+        const romanMap = { 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5 }
+        total += romanMap[match[1].toUpperCase()] || 1
+      } else {
+        total += 1
+      }
+    }
+  }
+  return total
+}
 
 // ────────────────────────────────────────────────────────────────────────────
 // Step titles
@@ -486,27 +505,122 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     return { total, speciesAP, cultureAP, professionAP, freeAP, attrSpend, skillSpend, ktSpend, vorteileAP, vorteileAPRaw, nachteileRefund, saSpend, remaining }
   }, [gradeData, species, culture, profession, professionVariant, attrUpgrades, baseAttributes, talentUpgrades, baseSkills, ktUpgrades, baseKT, vorteile, nachteile, purchasedSAs, talentSFMap, ktData])
 
-  // ── Derived values ──
-  const derivedValues = useMemo(() => {
+  // ── Derived values (with advantage/disadvantage modifiers + breakdown) ──
+  const derivedComputed = useMemo(() => {
     const a = finalAttributes
     const lepBase = species?.lep_base || 0
-    return {
-      LeP_max:     lepBase + a.KO * 2,
-      lep_base:    lepBase,         // persisted so server-side recompute stays accurate
-      SK_modifier: species?.sk_modifier || 0,
-      ZK_modifier: species?.zk_modifier || 0,
-      AsP_max:   isMagic ? 20 + Math.round((a.MU + a.IN + a.CH) / 3) : 0,
-      KaP_max:   isBlessed ? 20 + Math.round((a.MU + a.KL + a.IN) / 3) : 0,
-      GS:        species?.gs_base || 8,
-      INI_basis: Math.floor((a.MU + a.GE) / 2),
-      AW:        Math.floor(a.GE / 2),
-      WS:        Math.ceil(a.KO / 2),
-      SB:        Math.max(0, Math.floor((a.KK - 15) / 3)),
-      SK:        Math.floor((a.MU + a.KL + a.IN) / 3) + (species?.sk_modifier || 0),
-      ZK:        Math.floor((a.KO + a.KO + a.KK) / 3) + (species?.zk_modifier || 0),
-      SchiP:     3,
+    const gsBase = species?.gs_base || 8
+    const skMod = species?.sk_modifier || 0
+    const zkMod = species?.zk_modifier || 0
+
+    // Combine user-selected + species auto-advantages
+    const allAdvNames = [...vorteile.map(v => v.name), ...(species?.auto_advantages || [])]
+    const allDisNames = nachteile.map(n => n.name)
+
+    // Extract level-based modifiers from advantages/disadvantages
+    const hoheLK  = sumAdvantageLevel(allAdvNames, 'Hohe Lebenskraft')
+    const niedLK  = sumAdvantageLevel(allDisNames, 'Niedrige Lebenskraft')
+    const hoheSK  = sumAdvantageLevel(allAdvNames, 'Hohe Seelenkraft')
+    const niedSK  = sumAdvantageLevel(allDisNames, 'Niedrige Seelenkraft')
+    const hoheZK  = sumAdvantageLevel(allAdvNames, 'Hohe Zähigkeit')
+    const niedZK  = sumAdvantageLevel(allDisNames, 'Niedrige Zähigkeit')
+    const flink   = sumAdvantageLevel(allAdvNames, 'Flink')
+    const glueck  = sumAdvantageLevel(allAdvNames, 'Glück')
+    const pech    = sumAdvantageLevel(allDisNames, 'Pech')
+    const hoheAK  = sumAdvantageLevel(allAdvNames, 'Hohe Astralkraft')
+    const niedAK  = sumAdvantageLevel(allDisNames, 'Niedrige Astralkraft')
+    const hoheKK  = sumAdvantageLevel(allAdvNames, 'Hohe Karmalkraft')
+    const niedKK  = sumAdvantageLevel(allDisNames, 'Niedrige Karmalkraft')
+
+    // Attribute-based parts
+    const lepAttr = a.KO * 2
+    const aspAttrPart = Math.round((a.MU + a.IN + a.CH) / 3)
+    const kapAttrPart = Math.round((a.MU + a.KL + a.IN) / 3)
+    const iniBasis = Math.floor((a.MU + a.GE) / 2)
+    const awBasis = Math.floor(a.GE / 2)
+    const wsBasis = Math.ceil(a.KO / 2)
+    const sbBasis = Math.max(0, Math.floor((a.KK - 15) / 3))
+    const skAttr = Math.floor((a.MU + a.KL + a.IN) / 3)
+    const zkAttr = Math.floor((a.KO + a.KO + a.KK) / 3)
+
+    const values = {
+      LeP_max:     lepBase + lepAttr + hoheLK - niedLK,
+      lep_base:    lepBase,
+      SK_modifier: skMod,
+      ZK_modifier: zkMod,
+      AsP_max:     isMagic ? 20 + aspAttrPart + hoheAK - niedAK : 0,
+      KaP_max:     isBlessed ? 20 + kapAttrPart + hoheKK - niedKK : 0,
+      GS:          gsBase + flink,
+      INI_basis:   iniBasis,
+      AW:          awBasis,
+      WS:          wsBasis,
+      SB:          sbBasis,
+      SK:          skAttr + skMod + hoheSK - niedSK,
+      ZK:          zkAttr + zkMod + hoheZK - niedZK,
+      SchiP:       3 + glueck - pech,
     }
-  }, [finalAttributes, species, isMagic, isBlessed])
+
+    // Build step-by-step breakdown for each derived value
+    const b = (steps) => steps.filter(Boolean)
+    const breakdown = {
+      LeP_max: b([
+        { label: 'Spezies-Basis', value: lepBase },
+        { label: `2 × KO (${a.KO})`, value: lepAttr },
+        hoheLK > 0 && { label: 'Hohe Lebenskraft', value: hoheLK, bonus: true },
+        niedLK > 0 && { label: 'Niedrige Lebenskraft', value: -niedLK, penalty: true },
+      ]),
+      AsP_max: b([
+        { label: 'Basis (Zauberer)', value: 20 },
+        { label: `⌀ MU+IN+CH`, value: aspAttrPart },
+        hoheAK > 0 && { label: 'Hohe Astralkraft', value: hoheAK, bonus: true },
+        niedAK > 0 && { label: 'Niedrige Astralkraft', value: -niedAK, penalty: true },
+      ]),
+      KaP_max: b([
+        { label: 'Basis (Geweihter)', value: 20 },
+        { label: `⌀ MU+KL+IN`, value: kapAttrPart },
+        hoheKK > 0 && { label: 'Hohe Karmalkraft', value: hoheKK, bonus: true },
+        niedKK > 0 && { label: 'Niedrige Karmalkraft', value: -niedKK, penalty: true },
+      ]),
+      GS: b([
+        { label: 'Spezies-Basis', value: gsBase },
+        flink > 0 && { label: 'Flink', value: flink, bonus: true },
+      ]),
+      INI_basis: b([
+        { label: '⌊(MU + GE) / 2⌋', value: iniBasis },
+      ]),
+      AW: b([
+        { label: '⌊GE / 2⌋', value: awBasis },
+      ]),
+      WS: b([
+        { label: '⌈KO / 2⌉', value: wsBasis },
+      ]),
+      SB: b([
+        { label: '⌊(KK − 15) / 3⌋', value: sbBasis },
+      ]),
+      SK: b([
+        { label: '⌊(MU+KL+IN) / 3⌋', value: skAttr },
+        skMod !== 0 && { label: 'Spezies-Mod.', value: skMod, bonus: skMod > 0, penalty: skMod < 0 },
+        hoheSK > 0 && { label: 'Hohe Seelenkraft', value: hoheSK, bonus: true },
+        niedSK > 0 && { label: 'Niedrige Seelenkraft', value: -niedSK, penalty: true },
+      ]),
+      ZK: b([
+        { label: '⌊(2×KO+KK) / 3⌋', value: zkAttr },
+        zkMod !== 0 && { label: 'Spezies-Mod.', value: zkMod, bonus: zkMod > 0, penalty: zkMod < 0 },
+        hoheZK > 0 && { label: 'Hohe Zähigkeit', value: hoheZK, bonus: true },
+        niedZK > 0 && { label: 'Niedrige Zähigkeit', value: -niedZK, penalty: true },
+      ]),
+      SchiP: b([
+        { label: 'Basis', value: 3 },
+        glueck > 0 && { label: 'Glück', value: glueck, bonus: true },
+        pech > 0 && { label: 'Pech', value: -pech, penalty: true },
+      ]),
+    }
+
+    return { values, breakdown }
+  }, [finalAttributes, species, isMagic, isBlessed, vorteile, nachteile])
+
+  const derivedValues = derivedComputed.values
+  const derivationBreakdown = derivedComputed.breakdown
 
   // ── Step validation ──
   const canAdvance = useMemo(() => {
@@ -689,8 +803,8 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
       case 5: return <StepVorNachteile vorteile={vorteile} setVorteile={setVorteile} nachteile={nachteile} setNachteile={setNachteile} apBudget={apBudget} species={species} advantagesAll={advantagesAll} disadvantagesAll={disadvantagesAll} loadingAdv={apiLoading.advantages} loadingDis={apiLoading.disadvantages} errorAdv={apiError.advantages} errorDis={apiError.disadvantages} onRetryAdv={loadAdvantages} onRetryDis={loadDisadvantages} />
       case 6: return <StepAttributes baseAttributes={baseAttributes} attrUpgrades={attrUpgrades} setAttrUpgrades={setAttrUpgrades} gradeData={gradeData} apBudget={apBudget} derivedValues={derivedValues} />
       case 7: return <StepTalentsKT baseSkills={baseSkills} talentUpgrades={talentUpgrades} setTalentUpgrades={setTalentUpgrades} baseKT={baseKT} ktUpgrades={ktUpgrades} setKtUpgrades={setKtUpgrades} atPaSplits={atPaSplits} setAtPaSplits={setAtPaSplits} gradeData={gradeData} apBudget={apBudget} isMagic={isMagic} isBlessed={isBlessed} professionSpells={profession?.spells} professionLiturgies={profession?.liturgies} selectedSpells={selectedSpells} setSelectedSpells={setSelectedSpells} selectedLiturgies={selectedLiturgies} setSelectedLiturgies={setSelectedLiturgies} professionSAs={profession?.special_abilities} purchasedSAs={purchasedSAs} setPurchasedSAs={setPurchasedSAs} specialAbilitiesAll={specialAbilitiesAll} loadingSAs={apiLoading.specialAbilities} errorSAs={apiError.specialAbilities} onRetrySAs={loadSpecialAbilities} talentCategories={talentCategories} ktData={ktData} />
-      case 8: return <StepDerived derivedValues={derivedValues} isMagic={isMagic} isBlessed={isBlessed} />
-      case 9: return <StepSummary name={name} nickname={nickname} species={species} culture={culture} profession={profession} grade={grade} gradeData={gradeData} finalAttributes={finalAttributes} derivedValues={derivedValues} apBudget={apBudget} vorteile={vorteile} nachteile={nachteile} isMagic={isMagic} isBlessed={isBlessed} submitError={submitError} />
+      case 8: return <StepDerived derivedValues={derivedValues} derivationBreakdown={derivationBreakdown} isMagic={isMagic} isBlessed={isBlessed} />
+      case 9: return <StepSummary name={name} nickname={nickname} species={species} culture={culture} profession={profession} grade={grade} gradeData={gradeData} finalAttributes={finalAttributes} derivedValues={derivedValues} derivationBreakdown={derivationBreakdown} apBudget={apBudget} vorteile={vorteile} nachteile={nachteile} isMagic={isMagic} isBlessed={isBlessed} submitError={submitError} baseSkills={baseSkills} talentUpgrades={talentUpgrades} talentCategories={talentCategories} baseKT={baseKT} ktUpgrades={ktUpgrades} ktData={ktData} atPaSplits={atPaSplits} selectedSpells={selectedSpells} selectedLiturgies={selectedLiturgies} purchasedSAs={purchasedSAs} />
       default: return null
     }
   }
@@ -824,6 +938,54 @@ function HelpPanel({ children }) {
   )
 }
 
+// ── Reusable search input ──
+function SearchInput({ value, onChange, placeholder }) {
+  return (
+    <div className="relative">
+      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/50" />
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full pl-8 pr-3 py-2 text-xs bg-dsa-bg-card border border-dsa-bg-medium rounded text-dsa-parchment placeholder:text-dsa-parchment-dark/40 focus:outline-none focus:border-dsa-gold/50"
+      />
+      {value && (
+        <button onClick={() => onChange('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-dsa-parchment-dark/50 hover:text-dsa-parchment">
+          <X className="w-3 h-3" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+// ── Reusable category filter tabs ──
+function CategoryTabs({ activeCat, setActiveCat, categoryOrder, categoryMeta, items, getCat }) {
+  return (
+    <div className="flex flex-wrap gap-1">
+      {categoryOrder.map(cat => {
+        const meta = categoryMeta[cat]
+        const count = cat === 'alle' ? items.length : items.filter(i => getCat(i) === cat).length
+        if (cat !== 'alle' && count === 0) return null
+        return (
+          <button
+            key={cat}
+            onClick={() => setActiveCat(cat)}
+            className={clsx(
+              'px-2 py-1 text-[10px] rounded border transition-colors',
+              activeCat === cat
+                ? 'border-dsa-gold/50 bg-dsa-gold/10 text-dsa-gold font-semibold'
+                : 'border-dsa-bg-medium bg-dsa-bg-card text-dsa-parchment-dark hover:border-dsa-gold/30 hover:text-dsa-parchment'
+            )}
+          >
+            {meta.label} ({count})
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 // ── Step 1: Erfahrungsgrad ──
 function StepGrade({ grade, setGrade }) {
   return (
@@ -953,7 +1115,7 @@ function StepSpecies({ species, setSpecies, speciesVariant, setSpeciesVariant, s
                 <span className="text-xs font-mono text-dsa-gold">{sp.ap_cost || 0} AP</span>
               </div>
               <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
-                <p>GS {sp.gs_base || 8} | SK-Mod {sp.sk_modifier || 0} | ZK-Mod {sp.zk_modifier || 0}</p>
+                <p><TipAbbr term="GS" /> {sp.gs_base || 8} | <TipAbbr term="SK" />-Mod {sp.sk_modifier || 0} | <TipAbbr term="ZK" />-Mod {sp.zk_modifier || 0}</p>
                 <p className="flex flex-wrap gap-1">
                   {ATTR_KEYS.map(k => (
                     <span key={k} className={clsx('font-mono', (baseAttrs[k] || 8) !== 8 && 'text-dsa-gold')}>
@@ -1069,6 +1231,14 @@ function StepSpecies({ species, setSpecies, speciesVariant, setSpeciesVariant, s
 
 // ── Step 4: Culture (from API) ──
 function StepCulture({ culture, setCulture, cultures, loading, error, onRetry }) {
+  const [searchText, setSearchText] = useState('')
+
+  const filtered = useMemo(() => {
+    const q = searchText.toLowerCase().trim()
+    if (!q) return cultures
+    return cultures.filter(c => c.name.toLowerCase().includes(q))
+  }, [cultures, searchText])
+
   if (error) return <LoadError message={error} onRetry={onRetry} />
   if (loading && cultures.length === 0) {
     return (
@@ -1093,35 +1263,45 @@ function StepCulture({ culture, setCulture, cultures, loading, error, onRetry })
       {cultures.length === 0 ? (
         <p className="text-sm text-dsa-parchment-dark">Keine passenden Kulturen für diese Spezies.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {cultures.map((c) => {
-            const langs = (c.languages || []).map(l => typeof l === 'string' ? l : `${l.name} (${l.level})`).join(', ')
-            return (
-              <button
-                key={c.id || c.name}
-                onClick={() => setCulture(c)}
-                className={clsx(
-                  'text-left p-4 rounded border transition-all',
-                  culture?.name === c.name
-                    ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
-                    : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-dsa-gold/40'
-                )}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-display font-semibold text-dsa-parchment">{c.name}</span>
-                  <span className="text-xs font-mono text-dsa-gold">{c.ap_cost || 0} AP</span>
-                </div>
-                <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
-                  {c.skill_bonuses && Object.keys(c.skill_bonuses).length > 0 && (
-                    <p>Talente: {Object.entries(c.skill_bonuses).map(([k,v]) => `${k} +${v}`).join(', ')}</p>
-                  )}
-                  {langs && <p>Sprachen: {langs}</p>}
-                  {c.description && <p className="text-dsa-parchment-dark/50 italic line-clamp-2">{c.description}</p>}
-                </div>
-              </button>
-            )
-          })}
-        </div>
+        <>
+          <SearchInput value={searchText} onChange={setSearchText} placeholder="Kultur suchen..." />
+          <p className="text-[10px] text-dsa-parchment-dark/60">
+            {filtered.length} von {cultures.length} Kulturen
+          </p>
+          {filtered.length === 0 ? (
+            <p className="text-xs text-dsa-parchment-dark/60 py-4 text-center">Keine Treffer für diese Suche.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {filtered.map((c) => {
+                const langs = (c.languages || []).map(l => typeof l === 'string' ? l : `${l.name} (${l.level})`).join(', ')
+                return (
+                  <button
+                    key={c.id || c.name}
+                    onClick={() => setCulture(c)}
+                    className={clsx(
+                      'text-left p-4 rounded border transition-all',
+                      culture?.name === c.name
+                        ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
+                        : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-dsa-gold/40'
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-display font-semibold text-dsa-parchment">{c.name}</span>
+                      <span className="text-xs font-mono text-dsa-gold">{c.ap_cost || 0} <TipAbbr term="AP" /></span>
+                    </div>
+                    <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
+                      {c.skill_bonuses && Object.keys(c.skill_bonuses).length > 0 && (
+                        <p>Talente: {Object.entries(c.skill_bonuses).map(([k,v]) => `${k} +${v}`).join(', ')}</p>
+                      )}
+                      {langs && <p>Sprachen: {langs}</p>}
+                      {c.description && <p className="text-dsa-parchment-dark/50 italic line-clamp-2">{c.description}</p>}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </>
       )}
     </div>
   )
@@ -1129,6 +1309,18 @@ function StepCulture({ culture, setCulture, cultures, loading, error, onRetry })
 
 // ── Step 5: Profession (from API) ──
 function StepProfession({ profession, setProfession, professionVariant, setProfessionVariant, professions, gradeData, loading, error, onRetry }) {
+  const [searchText, setSearchText] = useState('')
+  const [activeCat, setActiveCat] = useState('alle')
+
+  const filtered = useMemo(() => {
+    const q = searchText.toLowerCase().trim()
+    return professions.filter(p => {
+      if (activeCat !== 'alle' && getProfCategory(p) !== activeCat) return false
+      if (q && !p.name.toLowerCase().includes(q)) return false
+      return true
+    })
+  }, [professions, searchText, activeCat])
+
   if (error) return <LoadError message={error} onRetry={onRetry} />
   if (loading && professions.length === 0) {
     return (
@@ -1147,60 +1339,82 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
       </div>
       <HelpPanel>
         <p><strong>Was ist eine Profession?</strong> Dein Beruf/Ausbildung vor dem Abenteuerdasein. Sie gibt dir Kampftechniken, Talente und ggf. Sonderfertigkeiten und Zauber/Liturgien.</p>
-        <p><strong>Kampftechniken (KT):</strong> Bestimmen, wie gut dein Held mit bestimmten Waffengattungen umgehen kann. Höhere KT-Werte = bessere AT/PA-Werte.</p>
+        <p><strong>Kampftechniken (<TipAbbr term="KT" className="text-dsa-parchment" />):</strong> Bestimmen, wie gut dein Held mit bestimmten Waffengattungen umgehen kann. Höhere KT-Werte = bessere <TipAbbr term="AT" className="text-dsa-parchment" />/<TipAbbr term="PA" className="text-dsa-parchment" />-Werte.</p>
         <p><strong>Talente:</strong> Fähigkeiten wie Klettern, Heilkunde oder Überreden. Die Profession gibt Startwerte, die du später weiter steigern kannst.</p>
-        <p><strong>Sonderfertigkeiten (SF):</strong> Spezielle Fähigkeiten wie Wuchtschlag oder Rüstungsgewöhnung, die im Kampf oder Abenteuer Vorteile bringen.</p>
+        <p><strong>Sonderfertigkeiten (<TipAbbr term="SF" className="text-dsa-parchment" />):</strong> Spezielle Fähigkeiten wie Wuchtschlag oder Rüstungsgewöhnung, die im Kampf oder Abenteuer Vorteile bringen.</p>
       </HelpPanel>
       {professions.length === 0 ? (
         <p className="text-sm text-dsa-parchment-dark">Keine passenden Professionen für diese Spezies.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {professions.map((p) => {
-            const ct = p.combat_techniques || {}
-            const hasOverLimit = gradeData && Object.values(ct).some(v => v > gradeData.kt)
-            const skillEntries = p.skills ? Object.keys(p.skills) : []
-            return (
-              <button
-                key={p.id || p.name}
-                onClick={() => setProfession(p)}
-                className={clsx(
-                  'text-left p-4 rounded border transition-all',
-                  profession?.name === p.name
-                    ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
-                    : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-dsa-gold/40'
-                )}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-display font-semibold text-dsa-parchment">{p.name}</span>
-                  <span className="text-xs font-mono text-dsa-gold">{p.ap_cost || 0} AP</span>
-                </div>
-                <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
-                  {Object.keys(ct).length > 0 && (
-                    <p>KT: {Object.entries(ct).map(([k,v]) => `${k} ${v}`).join(', ')}</p>
-                  )}
-                  {skillEntries.length > 0 && (
-                    <p>Talente: {skillEntries.join(', ')}</p>
-                  )}
-                  {(p.special_abilities || []).length > 0 && (
-                    <p>SF: {p.special_abilities.join(', ')}</p>
-                  )}
-                  {p.requires_magic && <p className="text-dsa-mana">Erfordert Magiebegabung</p>}
-                  {p.requires_blessed && <p className="text-dsa-karma">Erfordert Weihe</p>}
-                  {hasOverLimit && (
-                    <p className="flex items-center gap-1 text-yellow-400">
-                      <AlertTriangle className="w-3 h-3" />
-                      Wert überschreitet Grenzwert des Erfahrungsgrads
-                    </p>
-                  )}
-                  {p.description && <p className="text-dsa-parchment-dark/50 italic line-clamp-2">{p.description}</p>}
-                  {Array.isArray(p.variants) && p.variants.length > 0 && (
-                    <p className="text-dsa-gold/60 text-[9px]">{p.variants.length} Variante(n) verfügbar</p>
-                  )}
-                </div>
-              </button>
-            )
-          })}
-        </div>
+        <>
+          <SearchInput value={searchText} onChange={setSearchText} placeholder="Profession suchen..." />
+          <CategoryTabs
+            activeCat={activeCat}
+            setActiveCat={setActiveCat}
+            categoryOrder={PROF_CATEGORY_ORDER}
+            categoryMeta={PROF_CATEGORY_META}
+            items={professions}
+            getCat={getProfCategory}
+          />
+          <p className="text-[10px] text-dsa-parchment-dark/60">
+            {filtered.length} von {professions.length} Professionen
+          </p>
+          {filtered.length === 0 ? (
+            <p className="text-xs text-dsa-parchment-dark/60 py-4 text-center">Keine Treffer für diese Suche.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {filtered.map((p) => {
+                const ct = p.combat_techniques || {}
+                const hasOverLimit = gradeData && Object.values(ct).some(v => v > gradeData.kt)
+                const skillEntries = p.skills ? Object.keys(p.skills) : []
+                const catMeta = PROF_CATEGORY_META[getProfCategory(p)]
+                return (
+                  <button
+                    key={p.id || p.name}
+                    onClick={() => setProfession(p)}
+                    className={clsx(
+                      'text-left p-4 rounded border transition-all',
+                      profession?.name === p.name
+                        ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
+                        : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-dsa-gold/40'
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-display font-semibold text-dsa-parchment">{p.name}</span>
+                        <span className={clsx('text-[9px] shrink-0', catMeta.color)}>{catMeta.label}</span>
+                      </div>
+                      <span className="text-xs font-mono text-dsa-gold">{p.ap_cost || 0} <TipAbbr term="AP" /></span>
+                    </div>
+                    <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
+                      {Object.keys(ct).length > 0 && (
+                        <p>KT: {Object.entries(ct).map(([k,v]) => `${k} ${v}`).join(', ')}</p>
+                      )}
+                      {skillEntries.length > 0 && (
+                        <p>Talente: {skillEntries.join(', ')}</p>
+                      )}
+                      {(p.special_abilities || []).length > 0 && (
+                        <p>SF: {p.special_abilities.join(', ')}</p>
+                      )}
+                      {p.requires_magic && <p className="text-dsa-mana">Erfordert Magiebegabung</p>}
+                      {p.requires_blessed && <p className="text-dsa-karma">Erfordert Weihe</p>}
+                      {hasOverLimit && (
+                        <p className="flex items-center gap-1 text-yellow-400">
+                          <AlertTriangle className="w-3 h-3" />
+                          Wert überschreitet Grenzwert des Erfahrungsgrads
+                        </p>
+                      )}
+                      {p.description && <p className="text-dsa-parchment-dark/50 italic line-clamp-2">{p.description}</p>}
+                      {Array.isArray(p.variants) && p.variants.length > 0 && (
+                        <p className="text-dsa-gold/60 text-[9px]">{p.variants.length} Variante(n) verfügbar</p>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </>
       )}
 
       {/* Profession Variant picker */}
@@ -1257,6 +1471,106 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
   )
 }
 
+// ── Expandable advantage/disadvantage card ──
+function AdvDisCard({ item, active, onToggle, apColor, activeClass, inactiveClass }) {
+  const [expanded, setExpanded] = useState(false)
+  const rulesText = item.rules_text || item.description || ''
+  const catMeta = ADV_CATEGORY_META[item.category] || ADV_CATEGORY_META.allgemein
+
+  return (
+    <div className={clsx(
+      'rounded border text-xs transition-all',
+      active ? activeClass : inactiveClass
+    )}>
+      <button
+        onClick={onToggle}
+        className="w-full text-left px-3 py-2 flex items-center justify-between"
+      >
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className={clsx('truncate', active ? '' : 'text-dsa-parchment')}>{item.name}</span>
+          <span className={clsx('text-[9px] shrink-0', catMeta.color)}>{catMeta.label}</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0 ml-2">
+          <span className={clsx('font-mono text-[11px]', apColor)}>{item.ap} <TipAbbr term="AP" /></span>
+          {rulesText && (
+            <button
+              onClick={e => { e.stopPropagation(); setExpanded(!expanded) }}
+              className="text-dsa-parchment-dark/50 hover:text-dsa-gold transition-colors"
+            >
+              {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          )}
+        </div>
+      </button>
+      {expanded && rulesText && (
+        <div className="px-3 pb-2 text-[10px] text-dsa-parchment-dark/70 leading-relaxed border-t border-dsa-bg-medium/50 pt-1.5">
+          {rulesText}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Filterable advantage/disadvantage list ──
+function AdvDisList({ items, selected, onToggle, loading, error, onRetry, loadingLabel, accentColor }) {
+  const [searchText, setSearchText] = useState('')
+  const [activeCat, setActiveCat] = useState('alle')
+
+  const filtered = useMemo(() => {
+    const q = searchText.toLowerCase().trim()
+    return items.filter(v => {
+      if (activeCat !== 'alle' && v.category !== activeCat) return false
+      if (q && !v.name.toLowerCase().includes(q)) return false
+      return true
+    })
+  }, [items, searchText, activeCat])
+
+  if (error) return <LoadError message={error} onRetry={onRetry} />
+  if (loading) return <div className="flex items-center gap-2 py-4 text-xs text-dsa-parchment-dark"><Loader2 className="w-4 h-4 animate-spin" />{loadingLabel}</div>
+
+  const isAdvantage = accentColor === 'green'
+  const activeClass = isAdvantage ? 'border-green-700 bg-green-900/20 text-green-300' : 'border-red-700 bg-red-900/20 text-red-300'
+  const inactiveClass = isAdvantage ? 'border-dsa-bg-medium bg-dsa-bg-card hover:border-green-800' : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-red-800'
+  const apColor = isAdvantage ? 'text-red-400' : 'text-green-400'
+
+  return (
+    <div className="space-y-2">
+      <SearchInput value={searchText} onChange={setSearchText} placeholder={isAdvantage ? 'Vorteil suchen...' : 'Nachteil suchen...'} />
+      <CategoryTabs
+        activeCat={activeCat}
+        setActiveCat={setActiveCat}
+        categoryOrder={ADV_CATEGORY_ORDER}
+        categoryMeta={ADV_CATEGORY_META}
+        items={items}
+        getCat={v => v.category}
+      />
+      <p className="text-[10px] text-dsa-parchment-dark/60">
+        {filtered.length} von {items.length} {isAdvantage ? 'Vorteile' : 'Nachteile'}
+        {selected.length > 0 && <span className="text-dsa-gold ml-2">&middot; {selected.length} gewählt</span>}
+      </p>
+      <div className="space-y-1 max-h-[50vh] overflow-y-auto pr-1">
+        {filtered.length === 0 ? (
+          <p className="text-xs text-dsa-parchment-dark/60 py-4 text-center">Keine Treffer für diese Suche.</p>
+        ) : filtered.map(v => {
+          const active = selected.some(x => x.name === v.name)
+          const displayItem = { ...v, ap: isAdvantage ? v.ap : v.ap }
+          return (
+            <AdvDisCard
+              key={v.name}
+              item={displayItem}
+              active={active}
+              onToggle={() => onToggle(v)}
+              apColor={apColor}
+              activeClass={activeClass}
+              inactiveClass={inactiveClass}
+            />
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ── Step 6: Vor- & Nachteile ──
 function StepVorNachteile({ vorteile, setVorteile, nachteile, setNachteile, apBudget, species, advantagesAll, disadvantagesAll, loadingAdv, loadingDis, errorAdv, errorDis, onRetryAdv, onRetryDis }) {
   const autoAdvantages = species?.auto_advantages || []
@@ -1264,7 +1578,6 @@ function StepVorNachteile({ vorteile, setVorteile, nachteile, setNachteile, apBu
   const totalNachteilRefund = nachteile.reduce((s, n) => s + n.ap, 0)
   const cappedRefund = Math.min(80, totalNachteilRefund)
 
-  // Convert DB rows to {name, ap} format matching existing state shape
   const advPresets = useMemo(() =>
     advantagesAll.map(a => ({ name: a.name, ap: a.ap_cost, id: a.id, category: a.category, description: a.description, rules_text: a.rules_text })),
     [advantagesAll]
@@ -1290,12 +1603,13 @@ function StepVorNachteile({ vorteile, setVorteile, nachteile, setNachteile, apBu
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-display font-semibold text-dsa-gold mb-1">Vor- & Nachteile</h2>
-        <p className="text-xs text-dsa-parchment-dark">Vorteile kosten AP (max. 80 AP), Nachteile geben AP zurück (max. 80 AP).</p>
+        <p className="text-xs text-dsa-parchment-dark">Vorteile kosten <TipAbbr term="AP" /> (max. 80), Nachteile geben <TipAbbr term="AP" /> zurück (max. 80).</p>
       </div>
       <HelpPanel>
-        <p><strong>80-AP-Deckelung:</strong> Du darfst maximal 80 AP für Vorteile ausgeben und maximal 80 AP durch Nachteile zurückbekommen. Darüber hinaus bringt es keine weiteren AP.</p>
-        <p><strong>Vorteile im Spiel:</strong> Vorteile geben dauerhafte Boni (z.B. mehr LeP, Glück, bessere Sicht). Sie wirken passiv und erfordern keine Aktivierung.</p>
+        <p><strong>80-AP-Deckelung:</strong> Du darfst maximal 80 <TipAbbr term="AP" className="text-dsa-parchment" /> für Vorteile ausgeben und maximal 80 AP durch Nachteile zurückbekommen. Darüber hinaus bringt es keine weiteren AP.</p>
+        <p><strong>Vorteile im Spiel:</strong> Vorteile geben dauerhafte Boni (z.B. mehr <TipAbbr term="LeP" className="text-dsa-parchment" />, Glück, bessere Sicht). Sie wirken passiv und erfordern keine Aktivierung.</p>
         <p><strong>Nachteile im Spiel:</strong> Nachteile schränken deinen Helden ein (z.B. Angst, Goldgier, niedrigere Werte). Der SL kann sie im Spiel einfordern. Sie machen den Charakter interessanter!</p>
+        <p><strong>Beschreibungen:</strong> Klicke auf den Pfeil neben dem AP-Wert, um die Regelbeschreibung zu lesen.</p>
         <p><strong>Dieser Schritt ist optional.</strong> Du kannst ohne Vor-/Nachteile weitergehen und AP anderweitig ausgeben.</p>
       </HelpPanel>
 
@@ -1339,60 +1653,29 @@ function StepVorNachteile({ vorteile, setVorteile, nachteile, setNachteile, apBu
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <h3 className="text-sm font-display font-semibold text-green-400 mb-2">Vorteile</h3>
-          {errorAdv && <LoadError message={errorAdv} onRetry={onRetryAdv} />}
-          {loadingAdv && <div className="flex items-center gap-2 py-4 text-xs text-dsa-parchment-dark"><Loader2 className="w-4 h-4 animate-spin" />Lade Vorteile...</div>}
-          {!loadingAdv && !errorAdv && (
-            <div className="space-y-1 max-h-80 overflow-y-auto pr-1">
-              {advPresets.map((v) => {
-                const active = vorteile.some(x => x.name === v.name)
-                return (
-                  <button
-                    key={v.name}
-                    onClick={() => toggleVorteil(v)}
-                    title={v.rules_text || v.description || ''}
-                    className={clsx(
-                      'w-full text-left px-3 py-2 rounded border text-xs transition-all flex items-center justify-between',
-                      active
-                        ? 'border-green-700 bg-green-900/20 text-green-300'
-                        : 'border-dsa-bg-medium bg-dsa-bg-card text-dsa-parchment-dark hover:border-green-800'
-                    )}
-                  >
-                    <span>{v.name}</span>
-                    <span className="font-mono text-red-400">{v.ap} AP</span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
+          <AdvDisList
+            items={advPresets}
+            selected={vorteile}
+            onToggle={toggleVorteil}
+            loading={loadingAdv}
+            error={errorAdv}
+            onRetry={onRetryAdv}
+            loadingLabel="Lade Vorteile..."
+            accentColor="green"
+          />
         </div>
-
         <div>
           <h3 className="text-sm font-display font-semibold text-red-400 mb-2">Nachteile</h3>
-          {errorDis && <LoadError message={errorDis} onRetry={onRetryDis} />}
-          {loadingDis && <div className="flex items-center gap-2 py-4 text-xs text-dsa-parchment-dark"><Loader2 className="w-4 h-4 animate-spin" />Lade Nachteile...</div>}
-          {!loadingDis && !errorDis && (
-            <div className="space-y-1 max-h-80 overflow-y-auto pr-1">
-              {disPresets.map((n) => {
-                const active = nachteile.some(x => x.name === n.name)
-                return (
-                  <button
-                    key={n.name}
-                    onClick={() => toggleNachteil(n)}
-                    title={n.rules_text || n.description || ''}
-                    className={clsx(
-                      'w-full text-left px-3 py-2 rounded border text-xs transition-all flex items-center justify-between',
-                      active
-                        ? 'border-red-700 bg-red-900/20 text-red-300'
-                        : 'border-dsa-bg-medium bg-dsa-bg-card text-dsa-parchment-dark hover:border-red-800'
-                    )}
-                  >
-                    <span>{n.name}</span>
-                    <span className="font-mono text-green-400">+{n.ap} AP</span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
+          <AdvDisList
+            items={disPresets}
+            selected={nachteile}
+            onToggle={toggleNachteil}
+            loading={loadingDis}
+            error={errorDis}
+            onRetry={onRetryDis}
+            loadingLabel="Lade Nachteile..."
+            accentColor="red"
+          />
         </div>
       </div>
     </div>
@@ -1471,11 +1754,65 @@ function StepAttributes({ baseAttributes, attrUpgrades, setAttrUpgrades, gradeDa
   )
 }
 
-function DerivedChip({ label, value }) {
+// ── Derivation breakdown panel (reused in StepDerived + StepSummary) ──
+function DerivationBreakdownPanel({ steps, total }) {
   return (
-    <div className="flex items-center gap-1 bg-dsa-bg rounded px-2 py-1">
-      <TipAbbr term={label} className="text-dsa-gold font-semibold" />
-      <span className="font-mono text-dsa-parchment">{value}</span>
+    <div className="bg-dsa-bg border border-dsa-bg-medium rounded p-2.5 text-xs space-y-0.5 animate-fade-in">
+      {steps.map((s, i) => (
+        <div key={i} className="flex justify-between gap-4">
+          <span className="text-dsa-parchment-dark">{s.label}</span>
+          <span className={clsx(
+            'font-mono',
+            s.bonus ? 'text-green-400' : s.penalty ? 'text-red-400' : 'text-dsa-parchment'
+          )}>
+            {s.bonus ? '+' : ''}{s.value}
+          </span>
+        </div>
+      ))}
+      <div className="flex justify-between gap-4 border-t border-dsa-bg-medium pt-1 mt-1">
+        <span className="text-dsa-parchment font-semibold">Gesamt</span>
+        <span className="font-mono font-bold text-dsa-parchment">{total}</span>
+      </div>
+    </div>
+  )
+}
+
+// ── Collapsible section for Summary ──
+function SummarySection({ title, children, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-2.5"
+      >
+        <h3 className="text-sm font-display font-semibold text-dsa-gold">{title}</h3>
+        <ChevronRight className={clsx('w-4 h-4 text-dsa-parchment-dark transition-transform', open && 'rotate-90')} />
+      </button>
+      {open && <div className="px-4 pb-3 border-t border-dsa-bg-medium">{children}</div>}
+    </div>
+  )
+}
+
+function DerivedChip({ label, value, breakdown }) {
+  const [showBreakdown, setShowBreakdown] = useState(false)
+  return (
+    <div className="relative">
+      <button
+        onClick={() => breakdown && setShowBreakdown(!showBreakdown)}
+        className={clsx(
+          'flex items-center gap-1 bg-dsa-bg rounded px-2 py-1',
+          breakdown ? 'cursor-pointer hover:bg-dsa-bg-medium/50 transition-colors' : 'cursor-default'
+        )}
+      >
+        <TipAbbr term={label} className="text-dsa-gold font-semibold" />
+        <span className="font-mono text-dsa-parchment">{value}</span>
+      </button>
+      {showBreakdown && breakdown && (
+        <div className="absolute z-50 top-full left-0 mt-1 min-w-[200px]">
+          <DerivationBreakdownPanel steps={breakdown} total={value} />
+        </div>
+      )}
     </div>
   )
 }
@@ -1491,6 +1828,32 @@ const SA_CATEGORY_META = {
   karmal:              { label: 'Karmal',         color: 'text-amber-400' },
 }
 const SA_CATEGORY_ORDER = ['alle', 'nahkampf', 'fernkampf', 'allgemein', 'allgemein_nichtkampf', 'magisch', 'karmal']
+
+// ── Advantage/Disadvantage category metadata ──
+const ADV_CATEGORY_META = {
+  alle:       { label: 'Alle',       color: 'text-dsa-parchment' },
+  allgemein:  { label: 'Allgemein',  color: 'text-dsa-gold' },
+  kampf:      { label: 'Kampf',      color: 'text-red-400' },
+  magisch:    { label: 'Magisch',    color: 'text-violet-400' },
+  karmal:     { label: 'Karmal',     color: 'text-amber-400' },
+  sozial:     { label: 'Sozial',     color: 'text-pink-400' },
+}
+const ADV_CATEGORY_ORDER = ['alle', 'allgemein', 'kampf', 'magisch', 'karmal', 'sozial']
+
+// ── Profession category metadata ──
+const PROF_CATEGORY_META = {
+  alle:    { label: 'Alle',    color: 'text-dsa-parchment' },
+  mundane: { label: 'Mundan',  color: 'text-dsa-gold' },
+  magic:   { label: 'Magisch', color: 'text-violet-400' },
+  blessed: { label: 'Geweiht', color: 'text-amber-400' },
+}
+const PROF_CATEGORY_ORDER = ['alle', 'mundane', 'magic', 'blessed']
+
+function getProfCategory(p) {
+  if (p.requires_magic) return 'magic'
+  if (p.requires_blessed) return 'blessed'
+  return 'mundane'
+}
 
 // ── SA Selector with search & category filter ──
 function SASelector({ professionSAs, purchasedSAs, setPurchasedSAs, specialAbilitiesAll, loadingSAs, errorSAs, onRetrySAs, apBudget }) {
@@ -1664,11 +2027,12 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
         <p className="text-xs text-dsa-parchment-dark">Steigere Talente und Kampftechniken mit freien AP.</p>
       </div>
       <HelpPanel>
-        <p><strong>Talentproben (3W20):</strong> Jedes Talent wird mit 3W20 gegen drei Attribute geprobt. Der Fertigkeitswert (FW) bestimmt, wie viele Punkte du zum Ausgleichen hast.</p>
-        <p><strong>FW (Fertigkeitswert):</strong> Je höher, desto besser. FW 0 = ungeübt (Probe möglich, aber schwer). FW 4-8 = solide. FW 10+ = Meisterhaft.</p>
-        <p><strong>Kampftechniken:</strong> Bestimmen AT (Attacke) und PA (Parade) mit einer Waffengattung. Bei Nahkampf wird der KTW in AT und PA aufgeteilt.</p>
-        <p><strong>AT/PA-Verteilung:</strong> Der Kampftechnikwert (KTW) wird auf Attacke und Parade verteilt. Offensiv: mehr AT. Defensiv: mehr PA. Die Summe muss immer gleich KTW sein.</p>
-        <p><strong>Steigerungsfaktor (SF):</strong> A ist am billigsten, E am teuersten. SF bestimmt die AP-Kosten pro Stufe.</p>
+        <p><strong>Talentproben (3W20):</strong> Jedes Talent wird mit 3W20 gegen drei Attribute geprobt. Der <TipAbbr term="FW" className="text-dsa-parchment" /> bestimmt, wie viele Punkte du zum Ausgleichen hast.</p>
+        <p><strong><TipAbbr term="FW" className="text-dsa-parchment" /> (Fertigkeitswert):</strong> FW 0 = ungeübt (Probe möglich, aber schwer). FW 4 = Anfänger. FW 10 = Experte. FW 18+ = Meister.</p>
+        <p><strong>Kampftechniken:</strong> Bestimmen <TipAbbr term="AT" className="text-dsa-parchment" /> (Attacke) und <TipAbbr term="PA" className="text-dsa-parchment" /> (Parade) mit einer Waffengattung. Bei Nahkampf wird der KTW in AT und PA aufgeteilt.</p>
+        <p><strong><TipAbbr term="AT" className="text-dsa-parchment" />/<TipAbbr term="PA" className="text-dsa-parchment" />-Verteilung:</strong> Der Kampftechnikwert (KTW) wird auf Attacke und Parade verteilt. Offensiv: mehr AT. Defensiv: mehr PA. Die Summe muss immer gleich KTW sein.</p>
+        <p><strong>Steigerungsfaktor (<TipAbbr term="SF" className="text-dsa-parchment" />):</strong> Bestimmt <TipAbbr term="AP" className="text-dsa-parchment" />-Kosten pro Stufe: A = 1 AP, B = 2 AP, C = 3 AP, D = 4 AP, E = 5 AP (bei FW 0–7; darüber wird es progressiv teurer).</p>
+        <p><strong>Beruf-Werte:</strong> Werte mit dem Tag <span className="inline-flex items-center gap-0.5 text-[9px] text-dsa-gold/70 bg-dsa-gold/10 rounded px-1"><Shield className="w-2.5 h-2.5" />Beruf</span> wurden durch Kultur oder Profession vergeben.</p>
       </HelpPanel>
 
       <div className="flex border-b border-dsa-bg-medium">
@@ -1741,7 +2105,11 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
                     <div key={talent} className="flex items-center justify-between bg-dsa-bg-card border border-dsa-bg-medium rounded px-3 py-1.5">
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-xs text-dsa-parchment truncate">{talent}</span>
-                        {base > 0 && <span className="text-[10px] text-dsa-parchment-dark/50">Basis: {base}</span>}
+                        {base > 0 && (
+                          <span className="inline-flex items-center gap-0.5 text-[9px] text-dsa-gold/70 bg-dsa-gold/10 rounded px-1 shrink-0">
+                            <Shield className="w-2.5 h-2.5" />Beruf {base}
+                          </span>
+                        )}
                       </div>
                       <IncDec
                         value={val}
@@ -1787,9 +2155,13 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-xs text-dsa-parchment truncate">{kt.name}</span>
                     <span className="text-[10px] text-dsa-parchment-dark/50">
-                      {kt.type === 'ranged' ? 'Fern' : 'Nah'} | SF {kt.sf}
+                      {kt.type === 'ranged' ? 'Fern' : 'Nah'} | <TipAbbr term="SF" /> {kt.sf}
                     </span>
-                    {base > 6 && <span className="text-[10px] text-dsa-gold/60">Basis: {base}</span>}
+                    {base > 6 && (
+                      <span className="inline-flex items-center gap-0.5 text-[9px] text-dsa-gold/70 bg-dsa-gold/10 rounded px-1 shrink-0">
+                        <Shield className="w-2.5 h-2.5" />Beruf {base}
+                      </span>
+                    )}
                   </div>
                   <IncDec
                     value={val}
@@ -1832,9 +2204,9 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
                 {/* AT/PA split for melee techniques with KTW > 6 */}
                 {needsSplit && (
                   <div className="flex items-center gap-3 mt-1.5 pl-2">
-                    <span className="text-[10px] text-dsa-parchment-dark">AT/PA-Verteilung:</span>
+                    <span className="text-[10px] text-dsa-parchment-dark"><TipAbbr term="AT" />/<TipAbbr term="PA" />-Verteilung:</span>
                     <div className="flex items-center gap-1">
-                      <label className="text-[10px] text-red-400 font-semibold">AT</label>
+                      <label className="text-[10px] text-red-400 font-semibold"><TipAbbr term="AT" /></label>
                       <input
                         type="number"
                         min={0}
@@ -1849,7 +2221,7 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
                     </div>
                     <span className="text-[10px] text-dsa-parchment-dark">/</span>
                     <div className="flex items-center gap-1">
-                      <label className="text-[10px] text-blue-400 font-semibold">PA</label>
+                      <label className="text-[10px] text-blue-400 font-semibold"><TipAbbr term="PA" /></label>
                       <input
                         type="number"
                         min={0}
@@ -1959,26 +2331,28 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
 }
 
 // ── Step 9: Abgeleitete Werte ──
-function StepDerived({ derivedValues, isMagic, isBlessed }) {
+function StepDerived({ derivedValues, derivationBreakdown, isMagic, isBlessed }) {
+  const [expanded, setExpanded] = useState(null)
+
   const rows = [
-    { term: 'LeP', label: 'Lebenspunkte', value: derivedValues.LeP_max, show: true },
-    { term: 'AsP', label: 'Astralpunkte', value: derivedValues.AsP_max, show: isMagic },
-    { term: 'KaP', label: 'Karmapunkte', value: derivedValues.KaP_max, show: isBlessed },
-    { term: 'GS', label: 'Geschwindigkeit', value: derivedValues.GS, show: true },
-    { term: 'INI', label: 'Initiative (Basis)', value: derivedValues.INI_basis, show: true },
-    { term: 'AW', label: 'Ausweichen', value: derivedValues.AW, show: true },
-    { term: 'WS', label: 'Wundschwelle', value: derivedValues.WS, show: true },
-    { term: 'SB', label: 'Schadensbonus', value: derivedValues.SB, show: true },
-    { term: 'SK', label: 'Seelenkraft', value: derivedValues.SK, show: true },
-    { term: 'ZK', label: 'Zähigkeit', value: derivedValues.ZK, show: true },
-    { term: 'SchiP', label: 'Schicksalspunkte', value: derivedValues.SchiP, show: true },
+    { term: 'LeP', key: 'LeP_max', label: 'Lebenspunkte', value: derivedValues.LeP_max, show: true },
+    { term: 'AsP', key: 'AsP_max', label: 'Astralpunkte', value: derivedValues.AsP_max, show: isMagic },
+    { term: 'KaP', key: 'KaP_max', label: 'Karmapunkte', value: derivedValues.KaP_max, show: isBlessed },
+    { term: 'GS', key: 'GS', label: 'Geschwindigkeit', value: derivedValues.GS, show: true },
+    { term: 'INI', key: 'INI_basis', label: 'Initiative (Basis)', value: derivedValues.INI_basis, show: true },
+    { term: 'AW', key: 'AW', label: 'Ausweichen', value: derivedValues.AW, show: true },
+    { term: 'WS', key: 'WS', label: 'Wundschwelle', value: derivedValues.WS, show: true },
+    { term: 'SB', key: 'SB', label: 'Schadensbonus', value: derivedValues.SB, show: true },
+    { term: 'SK', key: 'SK', label: 'Seelenkraft', value: derivedValues.SK, show: true },
+    { term: 'ZK', key: 'ZK', label: 'Zähigkeit', value: derivedValues.ZK, show: true },
+    { term: 'SchiP', key: 'SchiP', label: 'Schicksalspunkte', value: derivedValues.SchiP, show: true },
   ]
 
   return (
     <div className="space-y-4">
       <div>
         <h2 className="text-lg font-display font-semibold text-dsa-gold mb-1">Abgeleitete Werte</h2>
-        <p className="text-xs text-dsa-parchment-dark">Diese Werte ergeben sich aus deinen Attributen und der Spezies.</p>
+        <p className="text-xs text-dsa-parchment-dark">Diese Werte ergeben sich aus Attributen, Spezies und Vor-/Nachteilen. Klicke auf einen Wert für die Herleitung.</p>
       </div>
       <HelpPanel>
         <p><strong>LeP (Lebenspunkte):</strong> Spezies-Basis + KO x 2. Bestimmt Überlebensfähigkeit.</p>
@@ -1986,17 +2360,27 @@ function StepDerived({ derivedValues, isMagic, isBlessed }) {
         <p><strong>INI (Initiative):</strong> (MU+GE)/2. Bestimmt Handlungsreihenfolge im Kampf (+1W6).</p>
         <p><strong>AW (Ausweichen):</strong> GE/2. Alternative zur Parade ohne Waffe.</p>
         <p><strong>SK (Seelenkraft):</strong> Widerstand gegen Geisteszauber. ZK (Zähigkeit): Widerstand gegen Körperzauber/-gifte.</p>
-        <p><strong>SchiP:</strong> 3 Schicksalspunkte. Können im Spiel für Probe wiederholen, Schaden halbieren oder Extra-Reaktion eingesetzt werden.</p>
+        <p><strong>SchiP:</strong> Schicksalspunkte. Basis 3, modifiziert durch Glück/Pech. Im Spiel für Probe wiederholen, Schaden halbieren oder Extra-Reaktion.</p>
         <p>Diese Werte können hier nicht direkt geändert werden. Gehe zurück zu Schritt 7, um Attribute anzupassen.</p>
       </HelpPanel>
       <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded divide-y divide-dsa-bg-medium">
         {rows.filter(r => r.show).map(r => (
-          <div key={r.term} className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-2">
-              <TipAbbr term={r.term} className="text-sm font-semibold text-dsa-gold" />
-              <span className="text-xs text-dsa-parchment-dark">{r.label}</span>
-            </div>
-            <span className="text-sm font-mono font-bold text-dsa-parchment">{r.value}</span>
+          <div key={r.term}>
+            <button
+              onClick={() => setExpanded(expanded === r.key ? null : r.key)}
+              className="w-full flex items-center justify-between px-4 py-3 hover:bg-dsa-bg-medium/30 transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <TipAbbr term={r.term} className="text-sm font-semibold text-dsa-gold" />
+                <span className="text-xs text-dsa-parchment-dark">{r.label}</span>
+              </div>
+              <span className="text-sm font-mono font-bold text-dsa-parchment">{r.value}</span>
+            </button>
+            {expanded === r.key && derivationBreakdown[r.key] && (
+              <div className="px-4 pb-3">
+                <DerivationBreakdownPanel steps={derivationBreakdown[r.key]} total={r.value} />
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -2005,9 +2389,56 @@ function StepDerived({ derivedValues, isMagic, isBlessed }) {
 }
 
 // ── Step 10: Zusammenfassung ──
-function StepSummary({ name, nickname, species, culture, profession, grade, gradeData, finalAttributes, derivedValues, apBudget, vorteile, nachteile, isMagic, isBlessed, submitError }) {
+function StepSummary({
+  name, nickname, species, culture, profession, grade, gradeData,
+  finalAttributes, derivedValues, derivationBreakdown, apBudget,
+  vorteile, nachteile, isMagic, isBlessed, submitError,
+  baseSkills, talentUpgrades, talentCategories,
+  baseKT, ktUpgrades, ktData, atPaSplits,
+  selectedSpells, selectedLiturgies,
+  purchasedSAs,
+}) {
+  // Final talent values grouped by category (only FW > 0)
+  const talentsByCategory = useMemo(() => {
+    const finalSkills = {}
+    for (const [k, v] of Object.entries(baseSkills || {})) {
+      const fw = v + (talentUpgrades?.[k] || 0)
+      if (fw > 0) finalSkills[k] = fw
+    }
+    for (const [k, v] of Object.entries(talentUpgrades || {})) {
+      if (!finalSkills[k] && v > 0) finalSkills[k] = (baseSkills?.[k] || 0) + v
+    }
+    return (talentCategories || []).map(cat => ({
+      ...cat,
+      talents: cat.talents
+        .filter(t => finalSkills[t])
+        .map(t => ({ name: t, fw: finalSkills[t] }))
+    })).filter(cat => cat.talents.length > 0)
+  }, [baseSkills, talentUpgrades, talentCategories])
+
+  // Final KT values (only > 6)
+  const finalKTs = useMemo(() => {
+    return (ktData || []).map(kt => {
+      const ktw = (baseKT?.[kt.name] || 6) + (ktUpgrades?.[kt.name] || 0)
+      const split = atPaSplits?.[kt.name]
+      return { name: kt.name, ktw, type: kt.type, at: split?.at, pa: split?.pa }
+    }).filter(kt => kt.ktw > 6)
+  }, [ktData, baseKT, ktUpgrades, atPaSplits])
+
+  // All special abilities
+  const allSAs = useMemo(() => {
+    const profSAs = profession?.special_abilities || []
+    const purchased = (purchasedSAs || []).map(sa => sa.name)
+    return [...profSAs, ...purchased]
+  }, [profession, purchasedSAs])
+
+  const languages = culture?.languages || []
+  const equipment = profession?.starting_equipment || []
+  const spells = selectedSpells || {}
+  const liturgies = selectedLiturgies || {}
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-3">
       <div>
         <h2 className="text-lg font-display font-semibold text-dsa-gold mb-1">Zusammenfassung</h2>
         <p className="text-xs text-dsa-parchment-dark">Prüfe deinen Charakter vor dem Erstellen.</p>
@@ -2018,6 +2449,7 @@ function StepSummary({ name, nickname, species, culture, profession, grade, grad
         <p><strong>Nach der Erstellung:</strong> Du kannst den Charakter im Nachhinein bearbeiten und mit verdienten AP weiter steigern.</p>
       </HelpPanel>
 
+      {/* Character identity card */}
       <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded p-4 space-y-2">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-display font-bold text-dsa-parchment">{name}</h3>
@@ -2031,9 +2463,9 @@ function StepSummary({ name, nickname, species, culture, profession, grade, grad
         </div>
       </div>
 
-      <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded p-4">
-        <h3 className="text-sm font-display font-semibold text-dsa-parchment mb-2">Attribute</h3>
-        <div className="grid grid-cols-4 gap-2">
+      {/* Attributes */}
+      <SummarySection title="Attribute" defaultOpen>
+        <div className="grid grid-cols-4 gap-2 pt-2">
           {ATTR_KEYS.map(attr => (
             <div key={attr} className="text-center bg-dsa-bg rounded p-2">
               <div className={clsx('text-xs font-semibold', ATTR_META[attr].color)}>{attr}</div>
@@ -2041,29 +2473,13 @@ function StepSummary({ name, nickname, species, culture, profession, grade, grad
             </div>
           ))}
         </div>
-      </div>
+      </SummarySection>
 
-      <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded p-4">
-        <h3 className="text-sm font-display font-semibold text-dsa-parchment mb-2">Abgeleitete Werte</h3>
-        <div className="flex flex-wrap gap-2">
-          <DerivedChip label="LeP" value={derivedValues.LeP_max} />
-          {isMagic && <DerivedChip label="AsP" value={derivedValues.AsP_max} />}
-          {isBlessed && <DerivedChip label="KaP" value={derivedValues.KaP_max} />}
-          <DerivedChip label="GS" value={derivedValues.GS} />
-          <DerivedChip label="INI" value={derivedValues.INI_basis} />
-          <DerivedChip label="AW" value={derivedValues.AW} />
-          <DerivedChip label="WS" value={derivedValues.WS} />
-          <DerivedChip label="SK" value={derivedValues.SK} />
-          <DerivedChip label="ZK" value={derivedValues.ZK} />
-          <DerivedChip label="SchiP" value={derivedValues.SchiP} />
-        </div>
-      </div>
-
+      {/* Vor-/Nachteile */}
       {(vorteile.length > 0 || nachteile.length > 0) && (
-        <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded p-4">
-          <h3 className="text-sm font-display font-semibold text-dsa-parchment mb-2">Vor- & Nachteile</h3>
-          <div className="grid grid-cols-2 gap-4 text-xs">
-            <div>
+        <SummarySection title={`Vor- & Nachteile (${vorteile.length + nachteile.length})`} defaultOpen>
+          <div className="grid grid-cols-2 gap-4 text-xs pt-2">
+            <div className="space-y-0.5">
               {vorteile.map(v => (
                 <div key={v.name} className="flex justify-between text-green-400">
                   <span>{v.name}</span>
@@ -2071,7 +2487,7 @@ function StepSummary({ name, nickname, species, culture, profession, grade, grad
                 </div>
               ))}
             </div>
-            <div>
+            <div className="space-y-0.5">
               {nachteile.map(n => (
                 <div key={n.name} className="flex justify-between text-red-400">
                   <span>{n.name}</span>
@@ -2080,9 +2496,124 @@ function StepSummary({ name, nickname, species, culture, profession, grade, grad
               ))}
             </div>
           </div>
-        </div>
+        </SummarySection>
       )}
 
+      {/* Talente */}
+      {talentsByCategory.length > 0 && (
+        <SummarySection title="Talente">
+          <div className="space-y-3 pt-2">
+            {talentsByCategory.map(cat => (
+              <div key={cat.id}>
+                <h4 className={clsx('text-xs font-semibold mb-1', cat.color)}>{cat.label}</h4>
+                <div className="flex flex-wrap gap-x-4 gap-y-0.5">
+                  {cat.talents.map(t => (
+                    <span key={t.name} className="text-xs text-dsa-parchment">
+                      {t.name}: <span className="font-mono text-dsa-gold">{t.fw}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </SummarySection>
+      )}
+
+      {/* Kampftechniken */}
+      {finalKTs.length > 0 && (
+        <SummarySection title="Kampftechniken">
+          <div className="space-y-1 pt-2">
+            {finalKTs.map(kt => (
+              <div key={kt.name} className="flex items-center justify-between text-xs">
+                <span className="text-dsa-parchment">{kt.name}</span>
+                <span className="font-mono text-dsa-gold">
+                  {kt.ktw}
+                  {kt.type === 'melee' && kt.at != null && (
+                    <span className="text-dsa-parchment-dark ml-2">AT {kt.at} / PA {kt.pa}</span>
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        </SummarySection>
+      )}
+
+      {/* Zauber */}
+      {isMagic && Object.keys(spells).length > 0 && (
+        <SummarySection title="Zauber">
+          <div className="flex flex-wrap gap-x-4 gap-y-0.5 pt-2">
+            {Object.entries(spells).map(([name, fw]) => (
+              <span key={name} className="text-xs text-dsa-parchment">
+                {name}: <span className="font-mono text-violet-400">{fw}</span>
+              </span>
+            ))}
+          </div>
+        </SummarySection>
+      )}
+
+      {/* Liturgien */}
+      {isBlessed && Object.keys(liturgies).length > 0 && (
+        <SummarySection title="Liturgien">
+          <div className="flex flex-wrap gap-x-4 gap-y-0.5 pt-2">
+            {Object.entries(liturgies).map(([name, fw]) => (
+              <span key={name} className="text-xs text-dsa-parchment">
+                {name}: <span className="font-mono text-amber-400">{fw}</span>
+              </span>
+            ))}
+          </div>
+        </SummarySection>
+      )}
+
+      {/* Sonderfertigkeiten */}
+      {allSAs.length > 0 && (
+        <SummarySection title={`Sonderfertigkeiten (${allSAs.length})`}>
+          <div className="flex flex-wrap gap-x-3 gap-y-1 pt-2">
+            {allSAs.map(sa => (
+              <span key={sa} className="text-xs text-dsa-parchment bg-dsa-bg rounded px-1.5 py-0.5">{sa}</span>
+            ))}
+          </div>
+        </SummarySection>
+      )}
+
+      {/* Sprachen */}
+      {languages.length > 0 && (
+        <SummarySection title="Sprachen">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 pt-2">
+            {languages.map(lang => (
+              <span key={lang} className="text-xs text-dsa-parchment bg-dsa-bg rounded px-1.5 py-0.5">{lang}</span>
+            ))}
+          </div>
+        </SummarySection>
+      )}
+
+      {/* Startausrüstung */}
+      {equipment.length > 0 && (
+        <SummarySection title="Startausrüstung">
+          <div className="space-y-0.5 pt-2">
+            {equipment.map((item, i) => (
+              <div key={i} className="text-xs text-dsa-parchment">{typeof item === 'string' ? item : item.name || JSON.stringify(item)}</div>
+            ))}
+          </div>
+        </SummarySection>
+      )}
+
+      {/* Abgeleitete Werte with clickable breakdown */}
+      <SummarySection title="Abgeleitete Werte" defaultOpen>
+        <div className="flex flex-wrap gap-2 pt-2">
+          <DerivedChip label="LeP" value={derivedValues.LeP_max} breakdown={derivationBreakdown?.LeP_max} />
+          {isMagic && <DerivedChip label="AsP" value={derivedValues.AsP_max} breakdown={derivationBreakdown?.AsP_max} />}
+          {isBlessed && <DerivedChip label="KaP" value={derivedValues.KaP_max} breakdown={derivationBreakdown?.KaP_max} />}
+          <DerivedChip label="GS" value={derivedValues.GS} breakdown={derivationBreakdown?.GS} />
+          <DerivedChip label="INI" value={derivedValues.INI_basis} breakdown={derivationBreakdown?.INI_basis} />
+          <DerivedChip label="AW" value={derivedValues.AW} breakdown={derivationBreakdown?.AW} />
+          <DerivedChip label="WS" value={derivedValues.WS} breakdown={derivationBreakdown?.WS} />
+          <DerivedChip label="SK" value={derivedValues.SK} breakdown={derivationBreakdown?.SK} />
+          <DerivedChip label="ZK" value={derivedValues.ZK} breakdown={derivationBreakdown?.ZK} />
+          <DerivedChip label="SchiP" value={derivedValues.SchiP} breakdown={derivationBreakdown?.SchiP} />
+        </div>
+      </SummarySection>
+
+      {/* AP Budget */}
       <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded p-4">
         <h3 className="text-sm font-display font-semibold text-dsa-parchment mb-2">AP-Bilanz</h3>
         <div className="space-y-1 text-xs">
@@ -2093,6 +2624,7 @@ function StepSummary({ name, nickname, species, culture, profession, grade, grad
           {apBudget.attrSpend > 0 && <ApRow label="Attribute" value={-apBudget.attrSpend} negative />}
           {apBudget.skillSpend > 0 && <ApRow label="Talente" value={-apBudget.skillSpend} negative />}
           {apBudget.ktSpend > 0 && <ApRow label="Kampftechniken" value={-apBudget.ktSpend} negative />}
+          {apBudget.saSpend > 0 && <ApRow label="Sonderfertigkeiten" value={-apBudget.saSpend} negative />}
           {apBudget.vorteileAP > 0 && <ApRow label="Vorteile" value={-apBudget.vorteileAP} negative />}
           {apBudget.nachteileRefund > 0 && <ApRow label="Nachteile" value={apBudget.nachteileRefund} positive />}
           <div className="flex justify-between border-t border-dsa-bg-medium pt-1 mt-1">

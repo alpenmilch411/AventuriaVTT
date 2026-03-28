@@ -49,6 +49,21 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 - **SA Purchase** in SteigerungTab: category tabs derived from data, search, filters out owned SAs, AP cost from DB
 - **improvement_cost column** on SpellTemplate + LiturgyTemplate: correct Steigerungsfaktor for all upgrade flows
 
+### Character Creator UX Overhaul
+- **Search/filter** on cultures (33), professions (180+), advantages (161), disadvantages (92) — text search + category tabs (mundane/magical/blessed for professions; kampf/magisch/karmal/allgemein/sozial for adv/dis)
+- **Expandable descriptions** on advantages/disadvantages — replaced HTML title tooltips (broken on mobile) with click-to-expand panels showing full rules_text
+- **DSA5 abbreviation tooltips** everywhere: LeP, GS, SK, ZK, FW, SF, KT, AT, PA, etc. — uses existing TipAbbr system
+- **Profession-granted values** shown with gold "Beruf" badge to differentiate from player choices
+- **FW/SF guides** in talent step: "FW 0 = ungeübt, FW 10 = Experte" + SF cost table
+- **Advantages affect derived values**: Hohe Lebenskraft→+1 LeP, Flink→+1 GS, Glück→+1 SchiP, etc. (14 advantage/disadvantage types wired in)
+- **Derivation breakdown popup**: click any derived value to see step-by-step formula (base, attribute contribution, advantage/disadvantage modifiers — green/red color-coded)
+- **Complete summary step**: 13 sections showing talents (by category), KTs (with AT/PA), spells, liturgies, SAs, advantages, disadvantages, languages, starting equipment, derived values with clickable breakdowns, AP budget with SA line
+
+### Character CRUD Fixes
+- DELETE endpoint now actually deletes (was soft-retiring to "Im Ruhestand")
+- Import endpoint accepts both JSON body and multipart file upload (was 422 on every import attempt)
+- Delete blocked during active session (locked_session_id guard)
+
 ### Combat Polish (3 features)
 - **AP Award Victory Screen**: GM sees gold-themed AP award panel after combat victory — surviving PC checkboxes, AP amount + reason inputs, "AP verteilen" button. Players see "+X Abenteuerpunkte" notification. Backend persists AP to characters.
 - **Creature Stat Editing**: CreatureEditModal for mid-combat NPC stat editing — name, LeP current/max, AT, PA, AW, RS, INI, weapon name/damage/reach. Pencil icon on NPC initiative bar entries. Changes broadcast to all clients.

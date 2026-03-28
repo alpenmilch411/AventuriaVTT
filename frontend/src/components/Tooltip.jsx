@@ -37,6 +37,9 @@ export const TOOLTIPS = {
   GE:    { full: 'Gewandtheit',          desc: 'Körperliche Beweglichkeit und Schnelligkeit.',                         formula: 'Basisattribut',                          applied: 'GS, AW, Körperproben (Klettern, Akrobatik, Schleichen)' },
   KO:    { full: 'Konstitution',         desc: 'Gesundheit, Zähigkeit, Ausdauer.',                                     formula: 'Basisattribut',                          applied: 'LeP, ZK, Ausdauerproben, Wundenproben' },
   KK:    { full: 'Körperkraft',          desc: 'Physische Stärke und Tragvermögen.',                                   formula: 'Basisattribut',                          applied: 'TP-Bonus, LeP, Kraftproben (Schleppen, Rammen)' },
+  KT:    { full: 'Kampftechnik',         desc: 'Fertigkeitswert einer Waffengattung (z.B. Schwerter, Bögen).',        formula: 'Basiswert + Steigerungen',               applied: 'Grundlage für AT/PA/FK-Berechnung; bestimmt Kampfeffektivität' },
+  WS:    { full: 'Wundschwelle',         desc: 'Ab dieser SP-Zahl erleidet das Ziel eine Wunde.',                     formula: 'KO ÷ 2',                                 applied: 'Bei SP ≥ WS: Wundenprobe (KO), bei Misslingen: Wundeffekt' },
+  SB:    { full: 'Schadensbonus',        desc: 'Zusätzlicher Schaden durch hohe Körperkraft.',                        formula: 'KK − 15 (mind. 0)',                      applied: 'Wird auf TP im Nahkampf addiert, wenn KK hoch genug' },
 }
 
 // ---------------------------------------------------------------------------

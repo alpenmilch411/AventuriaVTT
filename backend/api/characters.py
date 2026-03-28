@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -379,20 +379,42 @@ async def create_character(
     return char
 
 
-@router.post("/import", response_model=ImportResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/import", response_model=CharacterResponse, status_code=status.HTTP_201_CREATED)
 async def import_character(
-    file: UploadFile = File(...),
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Import character from JSON file (auto-detect Optolith vs DSA Ultimate)."""
-    content = await file.read()
-    try:
-        data = json.loads(content)
-    except json.JSONDecodeError:
+    """Import character from JSON body or file upload (auto-detect Optolith vs DSA Ultimate)."""
+    content_type = request.headers.get("content-type", "")
+    if "application/json" in content_type:
+        try:
+            data = await request.json()
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid JSON body",
+            )
+    elif "multipart/form-data" in content_type:
+        form = await request.form()
+        file = form.get("file")
+        if file is None:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="No file provided",
+            )
+        content = await file.read()
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid JSON file",
+            )
+    else:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Invalid JSON file",
+            detail="Expected JSON body or multipart file upload",
         )
 
     source_format = _detect_import_format(data)
@@ -432,12 +454,7 @@ async def import_character(
     db.add(char)
     await db.commit()
     await db.refresh(char)
-    return ImportResponse(
-        character_id=char.id,
-        name=char.name,
-        source_format=source_format,
-        warnings=warnings,
-    )
+    return char
 
 
 @router.put("/{character_id}", response_model=CharacterResponse)
@@ -814,9 +831,16 @@ async def delete_character(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Soft-delete (archive) a character by setting status to 'retired'."""
+    """Permanently delete a character."""
     char = await _get_own_character(character_id, current_user, db)
-    char.status = "retired"
+
+    if char.locked_session_id is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Charakter ist in einer aktiven Sitzung und kann nicht gelöscht werden",
+        )
+
+    await db.delete(char)
     await db.commit()
 
 

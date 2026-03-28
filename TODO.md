@@ -38,6 +38,14 @@
 - [x] Creature stat editing mid-combat — CreatureEditModal (name, LeP, AT/PA/AW/RS, INI, weapon), edit icon on NPC initiative bar entries
 - [x] Player pending requests withdraw option — gold pending banner in PlayerDashboard, "Zurückziehen" button, request_id tracking, GM notification auto-dismissed
 - [x] 476 SA descriptions missing — converter was reading `rules` but not `effect` field from Optolith; fixed, now 1,434/1,438 SAs have descriptions
+- [x] Character delete didn't actually delete (was soft-retire) — now permanent delete with session-lock guard
+- [x] Character import broken (422 error — content-type mismatch between frontend JSON and backend multipart) — now accepts both
+- [x] Wizard UX: search/filter on cultures (33), professions (180), advantages (161), disadvantages (92)
+- [x] Wizard UX: expandable descriptions on advantages/disadvantages (replaced broken HTML title tooltips)
+- [x] Wizard UX: DSA5 abbreviation tooltips (TipAbbr) on all steps — LeP, GS, SK, ZK, FW, SF, AT, PA, etc.
+- [x] Wizard UX: advantages/disadvantages now affect derived values (Hohe Lebenskraft→+1 LeP, Flink→+1 GS, Glück→+1 SchiP, etc.)
+- [x] Wizard UX: derivation breakdown popup — click any derived value to see step-by-step calculation
+- [x] Wizard UX: complete summary step — talents, KTs, spells, liturgies, SAs, advantages, disadvantages, languages, equipment, derived values with breakdown
 - [ ] Mobile responsive header
 - [ ] Opposed probes UI — backend supports it, UI selector missing
 - [ ] In-game time tracking UI — backend handler exists (`_handle_time_advance`), no frontend
