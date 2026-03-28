@@ -9,6 +9,7 @@ const useCampaignStore = create((set, get) => ({
   scenes: [],
   worldClock: { date: '1. Praios 1040 BF', time: '12:00', dayNight: 'day' },
   weather: 'klar',
+  restResults: null, // { results: [...], duration_hours: int } — set by rest_end WS
   loading: false,
   error: null,
 
@@ -76,6 +77,7 @@ const useCampaignStore = create((set, get) => ({
 
   setWorldClock: (clock) => set({ worldClock: clock }),
   setWeather: (weather) => set({ weather }),
+  setRestResults: (results) => set({ restResults: results }),
 
   addLoreEntry: (entry) => set((state) => ({
     loreBook: [...state.loreBook, entry],
@@ -120,7 +122,7 @@ const useCampaignStore = create((set, get) => ({
     campaign: null, loreBook: [], quests: [], timeline: [],
     npcs: [], scenes: [],
     worldClock: { date: '1. Praios 1040 BF', time: '12:00', dayNight: 'day' },
-    weather: 'klar', loading: false, error: null,
+    weather: 'klar', restResults: null, loading: false, error: null,
   }),
 }))
 

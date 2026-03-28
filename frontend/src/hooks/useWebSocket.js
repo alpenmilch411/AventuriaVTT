@@ -311,6 +311,11 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       useCampaignStore.getState().setWeather(payload.weather || payload)
     }
 
+    // ── Rest (GM → all) ──
+    else if (type === 'rest_end') {
+      useCampaignStore.getState().setRestResults(payload)
+    }
+
     // ── Defense request (GM → specific player) ──
     else if (type === 'defense_request') {
       useCombatStore.getState().setPendingDefense(payload)

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   BookOpen, Backpack, Swords, Sparkles, User, Bell, Gift,
-  X, Wifi, WifiOff, Star, Shield, Handshake, ArrowLeft, Loader2
+  X, Wifi, WifiOff, Star, Shield, Handshake, ArrowLeft, Loader2,
+  Clock, Cloud, Sun, CloudRain, CloudSnow, Wind, CloudLightning, CloudFog, CloudHail
 } from 'lucide-react'
 import useWebSocket from '../../hooks/useWebSocket'
 import useOffline from '../../hooks/useOffline'
@@ -53,12 +54,16 @@ export default function PlayerDashboard() {
   const pendingDiceRequest = useCombatStore((s) => s.pendingDiceRequest)
   const pendingDefense = useCombatStore((s) => s.pendingDefense)
   const phase = useSessionStore((s) => s.phase)
+  const worldClock = useCampaignStore((s) => s.worldClock)
+  const weather = useCampaignStore((s) => s.weather)
+  const restResults = useCampaignStore((s) => s.restResults)
 
   const [activeTab, setActiveTab] = useState('character')
   const [showNotifications, setShowNotifications] = useState(false)
   const [probeMinimized, setProbeMinimized] = useState(false)
   const [loadError, setLoadError] = useState(null)
   const [sessionBanner, setSessionBanner] = useState(null)
+  const [restToast, setRestToast] = useState(null)
 
   const { isOffline, OfflineBanner } = useOffline()
 
@@ -126,6 +131,24 @@ export default function PlayerDashboard() {
     }
   }, [phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Show rest results toast for this player
+  useEffect(() => {
+    if (!restResults?.results || !myCharacter) return
+    const myResult = restResults.results.find(r => r.character_id === myCharacter.id)
+    if (myResult) {
+      const parts = []
+      if (myResult.lep_healed) parts.push(`+${myResult.lep_healed} LeP`)
+      if (myResult.asp_healed) parts.push(`+${myResult.asp_healed} AsP`)
+      if (myResult.kap_healed) parts.push(`+${myResult.kap_healed} KaP`)
+      if (myResult.conditions_reduced?.length) {
+        myResult.conditions_reduced.forEach(c => parts.push(`${c} −1`))
+      }
+      setRestToast(parts.length > 0 ? parts.join(', ') : 'Keine Veränderung')
+      const timer = setTimeout(() => setRestToast(null), 6000)
+      return () => clearTimeout(timer)
+    }
+  }, [restResults, myCharacter?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const loadCharacter = async () => {
     if (!token) return
     setLoadError(null)
@@ -187,6 +210,13 @@ export default function PlayerDashboard() {
   const playerNotifications = notifications.filter(n => n.type !== 'system').slice(0, 10)
   const unreadCount = playerNotifications.length + (hasPendingDice ? 1 : 0)
 
+  const weatherIcon = {
+    klar: Sun, sonnig: Sun, bewölkt: Cloud, bewoelkt: Cloud,
+    regen: CloudRain, schnee: CloudSnow, sturm: Wind,
+    nebel: CloudFog, gewitter: CloudLightning, hagel: CloudHail,
+  }[weather] || Cloud
+  const WeatherIcon = weatherIcon
+
   // Which tabs to show (hide spells if character has no AsP)
   const visibleTabs = TABS.filter(t => {
     if (t.id === 'spells' && (!vitals.aspMax || vitals.aspMax === 0) && (!vitals.kapMax || vitals.kapMax === 0)) return false
@@ -201,6 +231,27 @@ export default function PlayerDashboard() {
       {sessionBanner && (
         <div className="flex-shrink-0 bg-gradient-to-r from-dsa-gold/20 via-dsa-gold/10 to-dsa-gold/20 border-b border-dsa-gold/30 px-4 py-2.5 text-center animate-banner-flash">
           <span className="text-sm font-display font-bold text-dsa-gold">{sessionBanner}</span>
+        </div>
+      )}
+
+      {/* ── WEATHER / TIME INFO BAR ── */}
+      {worldClock?.date && (
+        <div className="flex-shrink-0 flex items-center justify-center gap-3 bg-dsa-bg-light/60 border-b border-dsa-bg-medium px-3 py-1 text-[11px] text-dsa-parchment-dark">
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {worldClock.time || '12:00'} · {worldClock.date}
+          </span>
+          <span className="flex items-center gap-1 capitalize">
+            <WeatherIcon className="w-3 h-3" />
+            {weather || 'klar'}
+          </span>
+        </div>
+      )}
+
+      {/* ── REST RESULT TOAST ── */}
+      {restToast && (
+        <div className="flex-shrink-0 bg-dsa-forest/20 border-b border-dsa-forest/30 px-4 py-2 text-center animate-banner-flash">
+          <span className="text-xs text-dsa-forest font-semibold">Rast: {restToast}</span>
         </div>
       )}
 

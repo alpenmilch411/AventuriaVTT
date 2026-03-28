@@ -21,8 +21,8 @@
 
 ## Phase 5: Nice-to-Have
 - [ ] Shop system (NPC merchants)
-- [ ] Weather & environment modifier auto-calculation — backend handler exists, no UI
-- [ ] Regeneration & rest workflow — backend handler exists, no UI
+- [x] Weather & environment UI — 8 weather types, time advance controls, player info bar with weather/time display
+- [x] Regeneration & rest workflow — GM rest panel (presets: Kurze Rast 4h / Nachtlager 8h), character checkboxes, server-side healing rolls, player toast with results
 - [ ] Session feedback & voting
 - [ ] Regelmodul-System (optional rules toggle)
 - [ ] Campaign achievements
@@ -69,14 +69,14 @@
 - [x] Enter key in 3W20 probes, shared attribute constants, combat turn clarity, sort consistency
 - [x] Session vitals not restored on rejoin — preserved existing snapshot
 - [ ] Mobile responsive header
-- [ ] Opposed probes UI — backend supports it, UI selector missing
+- [x] Opposed probes UI — Vergleichsprobe toggle in ProbeSetupPopup, attacker+defender selectors, sends opposed_probe_request
 - [ ] In-game time tracking UI — backend handler exists (`_handle_time_advance`), no frontend
 - [ ] Weather system UI — backend handler exists (`_handle_weather_change`), no frontend
 - [ ] Ranged reload tracking UI — reload modifiers defined, no mid-combat reload state
-- [ ] Protokoll entry fix ("Singen — 0 bestanden" malformed group probe)
-- [ ] Loot panel text search umlaut handling (searching "Staerke" vs "Stärke")
-- [ ] DatenbankDetailModal missing Escape key support
-- [ ] Session lobby→active transition has no clear UI
+- [x] Protokoll entry fix ("Singen — 0 bestanden" — closure bug in computeGroupResult, reformatted to structured output)
+- [x] Loot panel text search umlaut handling — normalization added (ä→ae, ö→oe, ü→ue, ß→ss)
+- [x] DatenbankDetailModal Escape key support — useEffect keydown listener added
+- [x] Session lobby→active transition — gold "Sitzung gestartet!" banner with animation on phase change
 
 ## Data Completeness & Optolith Integration (HIGH PRIORITY)
 
