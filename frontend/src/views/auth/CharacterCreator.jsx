@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import {
   X, ChevronLeft, ChevronRight, Check, AlertTriangle, Loader2,
   Shield, Plus, Minus, RefreshCw, Search, ChevronDown, ChevronUp, Sparkles,
+  Info, Swords, BookOpen, Coins,
 } from 'lucide-react'
 import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
@@ -938,7 +939,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
       case 1: return <StepName name={name} setName={setName} nickname={nickname} setNickname={setNickname} />
       case 2: return <StepSpecies species={species} setSpecies={setSpecies} speciesVariant={speciesVariant} setSpeciesVariant={setSpeciesVariant} speciesFreePoints={speciesFreePoints} setSpeciesFreePoints={setSpeciesFreePoints} speciesFreeUsed={speciesFreeUsed} freeAttrPoints={freeAttrPoints} gradeData={gradeData} speciesAll={speciesAll} loading={apiLoading.species} error={apiError.species} onRetry={loadSpecies} />
       case 3: return <StepCulture culture={culture} setCulture={setCulture} cultures={filteredCultures} loading={apiLoading.cultures} error={apiError.cultures} onRetry={loadCultures} />
-      case 4: return <StepProfession profession={profession} setProfession={setProfession} professionVariant={professionVariant} setProfessionVariant={setProfessionVariant} professions={filteredProfessions} gradeData={gradeData} loading={apiLoading.professions} error={apiError.professions} onRetry={loadProfessions} />
+      case 4: return <StepProfession profession={profession} setProfession={setProfession} professionVariant={professionVariant} setProfessionVariant={setProfessionVariant} professions={filteredProfessions} gradeData={gradeData} loading={apiLoading.professions} error={apiError.professions} onRetry={loadProfessions} talentsAll={talentsAll} />
       case 5: return <StepVorNachteile vorteile={vorteile} setVorteile={setVorteile} nachteile={nachteile} setNachteile={setNachteile} apBudget={apBudget} species={species} advantagesAll={advantagesAll} disadvantagesAll={disadvantagesAll} loadingAdv={apiLoading.advantages} loadingDis={apiLoading.disadvantages} errorAdv={apiError.advantages} errorDis={apiError.disadvantages} onRetryAdv={loadAdvantages} onRetryDis={loadDisadvantages} />
       case 6: return <StepAttributes baseAttributes={baseAttributes} attrUpgrades={attrUpgrades} setAttrUpgrades={setAttrUpgrades} gradeData={gradeData} apBudget={apBudget} derivedValues={derivedValues} />
       case 7: return <StepTalentsKT baseSkills={baseSkills} talentUpgrades={talentUpgrades} setTalentUpgrades={setTalentUpgrades} baseKT={baseKT} ktUpgrades={ktUpgrades} setKtUpgrades={setKtUpgrades} atPaSplits={atPaSplits} setAtPaSplits={setAtPaSplits} gradeData={gradeData} apBudget={apBudget} isMagic={isMagic} isBlessed={isBlessed} professionSpells={profession?.spells} professionLiturgies={profession?.liturgies} selectedSpells={selectedSpells} setSelectedSpells={setSelectedSpells} selectedLiturgies={selectedLiturgies} setSelectedLiturgies={setSelectedLiturgies} professionSAs={profession?.special_abilities} purchasedSAs={purchasedSAs} setPurchasedSAs={setPurchasedSAs} specialAbilitiesAll={specialAbilitiesAll} loadingSAs={apiLoading.specialAbilities} errorSAs={apiError.specialAbilities} onRetrySAs={loadSpecialAbilities} talentCategories={talentCategories} ktData={ktData} />
@@ -1441,10 +1442,297 @@ function StepCulture({ culture, setCulture, cultures, loading, error, onRetry })
   )
 }
 
+// ── Profession Detail Modal ──
+function ProfessionDetailModal({ prof, onClose, talentsAll }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose?.() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [onClose])
+
+  if (!prof) return null
+
+  const ct = prof.combat_techniques || {}
+  const skills = prof.skills || {}
+  const sas = prof.special_abilities || []
+  const spells = prof.spells || {}
+  const liturgies = prof.liturgies || {}
+  const equipment = prof.starting_equipment || []
+  const money = prof.starting_money || {}
+  const variants = prof.variants || []
+  const catMeta = PROF_CATEGORY_META[getProfCategory(prof)]
+
+  // Build talent name → category lookup from talentsAll
+  const talentCatMap = useMemo(() => {
+    const m = {}
+    for (const t of talentsAll) m[t.name] = t.category || 'handwerk'
+    return m
+  }, [talentsAll])
+
+  // Group skills by talent category
+  const skillsByCategory = useMemo(() => {
+    const grouped = {}
+    for (const [name, fw] of Object.entries(skills)) {
+      const cat = talentCatMap[name] || 'handwerk'
+      if (!grouped[cat]) grouped[cat] = []
+      grouped[cat].push({ name, fw })
+    }
+    // Sort within each category
+    for (const cat of Object.keys(grouped)) grouped[cat].sort((a, b) => a.name.localeCompare(b.name))
+    return grouped
+  }, [skills, talentCatMap])
+
+  // Money display helper
+  const moneyParts = []
+  if (money.dukaten) moneyParts.push(`${money.dukaten} D`)
+  if (money.silber) moneyParts.push(`${money.silber} S`)
+  if (money.heller) moneyParts.push(`${money.heller} H`)
+  if (money.kreuzer) moneyParts.push(`${money.kreuzer} K`)
+
+  // Prerequisites
+  const prereqs = []
+  if (prof.requires_magic) prereqs.push('Magiebegabung erforderlich')
+  if (prof.requires_blessed) prereqs.push('Weihe erforderlich')
+  if (prof.compatible_species && prof.compatible_species.length > 0) {
+    prereqs.push(`Spezies: ${prof.compatible_species.join(', ')}`)
+  }
+
+  return (
+    <div className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="relative z-10 bg-dsa-bg border border-dsa-bg-medium rounded-xl shadow-2xl w-full max-w-xl max-h-[85vh] flex flex-col animate-fade-in"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Hero header */}
+        <div className="px-5 py-4 bg-gradient-to-r from-dsa-gold/15 via-dsa-gold/5 to-transparent flex-shrink-0 rounded-t-xl border-b border-dsa-bg-medium">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-xl font-display font-bold leading-tight mb-1 text-dsa-gold truncate">
+                {prof.name}
+              </h2>
+              {prof.name_f && prof.name_f !== prof.name && (
+                <p className="text-xs text-dsa-parchment-dark mb-1">weiblich: {prof.name_f}</p>
+              )}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={clsx('text-xs px-2 py-0.5 rounded-full border', catMeta.color, 'border-current/20 bg-current/5')}
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+                >
+                  {catMeta.label}
+                </span>
+                <span className="text-xs font-mono text-dsa-gold">{prof.ap_cost || 0} AP</span>
+                {BEGINNER_PROFESSIONS.has(prof.name) && (
+                  <span className="text-[9px] bg-green-900/30 text-green-400 border border-green-700/30 rounded px-1.5 py-0.5">Einsteiger</span>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-1.5 text-dsa-parchment-dark hover:text-dsa-parchment transition-colors rounded shrink-0"
+              title="Schließen"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Scrollable content */}
+        <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4 text-xs">
+          {/* Description */}
+          {prof.description && (
+            <div>
+              <p className="text-dsa-parchment/80 italic">{prof.description}</p>
+            </div>
+          )}
+
+          {/* Prerequisites */}
+          {prereqs.length > 0 && (
+            <Section title="Voraussetzungen">
+              <ul className="space-y-0.5">
+                {prereqs.map((r, i) => (
+                  <li key={i} className="text-dsa-parchment-dark flex items-center gap-1.5">
+                    <AlertTriangle className="w-3 h-3 text-yellow-500 shrink-0" />
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+
+          {/* Combat Techniques */}
+          {Object.keys(ct).length > 0 && (
+            <Section title="Kampftechniken" icon={<Swords className="w-3.5 h-3.5 text-red-400" />}>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                {Object.entries(ct).sort(([,a],[,b]) => b - a).map(([name, val]) => (
+                  <div key={name} className="flex items-center justify-between">
+                    <span className="text-dsa-parchment">{name}</span>
+                    <span className="font-mono text-dsa-gold">{val}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Talents grouped by category */}
+          {Object.keys(skills).length > 0 && (
+            <Section title="Talente" icon={<BookOpen className="w-3.5 h-3.5 text-blue-400" />}>
+              {TALENT_CATEGORY_ORDER.filter(cat => skillsByCategory[cat]).map(cat => {
+                const meta = TALENT_CATEGORY_META[cat]
+                return (
+                  <div key={cat} className="mb-2 last:mb-0">
+                    <p className={clsx('text-[10px] font-semibold mb-0.5', meta?.color || 'text-dsa-parchment')}>{meta?.label || cat}</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                      {skillsByCategory[cat].map(({ name, fw }) => (
+                        <div key={name} className="flex items-center justify-between">
+                          <span className="text-dsa-parchment truncate">{name}</span>
+                          <span className="font-mono text-dsa-gold shrink-0 ml-1">{fw}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+              {/* Uncategorized talents */}
+              {Object.keys(skillsByCategory).filter(c => !TALENT_CATEGORY_ORDER.includes(c)).map(cat => (
+                <div key={cat} className="mb-2 last:mb-0">
+                  <p className="text-[10px] font-semibold mb-0.5 text-dsa-parchment">{cat}</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                    {skillsByCategory[cat].map(({ name, fw }) => (
+                      <div key={name} className="flex items-center justify-between">
+                        <span className="text-dsa-parchment truncate">{name}</span>
+                        <span className="font-mono text-dsa-gold shrink-0 ml-1">{fw}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </Section>
+          )}
+
+          {/* Special Abilities */}
+          {sas.length > 0 && (
+            <Section title="Sonderfertigkeiten" icon={<Shield className="w-3.5 h-3.5 text-cyan-400" />}>
+              <div className="flex flex-wrap gap-1.5">
+                {sas.map((sa, i) => (
+                  <span key={i} className="px-2 py-0.5 rounded bg-dsa-bg-medium text-dsa-parchment border border-dsa-bg-medium">
+                    {sa}
+                  </span>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Spells */}
+          {Object.keys(spells).length > 0 && (
+            <Section title="Zauber" icon={<Sparkles className="w-3.5 h-3.5 text-dsa-mana" />}>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                {Object.entries(spells).sort(([a],[b]) => a.localeCompare(b)).map(([name, fw]) => (
+                  <div key={name} className="flex items-center justify-between">
+                    <span className="text-dsa-mana-light truncate">{name}</span>
+                    <span className="font-mono text-dsa-mana shrink-0 ml-1">FW {fw}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Liturgies */}
+          {Object.keys(liturgies).length > 0 && (
+            <Section title="Liturgien" icon={<Sparkles className="w-3.5 h-3.5 text-dsa-karma" />}>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                {Object.entries(liturgies).sort(([a],[b]) => a.localeCompare(b)).map(([name, fw]) => (
+                  <div key={name} className="flex items-center justify-between">
+                    <span className="text-dsa-karma-light truncate">{name}</span>
+                    <span className="font-mono text-dsa-karma shrink-0 ml-1">FW {fw}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Starting Equipment */}
+          {equipment.length > 0 && (
+            <Section title="Startausrüstung" icon={<Shield className="w-3.5 h-3.5 text-dsa-forest-light" />}>
+              <div className="flex flex-wrap gap-1.5">
+                {equipment.map((item, i) => {
+                  const label = typeof item === 'string' ? item
+                    : item.name || item.template_id || 'Gegenstand'
+                  const qty = typeof item === 'object' && item.quantity > 1 ? ` x${item.quantity}` : ''
+                  return (
+                    <span key={i} className="px-2 py-0.5 rounded bg-dsa-bg-medium text-dsa-parchment border border-dsa-bg-medium text-[10px]">
+                      {label}{qty}
+                    </span>
+                  )
+                })}
+              </div>
+            </Section>
+          )}
+
+          {/* Starting Money */}
+          {moneyParts.length > 0 && (
+            <Section title="Startgeld" icon={<Coins className="w-3.5 h-3.5 text-dsa-gold" />}>
+              <p className="text-dsa-gold font-mono">{moneyParts.join(' / ')}</p>
+            </Section>
+          )}
+
+          {/* Variants */}
+          {variants.length > 0 && (
+            <Section title={`Varianten (${variants.length})`}>
+              <div className="space-y-2">
+                {variants.map((v, i) => (
+                  <div key={v.id || i} className="p-2 rounded border border-dsa-bg-medium bg-dsa-bg-card">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="font-semibold text-dsa-parchment">{v.name}</span>
+                      {v.ap_cost != null && v.ap_cost !== 0 && (
+                        <span className={clsx('font-mono text-[10px]', v.ap_cost > 0 ? 'text-red-400' : 'text-green-400')}>
+                          {v.ap_cost > 0 ? '+' : ''}{v.ap_cost} AP
+                        </span>
+                      )}
+                    </div>
+                    {v.skills && Object.keys(v.skills).length > 0 && (
+                      <p className="text-[10px] text-dsa-parchment-dark">
+                        Talente: {Object.entries(v.skills).map(([k, val]) => `${k} ${val > 0 ? '+' : ''}${val}`).join(', ')}
+                      </p>
+                    )}
+                    {v.combat_techniques && Object.keys(v.combat_techniques).length > 0 && (
+                      <p className="text-[10px] text-dsa-parchment-dark">
+                        KT: {Object.entries(v.combat_techniques).map(([k, val]) => `${k} ${val > 0 ? '+' : ''}${val}`).join(', ')}
+                      </p>
+                    )}
+                    {v.note && <p className="text-[10px] text-dsa-parchment-dark/60 italic">{v.note}</p>}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Source */}
+          {prof.source_book && (
+            <p className="text-[10px] text-dsa-parchment-dark/40 pt-2 border-t border-dsa-bg-medium">Quelle: {prof.source_book}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Small helper for modal sections
+function Section({ title, icon, children }) {
+  return (
+    <div>
+      <div className="flex items-center gap-1.5 mb-1.5">
+        {icon}
+        <h3 className="text-[11px] font-semibold text-dsa-parchment uppercase tracking-wide">{title}</h3>
+      </div>
+      {children}
+    </div>
+  )
+}
+
 // ── Step 5: Profession (from API) ──
-function StepProfession({ profession, setProfession, professionVariant, setProfessionVariant, professions, gradeData, loading, error, onRetry }) {
+function StepProfession({ profession, setProfession, professionVariant, setProfessionVariant, professions, gradeData, loading, error, onRetry, talentsAll }) {
   const [searchText, setSearchText] = useState('')
   const [activeCat, setActiveCat] = useState('alle')
+  const [detailProf, setDetailProf] = useState(null)
 
   const filtered = useMemo(() => {
     const q = searchText.toLowerCase().trim()
@@ -1478,7 +1766,7 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
     <div className="space-y-4">
       <div>
         <h2 className="text-lg font-display font-semibold text-dsa-gold mb-1">Profession wählen</h2>
-        <p className="text-xs text-dsa-parchment-dark">Wähle die Profession deines Charakters.</p>
+        <p className="text-xs text-dsa-parchment-dark">Wähle die Profession deines Charakters. Klicke auf <Info className="inline w-3 h-3 text-dsa-parchment-dark/60" /> für alle Details.</p>
       </div>
       <HelpPanel>
         <p><strong>Was ist eine Profession?</strong> Dein Beruf/Ausbildung vor dem Abenteuerdasein. Sie gibt dir Kampftechniken, Talente und ggf. Sonderfertigkeiten und Zauber/Liturgien.</p>
@@ -1512,25 +1800,34 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
                 const skillEntries = p.skills ? Object.keys(p.skills) : []
                 const catMeta = PROF_CATEGORY_META[getProfCategory(p)]
                 return (
-                  <button
+                  <div
                     key={p.id || p.name}
-                    onClick={() => setProfession(p)}
                     className={clsx(
-                      'text-left p-4 rounded border transition-all',
+                      'text-left p-4 rounded border transition-all cursor-pointer',
                       profession?.name === p.name
                         ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
                         : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-dsa-gold/40'
                     )}
+                    onClick={() => setProfession(p)}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
+                      <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                         <span className="font-display font-semibold text-dsa-parchment">{p.name}</span>
                         <span className={clsx('text-[9px] shrink-0', catMeta.color)}>{catMeta.label}</span>
                         {BEGINNER_PROFESSIONS.has(p.name) && (
                           <span className="text-[9px] bg-green-900/30 text-green-400 border border-green-700/30 rounded px-1.5 py-0.5 shrink-0">Einsteiger</span>
                         )}
                       </div>
-                      <span className="text-xs font-mono text-dsa-gold shrink-0 ml-2">{p.ap_cost || 0} <TipAbbr term="AP" /></span>
+                      <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDetailProf(p) }}
+                          className="p-1 rounded text-dsa-parchment-dark/50 hover:text-dsa-parchment hover:bg-dsa-bg-medium transition-colors"
+                          title="Details anzeigen"
+                        >
+                          <Info className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-xs font-mono text-dsa-gold">{p.ap_cost || 0} <TipAbbr term="AP" /></span>
+                      </div>
                     </div>
                     {PROFESSION_GAMEPLAY_TAGS[p.name] && (
                       <p className="text-[10px] text-dsa-parchment/70 mb-1">{PROFESSION_GAMEPLAY_TAGS[p.name]}</p>
@@ -1540,10 +1837,10 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
                         <p>KT: {Object.entries(ct).map(([k,v]) => `${k} ${v}`).join(', ')}</p>
                       )}
                       {skillEntries.length > 0 && (
-                        <p>Talente: {skillEntries.join(', ')}</p>
+                        <p className="line-clamp-1">Talente: {skillEntries.join(', ')}</p>
                       )}
                       {(p.special_abilities || []).length > 0 && (
-                        <p>SF: {p.special_abilities.join(', ')}</p>
+                        <p className="line-clamp-1">SF: {p.special_abilities.join(', ')}</p>
                       )}
                       {p.requires_magic && <p className="text-dsa-mana">Erfordert Magiebegabung</p>}
                       {p.requires_blessed && <p className="text-dsa-karma">Erfordert Weihe</p>}
@@ -1558,7 +1855,7 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
                         <p className="text-dsa-gold/60 text-[9px]">{p.variants.length} Variante(n) verfügbar</p>
                       )}
                     </div>
-                  </button>
+                  </div>
                 )
               })}
             </div>
@@ -1615,6 +1912,15 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
             ))}
           </div>
         </div>
+      )}
+
+      {/* Profession Detail Modal */}
+      {detailProf && (
+        <ProfessionDetailModal
+          prof={detailProf}
+          onClose={() => setDetailProf(null)}
+          talentsAll={talentsAll || []}
+        />
       )}
     </div>
   )
@@ -1995,19 +2301,76 @@ const ADV_CATEGORY_META = {
 }
 const ADV_CATEGORY_ORDER = ['alle', 'allgemein', 'kampf', 'magisch', 'karmal', 'sozial']
 
-// ── Profession category metadata ──
+// ── Profession category metadata (DSA5-authentic subcategories) ──
 const PROF_CATEGORY_META = {
-  alle:    { label: 'Alle',    color: 'text-dsa-parchment' },
-  mundane: { label: 'Mundan',  color: 'text-dsa-gold' },
-  magic:   { label: 'Magisch', color: 'text-violet-400' },
-  blessed: { label: 'Geweiht', color: 'text-amber-400' },
+  alle:            { label: 'Alle',                 color: 'text-dsa-parchment' },
+  kaempfer:        { label: 'Kämpfer',              color: 'text-red-400' },
+  wildnis:         { label: 'Wildnis & Reise',      color: 'text-green-400' },
+  gesellschaft:    { label: 'Gesellschaft',         color: 'text-pink-400' },
+  streuner:        { label: 'Streuner & Schatten',  color: 'text-slate-400' },
+  handwerk:        { label: 'Handwerk & Gelehrte',  color: 'text-amber-400' },
+  gildenmagier:    { label: 'Gildenmagier',         color: 'text-violet-400' },
+  hexen_druiden:   { label: 'Hexen & Druiden',      color: 'text-emerald-400' },
+  andere_zauberer: { label: 'Andere Zauberwirker',  color: 'text-fuchsia-400' },
+  geweihte:        { label: 'Geweihte',             color: 'text-dsa-karma-light' },
 }
-const PROF_CATEGORY_ORDER = ['alle', 'mundane', 'magic', 'blessed']
+const PROF_CATEGORY_ORDER = ['alle', 'kaempfer', 'wildnis', 'gesellschaft', 'streuner', 'handwerk', 'gildenmagier', 'hexen_druiden', 'andere_zauberer', 'geweihte']
+
+// Name-based classification sets for mundane professions
+const _KAEMPFER_NAMES = new Set([
+  'Krieger', 'Söldner', 'Gardist', 'Ritter', 'Amazone', 'Gladiator', 'Soldat',
+  'Schaukämpfer', 'Lanisto', 'Sappeur', 'Landwehrsoldat', 'Seekrieger', 'Seesoldat',
+  'Stutzer', 'Heckenreiter', 'Distelritter', 'Ritter der Streitenden Königreiche',
+])
+const _KAEMPFER_PATTERNS = ['Krieger', 'Schwertgeselle', 'Lanzer', 'Sippenkrieger', 'Drachenkämpfer', 'Balayan', 'Buskur', 'Zwergenkrieger']
+
+const _WILDNIS_NAMES = new Set([
+  'Jäger', 'Wildniskundiger', 'Seefahrer', 'Bote', 'Entdecker', 'Stammeskrieger',
+  'Fallensteller', 'Hirte', 'Viehtreiber', 'Karawanenführer', 'Prospektor',
+  'Holzfäller', 'Albernischer Seefahrer', 'Schatzsucher der Siebenwindküste',
+])
+
+const _GESELLSCHAFT_NAMES = new Set([
+  'Barde', 'Gaukler', 'Händler', 'Höfling', 'Adliger', 'Künstler', 'Herrscher',
+  'Patrizier', 'Schauspieler', 'Erotikkünstler', 'Prostituierter', 'Koscher Almgreve',
+  'Logenmitglied', 'Wirt', 'Schankbursche',
+])
+
+const _STREUNER_NAMES = new Set([
+  'Streuner', 'Auftragsmörder', 'Spitzel', 'Diener', 'Kammerdiener (Zofe)',
+  'Taschendieb', 'Räuber', 'Schmuggler', 'Küstenschmuggler',
+  'Küstenschmuggler aus Havena', 'Sklave', 'Tagelöhner',
+])
+
+const _GILDENMAGIER_NAMES = new Set([
+  'Weißmagier', 'Graumagier', 'Schwarzmagier', 'Gildenloser Magier',
+  'Mehrer der Macht', 'Bewahrer', 'Former', 'Hüter der Kraft',
+  'Rashduler Dämonologe', 'Zauberalchimist', 'Scharlatan',
+])
+
+const _HEXEN_DRUIDEN_PATTERNS = ['hexer', 'hexe', 'Hexer', 'Hexe', 'Druide', 'Geode', 'Haindruide']
 
 function getProfCategory(p) {
-  if (p.requires_magic) return 'magic'
-  if (p.requires_blessed) return 'blessed'
-  return 'mundane'
+  const n = p.name
+  // Blessed professions
+  if (p.requires_blessed) return 'geweihte'
+  // Magic professions — subcategorize
+  if (p.requires_magic) {
+    if (_GILDENMAGIER_NAMES.has(n)) return 'gildenmagier'
+    // Hexen & Druiden: check patterns
+    if (_HEXEN_DRUIDEN_PATTERNS.some(pat => n.includes(pat))) return 'hexen_druiden'
+    // Also: Konzildruide, Brobim-Geode, Diener der Erdmutter, Herr der Erde, Sumudiener
+    if (['Konzildruide', 'Brobim-Geode', 'Diener der Erdmutter', 'Herr der Erde', 'Sumudiener'].includes(n)) return 'hexen_druiden'
+    return 'andere_zauberer'
+  }
+  // Mundane professions — subcategorize by name
+  if (_KAEMPFER_NAMES.has(n)) return 'kaempfer'
+  if (_KAEMPFER_PATTERNS.some(pat => n.includes(pat))) return 'kaempfer'
+  if (_WILDNIS_NAMES.has(n)) return 'wildnis'
+  if (_GESELLSCHAFT_NAMES.has(n)) return 'gesellschaft'
+  if (_STREUNER_NAMES.has(n)) return 'streuner'
+  // Everything else mundane → Handwerk & Gelehrte
+  return 'handwerk'
 }
 
 // ── SA Selector with search & category filter ──
