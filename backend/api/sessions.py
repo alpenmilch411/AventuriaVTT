@@ -667,10 +667,11 @@ async def join_session(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Already in this session",
             )
-        # Re-joining after leaving: update existing record
+        # Re-joining after leaving: preserve existing snapshot (vitals, conditions, buffs)
         existing_sp.status = "active"
         existing_sp.character_id = char.id
-        existing_sp.character_snapshot = _snapshot_character(char)
+        if not existing_sp.character_snapshot:
+            existing_sp.character_snapshot = _snapshot_character(char)
         char.locked_session_id = session.id
         await db.commit()
         await db.refresh(session)
