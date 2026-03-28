@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Shield, Swords, Heart, Sparkles, Star, Info, Eye, HelpCircle, Flame, Brain, Crown, Hand, Wind, HeartPulse, Hammer, AlertTriangle, Crosshair, Sun, User, BookOpen, X, ChevronRight } from 'lucide-react'
+import { Shield, Swords, Heart, Sparkles, Star, Info, Eye, HelpCircle, Flame, Brain, Crown, Hand, Wind, HeartPulse, Hammer, AlertTriangle, Crosshair, Sun, User, BookOpen, X, ChevronRight, Loader2 } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useAuthStore from '../../stores/authStore'
 import { getConditionModifier, CONDITIONS } from '../../engine/conditionsEngine'
@@ -73,13 +73,19 @@ function CharacterSheet({ sendMessage }) {
   const activeBuffs = useCharacterStore((s) => s.activeBuffs)
   const token = useAuthStore((s) => s.token)
   const [sfTemplates, setSfTemplates] = useState([])
+  const [sfLoading, setSfLoading] = useState(true)
+  const [sfError, setSfError] = useState(null)
   const [sfPopup, setSfPopup] = useState(null) // sf name string
 
   useEffect(() => {
     if (!token) return
+    setSfLoading(true)
+    setSfError(null)
     fetch('/api/databank/special_abilities', { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.ok ? r.json() : []).then(d => setSfTemplates(Array.isArray(d) ? d : d.items || []))
-      .catch(err => console.error('Failed to fetch special abilities:', err))
+      .then(r => { if (!r.ok) throw new Error('Fehler beim Laden'); return r.json() })
+      .then(d => setSfTemplates(Array.isArray(d) ? d : d.items || []))
+      .catch(err => setSfError(err.message))
+      .finally(() => setSfLoading(false))
   }, [token])
 
   if (!myCharacter) return <div className="flex items-center justify-center py-12"><p className="text-dsa-parchment-dark">Kein Charakter geladen.</p></div>
@@ -244,6 +250,8 @@ function CharacterSheet({ sendMessage }) {
             <Shield className="w-4 h-4 text-dsa-gold" />
             <span className="text-xs font-bold uppercase tracking-wider text-dsa-gold">Sonderfertigkeiten</span>
             <span className="text-[10px] font-mono text-dsa-parchment-dark/40">{sfs.length}</span>
+            {sfLoading && <Loader2 className="w-3 h-3 animate-spin text-dsa-parchment-dark/40" />}
+            {sfError && <span className="text-[9px] text-red-400">Details nicht verfügbar</span>}
           </div>
           <div className={clsx('grid gap-2', activeCats.length >= 4 ? 'grid-cols-2 lg:grid-cols-4' : activeCats.length === 3 ? 'grid-cols-3' : activeCats.length === 2 ? 'grid-cols-2' : 'grid-cols-1')}>
             {activeCats.map(cat => {
@@ -286,12 +294,12 @@ function CharacterSheet({ sendMessage }) {
         const exp = lookupExplanation(sfPopup, SF_EXPLAIN)
         return (
           <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setSfPopup(null)}>
-            <div className="bg-dsa-bg border border-dsa-bg-medium rounded shadow-2xl w-full max-w-md overflow-hidden animate-fade-in" onClick={e => e.stopPropagation()}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-dsa-bg-medium bg-dsa-bg-light">
+            <div className="bg-dsa-bg border border-dsa-bg-medium rounded shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-fade-in" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-dsa-bg-medium bg-dsa-bg-light flex-shrink-0">
                 <h3 className="text-sm font-display font-bold text-dsa-gold">{sfPopup}</h3>
                 <button onClick={() => setSfPopup(null)} className="text-dsa-parchment-dark/40 hover:text-dsa-parchment"><X className="w-4 h-4" /></button>
               </div>
-              <div className="p-4 space-y-3">
+              <div className="p-4 space-y-3 overflow-y-auto">
                 {/* Stat modifiers */}
                 {tpl && (tpl.at_mod || tpl.pa_mod || tpl.damage_modifier) && (
                   <div className="flex flex-wrap gap-2">

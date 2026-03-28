@@ -73,7 +73,7 @@ def cleanup_session_state(session_code: str) -> None:
 # ---------------------------------------------------------------------------
 
 _last_snapshot: dict[str, float] = {}
-SNAPSHOT_DEBOUNCE = 5.0  # seconds
+SNAPSHOT_DEBOUNCE = 2.0  # seconds
 
 
 async def _snapshot_session_state(session_code: str) -> None:
@@ -180,6 +180,7 @@ def _ensure_state(session_code: str) -> dict[str, Any]:
             "quests": [],
             "lore_entries": [],
             "pending_requests": {},    # request_id -> request data
+            "opposed_probes": {},      # probe_id -> {initiator, target, results, ...}
             "vitals": {},              # character_id -> {lep, asp, kap, schip}
             "conditions": {},          # character_id -> [{name, level}]
             "max_vitals": {},          # character_id -> {LeP_max, AsP_max, ...}
@@ -276,7 +277,13 @@ def _resolve_deltas(session_code: str, character_id: str, vitals: dict) -> dict:
             current_val = current.get(base_key, max_val)
             resolved[base_key] = max(0, min(max_val, current_val + value))
         else:
-            resolved[key] = value
+            # Clamp raw values to [0, max] as well
+            max_key = {"lep": "LeP_max", "asp": "AsP_max", "kap": "KaP_max"}.get(key)
+            max_val = max_vals.get(max_key) if max_key else None
+            if max_val is not None:
+                resolved[key] = max(0, min(max_val, value))
+            else:
+                resolved[key] = max(0, value) if isinstance(value, (int, float)) else value
     return resolved
 
 
@@ -2316,7 +2323,7 @@ async def handle_connect(session_code: str, user_id: str, role: str, is_table_vi
 
 
 async def handle_disconnect(session_code: str, user_id: str):
-    """Called when a WebSocket drops — notify survivors."""
+    """Called when a WebSocket drops — notify survivors and clean up pending actions."""
     state = _ensure_state(session_code)
     state["connected_users"] = manager.get_connected_users(session_code)
 
@@ -2325,6 +2332,50 @@ async def handle_disconnect(session_code: str, user_id: str):
         "connected_users": state["connected_users"],
     })
     await manager.broadcast_to_room(session_code, msg)
+
+    # Cancel any pending requests from this user (dice, probe, action) to prevent soft-locks
+    pending = state.get("pending_requests", {})
+    cancelled = [k for k, v in pending.items()
+                 if v.get("from_user") == user_id or k.startswith(f"dice_{user_id}") or k.startswith(f"probe_{user_id}")]
+    for k in cancelled:
+        del pending[k]
+
+    # Notify GM with player name if the disconnected user had pending actions or is in combat
+    if cancelled or _combat_snapshot(state) is not None:
+        # Resolve a human-readable name for the disconnected player
+        player_name = None
+        combat = _combat_snapshot(state)
+        if combat:
+            for c in combat.get("initiative_order", []):
+                if c.get("user_id") == user_id or c.get("userId") == user_id:
+                    player_name = c.get("name")
+                    break
+        if not player_name:
+            # Fallback: look up username from DB
+            try:
+                from database import async_session as _async_session
+                from sqlalchemy import select as _sel
+                from models.user import User as _User
+                async with _async_session() as _db:
+                    _r = await _db.execute(_sel(_User).where(_User.id == user_id))
+                    _u = _r.scalar_one_or_none()
+                    if _u:
+                        player_name = _u.username
+            except Exception:
+                pass
+        player_name = player_name or user_id[:8]
+
+        if cancelled:
+            await manager.broadcast_to_room(session_code, _msg(
+                "combat_log_entry", {
+                    "type": "system",
+                    "text": f"{player_name} hat die Verbindung verloren — offene Aktionen abgebrochen.",
+                },
+            ), target="gm")
+            logger.info("Cancelled %d pending requests for disconnected user %s in %s", len(cancelled), user_id, session_code)
+
+        await _append_session_log(session_code, "system", f"{player_name} hat die Verbindung verloren", icon="wifi-off")
+
     logger.info("User %s disconnected from session %s", user_id, session_code)
 
 

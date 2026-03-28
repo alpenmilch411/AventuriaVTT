@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import {
   Send, Check, Clock, HelpCircle, ChevronDown, ChevronUp,
-  Flame, Brain, Eye, Crown, Hand, Wind, HeartPulse, Hammer,
   Activity, Users, TreePine, BookOpen, Wrench, ClipboardList,
-  Dice5, X, Shield, FlaskConical
+  Dice5, X, Shield, FlaskConical, Loader2, AlertTriangle
 } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
@@ -11,30 +10,8 @@ import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import useCombatValues from '../../hooks/useCombatValues'
 import { TALENT_SF } from '../../engine/advancementCosts'
+import { ATTR_NAMES, ATTR_TEXT_COLORS, ATTR_COLORS, ATTR_ICONS } from '../../constants/attributes'
 import clsx from 'clsx'
-
-const ATTR_NAMES = {
-  MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
-  FF: 'Fingerfertigkeit', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Körperkraft',
-}
-const ATTR_TEXT_COLORS = {
-  MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
-  FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
-}
-const ATTR_COLORS = {
-  MU: 'from-red-900/30 to-red-950/10 border-red-800/20',
-  KL: 'from-blue-900/30 to-blue-950/10 border-blue-800/20',
-  IN: 'from-violet-900/30 to-violet-950/10 border-violet-800/20',
-  CH: 'from-pink-900/30 to-pink-950/10 border-pink-800/20',
-  FF: 'from-emerald-900/30 to-emerald-950/10 border-emerald-800/20',
-  GE: 'from-cyan-900/30 to-cyan-950/10 border-cyan-800/20',
-  KO: 'from-orange-900/30 to-orange-950/10 border-orange-800/20',
-  KK: 'from-amber-900/30 to-amber-950/10 border-amber-800/20',
-}
-const ATTR_ICONS = {
-  MU: Flame, KL: Brain, IN: Eye, CH: Crown,
-  FF: Hand, GE: Wind, KO: HeartPulse, KK: Hammer,
-}
 
 // TALENT_SF imported from engine/advancementCosts
 
@@ -60,15 +37,20 @@ function TalentList({ sendMessage }) {
   const [expandedTalent, setExpandedTalent] = useState(null)
   const [requestedTalents, setRequestedTalents] = useState({})
   const [dbTalents, setDbTalents] = useState([])
+  const [dbLoading, setDbLoading] = useState(true)
+  const [dbError, setDbError] = useState(null)
   const [probeItemPrompt, setProbeItemPrompt] = useState(null) // { talent, items: [{ item, bonus }] }
 
   // Load all talents from databank
   useEffect(() => {
     if (!token) return
+    setDbLoading(true)
+    setDbError(null)
     fetch('/api/databank/talents', { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.ok ? r.json() : [])
+      .then(r => { if (!r.ok) throw new Error('Fehler beim Laden'); return r.json() })
       .then(d => setDbTalents(Array.isArray(d) ? d : d.items || []))
-      .catch(err => console.error('Failed to fetch talents:', err))
+      .catch(err => setDbError(err.message))
+      .finally(() => setDbLoading(false))
   }, [token])
 
   // Auto-mark talent as approved when dice_request arrives
@@ -503,7 +485,19 @@ function TalentList({ sendMessage }) {
             })}
           </div>
 
-          {categoryTalents.length === 0 && (
+          {dbLoading && (
+            <div className="flex items-center justify-center gap-2 py-8">
+              <Loader2 className="w-4 h-4 animate-spin text-dsa-gold" />
+              <span className="text-xs text-dsa-parchment-dark">Talente werden geladen…</span>
+            </div>
+          )}
+          {dbError && (
+            <div className="flex items-center justify-center gap-2 py-8 text-red-400">
+              <AlertTriangle className="w-4 h-4" />
+              <span className="text-xs">{dbError}</span>
+            </div>
+          )}
+          {!dbLoading && !dbError && categoryTalents.length === 0 && (
             <p className="text-xs text-dsa-parchment-dark/40 text-center py-8">Keine Talente in dieser Kategorie gefunden.</p>
           )}
         </div>
@@ -512,7 +506,7 @@ function TalentList({ sendMessage }) {
       {/* Probe item bonus prompt */}
       {probeItemPrompt && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setProbeItemPrompt(null)}>
-          <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl p-5 w-full max-w-sm space-y-4 animate-fade-in" onClick={e => e.stopPropagation()}>
+          <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl p-5 w-full max-w-sm max-h-[90vh] overflow-y-auto space-y-4 animate-fade-in" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-2">
               <FlaskConical className="w-5 h-5 text-blue-400" />
               <h3 className="text-sm font-display font-bold text-dsa-parchment">Gegenstand verwenden?</h3>

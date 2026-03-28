@@ -80,7 +80,7 @@ function ConfirmModal({ title, description, cost, available, onConfirm, onCancel
   const affordable = cost <= available
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={onCancel}>
-      <div className="bg-dsa-bg border border-dsa-bg-medium rounded shadow-2xl w-full max-w-sm animate-fade-in" onClick={e => e.stopPropagation()}>
+      <div className="bg-dsa-bg border border-dsa-bg-medium rounded shadow-2xl w-full max-w-sm max-h-[90vh] overflow-y-auto animate-fade-in" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-4 py-3 border-b border-dsa-bg-medium bg-dsa-bg-card">
           <h3 className="text-sm font-display font-semibold text-dsa-gold">{title}</h3>
           <button onClick={onCancel} className="text-dsa-parchment-dark/40 hover:text-dsa-parchment"><X className="w-4 h-4" /></button>

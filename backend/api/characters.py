@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -58,15 +58,15 @@ def _recompute_derived(attributes: dict, spells: dict, liturgies: dict, existing
 # ---------------------------------------------------------------------------
 
 class CharacterCreate(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
     species: Optional[str] = None
     species_variant: Optional[str] = None
     profession: Optional[str] = None
     profession_variant: Optional[str] = None
     culture: Optional[str] = None
     experience_grade: Optional[str] = None
-    total_ap: int = 0
-    available_ap: int = 0
+    total_ap: int = Field(default=0, ge=0)
+    available_ap: int = Field(default=0, ge=0)
     portrait_url: Optional[str] = None
     bio: Optional[str] = None
     attributes: Optional[dict] = None
@@ -83,17 +83,48 @@ class CharacterCreate(BaseModel):
     basis_inventory: Optional[dict] = None
     current_vitals: Optional[dict] = None
 
+    @field_validator("attributes")
+    @classmethod
+    def validate_attributes(cls, v):
+        if v is None:
+            return v
+        valid_attrs = {"MU", "KL", "IN", "CH", "FF", "GE", "KO", "KK"}
+        for key, val in v.items():
+            if key in valid_attrs and isinstance(val, (int, float)):
+                if not (1 <= int(val) <= 25):
+                    raise ValueError(f"Attribute {key} must be between 1 and 25, got {val}")
+        return v
+
+    @field_validator("portrait_url")
+    @classmethod
+    def validate_portrait_url(cls, v):
+        if v is None:
+            return v
+        if not (v.startswith("http://") or v.startswith("https://") or v.startswith("/") or v.startswith("data:image/")):
+            raise ValueError("portrait_url must be a valid URL or path")
+        return v
+
+    @field_validator("current_vitals")
+    @classmethod
+    def validate_current_vitals(cls, v):
+        if v is None:
+            return v
+        for key in ("lep", "asp", "kap", "schip"):
+            if key in v and isinstance(v[key], (int, float)) and v[key] < 0:
+                v[key] = 0
+        return v
+
 
 class CharacterUpdate(BaseModel):
-    name: Optional[str] = None
+    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     species: Optional[str] = None
     species_variant: Optional[str] = None
     profession: Optional[str] = None
     profession_variant: Optional[str] = None
     culture: Optional[str] = None
     experience_grade: Optional[str] = None
-    total_ap: Optional[int] = None
-    available_ap: Optional[int] = None
+    total_ap: Optional[int] = Field(default=None, ge=0)
+    available_ap: Optional[int] = Field(default=None, ge=0)
     status: Optional[str] = None
     portrait_url: Optional[str] = None
     bio: Optional[str] = None
@@ -110,6 +141,27 @@ class CharacterUpdate(BaseModel):
     languages: Optional[list] = None
     basis_inventory: Optional[dict] = None
     death_record: Optional[dict] = None
+
+    @field_validator("attributes")
+    @classmethod
+    def validate_attributes(cls, v):
+        if v is None:
+            return v
+        valid_attrs = {"MU", "KL", "IN", "CH", "FF", "GE", "KO", "KK"}
+        for key, val in v.items():
+            if key in valid_attrs and isinstance(val, (int, float)):
+                if not (1 <= int(val) <= 25):
+                    raise ValueError(f"Attribute {key} must be between 1 and 25, got {val}")
+        return v
+
+    @field_validator("portrait_url")
+    @classmethod
+    def validate_portrait_url(cls, v):
+        if v is None:
+            return v
+        if not (v.startswith("http://") or v.startswith("https://") or v.startswith("/") or v.startswith("data:image/")):
+            raise ValueError("portrait_url must be a valid URL or path")
+        return v
 
 
 class CharacterResponse(BaseModel):
@@ -731,10 +783,10 @@ async def level_up(
 
 
 class VitalsUpdateRequest(BaseModel):
-    lep: Optional[int] = None
-    asp: Optional[int] = None
-    kap: Optional[int] = None
-    schip: Optional[int] = None
+    lep: Optional[int] = Field(default=None, ge=0)
+    asp: Optional[int] = Field(default=None, ge=0)
+    kap: Optional[int] = Field(default=None, ge=0)
+    schip: Optional[int] = Field(default=None, ge=0)
 
 
 class ConditionsUpdateRequest(BaseModel):

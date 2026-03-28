@@ -17,6 +17,8 @@ import DatenbankDetailModal, { ITEM_SUBCATEGORIES } from '../../components/Daten
 // Databank categories to search when looking up an item by name
 const DB_SEARCH_CATS = ['items', 'weapons', 'armor', 'shields']
 
+const normUmlaut = s => s.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' }[m] || m))
+
 async function lookupItemInDatabank(name, token) {
   const encoded = encodeURIComponent(name)
   for (const cat of DB_SEARCH_CATS) {
@@ -27,7 +29,10 @@ async function lookupItemInDatabank(name, token) {
       if (!res.ok) continue
       const data = await res.json()
       const items = data.items || []
-      const match = items.find(i => i.name?.toLowerCase() === name.toLowerCase()) || items[0]
+      const nameNorm = normUmlaut(name)
+      const match = items.find(i => i.name?.toLowerCase() === name.toLowerCase())
+        || items.find(i => normUmlaut(i.name || '') === nameNorm)
+        || items[0]
       if (match) {
         const { id, name: n, ...rest } = match
         return { id, name: n, data: rest, category: cat }

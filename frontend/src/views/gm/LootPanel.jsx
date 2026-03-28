@@ -183,8 +183,12 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
 
   const filteredItems = useMemo(() => {
     if (dbSearch.trim()) {
-      const q = dbSearch.toLowerCase()
-      return allDbItems.filter(i => i.name?.toLowerCase().includes(q))
+      const norm = s => s.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' }[m] || m))
+      const q = norm(dbSearch)
+      return allDbItems.filter(i => {
+        const name = i.name || ''
+        return name.toLowerCase().includes(dbSearch.toLowerCase()) || norm(name).includes(q)
+      })
     }
     return categorizedDb[dbCategory] || []
   }, [dbSearch, dbCategory, categorizedDb, allDbItems])

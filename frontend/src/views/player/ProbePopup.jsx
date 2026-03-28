@@ -1,16 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Dice5, Check, X, HelpCircle } from 'lucide-react'
 import clsx from 'clsx'
-
-const ATTR_NAMES = {
-  MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
-  FF: 'Fingerfertigkeit', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Koerperkraft',
-}
-
-const ATTR_TEXT_COLORS = {
-  MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
-  FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
-}
+import { ATTR_NAMES, ATTR_TEXT_COLORS } from '../../constants/attributes'
 
 /**
  * ProbePopup — Fullscreen dice input popup for talent/spell probes.
@@ -50,7 +41,7 @@ export default function ProbePopup({ request, character, sendMessage, onComplete
   if (isSimple) {
     return (
       <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-        <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl p-6 w-full max-w-sm text-center space-y-4 animate-fade-in relative">
+        <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto text-center space-y-4 animate-fade-in relative">
           {onMinimize && <button onClick={onMinimize} className="absolute top-3 right-3 text-dsa-parchment-dark hover:text-dsa-parchment text-xs">Minimieren</button>}
           <Dice5 className="w-8 h-8 text-dsa-gold mx-auto" />
           <h2 className="text-lg font-display font-bold text-dsa-gold">{request.label || 'Wuerfeln!'}</h2>
@@ -105,7 +96,7 @@ export default function ProbePopup({ request, character, sendMessage, onComplete
   if (probe.length === 0) {
     return (
       <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-        <div className="bg-dsa-bg border border-red-800/50 rounded shadow-2xl p-6 w-full max-w-sm text-center space-y-3">
+        <div className="bg-dsa-bg border border-red-800/50 rounded shadow-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto text-center space-y-3">
           <p className="text-sm text-red-400">Probe kann nicht durchgeführt werden — keine Probeneigenschaften definiert.</p>
           <button onClick={() => onComplete?.()} className="btn-primary text-xs">Schließen</button>
         </div>
@@ -186,7 +177,7 @@ export default function ProbePopup({ request, character, sendMessage, onComplete
     return (
       <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
         <div className={clsx(
-          'bg-dsa-bg border rounded shadow-2xl p-6 w-full max-w-md text-center space-y-4 animate-fade-in',
+          'bg-dsa-bg border rounded shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto text-center space-y-4 animate-fade-in',
           result.success ? 'border-green-800/50' : 'border-red-800/50'
         )}>
           {/* Probe result header */}
@@ -260,7 +251,7 @@ export default function ProbePopup({ request, character, sendMessage, onComplete
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-      <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl p-6 w-full max-w-lg space-y-5 animate-fade-in relative">
+      <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto space-y-5 animate-fade-in relative">
         <div className="absolute top-3 right-3 flex items-center gap-2">
           {onMinimize && <button onClick={onMinimize} className="text-dsa-parchment-dark hover:text-dsa-parchment text-xs bg-dsa-bg-medium rounded px-2 py-0.5">Minimieren</button>}
           {canAbort && <button onClick={() => onComplete?.()} className="text-dsa-parchment-dark hover:text-red-400 transition" title="Probe abbrechen"><X className="w-4 h-4" /></button>}

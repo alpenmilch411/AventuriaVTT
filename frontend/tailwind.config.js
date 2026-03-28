@@ -6,6 +6,14 @@ export default {
   ],
   darkMode: 'class',
   theme: {
+    screens: {
+      'xs': '480px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         dsa: {
@@ -43,6 +51,7 @@ export default {
         'slide-up': 'slide-up 0.3s ease-out',
         'slide-in-right': 'slide-in-right 0.3s ease-out',
         'schip-flash': 'schip-flash 0.6s ease-out',
+        'banner-flash': 'banner-flash 3s ease-out forwards',
       },
       keyframes: {
         'pulse-red': {
@@ -69,6 +78,12 @@ export default {
           '0%': { boxShadow: '0 0 0 0 rgba(201, 168, 76, 0.8)', transform: 'scale(1.1)' },
           '50%': { boxShadow: '0 0 16px 4px rgba(201, 168, 76, 0.4)' },
           '100%': { boxShadow: '0 0 0 0 rgba(201, 168, 76, 0)', transform: 'scale(1)' },
+        },
+        'banner-flash': {
+          '0%': { opacity: '0', transform: 'translateY(-8px)' },
+          '10%': { opacity: '1', transform: 'translateY(0)' },
+          '80%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
       },
     },

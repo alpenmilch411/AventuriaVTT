@@ -53,11 +53,13 @@ export default function PlayerDashboard() {
   const combatActive = useCombatStore((s) => Object.keys(s.battles).length > 0)
   const pendingDiceRequest = useCombatStore((s) => s.pendingDiceRequest)
   const pendingDefense = useCombatStore((s) => s.pendingDefense)
+  const phase = useSessionStore((s) => s.phase)
 
   const [activeTab, setActiveTab] = useState('character')
   const [showNotifications, setShowNotifications] = useState(false)
   const [probeMinimized, setProbeMinimized] = useState(false)
   const [loadError, setLoadError] = useState(null)
+  const [sessionBanner, setSessionBanner] = useState(null)
 
   const { isOffline, OfflineBanner } = useOffline()
 
@@ -105,6 +107,25 @@ export default function PlayerDashboard() {
     const isCombatRequest = pendingDiceRequest && ['attack', 'defense', 'damage', 'initiative'].includes(pendingDiceRequest.type)
     if ((pendingDefense || isCombatRequest) && activeTab !== 'combat') setActiveTab('combat')
   }, [pendingDefense?.id, pendingDiceRequest?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Session phase transition banner
+  const prevPhase = React.useRef(phase)
+  useEffect(() => {
+    if (prevPhase.current !== phase) {
+      if (phase === 'active' && (prevPhase.current === 'lobby' || prevPhase.current === 'paused')) {
+        setSessionBanner(prevPhase.current === 'paused' ? 'Sitzung fortgesetzt!' : 'Sitzung gestartet!')
+        if (combatActive) setActiveTab('combat')
+        setTimeout(() => setSessionBanner(null), 3000)
+      } else if (phase === 'paused') {
+        setSessionBanner('Sitzung pausiert')
+        setTimeout(() => setSessionBanner(null), 3000)
+      } else if (phase === 'ended') {
+        setSessionBanner('Sitzung beendet')
+        setTimeout(() => setSessionBanner(null), 5000)
+      }
+      prevPhase.current = phase
+    }
+  }, [phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadCharacter = async () => {
     if (!token) return
@@ -177,21 +198,28 @@ export default function PlayerDashboard() {
     <div className="h-screen flex flex-col bg-dsa-bg overflow-hidden">
       <OfflineBanner />
 
+      {/* ── SESSION PHASE BANNER ── */}
+      {sessionBanner && (
+        <div className="flex-shrink-0 bg-gradient-to-r from-dsa-gold/20 via-dsa-gold/10 to-dsa-gold/20 border-b border-dsa-gold/30 px-4 py-2.5 text-center animate-banner-flash">
+          <span className="text-sm font-display font-bold text-dsa-gold">{sessionBanner}</span>
+        </div>
+      )}
+
       {/* ── HEADER: Character info + Vitals ── */}
-      <header className="flex-shrink-0 bg-dsa-bg-light border-b border-dsa-bg-medium px-4 py-2">
+      <header className="flex-shrink-0 bg-dsa-bg-light border-b border-dsa-bg-medium px-3 sm:px-4 py-2">
         <div className="flex items-center justify-between mb-1.5">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
             <button
               onClick={() => navigate('/dashboard')}
-              className="p-1 text-dsa-parchment-dark hover:text-dsa-gold transition-colors"
+              className="p-1 text-dsa-parchment-dark hover:text-dsa-gold transition-colors flex-shrink-0"
               title="Zurück zur Übersicht"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <h1 className="text-sm font-display font-bold text-dsa-gold">{myCharacter?.name || (loadError ? 'Fehler' : 'Lade...')}</h1>
-            {myCharacter?.species && <span className="text-[10px] text-dsa-parchment-dark">{myCharacter.species} {myCharacter.profession}</span>}
+            <h1 className="text-sm font-display font-bold text-dsa-gold truncate">{myCharacter?.name || (loadError ? 'Fehler' : 'Lade...')}</h1>
+            {myCharacter?.species && <span className="text-[10px] text-dsa-parchment-dark hidden sm:inline truncate">{myCharacter.species} {myCharacter.profession}</span>}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {connected ? <Wifi className="w-3.5 h-3.5 text-green-400" /> : <WifiOff className="w-3.5 h-3.5 text-red-400" />}
             <button onClick={() => setShowNotifications(!showNotifications)} className="relative p-1">
               <Bell className="w-4 h-4 text-dsa-parchment-dark" />
@@ -279,14 +307,15 @@ export default function PlayerDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
+              title={tab.label}
               className={clsx(
                 'flex-1 flex items-center justify-center gap-1 py-2 text-xs font-semibold transition border-b-2',
                 isActive ? 'text-dsa-gold border-dsa-gold' : 'text-dsa-parchment-dark border-transparent hover:text-dsa-parchment',
                 isCombat && !isActive && 'text-red-400 animate-pulse'
               )}
             >
-              <Icon className="w-3.5 h-3.5" />
-              {tab.label}
+              <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="hidden xs:inline">{tab.label}</span>
             </button>
           )
         })}

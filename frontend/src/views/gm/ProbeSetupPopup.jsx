@@ -230,7 +230,7 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
   const computeGroupResult = (resultsOverride = null) => {
     const r = resultsOverride || results
     const playerResults = players.filter(p => p.characterId && r[p.characterId])
-    const successes = playerResults.filter(p => results[p.characterId]?.success)
+    const successes = playerResults.filter(p => r[p.characterId]?.success)
     const failures = playerResults.filter(p => !r[p.characterId]?.success)
 
     // QS for sorting — failed players get -1 so they're always worst
@@ -390,16 +390,26 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
     }
 
     setAppliedConsequences(allToApply)
-    // Smart result log — only show what's relevant
+    // Smart result log — structured format: "Gruppenprobe Singen (3 TN): bestanden, QS 2"
     const grLog = computeGroupResult(resultsData)
-    const resultParts = [`${selectedTalent?.name}`]
-    if (grLog.summary) resultParts.push(`— ${grLog.summary}`)
+    const pCount = players.filter(p => p.characterId && r[p.characterId]).length
+    const modeLabel = groupMode === 'group' ? 'Gruppenprobe' : groupMode !== 'individual' ? GROUP_MODES.find(m => m.id === groupMode)?.label || 'Probe' : 'Probe'
+    const skillName = probeName || selectedTalent?.name
+    const resultParts = [`${modeLabel} ${skillName} (${pCount} TN)`]
+    // Compute average QS of successes for group/individual summary
+    const successResults = players.filter(p => p.characterId && r[p.characterId]?.success).map(p => r[p.characterId])
+    const avgQS = successResults.length > 0 ? Math.round(successResults.reduce((s, x) => s + (x.qs || 0), 0) / successResults.length) : 0
+    if (groupMode === 'group') {
+      resultParts.push(grLog.passed ? `bestanden, QS ${avgQS}` : `gescheitert (${successResults.length}/${pCount} bestanden)`)
+    } else if (grLog.summary) {
+      resultParts.push(grLog.summary)
+    }
     const allC = [...successConsequences, ...failConsequences, ...appliedConsequences]
     if (allC.length > 0) {
       const cSummary = allC.map(c => c.label || c.condition || c.itemName || c.skillName || c.abilityName || c.text?.slice(0, 20) || c.type).filter(Boolean).join(', ')
       if (cSummary) resultParts.push(`[${cSummary}]`)
     }
-    sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: resultParts.join(' ') } })
+    sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: resultParts.join(': ') } })
     // Only auto-close if no pending dice consequences — otherwise stay open and wait
     if (pendingDiceConsequences <= 0) {
       const procs = useSessionStore.getState().activeProcesses.filter(p => p.type === 'probe')

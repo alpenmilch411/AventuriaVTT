@@ -18,6 +18,8 @@ class EventType(str, Enum):
     COMBAT_NEXT_TURN = "combat_next_turn"
     PROBE_REQUEST = "probe_request"
     GROUP_PROBE_REQUEST = "group_probe_request"
+    OPPOSED_PROBE_REQUEST = "opposed_probe_request"
+    OPPOSED_PROBE_RESULT = "opposed_probe_result"
     WHISPER = "whisper"
     HALT = "halt"
     HALT_RELEASE = "halt_release"

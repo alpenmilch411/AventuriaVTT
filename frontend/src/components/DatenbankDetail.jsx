@@ -2,7 +2,7 @@
  * DatenbankDetail — shared category config, detail renderers, and popup modal.
  * Used by DatenbankTab (dashboard) and DataBrowser (GM view).
  */
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import {
   Skull, Swords, Shield, ShieldHalf, Package, Sparkles, Star, Zap, BookOpen,
   Heart, Wind, Eye, X, Coins, Pencil, Trash2, Loader2,
@@ -1073,6 +1073,12 @@ export default function DatenbankDetailModal({ data, name, category, loading, is
   const Icon = cat.icon
   const Renderer = DETAIL_RENDERERS[category]
   const customUsername = data?.created_by_username
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose?.() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [onClose])
 
   return (
     <div className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
