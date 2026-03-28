@@ -204,6 +204,36 @@ def _combat_snapshot(state: dict) -> Optional[dict]:
     return state.get("combat")
 
 
+def _sync_vitals_to_combat(state: dict, character_id: str, vitals: dict, token_id: str = None):
+    """Propagate vitals changes into combat initiative_order and combatants dict.
+
+    Without this, _handle_combat_next_turn would broadcast stale HP values
+    from the original initiative_order, causing damage to appear "undone" on
+    the next round.
+    """
+    combat = state.get("combat")
+    if not combat:
+        return
+    vital_keys = ("lep", "asp", "kap")
+    # Update initiative_order entries (match by characterId, character_id, id, or token_id)
+    for c in combat.get("initiative_order", []):
+        cid = c.get("characterId") or c.get("character_id") or c.get("id")
+        match = (cid == character_id
+                 or c.get("id") == character_id
+                 or (token_id and c.get("id") == token_id))
+        if match:
+            for key in vital_keys:
+                if key in vitals:
+                    c[key] = vitals[key]
+    # Also update the combatants dict if it exists
+    combatants = combat.get("combatants", {})
+    for lookup_id in (character_id, token_id):
+        if lookup_id and lookup_id in combatants:
+            for key in vital_keys:
+                if key in vitals:
+                    combatants[lookup_id][key] = vitals[key]
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -784,6 +814,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     if event_type == "vitals_update" and not _is_gm(session_code, user_id) and payload.get("character_id"):
         cid = payload["character_id"]
         raw_vitals = payload.get("vitals", {})
+        token_id = payload.get("token_id")
         async with _get_char_lock(cid):
             # Ensure max_vitals are cached for delta resolution
             await _cache_character_vitals(session_code, cid)
@@ -792,6 +823,8 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
             # Update in-memory state with absolute values
             existing = state.setdefault("vitals", {}).get(cid, {})
             state["vitals"][cid] = {**existing, **resolved}
+            # Sync vitals into combat initiative_order so next_turn broadcasts current values
+            _sync_vitals_to_combat(state, cid, resolved, token_id=token_id)
             _bump_version(state)
             _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
             out_payload = {**payload, "vitals": resolved, "state_version": state["state_version"]}
@@ -1000,10 +1033,13 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         if event_type == "vitals_update" and cid:
             async with _get_char_lock(cid):
                 raw_vitals = payload.get("vitals", {})
+                token_id = payload.get("token_id")
                 await _cache_character_vitals(session_code, cid)
                 resolved = _resolve_deltas(session_code, cid, raw_vitals)
                 existing = state.setdefault("vitals", {}).get(cid, {})
                 state["vitals"][cid] = {**existing, **resolved}
+                # Sync vitals into combat initiative_order so next_turn broadcasts current values
+                _sync_vitals_to_combat(state, cid, resolved, token_id=token_id)
                 _bump_version(state)
                 _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
                 out_payload = {**payload, "vitals": resolved, "state_version": state["state_version"]}
@@ -1012,8 +1048,11 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         elif event_type == "state_update" and cid and payload.get("current_lep") is not None:
             async with _get_char_lock(cid):
                 vitals_update = {"lep": payload["current_lep"]}
+                token_id = payload.get("token_id")
                 existing = state.setdefault("vitals", {}).get(cid, {})
                 state["vitals"][cid] = {**existing, **vitals_update}
+                # Sync vitals into combat initiative_order so next_turn broadcasts current values
+                _sync_vitals_to_combat(state, cid, vitals_update, token_id=token_id)
                 _bump_version(state)
                 _safe_create_task(_persist_vitals(cid, vitals_update), name=f"persist_vitals_{cid[:8]}")
                 msg = _msg(event_type, {**out_payload, "state_version": state["state_version"]}, from_user=user_id)
@@ -1322,6 +1361,21 @@ async def _handle_combat_next_turn(session_code: str, user_id: str, payload: dic
     if not order:
         await manager.send_to_user(user_id, _error("Empty initiative order"))
         return
+
+    # Safety net: merge any tracked vitals into combatants before broadcasting.
+    # This ensures HP changes from vitals_update are always reflected even if
+    # _sync_vitals_to_combat missed a matching ID variant.
+    session_vitals = state.get("vitals", {})
+    for c in order:
+        cid = c.get("characterId") or c.get("character_id")
+        if cid and cid in session_vitals:
+            v = session_vitals[cid]
+            if "lep" in v:
+                c["lep"] = v["lep"]
+            if "asp" in v:
+                c["asp"] = v["asp"]
+            if "kap" in v:
+                c["kap"] = v["kap"]
 
     idx = combat.get("current_turn_index", 0) + 1
     round_number = combat.get("round_number", 1)

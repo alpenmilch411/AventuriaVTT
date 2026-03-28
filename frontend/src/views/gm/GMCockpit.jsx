@@ -952,14 +952,31 @@ function BattleSetup({ players, creatureList, token, sendMessage, gmControls, on
     const char = allChars.find(c => c.id === p.characterId) || p.character
     const cv = char?.combat_values || {}
     const dv = char?.derived_values || {}
-    const weapons = cv.weapons || []
-    const primary = weapons[0] || {}
+    const allWeapons = cv.weapons || []
+    // Filter to only equipped weapons (cross-reference inventory equipped flag)
+    // Inventory items may have name (enriched) or only template_id (thin), so match both
+    const rawInv = char?.basis_inventory || char?.campaign_inventory || {}
+    const invItems = Array.isArray(rawInv) ? rawInv : (rawInv.items || [])
+    const equippedIds = new Set()
+    for (const i of invItems) {
+      if (!i.equipped) continue
+      if (i.name) equippedIds.add(i.name.toLowerCase())
+      if (i.template_id) equippedIds.add(i.template_id.toLowerCase())
+    }
+    const weapons = allWeapons.filter(w => {
+      const wn = w.name?.toLowerCase() || ''
+      // Match weapon name against inventory name or template_id (e.g. "streitaxt" matches template_id "streitaxt")
+      return equippedIds.has(wn) || [...equippedIds].some(id => wn.includes(id) || id.includes(wn))
+    })
+    // Fall back to all weapons if nothing is explicitly equipped (backward compat)
+    const effectiveWeapons = weapons.length > 0 ? weapons : allWeapons
+    const primary = effectiveWeapons[0] || {}
     return {
       id: `player_${p.id}`, name: char?.name || p.username, userId: p.id, characterId: p.characterId, isNPC: false,
       lep: (char?.current_vitals || {}).lep ?? dv.LeP_max ?? 30, lepMax: dv.LeP_max ?? 30,
       at: primary.AT || 12, pa: primary.PA || 8, aw: dv.AW || 5, rs: cv.RS || 0, iniBasis: dv.INI_basis || 10,
       weaponName: primary.name || 'Unbewaffnet', weaponDamage: primary.TP || primary.damage || '1W6', weaponReach: primary.reach || 'kurz',
-      attacks: weapons.map(w => ({ name: w.name, at: w.AT, pa: w.PA, damage: w.TP || w.damage, reach: w.reach, isRanged: w.ranged || false })),
+      attacks: effectiveWeapons.map(w => ({ name: w.name, at: w.AT, pa: w.PA, damage: w.TP || w.damage, reach: w.reach, isRanged: w.ranged || false })),
     }
   }
 
