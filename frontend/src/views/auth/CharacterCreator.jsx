@@ -380,6 +380,77 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     }, 0)
   }, [editCharacter, speciesAll, culturesAll, professionsAll])
 
+  // ── Derived data ──
+  const gradeData = grade ? ERFAHRUNGSGRADE[grade] : null
+  const freeAttrPoints = species?.free_attribute_points ?? 7
+
+  // Base attributes = species base + fixed species attribute adjustments + free points
+  const baseAttributes = useMemo(() => {
+    const specBase = species?.base_attributes || {}
+    const base = ATTR_KEYS.reduce((o, k) => ({ ...o, [k]: specBase[k] ?? 8 }), {})
+    // Species racial attribute adjustments (e.g. Elf: IN+1/GE+1, Zwerg: KO+1/KK+1)
+    const adjustments = species?.attribute_adjustments || []
+    if (Array.isArray(adjustments)) {
+      // Array format: [{attr:"IN", value:1}, {choice:true, ...}]
+      for (const adj of adjustments) {
+        if (!adj.choice && adj.attr && ATTR_KEYS.includes(adj.attr)) {
+          base[adj.attr] = (base[adj.attr] || 8) + (adj.value || 0)
+        }
+      }
+    } else if (typeof adjustments === 'object') {
+      // Dict format fallback: {IN: 1, GE: 1}
+      for (const [k, v] of Object.entries(adjustments)) {
+        if (ATTR_KEYS.includes(k)) base[k] = (base[k] || 8) + v
+      }
+    }
+    for (const [k, v] of Object.entries(speciesFreePoints)) {
+      base[k] = (base[k] || 8) + v
+    }
+    return base
+  }, [species, speciesFreePoints])
+
+  // Final attributes = base + upgrades
+  const finalAttributes = useMemo(() => {
+    const result = { ...baseAttributes }
+    for (const [k, v] of Object.entries(attrUpgrades)) {
+      result[k] = (result[k] || 8) + v
+    }
+    return result
+  }, [baseAttributes, attrUpgrades])
+
+  // Base skills (from culture skill_bonuses + profession skills + profession variant adjustments)
+  const baseSkills = useMemo(() => {
+    const skills = {}
+    if (culture?.skill_bonuses) {
+      for (const [k, v] of Object.entries(culture.skill_bonuses)) {
+        skills[k] = (skills[k] || 0) + v
+      }
+    }
+    if (profession?.skills) {
+      for (const [k, v] of Object.entries(profession.skills)) {
+        skills[k] = (skills[k] || 0) + v
+      }
+    }
+    // Apply profession variant skill adjustments
+    if (professionVariant?.skills) {
+      for (const [k, v] of Object.entries(professionVariant.skills)) {
+        skills[k] = (skills[k] || 0) + v
+      }
+    }
+    return skills
+  }, [culture, profession, professionVariant])
+
+  // Base KT (from profession, min 6)
+  const baseKT = useMemo(() => {
+    const kt = {}
+    if (profession?.combat_techniques) {
+      for (const [k, v] of Object.entries(profession.combat_techniques)) {
+        kt[k] = Math.max(6, v)
+      }
+    }
+    return kt
+  }, [profession])
+
   // ── Edit mode: compute upgrades after base values stabilize ──
   const editUpgradesComputedRef = useRef(false)
   useEffect(() => {
@@ -458,76 +529,7 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
     }
   }, [editCharacter, species, profession, baseAttributes, baseSkills, baseKT, specialAbilitiesAll])
 
-  // ── Derived data ──
-  const gradeData = grade ? ERFAHRUNGSGRADE[grade] : null
-  const freeAttrPoints = species?.free_attribute_points ?? 7
 
-  // Base attributes = species base + fixed species attribute adjustments + free points
-  const baseAttributes = useMemo(() => {
-    const specBase = species?.base_attributes || {}
-    const base = ATTR_KEYS.reduce((o, k) => ({ ...o, [k]: specBase[k] ?? 8 }), {})
-    // Species racial attribute adjustments (e.g. Elf: IN+1/GE+1, Zwerg: KO+1/KK+1)
-    const adjustments = species?.attribute_adjustments || []
-    if (Array.isArray(adjustments)) {
-      // Array format: [{attr:"IN", value:1}, {choice:true, ...}]
-      for (const adj of adjustments) {
-        if (!adj.choice && adj.attr && ATTR_KEYS.includes(adj.attr)) {
-          base[adj.attr] = (base[adj.attr] || 8) + (adj.value || 0)
-        }
-      }
-    } else if (typeof adjustments === 'object') {
-      // Dict format fallback: {IN: 1, GE: 1}
-      for (const [k, v] of Object.entries(adjustments)) {
-        if (ATTR_KEYS.includes(k)) base[k] = (base[k] || 8) + v
-      }
-    }
-    for (const [k, v] of Object.entries(speciesFreePoints)) {
-      base[k] = (base[k] || 8) + v
-    }
-    return base
-  }, [species, speciesFreePoints])
-
-  // Final attributes = base + upgrades
-  const finalAttributes = useMemo(() => {
-    const result = { ...baseAttributes }
-    for (const [k, v] of Object.entries(attrUpgrades)) {
-      result[k] = (result[k] || 8) + v
-    }
-    return result
-  }, [baseAttributes, attrUpgrades])
-
-  // Base skills (from culture skill_bonuses + profession skills + profession variant adjustments)
-  const baseSkills = useMemo(() => {
-    const skills = {}
-    if (culture?.skill_bonuses) {
-      for (const [k, v] of Object.entries(culture.skill_bonuses)) {
-        skills[k] = (skills[k] || 0) + v
-      }
-    }
-    if (profession?.skills) {
-      for (const [k, v] of Object.entries(profession.skills)) {
-        skills[k] = (skills[k] || 0) + v
-      }
-    }
-    // Apply profession variant skill adjustments
-    if (professionVariant?.skills) {
-      for (const [k, v] of Object.entries(professionVariant.skills)) {
-        skills[k] = (skills[k] || 0) + v
-      }
-    }
-    return skills
-  }, [culture, profession, professionVariant])
-
-  // Base KT (from profession, min 6)
-  const baseKT = useMemo(() => {
-    const kt = {}
-    if (profession?.combat_techniques) {
-      for (const [k, v] of Object.entries(profession.combat_techniques)) {
-        kt[k] = Math.max(6, v)
-      }
-    }
-    return kt
-  }, [profession])
 
   // Dynamic talent categories from DB templates
   const talentCategories = useMemo(() => {
