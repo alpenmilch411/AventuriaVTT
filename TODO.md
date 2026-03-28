@@ -68,6 +68,14 @@
 - [x] Weather/time schema validation
 - [x] Enter key in 3W20 probes, shared attribute constants, combat turn clarity, sort consistency
 - [x] Session vitals not restored on rejoin — preserved existing snapshot
+- [x] **CRITICAL: Damage undone next round** — vitals not synced to combat initiative_order. Fixed with _sync_vitals_to_combat()
+- [x] Weapon switch showed ALL weapons — now only equipped. Cross-references inventory equipped flag
+- [x] Duplicate species merged (Mensch/Menschen → Mensch with variants)
+- [x] Profession picker: 9 DSA5 subcategories + ProfessionDetailModal
+- [x] Detail popups on all wizard steps (species, culture, adv/dis, talents)
+- [x] "Nur Grundregeln" toggle — filters to GRW, defaults for beginners
+- [x] Character lifecycle: Verfügbar / In Sitzung / Tot (removed Ruhend/Ruhestand)
+- [x] DatenbankTab "Alle" total count, ShopCreateModal with DataBrowser, loot multi-select
 - [ ] Mobile responsive header
 - [x] Opposed probes UI — Vergleichsprobe toggle in ProbeSetupPopup, attacker+defender selectors, sends opposed_probe_request
 - [ ] In-game time tracking UI — backend handler exists (`_handle_time_advance`), no frontend
