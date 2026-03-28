@@ -77,7 +77,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
 
     // ── Combat events ──
     else if (type === 'combat_start' || type === 'combat_end' || type === 'combat_next_turn' || type === 'initiative_update') {
-      console.log('[WS] Combat event:', type, payload)
       useCombatStore.getState().handleCombatMessage(msg)
       // Mirror combat lifecycle events to Protokoll
       if (type === 'combat_start') {
@@ -117,7 +116,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     // ── Probe flow ──
     else if (type === 'dice_request' || type === 'probe_request') {
       // Player receives a dice prompt from the GM
-      console.log('[WS] Received dice_request, setting pendingDiceRequest:', payload)
       useCombatStore.getState().setPendingDiceRequest(payload)
       // GM sent a dice request — our pending request was implicitly approved
       useSessionStore.getState().clearPendingRequest()
@@ -320,7 +318,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
 
     // ── Dice result (player → GM, or broadcast) ──
     else if (type === 'dice_result') {
-      console.log('[WS] Received dice_result:', payload.request_type, 'charId:', payload.character_id, 'value:', payload.value, 'conType:', payload.consequence_type)
       if (payload.request_type === 'talent_probe') {
         const resultText = `${payload.character_name}: ${payload.talent_name} — ${payload.success ? `QS ${payload.qs} ✓` : '✗ Misslungen'}`
         useSessionStore.getState().addNotification({
@@ -1020,7 +1017,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       wsRef.current = ws
 
       ws.onopen = () => {
-        console.log(`[WS] Connected as ${role} (user_id=${userId}) to ${sessionCode}`)
         setConnected(true)
         reconnectAttempts.current = 0
         heartbeatInterval.current = setInterval(() => {
@@ -1034,7 +1030,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
         }, HEARTBEAT_INTERVAL)
         // Flush queued messages on reconnect
         if (messageQueueRef.current.length > 0) {
-          console.log(`[WS] Flushing ${messageQueueRef.current.length} queued messages`)
           const queue = [...messageQueueRef.current]
           messageQueueRef.current = []
           for (const msg of queue) {
@@ -1054,7 +1049,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       }
 
       ws.onclose = (event) => {
-        console.log(`[WS] Disconnected (code ${event.code})`)
         setConnected(false)
         clearInterval(heartbeatInterval.current)
         if (!event.wasClean) scheduleReconnect()
@@ -1078,9 +1072,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
 
   const sendMessage = useCallback((message) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      if (message.type !== 'ping') {
-        console.log('[WS] Sending:', message.type, message.payload?.target_user_id || '')
-      }
       wsRef.current.send(JSON.stringify(message))
     } else {
       // Queue critical messages for retry on reconnect

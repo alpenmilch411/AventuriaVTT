@@ -68,7 +68,7 @@ async def websocket_endpoint(
 
             msg_type = message.get("type", "?")
             if msg_type != "ping":
-                logger.info(f"WS message from {user_id}: {msg_type}")
+                logger.debug(f"WS message from {user_id}: {msg_type}")
             await handle_message(websocket, user_id, session_code, message)
     except WebSocketDisconnect:
         logger.info(f"WS disconnected: {user_id}")

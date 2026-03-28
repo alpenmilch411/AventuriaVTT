@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react'
 import {
   X, Send, Search, ChevronDown, ChevronUp, Check, Dice5,
-  Users, User, Trophy, AlertTriangle, Clock
+  Users, User, Trophy, AlertTriangle, Clock, Swords
 } from 'lucide-react'
 import useAuthStore from '../../stores/authStore'
 import useCharacterStore from '../../stores/characterStore'
@@ -30,6 +30,9 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
   // Step state
   const [step, setStep] = useState('setup') // 'setup' | 'waiting' | 'results'
 
+  // Probe type: 'normal' (Regelprobe) or 'opposed' (Vergleichsprobe)
+  const [probeType, setProbeType] = useState('normal')
+
   // Setup state
   const [talentSearch, setTalentSearch] = useState('')
   const [selectedTalent, setSelectedTalent] = useState(null)
@@ -39,6 +42,14 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
   const [groupMode, setGroupMode] = useState('individual')
   const [successConsequences, setSuccessConsequences] = useState([])
   const [failConsequences, setFailConsequences] = useState([])
+
+  // Opposed probe state
+  const [opposedInitiator, setOpposedInitiator] = useState(null) // player object
+  const [opposedTarget, setOpposedTarget] = useState(null)
+  const [opposedInitTalent, setOpposedInitTalent] = useState(null) // talent object
+  const [opposedTargetTalent, setOpposedTargetTalent] = useState(null)
+  const [opposedInitSearch, setOpposedInitSearch] = useState('')
+  const [opposedTargetSearch, setOpposedTargetSearch] = useState('')
 
   // Results state
   const [results, setResults] = useState({}) // characterId → { success, qs, rolls, ... }
@@ -52,7 +63,6 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
     if (!lastDiceResult) return
 
     // Handle consequence dice rolls (damage/heal with dice formula)
-    console.log('[PROBE-EFFECT] lastDiceResult changed:', lastDiceResult?.request_type, 'step:', step)
     if (lastDiceResult.request_type === 'consequence_roll' && step === 'results') {
       const charId = lastDiceResult.character_id
       const charName = lastDiceResult.character_name || 'Spieler'
@@ -60,7 +70,6 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
       const cType = lastDiceResult.consequence_type
       const resource = lastDiceResult.resource || 'lep'
       if (cType === 'damage') {
-        console.log('[PROBE] Applying damage:', charId, val, 'lep_delta:', -val)
         sendMessage?.({ type: 'vitals_update', payload: { character_id: charId, vitals: { lep_delta: -val } } })
         sendMessage?.({ type: 'combat_log_entry', payload: { type: 'damage', text: `${charName}: ${val} Schadenspunkte` } })
         setConsequenceResults(prev => [...prev, { charName, label: 'Schaden', value: val }])
@@ -120,18 +129,19 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
 
   const allResultsIn = players.filter(p => p.characterId).every(p => results[p.characterId])
 
-  // Get player talent FW
-  const getPlayerFW = (player) => {
-    if (!selectedTalent || !player.character?.talents) return 0
+  // Get talent FW for a player (optionally with a specific talent override)
+  const normName = s => s.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' }[m] || m))
+  const getTalentFW = (player, talent) => {
+    if (!talent || !player?.character?.talents) return 0
     const talents = player.character.talents
-    const normName = s => s.toLowerCase().replace(/[äöüß]/g, m => ({ 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' }[m] || m))
     for (const [k, v] of Object.entries(talents)) {
-      if (normName(k) === normName(selectedTalent.name) || k.toLowerCase() === selectedTalent.id) {
+      if (normName(k) === normName(talent.name) || k.toLowerCase() === talent.id) {
         return typeof v === 'object' ? (v.fw || v.value || 0) : (v || 0)
       }
     }
     return 0
   }
+  const getPlayerFW = (player) => getTalentFW(player, selectedTalent)
 
   // Build merged talent list: character-specific entries first, then databank entries not already present
   const mergedTalentList = (() => {
@@ -225,6 +235,39 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
     })
     setStep('waiting')
   }
+
+  // Send opposed probe (Vergleichsprobe)
+  const handleSendOpposed = () => {
+    if (!opposedInitiator || !opposedTarget || !opposedInitTalent || !opposedTargetTalent) return
+    const initFW = getTalentFW(opposedInitiator, opposedInitTalent)
+    const targetFW = getTalentFW(opposedTarget, opposedTargetTalent)
+    sendMessage?.({
+      type: 'opposed_probe_request',
+      payload: {
+        initiator_id: opposedInitiator.id,
+        target_id: opposedTarget.id,
+        initiator_skill: opposedInitTalent.name,
+        target_skill: opposedTargetTalent.name,
+        initiator_name: opposedInitiator.character?.name || opposedInitiator.username,
+        target_name: opposedTarget.character?.name || opposedTarget.username,
+        modifier: difficulty,
+        initiator_fw: initFW,
+        target_fw: targetFW,
+        initiator_probe: opposedInitTalent.probe || [],
+        target_probe: opposedTargetTalent.probe || [],
+      },
+    })
+    sendMessage?.({ type: 'combat_log_entry', payload: {
+      type: 'system',
+      text: `Vergleichsprobe: ${opposedInitiator.character?.name?.split(' ')[0]} (${opposedInitTalent.name}) vs ${opposedTarget.character?.name?.split(' ')[0]} (${opposedTargetTalent.name})${difficulty ? ` [${difficulty > 0 ? '+' : ''}${difficulty}]` : ''}`,
+    }})
+    onClose()
+  }
+
+  // Filter talents for opposed probe sides
+  const filterTalents = (search) => search
+    ? mergedTalentList.filter(t => (t.name || '').toLowerCase().includes(search.toLowerCase())).slice(0, 8)
+    : []
 
   // Compute group result (accepts optional results override for auto-apply)
   const computeGroupResult = (resultsOverride = null) => {
@@ -444,6 +487,128 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
           {/* ── STEP 1: SETUP ── */}
           {step === 'setup' && (
             <>
+              {/* Probe type toggle */}
+              {players.length >= 2 && (
+                <div className="flex gap-1.5">
+                  <button onClick={() => setProbeType('normal')}
+                    className={clsx('flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-sm border text-xs font-bold transition',
+                      probeType === 'normal' ? 'bg-dsa-gold/10 border-dsa-gold/30 text-dsa-gold' : 'bg-dsa-bg-card border-dsa-bg-medium text-dsa-parchment-dark hover:text-dsa-parchment')}>
+                    <Dice5 className="w-4 h-4" /> Regelprobe
+                  </button>
+                  <button onClick={() => setProbeType('opposed')}
+                    className={clsx('flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-sm border text-xs font-bold transition',
+                      probeType === 'opposed' ? 'bg-dsa-gold/10 border-dsa-gold/30 text-dsa-gold' : 'bg-dsa-bg-card border-dsa-bg-medium text-dsa-parchment-dark hover:text-dsa-parchment')}>
+                    <Swords className="w-4 h-4" /> Vergleichsprobe
+                  </button>
+                </div>
+              )}
+
+              {/* ── Opposed probe setup ── */}
+              {probeType === 'opposed' && (
+                <>
+                  <p className="text-[9px] text-dsa-parchment-dark/50">Zwei Spieler treten gegeneinander an. Höhere QS gewinnt, bei Gleichstand gewinnt der Verteidiger.</p>
+
+                  {/* Initiator */}
+                  <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded-sm p-3 space-y-2">
+                    <label className="text-[10px] text-dsa-gold uppercase tracking-wider font-bold">Angreifer</label>
+                    <select
+                      value={opposedInitiator?.id || ''}
+                      onChange={e => setOpposedInitiator(players.find(p => p.id === e.target.value) || null)}
+                      className="input-field text-xs w-full"
+                    >
+                      <option value="">Charakter wählen...</option>
+                      {players.filter(p => p.characterId).map(p => (
+                        <option key={p.id} value={p.id}>{p.character?.name || p.username}</option>
+                      ))}
+                    </select>
+                    <div className="relative">
+                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/40" />
+                      <input
+                        value={opposedInitTalent ? opposedInitTalent.name : opposedInitSearch}
+                        onChange={e => { setOpposedInitSearch(e.target.value); setOpposedInitTalent(null) }}
+                        onFocus={() => { if (opposedInitTalent) { setOpposedInitSearch(opposedInitTalent.name); setOpposedInitTalent(null) } }}
+                        className="input-field text-xs w-full pl-8" placeholder="Talent suchen..."
+                      />
+                      {filterTalents(opposedInitSearch).length > 0 && !opposedInitTalent && (
+                        <div className="absolute z-20 top-full left-0 right-0 mt-0.5 bg-dsa-bg-card border border-dsa-bg-medium rounded-sm shadow-xl max-h-36 overflow-y-auto">
+                          {filterTalents(opposedInitSearch).map(t => (
+                            <button key={t.id || t.name} onClick={() => { setOpposedInitTalent(t); setOpposedInitSearch('') }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-dsa-bg-medium/50 transition text-xs border-b border-dsa-bg-medium/30">
+                              <span className="text-dsa-parchment">{t.name}</span>
+                              {t.probe && <span className="text-[9px] text-dsa-gold ml-2">{Array.isArray(t.probe) ? t.probe.join('/') : t.probe}</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {opposedInitiator && opposedInitTalent && (
+                      <div className="text-[10px] text-dsa-parchment-dark">
+                        FW: <span className="font-mono font-bold text-dsa-gold">{getTalentFW(opposedInitiator, opposedInitTalent)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* vs divider */}
+                  <div className="text-center text-xs font-bold text-dsa-parchment-dark">vs</div>
+
+                  {/* Target */}
+                  <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded-sm p-3 space-y-2">
+                    <label className="text-[10px] text-dsa-gold uppercase tracking-wider font-bold">Verteidiger</label>
+                    <select
+                      value={opposedTarget?.id || ''}
+                      onChange={e => setOpposedTarget(players.find(p => p.id === e.target.value) || null)}
+                      className="input-field text-xs w-full"
+                    >
+                      <option value="">Charakter wählen...</option>
+                      {players.filter(p => p.characterId).map(p => (
+                        <option key={p.id} value={p.id}>{p.character?.name || p.username}</option>
+                      ))}
+                    </select>
+                    <div className="relative">
+                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/40" />
+                      <input
+                        value={opposedTargetTalent ? opposedTargetTalent.name : opposedTargetSearch}
+                        onChange={e => { setOpposedTargetSearch(e.target.value); setOpposedTargetTalent(null) }}
+                        onFocus={() => { if (opposedTargetTalent) { setOpposedTargetSearch(opposedTargetTalent.name); setOpposedTargetTalent(null) } }}
+                        className="input-field text-xs w-full pl-8" placeholder="Talent suchen..."
+                      />
+                      {filterTalents(opposedTargetSearch).length > 0 && !opposedTargetTalent && (
+                        <div className="absolute z-20 top-full left-0 right-0 mt-0.5 bg-dsa-bg-card border border-dsa-bg-medium rounded-sm shadow-xl max-h-36 overflow-y-auto">
+                          {filterTalents(opposedTargetSearch).map(t => (
+                            <button key={t.id || t.name} onClick={() => { setOpposedTargetTalent(t); setOpposedTargetSearch('') }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-dsa-bg-medium/50 transition text-xs border-b border-dsa-bg-medium/30">
+                              <span className="text-dsa-parchment">{t.name}</span>
+                              {t.probe && <span className="text-[9px] text-dsa-gold ml-2">{Array.isArray(t.probe) ? t.probe.join('/') : t.probe}</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {opposedTarget && opposedTargetTalent && (
+                      <div className="text-[10px] text-dsa-parchment-dark">
+                        FW: <span className="font-mono font-bold text-dsa-gold">{getTalentFW(opposedTarget, opposedTargetTalent)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Difficulty (shared) */}
+                  <div>
+                    <label className="text-[10px] text-dsa-parchment-dark uppercase tracking-wider font-bold">Erschwernis / Erleichterung</label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <button onClick={() => setDifficulty(d => d - 1)} className="w-8 h-8 rounded-sm bg-red-900/20 border border-red-800/30 text-red-400 flex items-center justify-center hover:bg-red-900/30 text-lg font-bold">−</button>
+                      <div className="text-center flex-1">
+                        <div className={clsx('text-xl font-mono font-bold', difficulty > 0 ? 'text-green-400' : difficulty < 0 ? 'text-red-400' : 'text-dsa-parchment-dark/30')}>
+                          {difficulty > 0 ? `+${difficulty}` : difficulty}
+                        </div>
+                      </div>
+                      <button onClick={() => setDifficulty(d => d + 1)} className="w-8 h-8 rounded-sm bg-green-900/20 border border-green-800/30 text-green-400 flex items-center justify-center hover:bg-green-900/30 text-lg font-bold">+</button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* ── Normal probe setup ── */}
+              {probeType === 'normal' && <>
               {/* Talent search */}
               <div>
                 <label className="text-[10px] text-dsa-parchment-dark uppercase tracking-wider font-bold">Talent auswählen</label>
@@ -563,6 +728,7 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
                   <ConsequenceBuilder consequences={failConsequences} onChange={setFailConsequences} players={players} />
                 </div>
               </div>
+              </>}
             </>
           )}
 
@@ -727,10 +893,17 @@ export default function ProbeSetupPopup({ players, sendMessage, onClose, onMinim
           <button onClick={onClose} className="px-4 py-2 text-xs text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-parchment transition">
             {step === 'results' ? 'Schließen' : 'Abbrechen'}
           </button>
-          {step === 'setup' && (
+          {step === 'setup' && probeType === 'normal' && (
             <button onClick={handleSend} disabled={!selectedTalent}
               className="px-4 py-2 text-xs bg-dsa-gold/20 border border-dsa-gold/30 text-dsa-gold rounded-sm hover:bg-dsa-gold/30 transition font-bold flex items-center gap-2 disabled:opacity-30">
               <Send className="w-4 h-4" /> Probe senden
+            </button>
+          )}
+          {step === 'setup' && probeType === 'opposed' && (
+            <button onClick={handleSendOpposed}
+              disabled={!opposedInitiator || !opposedTarget || !opposedInitTalent || !opposedTargetTalent || opposedInitiator?.id === opposedTarget?.id}
+              className="px-4 py-2 text-xs bg-dsa-gold/20 border border-dsa-gold/30 text-dsa-gold rounded-sm hover:bg-dsa-gold/30 transition font-bold flex items-center gap-2 disabled:opacity-30">
+              <Swords className="w-4 h-4" /> Vergleichsprobe starten
             </button>
           )}
           {step === 'waiting' && allResultsIn && (

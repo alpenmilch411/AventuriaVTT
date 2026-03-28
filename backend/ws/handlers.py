@@ -675,8 +675,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     payload = raw.get("payload", {})
     state = _ensure_state(session_code)
     if event_type not in ("ping",):
-        import sys
-        print(f"[WS-MSG] {event_type} from {user_id[:8]} (gm={_is_gm(session_code, user_id)})", flush=True)
+        logger.debug("WS message: %s from %s (gm=%s)", event_type, user_id[:8], _is_gm(session_code, user_id))
 
     # Quick sanity check
     if event_type is None:
@@ -859,7 +858,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         else:
             msg = _msg(event_type, payload, from_user=user_id)
             await manager.broadcast_to_room(session_code, msg)
-        logger.info("Player %s broadcast inventory_change for %s", user_id, payload["character_id"])
+        logger.debug("Player %s broadcast inventory_change for %s", user_id, payload["character_id"])
         return
 
     # Probe cancel — player withdraws their probe request
@@ -918,13 +917,13 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
             }
         msg = _msg(event_type, payload, from_user=user_id, target="gm")
         await manager.broadcast_to_room(session_code, msg, target="gm")
-        logger.info("Relayed %s from %s to GM in %s", event_type, user_id, session_code)
+        logger.debug("Relayed %s from %s to GM in %s", event_type, user_id, session_code)
         return
 
     # GM → targeted message (dice_request, defense_request, probe_consequence go to specific player)
     if event_type in ("dice_request", "defense_request", "probe_consequence"):
         is_gm = _is_gm(session_code, user_id)
-        logger.info("dice/defense_request from %s (is_gm=%s) in %s", user_id, is_gm, session_code)
+        logger.debug("dice/defense_request from %s (is_gm=%s) in %s", user_id, is_gm, session_code)
         if is_gm:
             target_user = payload.get("target_user_id")
             if target_user:
@@ -941,7 +940,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
             # Fallback: broadcast to all players if no target
             msg = _msg(event_type, payload, from_user=user_id)
             await manager.broadcast_to_room(session_code, msg, target="players")
-            logger.info("GM broadcast %s to all players in %s", event_type, session_code)
+            logger.debug("GM broadcast %s to all players in %s", event_type, session_code)
             return
         else:
             # Player sending dice_request — relay to GM
@@ -1075,7 +1074,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
             log.append(entry)
             if len(log) > 500:
                 state["session_log"] = log[-500:]
-        logger.info("GM broadcast %s in %s", event_type, session_code)
+        logger.debug("GM broadcast %s in %s", event_type, session_code)
         # Snapshot after state-mutating GM events
         if event_type in ("vitals_update", "conditions_update", "condition_change"):
             _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_gm_{event_type}_{session_code}")
@@ -1197,7 +1196,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     if _is_gm(session_code, user_id):
         msg = _msg(event_type, payload, from_user=user_id)
         await manager.broadcast_to_room(session_code, msg, exclude=user_id)
-        logger.info("GM broadcast %s in %s", event_type, session_code)
+        logger.debug("GM broadcast %s in %s", event_type, session_code)
         return
 
     # Player → GM + all broadcast (dice_result, defense_choice, action_declare go to everyone)
@@ -1212,13 +1211,13 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
                 del pending[k]
         msg = _msg(event_type, payload, from_user=user_id)
         await manager.broadcast_to_room(session_code, msg)
-        logger.info("Player broadcast %s from %s in %s", event_type, user_id, session_code)
+        logger.debug("Player broadcast %s from %s in %s", event_type, user_id, session_code)
         return
 
     # Player → all broadcast (token_move etc. that aren't in the explicit map)
     msg = _msg(event_type, payload, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
-    logger.info("Player broadcast %s from %s in %s", event_type, user_id, session_code)
+    logger.debug("Player broadcast %s from %s in %s", event_type, user_id, session_code)
 
 
 # ===================================================================
