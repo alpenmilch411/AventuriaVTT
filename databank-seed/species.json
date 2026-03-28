@@ -1,7 +1,7 @@
 [
   {
     "id": "species_menschen",
-    "name": "Menschen",
+    "name": "Mensch",
     "optolith_id": "R_1",
     "ap_cost": 0,
     "lep_base": 5,
@@ -106,7 +106,7 @@
   },
   {
     "id": "species_elfen",
-    "name": "Elfen",
+    "name": "Elf",
     "optolith_id": "R_2",
     "ap_cost": 18,
     "lep_base": 2,
@@ -174,7 +174,7 @@
   },
   {
     "id": "species_halbelfen",
-    "name": "Halbelfen",
+    "name": "Halbelf",
     "optolith_id": "R_3",
     "ap_cost": 0,
     "lep_base": 5,
@@ -233,7 +233,7 @@
   },
   {
     "id": "species_zwerge",
-    "name": "Zwerge",
+    "name": "Zwerg",
     "optolith_id": "R_4",
     "ap_cost": 61,
     "lep_base": 8,
