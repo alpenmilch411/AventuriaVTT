@@ -30,7 +30,6 @@ class EventType(str, Enum):
     WEATHER_CHANGE = "weather_change"
     ATTENTION = "attention"
     ATTENTION_RELEASE = "attention_release"
-    AP_AWARD = "ap_award"
     QUEST_UPDATE = "quest_update"
     LORE_REVEAL = "lore_reveal"
     REST_START = "rest_start"

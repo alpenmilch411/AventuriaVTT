@@ -743,41 +743,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       })
     }
 
-    // ── AP Award (GM → player) ──
-    else if (type === 'ap_award') {
-      const myId = useAuthStore?.getState?.()?.user?.id
-      const charState = useCharacterStore.getState()
-      const myAward = (payload.awards || []).find(a => a.user_id === myId)
-      if (myAward) {
-        useSessionStore.getState().addNotification({
-          id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, type: 'success', from: 'Spielleiter',
-          text: `${myAward.amount} Abenteuerpunkte erhalten${myAward.reason ? `: ${myAward.reason}` : ''}`,
-          timestamp: msg.timestamp,
-        })
-        // Update available_ap on own character
-        if (charState.myCharacter) {
-          const cur = charState.myCharacter.available_ap || 0
-          const tot = charState.myCharacter.total_ap || 0
-          charState.updateCharacterField('available_ap', cur + myAward.amount)
-          charState.updateCharacterField('total_ap', tot + myAward.amount)
-        }
-        // Store AP award in combatStore for victory screen display
-        useCombatStore.getState().setApAwarded(myAward)
-      }
-      // GM side: update allCharacters with new AP
-      for (const award of (payload.awards || [])) {
-        if (award.character_id) {
-          const existing = charState.allCharacters.find(c => c.id === award.character_id)
-          if (existing) {
-            charState.updateCharacterInList(award.character_id, {
-              available_ap: (existing.available_ap || 0) + award.amount,
-              total_ap: (existing.total_ap || 0) + award.amount,
-            })
-          }
-        }
-      }
-    }
-
     // ── Spotlight ──
     else if (type === 'spotlight') {
       useSessionStore.getState().addNotification({

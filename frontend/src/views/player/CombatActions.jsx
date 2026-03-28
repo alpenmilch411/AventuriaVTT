@@ -27,7 +27,6 @@ const DEFENSE_OPTIONS = [
 function CombatActions({ sendMessage }) {
   const combatActive = useCombatStore((s) => Object.keys(s.battles).length > 0)
   const combatResult = useCombatStore((s) => s.combatResult)
-  const apAwarded = useCombatStore((s) => s.apAwarded)
   const isMyTurn = useCombatStore((s) => s.isMyTurn)
   const turnsUntilMine = useCombatStore((s) => s.turnsUntilMine)
   const activeBattleId = useCombatStore((s) => s.activeBattleId)
@@ -96,17 +95,6 @@ function CombatActions({ sendMessage }) {
                 </div>
               )}
             </div>
-            {apAwarded && (
-              <div className="bg-dsa-gold/10 border border-dsa-gold/30 rounded px-5 py-3 mb-4 animate-slide-up">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Star className="w-4 h-4 text-dsa-gold" fill="currentColor" />
-                  <span className="text-sm font-display font-bold text-dsa-gold">+{apAwarded.amount} Abenteuerpunkte</span>
-                </div>
-                {apAwarded.reason && (
-                  <p className="text-[10px] text-dsa-parchment-dark text-center">{apAwarded.reason}</p>
-                )}
-              </div>
-            )}
             <button onClick={() => useCombatStore.getState().clearCombatResult?.()}
               className="text-xs text-dsa-parchment-dark hover:text-dsa-parchment transition px-4 py-2 border border-dsa-bg-medium rounded-sm">
               Schließen

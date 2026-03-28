@@ -711,7 +711,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.WEATHER_CHANGE: _handle_weather_change,
         EventType.ATTENTION: _handle_attention,
         EventType.ATTENTION_RELEASE: _handle_attention_release,
-        EventType.AP_AWARD: _handle_ap_award,
         EventType.QUEST_UPDATE: _handle_quest_update,
         EventType.LORE_REVEAL: _handle_lore_reveal,
         EventType.REST_START: _handle_rest_start,
@@ -1890,39 +1889,6 @@ async def _handle_attention_release(session_code: str, user_id: str, payload: di
     state["attention"] = False
     msg = _msg(EventType.ATTENTION_RELEASE, {}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
-
-
-async def _handle_ap_award(session_code: str, user_id: str, payload: dict, state: dict):
-    """Award adventure points to one or more characters."""
-    awards = payload.get("awards", [])
-    # awards: [{character_id, amount, reason, character_name?, user_id?}, ...]
-    msg = _msg(EventType.AP_AWARD, {"awards": awards}, from_user=user_id)
-    # Notify each player individually about their award
-    for award in awards:
-        target_user = award.get("user_id")
-        if target_user:
-            await manager.send_to_user(target_user, _msg(EventType.AP_AWARD, {
-                "character_id": award.get("character_id"),
-                "amount": award.get("amount", 0),
-                "reason": award.get("reason", ""),
-            }, from_user=user_id))
-    # Also broadcast summary to everyone
-    await manager.broadcast_to_room(session_code, msg)
-    # Log to Protokoll
-    if awards:
-        names = ", ".join(a.get("character_name", "?") for a in awards if a.get("amount", 0) > 0)
-        amount = awards[0].get("amount", 0) if awards else 0
-        reason = awards[0].get("reason", "") if awards else ""
-        log_text = f"AP verteilt: {amount} AP an {names}"
-        if reason:
-            log_text += f" ({reason})"
-        await _append_session_log(session_code, "system", log_text, icon="star")
-    # Persist AP awards to the database
-    if awards:
-        _safe_create_task(
-            _persist_ap_awards(session_code, awards),
-            name=f"persist_ap_awards_{session_code}",
-        )
 
 
 async def _handle_quest_update(session_code: str, user_id: str, payload: dict, state: dict):

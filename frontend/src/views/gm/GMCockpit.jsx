@@ -22,7 +22,6 @@ import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
 import CombatOverlay from './CombatOverlay'
 import SessionPrep, { getSessionPool } from './SessionPrep'
-import CampaignManager from '../auth/CampaignManager'
 import CombatTracker from './CombatTracker'
 import BattleManager from './BattleManager'
 import LootPanel from './LootPanel'
@@ -80,7 +79,6 @@ export default function GMCockpit() {
     whisperText, setWhisperText,
     healthInput, setHealthInput,
     npcDetail, setNpcDetail,
-    showCampaignManager, setShowCampaignManager,
     showDiceRoller, setShowDiceRoller,
     diceFormula, setDiceFormula,
     diceResult, setDiceResult,
@@ -231,10 +229,6 @@ export default function GMCockpit() {
           <button onClick={() => setShowPrep(true)}
             className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition">
             Session-Material
-          </button>
-          <button onClick={() => setShowCampaignManager(true)}
-            className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition">
-            Kampagne
           </button>
           <button onClick={() => setShowQuests(true)}
             className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition flex items-center gap-1">
@@ -799,11 +793,6 @@ export default function GMCockpit() {
             <NPCDetailView creature={npcDetail} onClose={() => setNpcDetail(null)} />
           </div>
         </div>
-      )}
-
-      {/* Campaign Manager */}
-      {showCampaignManager && campaign?.id && (
-        <CampaignManager campaignId={campaign.id} onClose={() => setShowCampaignManager(false)} />
       )}
 
       {/* Shop Create Modal */}

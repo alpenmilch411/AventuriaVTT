@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { X, Play, Pause, Square, Gift, Clock, Cloud, Sun, CloudRain, CloudSnow, Wind, CloudLightning, CloudHail, CloudFog, Moon, Heart, ChevronDown, ChevronUp, Check, Loader2 } from 'lucide-react'
+import { X, Play, Pause, Square, Clock, Cloud, Sun, CloudRain, CloudSnow, Wind, CloudLightning, CloudHail, CloudFog, Moon, Heart, ChevronDown, ChevronUp, Check, Loader2 } from 'lucide-react'
 import useSessionStore from '../../stores/sessionStore'
 import useCampaignStore from '../../stores/campaignStore'
 import Modal from '../../components/common/Modal'
@@ -28,8 +28,6 @@ function SessionControls({ onClose, sendMessage, gmControls }) {
   const weather = useCampaignStore((s) => s.weather)
   const setWeather = useCampaignStore((s) => s.setWeather)
 
-  const [showAPDialog, setShowAPDialog] = useState(false)
-  const [apAmounts, setApAmounts] = useState({})
   const [sessionActive, setSessionActive] = useState(true)
   const [showEndConfirm, setShowEndConfirm] = useState(false)
 
@@ -53,16 +51,6 @@ function SessionControls({ onClose, sendMessage, gmControls }) {
   const [restCharIds, setRestCharIds] = useState({}) // { charId: true/false }
   const [restPending, setRestPending] = useState(false)
   const [restResults, setRestResults] = useState(null)
-
-  const handleAwardAP = () => {
-    Object.entries(apAmounts).forEach(([playerId, amount]) => {
-      if (amount > 0) {
-        gmControls.awardAP(playerId, parseInt(amount))
-      }
-    })
-    setShowAPDialog(false)
-    setApAmounts({})
-  }
 
   const handleWeatherChange = (newWeather) => {
     setWeather(newWeather)
@@ -157,18 +145,6 @@ function SessionControls({ onClose, sendMessage, gmControls }) {
               Ende
             </button>
           </div>
-        </div>
-
-        {/* AP Award */}
-        <div>
-          <h3 className="text-xs font-semibold text-dsa-parchment-dark uppercase tracking-wider mb-3">Abenteuerpunkte vergeben</h3>
-          <button
-            onClick={() => setShowAPDialog(true)}
-            className="btn-secondary w-full flex items-center justify-center gap-2"
-          >
-            <Gift className="w-4 h-4" />
-            AP vergeben
-          </button>
         </div>
 
         {/* World Clock + Time Advance */}
@@ -316,40 +292,6 @@ function SessionControls({ onClose, sendMessage, gmControls }) {
           )}
         </div>
       </div>
-
-      {/* AP Dialog */}
-      <Modal
-        isOpen={showAPDialog}
-        onClose={() => setShowAPDialog(false)}
-        title="Abenteuerpunkte vergeben"
-        footer={
-          <>
-            <button onClick={() => setShowAPDialog(false)} className="btn-ghost">Abbrechen</button>
-            <button onClick={handleAwardAP} className="btn-primary">Vergeben</button>
-          </>
-        }
-      >
-        <div className="space-y-3">
-          {players.map((player) => (
-            <div key={player.id} className="flex items-center justify-between gap-3">
-              <span className="text-sm text-dsa-parchment">
-                {player.character?.name || player.username || 'Spieler'}
-              </span>
-              <input
-                type="number"
-                min="0"
-                value={apAmounts[player.id] || ''}
-                onChange={(e) => setApAmounts({ ...apAmounts, [player.id]: e.target.value })}
-                className="input-field w-20 text-center"
-                placeholder="AP"
-              />
-            </div>
-          ))}
-          {players.length === 0 && (
-            <p className="text-sm text-dsa-parchment-dark text-center">Keine Spieler verbunden</p>
-          )}
-        </div>
-      </Modal>
 
       {/* End Session Confirmation */}
       <Modal

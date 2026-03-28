@@ -113,15 +113,6 @@ export default function useGMControls(sendMessage) {
     })
   }, [sendMessage])
 
-  const awardAP = useCallback((playerIdOrAwards, amount) => {
-    // Support both old API (playerId, amount) and new API (awards array)
-    if (Array.isArray(playerIdOrAwards)) {
-      sendMessage?.({ type: 'ap_award', payload: { awards: playerIdOrAwards } })
-    } else {
-      sendMessage?.({ type: 'ap_award', payload: { awards: [{ user_id: playerIdOrAwards, amount }] } })
-    }
-  }, [sendMessage])
-
   const setWorldClock = useCallback((clock) => {
     sendMessage?.({
       type: 'time_advance',
@@ -221,7 +212,6 @@ export default function useGMControls(sendMessage) {
     addCombatant,
     removeCombatant,
     setTableView,
-    awardAP,
     setWorldClock,
     setWeather,
     spawnToken,

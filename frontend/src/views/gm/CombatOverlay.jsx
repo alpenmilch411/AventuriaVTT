@@ -59,10 +59,6 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
   const [approvedAction, setApprovedAction] = useState(null)
   const [editingCreature, setEditingCreature] = useState(null)
   const [victoryData, setVictoryData] = useState(null) // { survivors, fallen, rounds, deadNPCs, summary }
-  const [apAmount, setApAmount] = useState(5)
-  const [apReason, setApReason] = useState('Kampf')
-  const [apSelected, setApSelected] = useState({}) // characterId → boolean
-  const [apAwarding, setApAwarding] = useState(false)
   const pendingPlayerAction = useCombatStore((s) => s.pendingPlayerAction)
   const clearPendingPlayerAction = useCombatStore((s) => s.clearPendingPlayerAction)
 
@@ -124,13 +120,11 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
     }
   }, [pendingPlayerAction])
 
-  // ── Victory AP Award Screen ──
+  // ── Victory Screen ──
   if (victoryData) {
-    const selectedCount = Object.values(apSelected).filter(Boolean).length
     return (
       <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
         <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl w-full max-w-lg overflow-hidden">
-          {/* Header */}
           <div className="bg-gradient-to-r from-dsa-gold/20 to-dsa-gold/5 border-b border-dsa-gold/20 px-6 py-4 text-center">
             <div className="w-16 h-16 rounded-full bg-dsa-gold/20 ring-2 ring-dsa-gold/30 flex items-center justify-center mx-auto mb-3">
               <Star className="w-8 h-8 text-dsa-gold" fill="currentColor" />
@@ -139,88 +133,27 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
             <p className="text-xs text-dsa-parchment-dark mt-1">{victoryData.rounds} Runden · {victoryData.fallen.length > 0 ? `${victoryData.fallen.length} Gefallene` : 'Keine Verluste'}</p>
           </div>
 
-          {/* AP Award Form */}
-          <div className="p-6 space-y-4">
-            <div>
-              <label className="text-xs font-semibold text-dsa-gold uppercase tracking-wider">Abenteuerpunkte verteilen</label>
-              <div className="flex gap-3 mt-2">
-                <div className="flex-1">
-                  <label className="text-[10px] text-dsa-parchment-dark mb-0.5 block">AP pro Held</label>
-                  <input
-                    type="number" min="1" max="100" value={apAmount}
-                    onChange={(e) => setApAmount(e.target.value)}
-                    className="w-full h-10 bg-dsa-bg-light border border-dsa-gold/30 rounded text-center text-lg font-mono text-dsa-gold focus:outline-none focus:border-dsa-gold"
-                  />
-                </div>
-                <div className="flex-[2]">
-                  <label className="text-[10px] text-dsa-parchment-dark mb-0.5 block">Grund</label>
-                  <input
-                    type="text" value={apReason}
-                    onChange={(e) => setApReason(e.target.value)}
-                    placeholder="Kampf"
-                    className="w-full h-10 bg-dsa-bg-light border border-dsa-bg-medium rounded px-3 text-sm text-dsa-parchment focus:outline-none focus:border-dsa-gold/30"
-                  />
-                </div>
+          <div className="p-6 space-y-3">
+            {victoryData.survivors.length > 0 && (
+              <div>
+                <p className="text-[10px] text-dsa-gold font-semibold uppercase tracking-wider mb-1">Überlebende</p>
+                <p className="text-sm text-dsa-parchment">{victoryData.survivors.filter(c => c.name).map(c => c.name).join(', ')}</p>
               </div>
-            </div>
-
-            {/* Character selection */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-[10px] text-dsa-parchment-dark">Empfaenger ({selectedCount}/{victoryData.survivors.length})</label>
-                <button
-                  onClick={() => {
-                    const allSelected = victoryData.survivors.every(c => !c.characterId || apSelected[c.characterId])
-                    const next = {}
-                    victoryData.survivors.forEach(c => { if (c.characterId) next[c.characterId] = !allSelected })
-                    setApSelected(next)
-                  }}
-                  className="text-[9px] text-dsa-gold hover:text-dsa-gold/80"
-                >
-                  {victoryData.survivors.every(c => !c.characterId || apSelected[c.characterId]) ? 'Keine' : 'Alle'}
-                </button>
+            )}
+            {victoryData.fallen.length > 0 && (
+              <div>
+                <p className="text-[10px] text-red-400 font-semibold uppercase tracking-wider mb-1">Gefallen</p>
+                <p className="text-sm text-red-300">{victoryData.fallen.join(', ')}</p>
               </div>
-              <div className="space-y-1 max-h-40 overflow-y-auto">
-                {victoryData.survivors.filter(c => c.characterId).map(c => (
-                  <button
-                    key={c.characterId}
-                    onClick={() => setApSelected(prev => ({ ...prev, [c.characterId]: !prev[c.characterId] }))}
-                    className={clsx(
-                      'w-full flex items-center gap-2 px-3 py-2 rounded-sm text-sm transition-colors text-left',
-                      apSelected[c.characterId]
-                        ? 'bg-dsa-gold/10 border border-dsa-gold/30 text-dsa-parchment'
-                        : 'bg-dsa-bg-light border border-dsa-bg-medium text-dsa-parchment-dark'
-                    )}
-                  >
-                    <span className={clsx(
-                      'w-5 h-5 rounded border flex items-center justify-center text-xs',
-                      apSelected[c.characterId] ? 'bg-dsa-gold border-dsa-gold text-dsa-bg' : 'border-dsa-bg-medium'
-                    )}>
-                      {apSelected[c.characterId] && '✓'}
-                    </span>
-                    <span className="text-xs">{getCreatureIcon(c.name)}</span>
-                    <span className="flex-1 text-xs font-medium">{c.name}</span>
-                    {apSelected[c.characterId] && (
-                      <span className="text-xs font-mono text-dsa-gold">+{apAmount || 0} AP</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-dsa-bg-medium flex gap-3 justify-end">
-            <button onClick={handleSkipAP} className="px-4 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-parchment transition">
-              Ueberspringen
-            </button>
+          <div className="px-6 py-4 border-t border-dsa-bg-medium flex justify-end">
             <button
-              onClick={handleAwardAP}
-              disabled={selectedCount === 0 || !apAmount || parseInt(apAmount) <= 0 || apAwarding}
-              className="px-5 py-2 bg-gradient-to-r from-dsa-gold/30 to-dsa-gold/20 text-dsa-gold border border-dsa-gold/30 rounded font-semibold text-sm hover:from-dsa-gold/40 hover:to-dsa-gold/30 transition flex items-center gap-2 disabled:opacity-30"
+              onClick={() => { setVictoryData(null); onClose() }}
+              className="px-5 py-2 bg-dsa-gold/10 text-dsa-gold border border-dsa-gold/30 rounded text-sm font-medium hover:bg-dsa-gold/20 transition"
             >
-              <Star className="w-4 h-4" />
-              {apAwarding ? 'Verteilt!' : `${apAmount || 0} AP an ${selectedCount} Helden verteilen`}
+              Schliessen
             </button>
           </div>
         </div>
@@ -263,11 +196,8 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
           rounds: battle.round,
         },
       })
-      // On hero victory, show AP award panel before closing
+      // On hero victory, show victory screen before closing
       if (heroesWon) {
-        const sel = {}
-        survivorPCs.forEach(c => { if (c.characterId) sel[c.characterId] = true })
-        setApSelected(sel)
         setVictoryData({ survivors: survivorPCs, fallen, rounds: battle.round, deadNPCs, summary })
         // Trigger loot distribution
         if (onVictoryLoot) {
@@ -307,34 +237,6 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
   const handleEnd = () => {
     endBattle(battleId)
     sendMessage?.({ type: 'combat_end', payload: { battle_id: battleId } })
-    onClose()
-  }
-
-  const handleAwardAP = () => {
-    const amount = parseInt(apAmount, 10)
-    if (isNaN(amount) || amount <= 0) return
-    const awards = victoryData.survivors
-      .filter(c => c.characterId && apSelected[c.characterId])
-      .map(c => ({
-        character_id: c.characterId,
-        user_id: c.userId,
-        character_name: c.name,
-        amount,
-        reason: apReason || 'Kampf',
-      }))
-    if (awards.length > 0) {
-      setApAwarding(true)
-      sendMessage?.({ type: 'ap_award', payload: { awards } })
-      setTimeout(() => {
-        setApAwarding(false)
-        setVictoryData(null)
-        onClose()
-      }, 1200)
-    }
-  }
-
-  const handleSkipAP = () => {
-    setVictoryData(null)
     onClose()
   }
 

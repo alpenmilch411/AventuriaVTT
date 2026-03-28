@@ -38,15 +38,7 @@ export const router = createBrowserRouter([
   },
   // Legacy routes redirect to dashboard
   {
-    path: '/campaign/:campaignId',
-    element: <Navigate to="/dashboard" replace />,
-  },
-  {
     path: '/table/:sessionCode',
-    element: <Navigate to="/dashboard" replace />,
-  },
-  {
-    path: '/prep/:campaignId',
     element: <Navigate to="/dashboard" replace />,
   },
 ])

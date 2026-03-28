@@ -16,6 +16,7 @@
 - Working on Nice-to-Have?         → Sections 10.1–10.12
 - Deployment issue?                → Section 3.4
 - DSA5 Rules reference?            → Section 3.5
+- **Campaigns are internal only** — the user-facing unit is Sessions. GMs create sessions directly. Campaign backend/models remain for internal use (group inventory, quests use campaign_id).
 - Roadmap / what's next?           → Section 11
 
 ---

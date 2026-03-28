@@ -24,7 +24,6 @@ export default function useGMPopups() {
   const [whisperText, setWhisperText] = useState('')
   const [healthInput, setHealthInput] = useState('')
   const [npcDetail, setNpcDetail] = useState(null) // creature object for detail modal
-  const [showCampaignManager, setShowCampaignManager] = useState(false)
   const [showDiceRoller, setShowDiceRoller] = useState(false)
   const [diceFormula, setDiceFormula] = useState('1W6')
   const [diceResult, setDiceResult] = useState(null)
@@ -61,7 +60,6 @@ export default function useGMPopups() {
     whisperText, setWhisperText,
     healthInput, setHealthInput,
     npcDetail, setNpcDetail,
-    showCampaignManager, setShowCampaignManager,
     showDiceRoller, setShowDiceRoller,
     diceFormula, setDiceFormula,
     diceResult, setDiceResult,
