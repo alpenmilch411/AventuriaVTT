@@ -1055,13 +1055,18 @@ function StepGrade({ grade, setGrade }) {
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="font-display font-semibold text-dsa-parchment">{data.label}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="font-display font-semibold text-dsa-parchment">{data.label}</span>
+                {key === 'erfahren' && (
+                  <span className="text-[9px] bg-green-900/30 text-green-400 border border-green-700/30 rounded px-1.5 py-0.5">Empfohlen</span>
+                )}
+              </div>
               <span className="text-sm font-mono font-bold text-dsa-gold">{data.ap} AP</span>
             </div>
             <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
-              <p>Max. Eigenschaft: {data.maxAttr}</p>
-              <p>Max. Talent: {data.maxSkill}</p>
-              <p>Max. Kampftechnik: {data.maxKt}</p>
+              <p>Max. Eigenschaft: {data.attr}</p>
+              <p>Max. Talent: {data.skill}</p>
+              <p>Max. Kampftechnik: {data.kt}</p>
             </div>
           </button>
         ))}
@@ -1739,7 +1744,7 @@ function StepAttributes({ baseAttributes, attrUpgrades, setAttrUpgrades, gradeDa
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-display font-semibold text-dsa-gold mb-1">Attribute verfeinern</h2>
-        <p className="text-xs text-dsa-parchment-dark">Steigere deine Attribute mit freien AP. Max: {gradeData?.maxAttr || '?'}</p>
+        <p className="text-xs text-dsa-parchment-dark">Steigere deine Attribute mit freien AP. Max: {gradeData?.attr || '?'}</p>
       </div>
       <HelpPanel>
         <p><strong>Die 8 Attribute:</strong> MU (Mut), KL (Klugheit), IN (Intuition), CH (Charisma), FF (Fingerfertigkeit), GE (Gewandtheit), KO (Konstitution), KK (Körperkraft).</p>
