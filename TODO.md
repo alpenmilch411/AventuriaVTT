@@ -53,6 +53,21 @@
 - [x] Wizard UX: grade card max values were blank (field name mismatch) — fixed
 - [x] Fix AsP/KaP formulas: was ceil(/3), now ceil(/2) per GRW — affected all mages/priests (frontend + backend + test characters)
 - [x] Wizard tested with beginner + veteran personas — all 10 steps rated 4-5/5, no DSA5 rule violations
+- [x] **CRITICAL: CharacterResponse advantages/disadvantages Pydantic dict→list coercion** — root cause of "saving doesn't work", AP metadata silently dropped
+- [x] **CRITICAL: isMagic/isBlessed based on species not profession** — all characters got AsP/KaP (every species has magic_capable=true)
+- [x] **CRITICAL: Edit mode never restored attribute/talent/CT upgrades** — saving edited character reset values to profession base
+- [x] Quick template missing derived_values/current_vitals — characters couldn't function in sessions
+- [x] Species attribute_adjustments array format ignored — Elf racial bonuses silently dropped
+- [x] Edit mode effects fired during data restore — cleared variants, overwrote spells/liturgies
+- [x] Escape key, modal overflow, loading states, umlaut search fixes
+- [x] Mobile header responsive + session lobby→active transition banner
+- [x] Group probe closure bug (was always "0 bestanden"), snapshot debounce 5s→2s
+- [x] Pydantic validation, vital range clamping, player disconnect combat cleanup
+- [x] Opposed probes (Vergleichsprobe) — full player-vs-player/NPC flow
+- [x] REST/regeneration system — server-side healing rolls, condition reduction
+- [x] Weather/time schema validation
+- [x] Enter key in 3W20 probes, shared attribute constants, combat turn clarity, sort consistency
+- [x] Session vitals not restored on rejoin — preserved existing snapshot
 - [ ] Mobile responsive header
 - [ ] Opposed probes UI — backend supports it, UI selector missing
 - [ ] In-game time tracking UI — backend handler exists (`_handle_time_advance`), no frontend

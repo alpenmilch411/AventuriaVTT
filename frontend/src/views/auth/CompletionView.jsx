@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, Loader2, AlertCircle, Trophy, Swords, Shield,
-  Skull, Sparkles, Target, Zap
+  Skull, Sparkles, Target, Zap, TrendingUp, Download, Star, Home
 } from 'lucide-react'
 import useAuthStore from '../../stores/authStore'
 import useDashboardStore from '../../stores/dashboardStore'
+import SteigerungModal from './SteigerungModal'
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
@@ -96,12 +97,15 @@ export default function CompletionView() {
   const { sessionId } = useParams()
   const navigate = useNavigate()
   const token = useAuthStore((s) => s.token)
+  const user = useAuthStore((s) => s.user)
   const fetchSessionStats = useDashboardStore((s) => s.fetchSessionStats)
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [sessionData, setSessionData] = useState(null)
   const [stats, setStats] = useState([])
+  const [playerChar, setPlayerChar] = useState(null)
+  const [showLevelUp, setShowLevelUp] = useState(false)
 
   useEffect(() => {
     if (!token) {
@@ -117,7 +121,20 @@ export default function CompletionView() {
         if (!cancelled) {
           if (data) {
             setSessionData(data.session || null)
-            setStats(Array.isArray(data.stats) ? data.stats : [])
+            const loadedStats = Array.isArray(data.stats) ? data.stats : []
+            setStats(loadedStats)
+            // Fetch the player's character for SteigerungModal / export
+            const myStats = loadedStats.find((s) => s.user_id === user?.id)
+            if (myStats?.character_id) {
+              try {
+                const charRes = await fetch(`/api/characters/${myStats.character_id}`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                })
+                if (charRes.ok && !cancelled) {
+                  setPlayerChar(await charRes.json())
+                }
+              } catch { /* non-critical */ }
+            }
           } else {
             setError('Statistiken konnten nicht geladen werden')
           }
@@ -129,7 +146,32 @@ export default function CompletionView() {
     }
     load()
     return () => { cancelled = true }
-  }, [sessionId, token, navigate, fetchSessionStats])
+  }, [sessionId, token, user, navigate, fetchSessionStats])
+
+  const handleExport = async () => {
+    if (!playerChar?.id) return
+    try {
+      const res = await fetch(`/api/characters/${playerChar.id}/export`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${(playerChar.name || 'charakter').replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, '')}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch { /* ignore */ }
+  }
+
+  const handleLevelUpSaved = (updatedChar) => {
+    setPlayerChar(updatedChar)
+    setShowLevelUp(false)
+  }
 
   const awards = computeAwards(stats)
 
@@ -277,17 +319,59 @@ export default function CompletionView() {
           )}
         </div>
 
-        {/* Back button */}
-        <div className="text-center">
+        {/* AP earned badge + action buttons */}
+        {playerChar && (
+          <div className="bg-gradient-to-r from-amber-900/40 to-amber-950/20 border border-amber-800/30 rounded-sm px-4 py-3 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-dsa-gold" />
+              <span className="text-sm font-display font-bold text-dsa-gold">{playerChar.name}</span>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] text-dsa-parchment-dark uppercase">Verfügbare AP</div>
+              <div className="text-lg font-mono font-bold text-green-400">
+                {playerChar.available_ap || 0} <span className="text-[10px] text-dsa-parchment-dark font-normal">AP</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {playerChar && (playerChar.available_ap || 0) > 0 && (
+            <button
+              onClick={() => setShowLevelUp(true)}
+              className="btn-primary flex items-center gap-2 text-sm"
+            >
+              <TrendingUp className="w-4 h-4" />
+              AP ausgeben
+            </button>
+          )}
           <button
             onClick={() => navigate('/dashboard')}
-            className="btn-secondary flex items-center gap-2 mx-auto"
+            className="btn-secondary flex items-center gap-2 text-sm"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Zurück zum Dashboard
+            <Home className="w-4 h-4" />
+            Zum Dashboard
           </button>
+          {playerChar && (
+            <button
+              onClick={handleExport}
+              className="btn-secondary flex items-center gap-2 text-sm"
+            >
+              <Download className="w-4 h-4" />
+              Exportieren
+            </button>
+          )}
         </div>
       </div>
+
+      {/* SteigerungModal */}
+      {showLevelUp && playerChar && (
+        <SteigerungModal
+          character={playerChar}
+          onClose={() => setShowLevelUp(false)}
+          onSaved={handleLevelUpSaved}
+        />
+      )}
     </div>
   )
 }

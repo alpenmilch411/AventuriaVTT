@@ -93,6 +93,17 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 - **SA Purchase** in SteigerungTab: category tabs derived from data, search, filters out owned SAs, AP cost from DB
 - **improvement_cost column** on SpellTemplate + LiturgyTemplate: correct Steigerungsfaktor for all upgrade flows
 
+### Continuous Improvement Cycles (5 cycles)
+**Cycle 1**: Escape key on modals, modal overflow fix (7 components), loading states, umlaut search, mobile header responsive, session transition banner, group probe closure bug, snapshot debounce 5→2s, Pydantic validation, vital clamping, disconnect combat cleanup.
+
+**Cycle 2**: Enter key in 3W20 probes, shared attribute constants (extracted from 4 files), combat turn clarity ("X Züge bis du dran bist"), sort consistency, dead code cleanup.
+
+**Cycle 3**: Opposed probes (Vergleichsprobe) — full player-vs-player/NPC flow with QS comparison. REST/regeneration system — server-side 1W6 healing, condition reduction. Weather/time schema validation.
+
+**Cycle 4**: Session vitals restored on rejoin (was overwriting snapshot). Completion view: AP badge + action buttons. Import inventory validation (strips unknown template_ids). Export completeness (all fields, version 2, re-importable).
+
+**Cycle 5 (QA)**: 6 critical character bugs fixed — Pydantic dict→list coercion (root cause of save failures), isMagic based on species not profession, edit mode not restoring upgrades, quick template missing derived values, species attribute_adjustments array format, edit mode effects firing during restore.
+
 ### Character Creator UX Overhaul
 - **Search/filter** on cultures (33), professions (180+), advantages (161), disadvantages (92) — text search + category tabs (mundane/magical/blessed for professions; kampf/magisch/karmal/allgemein/sozial for adv/dis)
 - **Expandable descriptions** on advantages/disadvantages — replaced HTML title tooltips (broken on mobile) with click-to-expand panels showing full rules_text
