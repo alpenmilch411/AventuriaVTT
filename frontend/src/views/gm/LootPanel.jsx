@@ -6,7 +6,7 @@ import {
 import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import Badge from '../../components/common/Badge'
-import { ITEM_SUBCATEGORIES } from '../../components/DatenbankDetail'
+import DatenbankDetailModal, { ITEM_SUBCATEGORIES } from '../../components/DatenbankDetail'
 import clsx from 'clsx'
 
 // ---------------------------------------------------------------------------
@@ -133,10 +133,11 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
   const [allDbItems, setAllDbItems] = useState([])
 
   // Distribute phase state
-  const [itemAssignments, setItemAssignments] = useState({}) // itemId → playerId
+  const [itemAssignments, setItemAssignments] = useState({}) // itemId → [playerId, ...]
   const [moneyAssignments, setMoneyAssignments] = useState({}) // playerId → purse
   const [moneySplitMode, setMoneySplitMode] = useState('even') // 'even' | 'manual'
   const [expandedItem, setExpandedItem] = useState(null)
+  const [detailItem, setDetailItem] = useState(null) // item for DatenbankDetailModal
 
   // DB item detail expansion
   const [expandedDbItem, setExpandedDbItem] = useState(null) // `${_type}_${id}`
@@ -236,7 +237,7 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
     // Auto-assign all items to the single player
     if (players.length === 1) {
       const autoAssign = {}
-      lootItems.forEach(item => { autoAssign[item.id] = players[0].id })
+      lootItems.forEach(item => { autoAssign[item.id] = [players[0].id] })
       setItemAssignments(autoAssign)
     }
     setPhase('distribute')
@@ -260,21 +261,25 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
 
   const handleConfirmDistribution = () => {
     const distributions = []
-    for (const [itemId, playerId] of Object.entries(itemAssignments)) {
+    for (const [itemId, playerIds] of Object.entries(itemAssignments)) {
       const item = lootItems.find(i => i.id === itemId)
-      const player = players.find(p => p.id === playerId)
-      if (!item || !player) continue
-      distributions.push({
-        player_id: playerId,
-        character_id: player.characterId,
-        player_name: player.character?.name || player.username,
-        item_name: item.name,
-        quantity: item.quantity,
-        weight: item.weight || 0,
-        category: item.category || '',
-        template_id: item.template_id || null,
-        _type: item._type || '',
-      })
+      if (!item) continue
+      const ids = Array.isArray(playerIds) ? playerIds : [playerIds]
+      for (const playerId of ids) {
+        const player = players.find(p => p.id === playerId)
+        if (!player) continue
+        distributions.push({
+          player_id: playerId,
+          character_id: player.characterId,
+          player_name: player.character?.name || player.username,
+          item_name: item.name,
+          quantity: item.quantity,
+          weight: item.weight || 0,
+          category: item.category || '',
+          template_id: item.template_id || null,
+          _type: item._type || '',
+        })
+      }
     }
 
     const moneyDistributions = []
@@ -303,7 +308,7 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
     setPhase('done')
   }
 
-  const assignedCount = lootItems.filter(i => itemAssignments[i.id]).length
+  const assignedCount = lootItems.filter(i => (itemAssignments[i.id] || []).length > 0).length
   const unassignedCount = lootItems.length - assignedCount
   const canConfirm = lootItems.length === 0
     || lootItems.every(i => itemAssignments[i.id])
@@ -627,46 +632,51 @@ export default function LootPanel({ sourceName, sourceItems, onClose, sendMessag
                 Gegenstände zuweisen
               </span>
               {lootItems.map((item) => {
-                const assignedPlayer = players.find(p => p.id === itemAssignments[item.id])
-                const isExpanded = expandedItem === item.id
+                const assignedIds = itemAssignments[item.id] || []
+                const assignedPlayers = players.filter(p => assignedIds.includes(p.id))
                 return (
                   <div key={item.id} className="bg-dsa-bg rounded-lg border border-dsa-bg-medium overflow-hidden">
-                    <div
-                      className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-dsa-bg-light/30"
-                      onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-                    >
-                      <span className="text-sm text-dsa-parchment flex-1">
+                    {/* Item header with detail button + player multi-select */}
+                    <div className="flex items-center gap-2 px-3 py-2">
+                      <button
+                        onClick={() => setDetailItem({ ...item, category: item._type || item.category })}
+                        className="text-sm text-dsa-parchment hover:text-dsa-gold transition flex-1 text-left truncate"
+                        title="Details anzeigen"
+                      >
                         {item.quantity > 1 ? `${item.quantity}× ` : ''}{item.name}
-                      </span>
-                      {assignedPlayer ? (
-                        <Badge variant="success" size="sm">{assignedPlayer.character?.name || assignedPlayer.username}</Badge>
+                      </button>
+                      {assignedPlayers.length > 0 ? (
+                        <span className="flex gap-1 flex-wrap">
+                          {assignedPlayers.map(ap => (
+                            <Badge key={ap.id} variant="success" size="sm">{ap.character?.name || ap.username}</Badge>
+                          ))}
+                        </span>
                       ) : (
                         <Badge variant="warning" size="sm">Nicht zugewiesen</Badge>
                       )}
-                      {isExpanded ? <ChevronUp className="w-3 h-3 text-dsa-parchment-dark/40" /> : <ChevronDown className="w-3 h-3 text-dsa-parchment-dark/40" />}
                     </div>
-                    {isExpanded && (
-                      <div className="px-3 pb-3 border-t border-dsa-bg-medium pt-2">
-                        {item.desc && <p className="text-[10px] text-dsa-parchment-dark/60 italic mb-2">{item.desc}</p>}
-                        <div className="grid grid-cols-2 gap-1">
-                          {players.map((p) => (
-                            <button
-                              key={p.id}
-                              onClick={() => setItemAssignments(prev => ({ ...prev, [item.id]: p.id }))}
-                              className={clsx(
-                                'text-left px-2 py-1.5 rounded text-xs transition-colors',
-                                itemAssignments[item.id] === p.id
-                                  ? 'bg-green-900/30 text-green-400 border border-green-800/30'
-                                  : 'bg-dsa-bg-light text-dsa-parchment-dark border border-dsa-bg-medium hover:border-dsa-gold/20'
-                              )}
-                            >
-                              {itemAssignments[item.id] === p.id && <Check className="w-3 h-3 inline mr-1" />}
-                              {p.character?.name || p.username}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    {/* Player multi-select buttons (always visible) */}
+                    <div className="px-3 pb-2 flex flex-wrap gap-1">
+                      {players.map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => setItemAssignments(prev => {
+                            const current = prev[item.id] || []
+                            const isSelected = current.includes(p.id)
+                            return { ...prev, [item.id]: isSelected ? current.filter(id => id !== p.id) : [...current, p.id] }
+                          })}
+                          className={clsx(
+                            'px-2 py-1 rounded text-[10px] transition-colors',
+                            (itemAssignments[item.id] || []).includes(p.id)
+                              ? 'bg-green-900/30 text-green-400 border border-green-800/30'
+                              : 'bg-dsa-bg-light text-dsa-parchment-dark border border-dsa-bg-medium hover:border-dsa-gold/20'
+                          )}
+                        >
+                          {(itemAssignments[item.id] || []).includes(p.id) && <Check className="w-3 h-3 inline mr-0.5" />}
+                          {p.character?.name || p.username}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )
               })}
