@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, Loader2, AlertCircle, Trophy, Swords, Shield,
-  Skull, Sparkles, Target, Zap, TrendingUp, Download, Star, Home
+  Skull, Sparkles, Target, Zap, TrendingUp, Download, Star, Home,
+  MessageSquare, Send, Check
 } from 'lucide-react'
 import useAuthStore from '../../stores/authStore'
 import useDashboardStore from '../../stores/dashboardStore'
@@ -107,6 +108,14 @@ export default function CompletionView() {
   const [playerChar, setPlayerChar] = useState(null)
   const [showLevelUp, setShowLevelUp] = useState(false)
 
+  // Feedback state
+  const [feedbackRating, setFeedbackRating] = useState(0)
+  const [feedbackMvp, setFeedbackMvp] = useState('')
+  const [feedbackComment, setFeedbackComment] = useState('')
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
+  const [feedbackSending, setFeedbackSending] = useState(false)
+  const [feedbackAgg, setFeedbackAgg] = useState(null) // aggregate results
+
   useEffect(() => {
     if (!token) {
       navigate('/')
@@ -171,6 +180,53 @@ export default function CompletionView() {
   const handleLevelUpSaved = (updatedChar) => {
     setPlayerChar(updatedChar)
     setShowLevelUp(false)
+  }
+
+  // Load existing feedback
+  useEffect(() => {
+    if (!sessionId || !token) return
+    fetch(`/api/sessions/${sessionId}/feedback`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return
+        setFeedbackAgg(data)
+        // Check if current user already submitted
+        const mine = (data.feedback || []).find(f => f.user_id === user?.id)
+        if (mine) {
+          setFeedbackRating(mine.rating)
+          setFeedbackMvp(mine.mvp_character_id || '')
+          setFeedbackComment(mine.comment || '')
+          setFeedbackSubmitted(true)
+        }
+      })
+      .catch(() => {})
+  }, [sessionId, token, user?.id])
+
+  const handleSubmitFeedback = async () => {
+    if (feedbackRating < 1) return
+    setFeedbackSending(true)
+    try {
+      const res = await fetch(`/api/sessions/${sessionId}/feedback`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rating: feedbackRating,
+          mvp_character_id: feedbackMvp || null,
+          comment: feedbackComment || null,
+        }),
+      })
+      if (res.ok) {
+        setFeedbackSubmitted(true)
+        // Refresh aggregate
+        const aggRes = await fetch(`/api/sessions/${sessionId}/feedback`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (aggRes.ok) setFeedbackAgg(await aggRes.json())
+      }
+    } catch { /* ignore */ }
+    setFeedbackSending(false)
   }
 
   const awards = computeAwards(stats)
@@ -317,6 +373,112 @@ export default function CompletionView() {
               </table>
             </div>
           )}
+        </div>
+
+        {/* Session Feedback */}
+        <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden">
+          <div className="px-4 py-3 border-b border-dsa-bg-medium flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-dsa-gold" />
+            <h2 className="font-semibold text-dsa-parchment">Sitzungs-Feedback</h2>
+          </div>
+          <div className="p-4 space-y-4">
+            {/* Star rating */}
+            <div>
+              <label className="text-xs text-dsa-parchment-dark block mb-1.5">Bewertung</label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map(n => (
+                  <button
+                    key={n}
+                    onClick={() => !feedbackSubmitted && setFeedbackRating(n)}
+                    disabled={feedbackSubmitted}
+                    className="p-0.5 transition-transform hover:scale-110 disabled:hover:scale-100"
+                  >
+                    <Star
+                      className={`w-7 h-7 transition-colors ${
+                        n <= feedbackRating ? 'text-dsa-gold fill-dsa-gold' : 'text-dsa-bg-medium'
+                      }`}
+                    />
+                  </button>
+                ))}
+                {feedbackRating > 0 && (
+                  <span className="text-xs text-dsa-parchment-dark self-center ml-2">
+                    {feedbackRating}/5
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* MVP vote */}
+            {stats.length > 1 && (
+              <div>
+                <label className="text-xs text-dsa-parchment-dark block mb-1.5">MVP — Bester Rollenspieler</label>
+                <select
+                  value={feedbackMvp}
+                  onChange={e => setFeedbackMvp(e.target.value)}
+                  disabled={feedbackSubmitted}
+                  className="input-field text-xs w-full max-w-xs"
+                >
+                  <option value="">— Keiner gewählt —</option>
+                  {stats
+                    .filter(s => s.character_id !== playerChar?.id)
+                    .map(s => (
+                      <option key={s.character_id} value={s.character_id}>
+                        {s.character_name || 'Unbekannt'}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+
+            {/* Comment */}
+            <div>
+              <label className="text-xs text-dsa-parchment-dark block mb-1.5">Kommentar (optional)</label>
+              <textarea
+                value={feedbackComment}
+                onChange={e => setFeedbackComment(e.target.value.slice(0, 500))}
+                disabled={feedbackSubmitted}
+                placeholder="Was hat dir an der Sitzung gefallen? Was kann verbessert werden?"
+                rows={2}
+                className="input-field text-xs w-full resize-none"
+              />
+              <span className="text-[9px] text-dsa-parchment-dark/40">{feedbackComment.length}/500</span>
+            </div>
+
+            {/* Submit / Status */}
+            {feedbackSubmitted ? (
+              <div className="flex items-center gap-2 text-xs text-green-400">
+                <Check className="w-4 h-4" /> Feedback gespeichert!
+              </div>
+            ) : (
+              <button
+                onClick={handleSubmitFeedback}
+                disabled={feedbackRating < 1 || feedbackSending}
+                className="btn-primary text-xs flex items-center gap-2 disabled:opacity-30"
+              >
+                {feedbackSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                Feedback senden
+              </button>
+            )}
+
+            {/* Aggregate results (shown after submission or if data available) */}
+            {feedbackAgg && feedbackAgg.count > 0 && (
+              <div className="border-t border-dsa-bg-medium pt-3 mt-3 space-y-2">
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="text-dsa-parchment-dark">
+                    Durchschnitt: <strong className="text-dsa-gold">{feedbackAgg.average_rating}/5</strong>
+                  </span>
+                  <span className="text-dsa-parchment-dark">
+                    {feedbackAgg.count} {feedbackAgg.count === 1 ? 'Bewertung' : 'Bewertungen'}
+                  </span>
+                  {feedbackAgg.mvp && (
+                    <span className="text-dsa-parchment-dark">
+                      MVP: <strong className="text-dsa-gold">{feedbackAgg.mvp}</strong>
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* AP earned badge + action buttons */}

@@ -26,6 +26,7 @@ from models.session_state import (
     SessionLog,
     APAward,
     SessionSnapshot,
+    SessionFeedback,
 )
 
 # Inventory
@@ -80,6 +81,7 @@ __all__ = [
     "SessionLog",
     "APAward",
     "SessionSnapshot",
+    "SessionFeedback",
     # inventory
     "InventoryItem",
     "GroupInventory",

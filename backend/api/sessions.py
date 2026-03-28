@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select, func as sa_func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -21,6 +21,7 @@ from models.session_state import (
     SessionLog,
     APAward,
     CombatState,
+    SessionFeedback,
 )
 from ws.manager import manager
 
@@ -542,6 +543,9 @@ async def complete_session(
 
     completion_snapshot = {"players": []}
 
+    from models.inventory import InventoryItem
+    from models.campaign import CampaignPlayer
+
     for sp in active_players:
         # Get the character
         if sp.character_id:
@@ -550,15 +554,55 @@ async def complete_session(
             )
             char = char_result.scalar_one_or_none()
             if char:
-                # The character's current_vitals, conditions, etc. are already
-                # the "live" state from the session — they persist as the base
-                # state going forward (session changes become permanent).
+                # --- Inventory carry-over ---
+                # Session-scoped InventoryItem records become permanent
+                # (clear session_id so they survive as base character items)
+                inv_result = await db.execute(
+                    select(InventoryItem).where(
+                        InventoryItem.character_id == sp.character_id,
+                        InventoryItem.session_id == session.id,
+                    )
+                )
+                for item in inv_result.scalars().all():
+                    item.session_id = None
+
+                # current_vitals, conditions, basis_inventory, active_buffs
+                # are already the "live" state from the session — they persist
+                # as the base state going forward (session changes are permanent).
+
                 completion_snapshot["players"].append({
                     "user_id": sp.user_id,
                     "character_id": sp.character_id,
+                    "character_name": char.name,
                     "final_vitals": dict(char.current_vitals) if char.current_vitals else None,
                     "final_conditions": list(char.conditions) if char.conditions else None,
+                    "final_inventory_count": len(
+                        (char.basis_inventory or {}).get("items", [])
+                        if isinstance(char.basis_inventory, dict)
+                        else (char.basis_inventory or [])
+                    ),
                 })
+
+                # Update CampaignPlayer snapshot with post-session state
+                if session.campaign_id:
+                    cp_result = await db.execute(
+                        select(CampaignPlayer).where(
+                            CampaignPlayer.campaign_id == session.campaign_id,
+                            CampaignPlayer.character_id == sp.character_id,
+                        )
+                    )
+                    cp = cp_result.scalar_one_or_none()
+                    if cp:
+                        vitals = char.current_vitals or {}
+                        cp.campaign_snapshot = {
+                            "current_lep": vitals.get("lep", 0),
+                            "current_asp": vitals.get("asp", 0),
+                            "current_kap": vitals.get("kap", 0),
+                            "current_schip": vitals.get("schip", 0),
+                            "conditions": char.conditions or [],
+                            "campaign_inventory": char.basis_inventory,
+                        }
+
                 # Unlock the character
                 char.locked_session_id = None
 
@@ -1130,3 +1174,143 @@ def _session_to_markdown(data: dict) -> str:
         lines.append("")
 
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Session Feedback
+# ---------------------------------------------------------------------------
+
+class FeedbackRequest(BaseModel):
+    rating: int = Field(ge=1, le=5)
+    mvp_character_id: Optional[str] = None
+    comment: Optional[str] = Field(default=None, max_length=500)
+
+
+@router.post("/{session_id}/feedback")
+async def submit_feedback(
+    session_id: str,
+    body: FeedbackRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Submit or update session feedback. One per user per session (upsert)."""
+    session = await _get_session(session_id, db)
+    await _verify_gm_or_active_player(session, current_user, db)
+
+    # Find the user's character in this session
+    sp_result = await db.execute(
+        select(SessionPlayer).where(
+            SessionPlayer.session_id == session_id,
+            SessionPlayer.user_id == current_user.id,
+        )
+    )
+    sp = sp_result.scalar_one_or_none()
+    character_id = sp.character_id if sp else None
+
+    # Upsert: check for existing feedback
+    existing_result = await db.execute(
+        select(SessionFeedback).where(
+            SessionFeedback.session_id == session_id,
+            SessionFeedback.user_id == current_user.id,
+        )
+    )
+    existing = existing_result.scalar_one_or_none()
+    is_update = existing is not None
+
+    if existing:
+        existing.rating = body.rating
+        existing.mvp_character_id = body.mvp_character_id
+        existing.comment = body.comment
+        feedback = existing
+    else:
+        import uuid
+        feedback = SessionFeedback(
+            id=str(uuid.uuid4()),
+            session_id=session_id,
+            user_id=current_user.id,
+            character_id=character_id,
+            rating=body.rating,
+            mvp_character_id=body.mvp_character_id,
+            comment=body.comment,
+        )
+        db.add(feedback)
+
+    await db.commit()
+
+    return {
+        "id": feedback.id,
+        "session_id": session_id,
+        "rating": feedback.rating,
+        "mvp_character_id": feedback.mvp_character_id,
+        "comment": feedback.comment,
+        "updated": is_update,
+    }
+
+
+@router.get("/{session_id}/feedback")
+async def get_session_feedback(
+    session_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get all feedback for a session. GM sees all; players see aggregate only."""
+    session = await _get_session(session_id, db)
+    is_gm = session.gm_user_id == current_user.id
+
+    result = await db.execute(
+        select(SessionFeedback).where(SessionFeedback.session_id == session_id)
+    )
+    feedbacks = result.scalars().all()
+
+    if not feedbacks:
+        return {"session_id": session_id, "count": 0, "average_rating": None, "mvp": None, "feedback": []}
+
+    # Compute aggregate
+    ratings = [f.rating for f in feedbacks]
+    avg_rating = round(sum(ratings) / len(ratings), 1)
+
+    # MVP vote tally
+    mvp_votes: dict[str, int] = {}
+    for f in feedbacks:
+        if f.mvp_character_id:
+            mvp_votes[f.mvp_character_id] = mvp_votes.get(f.mvp_character_id, 0) + 1
+    mvp_id = max(mvp_votes, key=mvp_votes.get) if mvp_votes else None
+
+    # Resolve MVP name
+    mvp_name = None
+    if mvp_id:
+        from models.character import Character
+        char_result = await db.execute(select(Character).where(Character.id == mvp_id))
+        mvp_char = char_result.scalar_one_or_none()
+        if mvp_char:
+            mvp_name = mvp_char.name
+
+    # Detail list (GM only, or own feedback for players)
+    feedback_list = []
+    for f in feedbacks:
+        if is_gm or f.user_id == current_user.id:
+            # Resolve character name
+            char_name = None
+            if f.character_id:
+                from models.character import Character
+                cr = await db.execute(select(Character).where(Character.id == f.character_id))
+                c = cr.scalar_one_or_none()
+                if c:
+                    char_name = c.name
+            feedback_list.append({
+                "user_id": f.user_id,
+                "character_id": f.character_id,
+                "character_name": char_name,
+                "rating": f.rating,
+                "mvp_character_id": f.mvp_character_id,
+                "comment": f.comment,
+                "created_at": f.created_at.isoformat() if f.created_at else None,
+            })
+
+    return {
+        "session_id": session_id,
+        "count": len(feedbacks),
+        "average_rating": avg_rating,
+        "mvp": {"character_id": mvp_id, "name": mvp_name, "votes": mvp_votes.get(mvp_id, 0)} if mvp_id else None,
+        "feedback": feedback_list,
+    }
