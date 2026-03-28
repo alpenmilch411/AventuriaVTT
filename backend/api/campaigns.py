@@ -997,3 +997,170 @@ async def get_campaign_players_detail(
         })
 
     return players
+
+
+# ---------------------------------------------------------------------------
+# Campaign Export (backup / migration)
+# ---------------------------------------------------------------------------
+
+@router.get("/{campaign_id}/export")
+async def export_campaign(
+    campaign_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Export full campaign as JSON for backup/migration. GM only."""
+    campaign = await _get_campaign_as_gm(campaign_id, current_user, db)
+
+    # --- Characters (via campaign_players → character) ---
+    from utils.inventory_enrichment import enrich_basis_inventory
+    characters = []
+    for cp in campaign.players:
+        if cp.character:
+            char = cp.character
+            enriched_inv = await enrich_basis_inventory(char.basis_inventory, db)
+            characters.append({
+                "user_id": cp.user_id,
+                "status": cp.status,
+                "character": {
+                    "name": char.name,
+                    "species": char.species,
+                    "species_variant": char.species_variant,
+                    "profession": char.profession,
+                    "profession_variant": char.profession_variant,
+                    "culture": char.culture,
+                    "experience_grade": char.experience_grade,
+                    "total_ap": char.total_ap,
+                    "available_ap": char.available_ap,
+                    "status": char.status,
+                    "portrait_url": char.portrait_url,
+                    "bio": char.bio,
+                    "attributes": char.attributes,
+                    "derived_values": char.derived_values,
+                    "combat_values": char.combat_values,
+                    "combat_techniques": char.combat_techniques,
+                    "talents": char.talents,
+                    "spells": char.spells,
+                    "liturgies": char.liturgies,
+                    "special_abilities": char.special_abilities,
+                    "advantages": char.advantages,
+                    "disadvantages": char.disadvantages,
+                    "languages": char.languages,
+                    "basis_inventory": enriched_inv,
+                    "current_vitals": char.current_vitals,
+                },
+            })
+
+    # --- Quests ---
+    quests = [
+        {
+            "id": q.id,
+            "title": q.title,
+            "description": q.description,
+            "type": q.type,
+            "status": q.status,
+            "assigned_to": q.assigned_to,
+            "given_by": q.given_by,
+            "reward_description": q.reward_description,
+            "objectives": q.objectives,
+            "created_session": q.created_session,
+            "completed_session": q.completed_session,
+        }
+        for q in campaign.quests
+    ]
+
+    # --- Lore entries ---
+    lore = [
+        {
+            "id": le.id,
+            "category": le.category,
+            "title": le.title,
+            "player_text": le.player_text,
+            "gm_text": le.gm_text,
+            "first_encountered": le.first_encountered,
+            "tags": le.tags,
+            "linked_entries": le.linked_entries,
+            "linked_npcs": le.linked_npcs,
+            "linked_quests": le.linked_quests,
+            "reveals": le.reveals,
+        }
+        for le in campaign.lore_entries
+    ]
+
+    # --- Timeline ---
+    timeline = [
+        {
+            "id": te.id,
+            "game_date": te.game_date,
+            "game_time": te.game_time,
+            "session_number": te.session_number,
+            "real_date": str(te.real_date) if te.real_date else None,
+            "event_type": te.event_type,
+            "title": te.title,
+            "description": te.description,
+            "characters_involved": te.characters_involved,
+            "npcs_involved": te.npcs_involved,
+            "linked_lore": te.linked_lore,
+            "linked_quest": te.linked_quest,
+        }
+        for te in campaign.timeline_events
+    ]
+
+    # --- Sessions (summary only — use session export for full logs) ---
+    sessions = [
+        {
+            "id": s.id,
+            "name": s.name,
+            "status": s.status,
+            "started_at": s.started_at.isoformat() if s.started_at else None,
+            "ended_at": s.ended_at.isoformat() if s.ended_at else None,
+            "completed_at": s.completed_at.isoformat() if s.completed_at else None,
+            "gm_notes": s.gm_notes,
+            "recap_text": s.recap_text,
+        }
+        for s in campaign.sessions
+    ]
+
+    # --- Group inventory ---
+    group_inv = None
+    if campaign.group_inventory:
+        group_inv = campaign.group_inventory.items
+
+    # --- Campaign inventory items ---
+    campaign_items = [
+        {
+            "id": item.id,
+            "name": item.name,
+            "item_template_id": item.item_template_id,
+            "quantity": item.quantity,
+            "equipped": item.equipped,
+            "properties": item.properties,
+            "notes": item.notes,
+        }
+        for item in campaign.campaign_inventory_items
+    ]
+
+    return {
+        "format": "aventuria_vtt_campaign",
+        "version": 1,
+        "exported_at": datetime.utcnow().isoformat(),
+        "campaign": {
+            "name": campaign.name,
+            "description": campaign.description,
+            "campaign_code": campaign.campaign_code,
+            "status": campaign.status,
+            "complexity_level": campaign.complexity_level,
+            "optional_rules": campaign.optional_rules,
+            "world_clock": campaign.world_clock,
+            "weather": campaign.weather,
+            "created_at": campaign.created_at.isoformat() if campaign.created_at else None,
+            "last_played": campaign.last_played.isoformat() if campaign.last_played else None,
+        },
+        "characters": characters,
+        "quests": quests,
+        "lore_entries": lore,
+        "timeline": timeline,
+        "sessions": sessions,
+        "group_inventory": group_inv,
+        "campaign_inventory_items": campaign_items,
+    }

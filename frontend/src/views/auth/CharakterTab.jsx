@@ -32,7 +32,9 @@ const GRADE_LABELS = {
 }
 
 const STATUS_BADGE = {
+  created: { variant: 'default', label: 'Erstellt' },
   active: { variant: 'success', label: 'Aktiv' },
+  resting: { variant: 'warning', label: 'Ruhend' },
   retired: { variant: 'default', label: 'Im Ruhestand' },
   dead: { variant: 'danger', label: 'Verstorben' },
 }
@@ -366,15 +368,20 @@ function DeleteModal({ isOpen, character, onClose, onConfirm, loading }) {
 
 // ── Character Card ──
 
-function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelete }) {
+function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelete, onStatusChange }) {
   const grade = (character.experience_grade || 'erfahren').toLowerCase()
   const gradeLabel = GRADE_LABELS[grade] || character.experience_grade || 'Erfahren'
   const gradeVariant = GRADE_COLORS[grade] || 'default'
   const statusInfo = STATUS_BADGE[character.status] || STATUS_BADGE.active
   const availableAP = character.available_ap || 0
+  const isDimmed = character.status === 'retired' || character.status === 'dead'
+  const isEditable = !isDimmed
 
   return (
-    <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden hover:border-dsa-parchment-dark/50 transition group">
+    <div className={clsx(
+      'bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden transition group',
+      isDimmed ? 'opacity-50' : 'hover:border-dsa-parchment-dark/50'
+    )}>
       <div className="p-4">
         <div className="flex items-start gap-3">
           {/* Portrait / Avatar */}
@@ -382,7 +389,7 @@ function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelet
             <img
               src={character.portrait_url}
               alt={character.name}
-              className="w-14 h-14 rounded object-cover border border-dsa-bg-medium flex-shrink-0"
+              className={clsx('w-14 h-14 rounded object-cover border border-dsa-bg-medium flex-shrink-0', isDimmed && 'grayscale')}
             />
           ) : (
             <div className="w-14 h-14 rounded bg-dsa-bg-medium border border-dsa-bg-medium flex items-center justify-center flex-shrink-0">
@@ -409,6 +416,36 @@ function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelet
                 <Badge variant="gold" size="sm">{availableAP} AP</Badge>
               )}
             </div>
+
+            {/* Status change buttons */}
+            {onStatusChange && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {(character.status === 'active' || character.status === 'created') && (
+                  <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'resting') }}
+                    className="text-[9px] px-1.5 py-0.5 rounded bg-amber-900/20 text-amber-400 border border-amber-800/20 hover:bg-amber-900/30 transition">
+                    Ruhend stellen
+                  </button>
+                )}
+                {(character.status === 'resting' || character.status === 'created') && (
+                  <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'active') }}
+                    className="text-[9px] px-1.5 py-0.5 rounded bg-green-900/20 text-green-400 border border-green-800/20 hover:bg-green-900/30 transition">
+                    Aktivieren
+                  </button>
+                )}
+                {character.status !== 'retired' && character.status !== 'dead' && (
+                  <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'retired') }}
+                    className="text-[9px] px-1.5 py-0.5 rounded bg-dsa-bg-medium text-dsa-parchment-dark border border-dsa-bg-light/20 hover:text-dsa-parchment transition">
+                    In Ruhestand
+                  </button>
+                )}
+                {isDimmed && (
+                  <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'active') }}
+                    className="text-[9px] px-1.5 py-0.5 rounded bg-green-900/20 text-green-400 border border-green-800/20 hover:bg-green-900/30 transition">
+                    Reaktivieren
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -423,22 +460,26 @@ function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelet
           <Eye className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Anzeigen</span>
         </button>
-        <button
-          onClick={() => onEdit(character)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-light transition"
-          title="Bearbeiten"
-        >
-          <Pencil className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Bearbeiten</span>
-        </button>
-        <button
-          onClick={() => onLevelUp(character)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-gold hover:bg-dsa-gold/5 transition"
-          title="AP ausgeben"
-        >
-          <TrendingUp className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">AP</span>
-        </button>
+        {isEditable && (
+          <button
+            onClick={() => onEdit(character)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-light transition"
+            title="Bearbeiten"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Bearbeiten</span>
+          </button>
+        )}
+        {isEditable && (
+          <button
+            onClick={() => onLevelUp(character)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-gold hover:bg-dsa-gold/5 transition"
+            title="AP ausgeben"
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">AP</span>
+          </button>
+        )}
         <button
           onClick={() => onExport(character)}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-parchment hover:bg-dsa-bg-light transition"
@@ -547,6 +588,23 @@ export default function CharakterTab() {
     )
     setEditCharacter(null)
     showSuccess(`${updatedCharacter.name} aktualisiert!`)
+  }
+
+  const handleStatusChange = async (character, newStatus) => {
+    try {
+      const res = await fetch(`/api/characters/${character.id}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
+      if (!res.ok) throw new Error('Status konnte nicht geändert werden')
+      const updated = await res.json()
+      setCharacters((prev) => prev.map((c) => (c.id === updated.id ? { ...c, status: updated.status || newStatus } : c)))
+      const label = STATUS_BADGE[newStatus]?.label || newStatus
+      showSuccess(`${character.name}: ${label}`)
+    } catch (err) {
+      showError(err.message)
+    }
   }
 
   const handleView = async (character) => {
@@ -708,6 +766,7 @@ export default function CharakterTab() {
               onLevelUp={setLevelUpChar}
               onExport={handleExport}
               onDelete={setShowDelete}
+              onStatusChange={handleStatusChange}
             />
           ))}
         </div>

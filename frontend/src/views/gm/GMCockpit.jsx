@@ -26,6 +26,7 @@ import CampaignManager from '../auth/CampaignManager'
 import CombatTracker from './CombatTracker'
 import BattleManager from './BattleManager'
 import LootPanel from './LootPanel'
+import GroupInventoryPanel from './GroupInventoryPanel'
 import NotificationPanel from './NotificationPanel'
 import ConditionPopup from './ConditionPopup'
 import ProbeSetupPopup from './ProbeSetupPopup'
@@ -89,6 +90,7 @@ export default function GMCockpit() {
     showVitalsPopup, setShowVitalsPopup,
     gmNotes, setGmNotes,
     detailPlayer, setDetailPlayer,
+    showGroupInventory, setShowGroupInventory,
   } = popups
 
   const { talentList, creatureList } = useGMDatabank({ showBattleSetup, showProbePopup })
@@ -235,6 +237,10 @@ export default function GMCockpit() {
           <button onClick={() => setShowQuests(true)}
             className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition flex items-center gap-1">
             <Scroll className="w-3 h-3" /> Quests
+          </button>
+          <button onClick={() => setShowGroupInventory(true)}
+            className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition flex items-center gap-1">
+            <Package className="w-3 h-3" /> Inventar
           </button>
           {/* Unified notification bell */}
           {(() => {
@@ -792,6 +798,19 @@ export default function GMCockpit() {
       {/* Campaign Manager */}
       {showCampaignManager && campaign?.id && (
         <CampaignManager campaignId={campaign.id} onClose={() => setShowCampaignManager(false)} />
+      )}
+
+      {/* Group Inventory */}
+      {showGroupInventory && campaign?.id && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowGroupInventory(false)}>
+          <div onClick={e => e.stopPropagation()}>
+            <GroupInventoryPanel
+              campaignId={campaign.id}
+              sendMessage={sendMessage}
+              onClose={() => setShowGroupInventory(false)}
+            />
+          </div>
+        </div>
       )}
     </div>
   )

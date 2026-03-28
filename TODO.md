@@ -6,13 +6,13 @@
 ## Phase 2: Combat & Polish (remaining)
 - [x] Schicksalspunkte usage flow in combat UI — SchipMenu component, 4 usage types (reroll, defense boost, halve damage, ignore condition), auto-deduct on additional reactions, GM quick +/-, SchiP reset at session start, Protokoll logging, session statistics
 - [ ] Guided combat flow (Basic complexity mode with step-by-step hints)
-- [ ] Group inventory
+- [x] Group inventory — GM GroupInventoryPanel + player "Gruppeninventar" section, move items between group↔personal
 
 ## Phase 3: Persistence & Campaign (remaining)
 - [ ] Session recap (AI-generated) — API stub exists
 - [ ] Character death memorial + archive UI — model exists, UI pending
 - [ ] Inventory carry-over flow at campaign end
-- [ ] Character lifecycle state machine UI (active→resting→retired)
+- [x] Character lifecycle state machine UI — 5 states (created/active/resting/retired/dead), status badges, change buttons, visual dimming for retired/dead
 
 ## Phase 4: AI Features (stubs built, nothing active)
 - [ ] AI Import Portal (PDF upload → extraction) — backend code exists, UI needs polish, Claude API not wired
@@ -20,14 +20,14 @@
 - [ ] AI session recap — backend code exists, needs API key
 
 ## Phase 5: Nice-to-Have
-- [ ] Shop system (NPC merchants)
+- [ ] Shop system (NPC merchants) — backend WS handlers in progress
 - [x] Weather & environment UI — 8 weather types, time advance controls, player info bar with weather/time display
 - [x] Regeneration & rest workflow — GM rest panel (presets: Kurze Rast 4h / Nachtlager 8h), character checkboxes, server-side healing rolls, player toast with results
 - [ ] Session feedback & voting
 - [ ] Regelmodul-System (optional rules toggle)
 - [ ] Campaign achievements
 - [ ] Complexity level switching (Basic/Standard/Advanced)
-- [ ] Export (character, campaign, session log)
+- [x] Export — character (v2, re-importable), campaign (full JSON), session log (JSON + Markdown with tables)
 
 ## Open Bugs & Polish
 - [x] InventoryPanel.jsx JSX syntax error (stray brackets causing DOM render issue) — fixed Session 14

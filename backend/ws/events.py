@@ -98,6 +98,14 @@ class EventType(str, Enum):
     LOOT_DISPLAY = "loot_display"
     LOOT_DISTRIBUTE = "loot_distribute"
 
+    # Shop / Merchant
+    SHOP_CREATE = "shop_create"
+    SHOP_UPDATE = "shop_update"
+    SHOP_CLOSE = "shop_close"
+    SHOP_BUY = "shop_buy"
+    SHOP_SELL = "shop_sell"
+    SHOP_STATE = "shop_state"
+
     # Session Control
     SESSION_START = "session_start"
     SESSION_PAUSE = "session_pause"

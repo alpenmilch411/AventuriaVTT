@@ -296,7 +296,9 @@ function InventoryPanel({ sendMessage }) {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getAttributes = useCharacterStore((s) => s.getAttributes)
   const players = useSessionStore((s) => s.players)
+  const campaignId = useSessionStore((s) => s.campaignId)
   const currentUser = useAuthStore((s) => s.user)
+  const token = useAuthStore((s) => s.token)
   const incomingTrade = useSessionStore((s) => s.incomingTrade)
   const setIncomingTrade = useSessionStore((s) => s.setIncomingTrade)
   const outgoingTrade = useSessionStore((s) => s.outgoingTrade)
@@ -339,6 +341,53 @@ function InventoryPanel({ sendMessage }) {
       if (item.category) fallback.category = item.category
       if (item.effects && Object.keys(item.effects).length > 0) fallback.effects = item.effects
       setDbDetail({ name: item.name, data: fallback, category: 'items' })
+    }
+  }
+
+  // Group inventory
+  const [groupItems, setGroupItems] = useState([])
+  const [groupOpen, setGroupOpen] = useState(false)
+  const [groupLoading, setGroupLoading] = useState(false)
+
+  useEffect(() => {
+    if (!campaignId || !token) return
+    setGroupLoading(true)
+    fetch(`/api/inventory/group/${campaignId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.items) setGroupItems(data.items) })
+      .catch(() => {})
+      .finally(() => setGroupLoading(false))
+  }, [campaignId, token])
+
+  const handleTakeFromGroup = async (item) => {
+    if (!myCharacter?.id || !campaignId) return
+    try {
+      const res = await fetch(`/api/inventory/group/${campaignId}/move`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item_id: item.name,
+          direction: 'to_personal',
+          character_id: myCharacter.id,
+          quantity: 1,
+        }),
+      })
+      if (!res.ok) throw new Error('Fehler')
+      // Refresh group inventory
+      const refreshRes = await fetch(`/api/inventory/group/${campaignId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (refreshRes.ok) {
+        const data = await refreshRes.json()
+        setGroupItems(data.items || [])
+      }
+      setActionResult('Gegenstand aus Gruppeninventar genommen!')
+      setTimeout(() => setActionResult(null), 3000)
+    } catch {
+      setActionResult('Fehler beim Nehmen des Gegenstands.')
+      setTimeout(() => setActionResult(null), 3000)
     }
   }
 
@@ -972,6 +1021,40 @@ function InventoryPanel({ sendMessage }) {
             )
           })()}
         </div>
+
+        {/* GROUP INVENTORY (shared party items) */}
+        {groupItems.length > 0 && (
+          <div className="lg:col-span-3">
+            <div className="bg-dsa-bg-card border border-dsa-bg-medium rounded overflow-hidden">
+              <button
+                onClick={() => setGroupOpen(!groupOpen)}
+                className="w-full flex items-center gap-2 px-3 py-2 border-b border-dsa-bg-medium/50 bg-indigo-950/50 hover:bg-indigo-950/60 transition"
+              >
+                <Package className="w-4 h-4 text-indigo-400" />
+                <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">Gruppeninventar</span>
+                <Badge variant="default" size="sm">{groupItems.length}</Badge>
+                <ChevronDown className={clsx('w-3.5 h-3.5 text-indigo-400/50 ml-auto transition-transform', groupOpen && 'rotate-180')} />
+              </button>
+              {groupOpen && (
+                <div className="p-3 space-y-1">
+                  {groupItems.map((item, i) => (
+                    <div key={`grp-${i}`} className="flex items-center gap-2 bg-dsa-bg border border-dsa-bg-medium rounded px-3 py-1.5 group">
+                      <span className="text-xs">{getItemEmoji(item.name)}</span>
+                      <span className="text-[11px] text-dsa-parchment font-medium flex-1 truncate">{item.name}</span>
+                      <span className="text-[10px] font-mono text-dsa-parchment-dark">x{item.quantity || 1}</span>
+                      <button
+                        onClick={() => handleTakeFromGroup(item)}
+                        className="text-[9px] px-1.5 py-0.5 bg-indigo-900/20 text-indigo-400 border border-indigo-800/20 rounded hover:bg-indigo-900/30 transition opacity-0 group-hover:opacity-100"
+                      >
+                        Nehmen
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* RIGHT column — categorized (lean accordion) */}
         <div className="lg:col-span-2">

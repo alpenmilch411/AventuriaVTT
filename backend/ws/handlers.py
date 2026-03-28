@@ -186,6 +186,7 @@ def _ensure_state(session_code: str) -> dict[str, Any]:
             "conditions": {},          # character_id -> [{name, level}]
             "max_vitals": {},          # character_id -> {LeP_max, AsP_max, ...}
             "buffs": {},               # character_id -> [{...}]
+            "shops": {},               # shop_id -> {name, items: [...], markup, owner_character_id}
             "session_log": [],         # unified log: [{type, text, icon, ts}] — last 500 entries
             "state_version": 0,        # monotonic counter, incremented on every state change
         }
@@ -718,6 +719,9 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.SESSION_START: _handle_session_start,
         EventType.SESSION_PAUSE: _handle_session_pause,
         EventType.SESSION_END: _handle_session_end,
+        EventType.SHOP_CREATE: _handle_shop_create,
+        EventType.SHOP_UPDATE: _handle_shop_update,
+        EventType.SHOP_CLOSE: _handle_shop_close,
     }
 
     if event_type in gm_commands:
@@ -736,6 +740,8 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.ITEM_TRANSFER: _handle_item_transfer,
         EventType.SPELL_CAST: _handle_spell_cast,
         EventType.TOKEN_MOVE: _handle_token_move,
+        EventType.SHOP_BUY: _handle_shop_buy,
+        EventType.SHOP_SELL: _handle_shop_sell,
     }
 
     if event_type in player_actions:
@@ -2683,6 +2689,397 @@ def _inv_add(inv, items: list, money) -> dict:
 
 
 # ===================================================================
+# Shop / Merchant system
+# ===================================================================
+
+# DSA5 currency: 1 Dukaten = 10 Silbertaler = 100 Heller = 1000 Kreuzer
+# Template prices are stored in Silbertaler.
+
+def _to_kreuzer(purse: dict) -> int:
+    """Convert a purse dict {dukaten, silber, heller, kreuzer} to Kreuzer."""
+    return (
+        purse.get("dukaten", 0) * 1000
+        + purse.get("silber", 0) * 100
+        + purse.get("heller", 0) * 10
+        + purse.get("kreuzer", 0)
+    )
+
+
+def _from_kreuzer(total: int) -> dict:
+    """Convert Kreuzer back to a purse dict with optimal denominations."""
+    d, rem = divmod(total, 1000)
+    s, rem = divmod(rem, 100)
+    h, k = divmod(rem, 10)
+    return {"dukaten": d, "silber": s, "heller": h, "kreuzer": k}
+
+
+def _price_to_kreuzer(price_silber: float, markup: float = 1.0) -> int:
+    """Convert a template price (in Silbertaler) to Kreuzer, applying markup."""
+    return round(price_silber * 100 * markup)
+
+
+async def _handle_shop_create(session_code: str, user_id: str, payload: dict, state: dict):
+    """GM creates a shop. payload: {name, items: [{template_id, name, price, stock?, category?}], markup?}"""
+    name = payload.get("name", "Händler")
+    items = payload.get("items", [])
+    markup = payload.get("markup", 1.0)
+
+    if not items:
+        await manager.send_to_user(user_id, _error("Shop benötigt mindestens einen Gegenstand"))
+        return
+
+    shop_id = str(uuid.uuid4())[:8]
+
+    # Normalize shop items — ensure each has required fields
+    shop_items = []
+    for item in items:
+        shop_items.append({
+            "template_id": item.get("template_id"),
+            "name": item.get("name", "Unbekannt"),
+            "price": item.get("price", 0),  # in Silbertaler
+            "stock": item.get("stock"),      # None = unlimited
+            "category": item.get("category", ""),
+            "weight": item.get("weight"),
+            "properties": item.get("properties"),
+        })
+
+    shop = {
+        "id": shop_id,
+        "name": name,
+        "items": shop_items,
+        "markup": markup,
+        "open": True,
+    }
+
+    state.setdefault("shops", {})[shop_id] = shop
+    _bump_version(state)
+
+    await manager.broadcast_to_room(session_code, _msg(EventType.SHOP_STATE, {
+        "action": "created",
+        "shop": shop,
+        "shops": state["shops"],
+    }))
+    await _append_session_log(session_code, "system", f"Laden eröffnet: {name}", icon="store")
+    await _snapshot_session_state(session_code)
+
+
+async def _handle_shop_update(session_code: str, user_id: str, payload: dict, state: dict):
+    """GM updates a shop. payload: {shop_id, name?, items?, markup?, add_items?, remove_items?}"""
+    shop_id = payload.get("shop_id")
+    shops = state.get("shops", {})
+    shop = shops.get(shop_id)
+
+    if not shop:
+        await manager.send_to_user(user_id, _error("Laden nicht gefunden"))
+        return
+
+    if payload.get("name"):
+        shop["name"] = payload["name"]
+    if payload.get("markup") is not None:
+        shop["markup"] = payload["markup"]
+
+    # Full item list replacement
+    if payload.get("items") is not None:
+        shop["items"] = [
+            {
+                "template_id": i.get("template_id"),
+                "name": i.get("name", "Unbekannt"),
+                "price": i.get("price", 0),
+                "stock": i.get("stock"),
+                "category": i.get("category", ""),
+                "weight": i.get("weight"),
+                "properties": i.get("properties"),
+            }
+            for i in payload["items"]
+        ]
+
+    # Add items incrementally
+    if payload.get("add_items"):
+        for item in payload["add_items"]:
+            shop["items"].append({
+                "template_id": item.get("template_id"),
+                "name": item.get("name", "Unbekannt"),
+                "price": item.get("price", 0),
+                "stock": item.get("stock"),
+                "category": item.get("category", ""),
+                "weight": item.get("weight"),
+                "properties": item.get("properties"),
+            })
+
+    # Remove items by template_id
+    if payload.get("remove_items"):
+        remove_ids = set(payload["remove_items"])
+        shop["items"] = [i for i in shop["items"] if i.get("template_id") not in remove_ids]
+
+    _bump_version(state)
+    await manager.broadcast_to_room(session_code, _msg(EventType.SHOP_STATE, {
+        "action": "updated",
+        "shop": shop,
+        "shops": state["shops"],
+    }))
+    await _snapshot_session_state(session_code)
+
+
+async def _handle_shop_close(session_code: str, user_id: str, payload: dict, state: dict):
+    """GM closes a shop. payload: {shop_id}"""
+    shop_id = payload.get("shop_id")
+    shops = state.get("shops", {})
+    shop = shops.pop(shop_id, None)
+
+    if not shop:
+        await manager.send_to_user(user_id, _error("Laden nicht gefunden"))
+        return
+
+    _bump_version(state)
+    await manager.broadcast_to_room(session_code, _msg(EventType.SHOP_STATE, {
+        "action": "closed",
+        "shop_id": shop_id,
+        "shop_name": shop.get("name", "Händler"),
+        "shops": state["shops"],
+    }))
+    await _append_session_log(session_code, "system", f"Laden geschlossen: {shop.get('name', 'Händler')}", icon="store")
+    await _snapshot_session_state(session_code)
+
+
+async def _handle_shop_buy(session_code: str, user_id: str, payload: dict, state: dict):
+    """Player buys an item from a shop.
+    payload: {shop_id, template_id, character_id, quantity?}
+    """
+    shop_id = payload.get("shop_id")
+    template_id = payload.get("template_id")
+    character_id = payload.get("character_id")
+    quantity = max(1, payload.get("quantity", 1))
+
+    shops = state.get("shops", {})
+    shop = shops.get(shop_id)
+    if not shop or not shop.get("open", True):
+        await manager.send_to_user(user_id, _error("Laden nicht verfügbar"))
+        return
+
+    # Find the item in the shop
+    shop_item = None
+    shop_item_idx = None
+    for idx, si in enumerate(shop.get("items", [])):
+        if si.get("template_id") == template_id:
+            shop_item = si
+            shop_item_idx = idx
+            break
+
+    if not shop_item:
+        await manager.send_to_user(user_id, _error("Gegenstand nicht im Laden"))
+        return
+
+    # Check stock
+    if shop_item.get("stock") is not None:
+        if shop_item["stock"] < quantity:
+            await manager.send_to_user(user_id, _error(
+                f"Nicht genug auf Lager (verfügbar: {shop_item['stock']})"
+            ))
+            return
+
+    # Calculate price in Kreuzer
+    markup = shop.get("markup", 1.0)
+    unit_price_k = _price_to_kreuzer(shop_item.get("price", 0), markup)
+    total_price_k = unit_price_k * quantity
+
+    # Load character inventory and check money
+    async with _get_char_lock(character_id):
+        from database import async_session
+        from sqlalchemy import select
+        from models.character import Character
+
+        async with async_session() as db:
+            result = await db.execute(select(Character).where(Character.id == character_id))
+            char = result.scalar_one_or_none()
+            if not char:
+                await manager.send_to_user(user_id, _error("Charakter nicht gefunden"))
+                return
+
+            inv = _normalize_inv(char.basis_inventory)
+            purse = inv.get("purse", {})
+            available_k = _to_kreuzer(purse)
+
+            if available_k < total_price_k:
+                price_display = _from_kreuzer(total_price_k)
+                await manager.send_to_user(user_id, _error(
+                    f"Nicht genug Geld. Preis: {_format_price(price_display)}"
+                ))
+                return
+
+            # Deduct money
+            new_purse = _from_kreuzer(available_k - total_price_k)
+            inv["purse"] = new_purse
+
+            # Add item to inventory
+            new_item = {
+                "template_id": template_id,
+                "name": shop_item["name"],
+                "quantity": quantity,
+                "equipped": False,
+            }
+            if shop_item.get("weight"):
+                new_item["weight"] = shop_item["weight"]
+            if shop_item.get("category"):
+                new_item["category"] = shop_item["category"]
+            inv = _inv_add(inv, [new_item], None)
+
+            # Persist
+            char.basis_inventory = inv
+            await db.commit()
+
+    # Decrement stock
+    if shop_item.get("stock") is not None:
+        shop["items"][shop_item_idx]["stock"] = shop_item["stock"] - quantity
+        if shop["items"][shop_item_idx]["stock"] <= 0:
+            shop["items"].pop(shop_item_idx)
+
+    _bump_version(state)
+
+    # Broadcast updated shop + inventory change
+    await manager.broadcast_to_room(session_code, _msg(EventType.SHOP_STATE, {
+        "action": "purchase",
+        "shop": shop,
+        "shops": state["shops"],
+        "buyer_character_id": character_id,
+        "item_name": shop_item["name"],
+        "quantity": quantity,
+    }))
+    await manager.broadcast_to_room(session_code, _msg("inventory_change", {
+        "character_id": character_id,
+        "basis_inventory": inv,
+    }))
+    await _append_session_log(
+        session_code, "system",
+        f"{shop_item['name']} ×{quantity} gekauft bei {shop.get('name', 'Händler')}",
+        icon="shopping-cart",
+    )
+    await _snapshot_session_state(session_code)
+
+
+async def _handle_shop_sell(session_code: str, user_id: str, payload: dict, state: dict):
+    """Player sells an item to a shop.
+    payload: {shop_id, template_id, character_id, item_name?, quantity?, sell_price?}
+    Sell price defaults to 50% of shop markup price (standard DSA5 resale).
+    """
+    shop_id = payload.get("shop_id")
+    template_id = payload.get("template_id")
+    item_name = payload.get("item_name", "")
+    character_id = payload.get("character_id")
+    quantity = max(1, payload.get("quantity", 1))
+
+    shops = state.get("shops", {})
+    shop = shops.get(shop_id)
+    if not shop or not shop.get("open", True):
+        await manager.send_to_user(user_id, _error("Laden nicht verfügbar"))
+        return
+
+    # Determine sell price: explicit override, or 50% of shop item price, or 0
+    sell_price_silber = payload.get("sell_price")
+    if sell_price_silber is None:
+        # Check if item exists in shop catalog for reference price
+        for si in shop.get("items", []):
+            if si.get("template_id") == template_id:
+                sell_price_silber = si.get("price", 0) * 0.5
+                break
+        if sell_price_silber is None:
+            sell_price_silber = 0
+
+    total_sell_k = round(sell_price_silber * 100 * quantity)
+
+    # Remove item from character inventory, add money
+    async with _get_char_lock(character_id):
+        from database import async_session
+        from sqlalchemy import select
+        from models.character import Character
+
+        async with async_session() as db:
+            result = await db.execute(select(Character).where(Character.id == character_id))
+            char = result.scalar_one_or_none()
+            if not char:
+                await manager.send_to_user(user_id, _error("Charakter nicht gefunden"))
+                return
+
+            inv = _normalize_inv(char.basis_inventory)
+
+            # Check player actually has the item
+            found = False
+            for it in inv.get("items", []):
+                if (template_id and it.get("template_id") == template_id) or it.get("name") == item_name:
+                    if it.get("quantity", 1) < quantity:
+                        await manager.send_to_user(user_id, _error(
+                            f"Nicht genug Gegenstände (vorhanden: {it.get('quantity', 1)})"
+                        ))
+                        return
+                    found = True
+                    sold_item_name = it.get("name", item_name)
+                    break
+
+            if not found:
+                await manager.send_to_user(user_id, _error("Gegenstand nicht im Inventar"))
+                return
+
+            # Remove item
+            remove_entry = {"template_id": template_id, "name": item_name, "quantity": quantity}
+            inv = _inv_remove(inv, [remove_entry], None)
+
+            # Add money
+            if total_sell_k > 0:
+                money = _from_kreuzer(total_sell_k)
+                inv = _inv_add(inv, [], money)
+
+            # Persist
+            char.basis_inventory = inv
+            await db.commit()
+
+    # Optionally add item back to shop stock
+    if payload.get("add_to_shop", True):
+        existing = None
+        for si in shop.get("items", []):
+            if si.get("template_id") == template_id:
+                existing = si
+                break
+        if existing and existing.get("stock") is not None:
+            existing["stock"] = existing["stock"] + quantity
+        # Don't add new items to shop catalog automatically — GM controls stock
+
+    _bump_version(state)
+
+    await manager.broadcast_to_room(session_code, _msg(EventType.SHOP_STATE, {
+        "action": "sale",
+        "shop": shop,
+        "shops": state["shops"],
+        "seller_character_id": character_id,
+        "item_name": sold_item_name,
+        "quantity": quantity,
+        "sell_price_kreuzer": total_sell_k,
+    }))
+    await manager.broadcast_to_room(session_code, _msg("inventory_change", {
+        "character_id": character_id,
+        "basis_inventory": inv,
+    }))
+    await _append_session_log(
+        session_code, "system",
+        f"{sold_item_name} ×{quantity} verkauft an {shop.get('name', 'Händler')}",
+        icon="shopping-cart",
+    )
+    await _snapshot_session_state(session_code)
+
+
+def _format_price(purse: dict) -> str:
+    """Format a purse dict as a readable German price string."""
+    parts = []
+    if purse.get("dukaten"):
+        parts.append(f"{purse['dukaten']}D")
+    if purse.get("silber"):
+        parts.append(f"{purse['silber']}S")
+    if purse.get("heller"):
+        parts.append(f"{purse['heller']}H")
+    if purse.get("kreuzer"):
+        parts.append(f"{purse['kreuzer']}K")
+    return " ".join(parts) if parts else "0K"
+
+
+# ===================================================================
 # Connection lifecycle handlers
 # ===================================================================
 
@@ -2852,6 +3249,7 @@ def get_full_sync(session_code: str) -> dict:
         "vitals": state.get("vitals", {}),
         "conditions": state.get("conditions", {}),
         "buffs": state.get("buffs", {}),
+        "shops": state.get("shops", {}),
         "session_log": state.get("session_log", [])[-200:],
         "pending_requests": state.get("pending_requests", {}),
         "state_version": state.get("state_version", 0),

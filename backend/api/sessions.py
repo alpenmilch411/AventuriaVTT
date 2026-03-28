@@ -18,6 +18,9 @@ from models.session_state import (
     GameSession,
     SessionPlayer,
     SessionStatistics,
+    SessionLog,
+    APAward,
+    CombatState,
 )
 from ws.manager import manager
 
@@ -924,3 +927,206 @@ async def get_session_statistics(
         },
         "stats": stats,
     }
+
+
+# ---------------------------------------------------------------------------
+# Session Export (log / backup)
+# ---------------------------------------------------------------------------
+
+@router.get("/{session_id}/export")
+async def export_session(
+    session_id: str,
+    format: str = "json",
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Export session as JSON or Markdown. GM or active player."""
+    session = await _get_session(session_id, db)
+    await _verify_gm_or_active_player(session, current_user, db)
+
+    # --- Logs (Protokoll entries) ---
+    log_result = await db.execute(
+        select(SessionLog)
+        .where(SessionLog.session_id == session_id)
+        .order_by(SessionLog.timestamp)
+    )
+    logs = [
+        {
+            "entry_type": log.entry_type,
+            "data": log.data,
+            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+        }
+        for log in log_result.scalars().all()
+    ]
+
+    # --- AP Awards ---
+    ap_result = await db.execute(
+        select(APAward).where(APAward.session_id == session_id)
+    )
+    ap_awards = [
+        {
+            "character_id": aw.character_id,
+            "character_name": aw.character.name if aw.character else "Unbekannt",
+            "amount": aw.amount,
+            "reason": aw.reason,
+        }
+        for aw in ap_result.scalars().all()
+    ]
+
+    # --- Combat states ---
+    combat_result = await db.execute(
+        select(CombatState).where(CombatState.session_id == session_id)
+    )
+    combats = [
+        {
+            "status": cs.status,
+            "round_number": cs.round_number,
+            "initiative_order": cs.initiative_order,
+            "combatants": cs.combatants,
+        }
+        for cs in combat_result.scalars().all()
+    ]
+
+    # --- Players ---
+    player_result = await db.execute(
+        select(SessionPlayer)
+        .where(SessionPlayer.session_id == session_id)
+        .options(selectinload(SessionPlayer.user), selectinload(SessionPlayer.character))
+    )
+    players = [
+        {
+            "user_id": sp.user_id,
+            "username": sp.user.username if sp.user else "Unbekannt",
+            "character_id": sp.character_id,
+            "character_name": sp.character.name if sp.character else None,
+            "status": sp.status,
+            "joined_at": sp.joined_at.isoformat() if sp.joined_at else None,
+        }
+        for sp in player_result.scalars().all()
+    ]
+
+    # --- Statistics ---
+    stats_result = await db.execute(
+        select(SessionStatistics)
+        .where(SessionStatistics.session_id == session_id)
+        .options(selectinload(SessionStatistics.character))
+    )
+    stats = [
+        {
+            "character_id": s.character_id,
+            "character_name": s.character.name if s.character else "Unbekannt",
+            "kills": s.kills,
+            "damage_dealt": s.damage_dealt,
+            "damage_taken": s.damage_taken,
+            "dice_rolls": s.dice_rolls,
+            "critical_successes": s.critical_successes,
+            "critical_failures": s.critical_failures,
+            "spells_cast": s.spells_cast,
+            "probes_attempted": s.probes_attempted,
+            "probes_succeeded": s.probes_succeeded,
+            "schip_spent": s.schip_spent,
+        }
+        for s in stats_result.scalars().all()
+    ]
+
+    data = {
+        "format": "aventuria_vtt_session",
+        "version": 1,
+        "exported_at": datetime.utcnow().isoformat(),
+        "session": {
+            "id": session.id,
+            "name": session.name,
+            "status": session.status,
+            "started_at": session.started_at.isoformat() if session.started_at else None,
+            "ended_at": session.ended_at.isoformat() if session.ended_at else None,
+            "completed_at": session.completed_at.isoformat() if session.completed_at else None,
+            "gm_notes": session.gm_notes,
+            "recap_text": session.recap_text,
+        },
+        "players": players,
+        "logs": logs,
+        "ap_awards": ap_awards,
+        "combats": combats,
+        "statistics": stats,
+    }
+
+    if format == "markdown":
+        from fastapi.responses import PlainTextResponse
+        md = _session_to_markdown(data)
+        return PlainTextResponse(content=md, media_type="text/markdown")
+
+    return data
+
+
+def _session_to_markdown(data: dict) -> str:
+    """Convert session export dict to readable Markdown."""
+    s = data["session"]
+    lines = [
+        f"# {s['name']}",
+        "",
+        f"**Status:** {s['status']}",
+    ]
+    if s.get("started_at"):
+        lines.append(f"**Beginn:** {s['started_at']}")
+    if s.get("ended_at"):
+        lines.append(f"**Ende:** {s['ended_at']}")
+    lines.append("")
+
+    # Players
+    if data["players"]:
+        lines.append("## Teilnehmer")
+        lines.append("")
+        for p in data["players"]:
+            char_part = f" — {p['character_name']}" if p.get("character_name") else ""
+            lines.append(f"- {p['username']}{char_part}")
+        lines.append("")
+
+    # Recap
+    if s.get("recap_text"):
+        lines.append("## Zusammenfassung")
+        lines.append("")
+        lines.append(s["recap_text"])
+        lines.append("")
+
+    # Protokoll
+    if data["logs"]:
+        lines.append("## Protokoll")
+        lines.append("")
+        for entry in data["logs"]:
+            ts = entry["timestamp"][:16] if entry.get("timestamp") else ""
+            entry_data = entry.get("data") or {}
+            text = entry_data.get("text") or entry_data.get("message") or str(entry_data)
+            lines.append(f"- `{ts}` [{entry['entry_type']}] {text}")
+        lines.append("")
+
+    # AP Awards
+    if data["ap_awards"]:
+        lines.append("## AP-Vergabe")
+        lines.append("")
+        for aw in data["ap_awards"]:
+            reason = f" ({aw['reason']})" if aw.get("reason") else ""
+            lines.append(f"- {aw['character_name']}: {aw['amount']} AP{reason}")
+        lines.append("")
+
+    # Statistics
+    if data["statistics"]:
+        lines.append("## Statistiken")
+        lines.append("")
+        lines.append("| Held | Würfe | Krit+ | Krit- | Schaden | Erhalten | Kills |")
+        lines.append("|------|-------|-------|-------|---------|----------|-------|")
+        for st in data["statistics"]:
+            lines.append(
+                f"| {st['character_name']} | {st['dice_rolls']} | {st['critical_successes']} "
+                f"| {st['critical_failures']} | {st['damage_dealt']} | {st['damage_taken']} "
+                f"| {st['kills']} |"
+            )
+        lines.append("")
+
+    # GM Notes
+    if s.get("gm_notes"):
+        lines.append("## GM-Notizen")
+        lines.append("")
+        lines.append(s["gm_notes"])
+        lines.append("")
+
+    return "\n".join(lines)

@@ -35,6 +35,7 @@ export default function useGMPopups() {
   const [showVitalsPopup, setShowVitalsPopup] = useState(false)
   const [gmNotes, setGmNotes] = useState(() => { try { return localStorage.getItem('aventuria_gm_notes') || '' } catch { return '' } })
   const [detailPlayer, setDetailPlayer] = useState(null) // player object for detail modal
+  const [showGroupInventory, setShowGroupInventory] = useState(false)
 
   // Clear stale overlays when combat ends
   useEffect(() => {
@@ -70,5 +71,6 @@ export default function useGMPopups() {
     showVitalsPopup, setShowVitalsPopup,
     gmNotes, setGmNotes,
     detailPlayer, setDetailPlayer,
+    showGroupInventory, setShowGroupInventory,
   }
 }
