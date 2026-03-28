@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Swords, X, SkipForward, Plus, Heart, LogOut, Dice5,
   Shield, ChevronRight, AlertTriangle, Trophy, Users,
-  Sparkles, Package, Footprints, Clock, Star, Target, Send
+  Sparkles, Package, Footprints, Clock, Star, Target, Send, Pencil
 } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
 import useSessionStore from '../../stores/sessionStore'
 import TurnFlow from './TurnFlow'
+import CreatureEditModal from './CreatureEditModal'
 import Badge from '../../components/common/Badge'
 import ProgressBar from '../../components/common/ProgressBar'
 import { getCreatureIcon } from '../../utils/icons'
@@ -56,6 +57,12 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
   const [addSelection, setAddSelection] = useState({}) // tokenId → bool
   const [showTurnFlow, setShowTurnFlow] = useState(false)
   const [approvedAction, setApprovedAction] = useState(null)
+  const [editingCreature, setEditingCreature] = useState(null)
+  const [victoryData, setVictoryData] = useState(null) // { survivors, fallen, rounds, deadNPCs, summary }
+  const [apAmount, setApAmount] = useState(5)
+  const [apReason, setApReason] = useState('Kampf')
+  const [apSelected, setApSelected] = useState({}) // characterId → boolean
+  const [apAwarding, setApAwarding] = useState(false)
   const pendingPlayerAction = useCombatStore((s) => s.pendingPlayerAction)
   const clearPendingPlayerAction = useCombatStore((s) => s.clearPendingPlayerAction)
 
@@ -117,6 +124,110 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
     }
   }, [pendingPlayerAction])
 
+  // ── Victory AP Award Screen ──
+  if (victoryData) {
+    const selectedCount = Object.values(apSelected).filter(Boolean).length
+    return (
+      <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <div className="bg-dsa-bg border border-dsa-gold/30 rounded shadow-2xl w-full max-w-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-dsa-gold/20 to-dsa-gold/5 border-b border-dsa-gold/20 px-6 py-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-dsa-gold/20 ring-2 ring-dsa-gold/30 flex items-center justify-center mx-auto mb-3">
+              <Star className="w-8 h-8 text-dsa-gold" fill="currentColor" />
+            </div>
+            <h2 className="text-xl font-display font-bold text-dsa-gold">Sieg der Helden!</h2>
+            <p className="text-xs text-dsa-parchment-dark mt-1">{victoryData.rounds} Runden · {victoryData.fallen.length > 0 ? `${victoryData.fallen.length} Gefallene` : 'Keine Verluste'}</p>
+          </div>
+
+          {/* AP Award Form */}
+          <div className="p-6 space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-dsa-gold uppercase tracking-wider">Abenteuerpunkte verteilen</label>
+              <div className="flex gap-3 mt-2">
+                <div className="flex-1">
+                  <label className="text-[10px] text-dsa-parchment-dark mb-0.5 block">AP pro Held</label>
+                  <input
+                    type="number" min="1" max="100" value={apAmount}
+                    onChange={(e) => setApAmount(e.target.value)}
+                    className="w-full h-10 bg-dsa-bg-light border border-dsa-gold/30 rounded text-center text-lg font-mono text-dsa-gold focus:outline-none focus:border-dsa-gold"
+                  />
+                </div>
+                <div className="flex-[2]">
+                  <label className="text-[10px] text-dsa-parchment-dark mb-0.5 block">Grund</label>
+                  <input
+                    type="text" value={apReason}
+                    onChange={(e) => setApReason(e.target.value)}
+                    placeholder="Kampf"
+                    className="w-full h-10 bg-dsa-bg-light border border-dsa-bg-medium rounded px-3 text-sm text-dsa-parchment focus:outline-none focus:border-dsa-gold/30"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Character selection */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[10px] text-dsa-parchment-dark">Empfaenger ({selectedCount}/{victoryData.survivors.length})</label>
+                <button
+                  onClick={() => {
+                    const allSelected = victoryData.survivors.every(c => !c.characterId || apSelected[c.characterId])
+                    const next = {}
+                    victoryData.survivors.forEach(c => { if (c.characterId) next[c.characterId] = !allSelected })
+                    setApSelected(next)
+                  }}
+                  className="text-[9px] text-dsa-gold hover:text-dsa-gold/80"
+                >
+                  {victoryData.survivors.every(c => !c.characterId || apSelected[c.characterId]) ? 'Keine' : 'Alle'}
+                </button>
+              </div>
+              <div className="space-y-1 max-h-40 overflow-y-auto">
+                {victoryData.survivors.filter(c => c.characterId).map(c => (
+                  <button
+                    key={c.characterId}
+                    onClick={() => setApSelected(prev => ({ ...prev, [c.characterId]: !prev[c.characterId] }))}
+                    className={clsx(
+                      'w-full flex items-center gap-2 px-3 py-2 rounded-sm text-sm transition-colors text-left',
+                      apSelected[c.characterId]
+                        ? 'bg-dsa-gold/10 border border-dsa-gold/30 text-dsa-parchment'
+                        : 'bg-dsa-bg-light border border-dsa-bg-medium text-dsa-parchment-dark'
+                    )}
+                  >
+                    <span className={clsx(
+                      'w-5 h-5 rounded border flex items-center justify-center text-xs',
+                      apSelected[c.characterId] ? 'bg-dsa-gold border-dsa-gold text-dsa-bg' : 'border-dsa-bg-medium'
+                    )}>
+                      {apSelected[c.characterId] && '✓'}
+                    </span>
+                    <span className="text-xs">{getCreatureIcon(c.name)}</span>
+                    <span className="flex-1 text-xs font-medium">{c.name}</span>
+                    {apSelected[c.characterId] && (
+                      <span className="text-xs font-mono text-dsa-gold">+{apAmount || 0} AP</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 py-4 border-t border-dsa-bg-medium flex gap-3 justify-end">
+            <button onClick={handleSkipAP} className="px-4 py-2 text-xs text-dsa-parchment-dark hover:text-dsa-parchment transition">
+              Ueberspringen
+            </button>
+            <button
+              onClick={handleAwardAP}
+              disabled={selectedCount === 0 || !apAmount || parseInt(apAmount) <= 0 || apAwarding}
+              className="px-5 py-2 bg-gradient-to-r from-dsa-gold/30 to-dsa-gold/20 text-dsa-gold border border-dsa-gold/30 rounded font-semibold text-sm hover:from-dsa-gold/40 hover:to-dsa-gold/30 transition flex items-center gap-2 disabled:opacity-30"
+            >
+              <Star className="w-4 h-4" />
+              {apAwarding ? 'Verteilt!' : `${apAmount || 0} AP an ${selectedCount} Helden verteilen`}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!battle) return null
 
   // Combat-relevant notifications (only Sonstiges still needs approval)
@@ -139,6 +250,7 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
       const summary = heroesWon ? 'Sieg der Helden!' : 'Die Helden sind gefallen...'
       sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `Kampf vorbei — ${summary}` } })
       // Send combat_end with result summary so players see a proper ending
+      const survivorPCs = battle.initiativeOrder.filter(c => !c.isNPC && (c.lep === undefined || c.lep > 0))
       endBattle(battleId)
       sendMessage?.({
         type: 'combat_end',
@@ -151,18 +263,24 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
           rounds: battle.round,
         },
       })
-      onClose()
-      // On hero victory, trigger loot distribution for dead NPCs
-      if (heroesWon && onVictoryLoot) {
-        // Collect loot from dead NPC map tokens
-        const deadNPCLoot = deadNPCs.map(npc => {
-          const token = mapTokens.find(t => t.id === npc.id)
-          const loot = token?.guaranteed_loot || token?.stats?.guaranteed_loot || []
-          return { name: npc.name, items: loot }
-        }).filter(l => l.items.length > 0)
-        // Also include NPCs without token loot — GM can add items manually
-        const deadNPCNames = deadNPCs.map(c => c.name)
-        onVictoryLoot({ deadNPCs: deadNPCNames, loot: deadNPCLoot })
+      // On hero victory, show AP award panel before closing
+      if (heroesWon) {
+        const sel = {}
+        survivorPCs.forEach(c => { if (c.characterId) sel[c.characterId] = true })
+        setApSelected(sel)
+        setVictoryData({ survivors: survivorPCs, fallen, rounds: battle.round, deadNPCs, summary })
+        // Trigger loot distribution
+        if (onVictoryLoot) {
+          const deadNPCLoot = deadNPCs.map(npc => {
+            const token = mapTokens.find(t => t.id === npc.id)
+            const loot = token?.guaranteed_loot || token?.stats?.guaranteed_loot || []
+            return { name: npc.name, items: loot }
+          }).filter(l => l.items.length > 0)
+          const deadNPCNames = deadNPCs.map(c => c.name)
+          onVictoryLoot({ deadNPCs: deadNPCNames, loot: deadNPCLoot })
+        }
+      } else {
+        onClose()
       }
       return
     }
@@ -189,6 +307,34 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
   const handleEnd = () => {
     endBattle(battleId)
     sendMessage?.({ type: 'combat_end', payload: { battle_id: battleId } })
+    onClose()
+  }
+
+  const handleAwardAP = () => {
+    const amount = parseInt(apAmount, 10)
+    if (isNaN(amount) || amount <= 0) return
+    const awards = victoryData.survivors
+      .filter(c => c.characterId && apSelected[c.characterId])
+      .map(c => ({
+        character_id: c.characterId,
+        user_id: c.userId,
+        character_name: c.name,
+        amount,
+        reason: apReason || 'Kampf',
+      }))
+    if (awards.length > 0) {
+      setApAwarding(true)
+      sendMessage?.({ type: 'ap_award', payload: { awards } })
+      setTimeout(() => {
+        setApAwarding(false)
+        setVictoryData(null)
+        onClose()
+      }, 1200)
+    }
+  }
+
+  const handleSkipAP = () => {
+    setVictoryData(null)
     onClose()
   }
 
@@ -370,6 +516,11 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
                         <button onClick={() => handleDamage(c)} className="flex-1 flex items-center justify-center gap-0.5 py-0.5 rounded bg-dsa-bg-medium text-[8px] text-dsa-parchment-dark hover:text-red-400 transition-colors" title="Schaden/Heilen">
                           <Heart className="w-2.5 h-2.5" /> SP
                         </button>
+                        {c.isNPC && (
+                          <button onClick={() => setEditingCreature(c)} className="flex-1 flex items-center justify-center gap-0.5 py-0.5 rounded bg-dsa-bg-medium text-[8px] text-dsa-parchment-dark hover:text-dsa-gold transition-colors" title="Stats bearbeiten">
+                            <Pencil className="w-2.5 h-2.5" /> Edit
+                          </button>
+                        )}
                         <button onClick={() => { removeCombatant(effectiveBattleId, c.id); addBattleLogEntry(effectiveBattleId, { type: 'system', text: `${c.name} verlaesst den Kampf.` }) }}
                           className="flex-1 flex items-center justify-center gap-0.5 py-0.5 rounded bg-dsa-bg-medium text-[8px] text-dsa-parchment-dark hover:text-red-400 transition-colors" title="Entfernen">
                           <LogOut className="w-2.5 h-2.5" /> Raus
@@ -541,7 +692,7 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
                       ) : playerAction === 'custom' ? (
                         <div className="text-center space-y-3"><Star className="w-6 h-6 text-purple-400 mx-auto" /><p className="text-sm text-dsa-parchment">Sag am Tisch was du tun moechtest!</p>
                           <div className="flex justify-center gap-2"><button onClick={() => setPlayerAction(null)} className="btn-ghost text-xs">Zurueck</button>
-                          <button onClick={() => { sendMessage?.({ type: 'action_request', payload: { character_id: myId, character_name: myCharacter?.name, action_type: 'combat_custom', action_label: 'Sonstige Aktion' } }); setPlayerAction(null) }} className="btn-primary text-xs"><Send className="w-3 h-3 inline mr-1" />Anfrage senden</button></div>
+                          <button onClick={() => { const rId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`; sendMessage?.({ type: 'action_request', payload: { request_id: rId, character_id: myId, character_name: myCharacter?.name, action_type: 'combat_custom', action_label: 'Sonstige Aktion' } }); useSessionStore.getState().setPendingRequest({ id: rId, type: 'action', label: 'Sonstige Aktion', timestamp: Date.now() }); setPlayerAction(null) }} className="btn-primary text-xs"><Send className="w-3 h-3 inline mr-1" />Anfrage senden</button></div>
                         </div>
                       ) : (
                         (() => { const labels = { spell: 'Zaubern', item: 'Gegenstand', move: 'Bewegen', ready: 'Warten' }; const l = labels[playerAction] || playerAction; return (
@@ -763,6 +914,18 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
             </div>
           </div>
         </Modal>
+
+        {/* Creature/NPC stat editor */}
+        <CreatureEditModal
+          creature={editingCreature}
+          isOpen={!!editingCreature}
+          onClose={() => setEditingCreature(null)}
+          onSave={(creatureId, updates) => {
+            updateCombatant(creatureId, updates)
+            addBattleLogEntry(battleId, { type: 'system', text: `${updates.name || editingCreature?.name}: Stats bearbeitet.` })
+            sendMessage?.({ type: 'combatant_update', payload: { battle_id: battleId, combatant_id: creatureId, updates } })
+          }}
+        />
       </div>
     </div>
   )

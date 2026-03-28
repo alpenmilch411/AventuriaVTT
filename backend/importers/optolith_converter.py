@@ -927,7 +927,7 @@ def convert_special_abilities(data: OptolithData) -> list[dict]:
         gr = sa.get("gr", 1)
         category = SA_GR_CATEGORY.get(gr, data.sa_group_map.get(gr, "allgemein").lower())
 
-        rules = de.get("rules", "").strip()
+        rules = (de.get("rules") or de.get("effect") or "").strip()
 
         record = {
             "id": _slugify(name),

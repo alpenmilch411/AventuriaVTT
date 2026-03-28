@@ -15,6 +15,10 @@ const useSessionStore = create((set, get) => ({
 
   notifications: [],
   activeProcesses: [], // { id, type: 'probe'|'trade', label, data, timestamp }
+  pendingRequest: null, // { id, type, label, timestamp } — player's pending request awaiting GM
+
+  setPendingRequest: (request) => set({ pendingRequest: request }),
+  clearPendingRequest: () => set({ pendingRequest: null }),
 
   addActiveProcess: (process) => set((state) => ({
     activeProcesses: [process, ...state.activeProcesses.filter(p => p.id !== process.id)],
@@ -129,7 +133,7 @@ const useSessionStore = create((set, get) => ({
     sessionCode: null, sessionId: null, campaignId: null,
     phase: 'lobby', isGM: false, isHalted: false, isAttentionMode: false,
     players: [], tableViewMode: 'lobby', tableViewData: null, sessionInfo: null,
-    notifications: [], activeProcesses: [], activeLoot: null,
+    notifications: [], activeProcesses: [], pendingRequest: null, activeLoot: null,
     lootReceived: null, sceneContent: [], sessionLog: [],
     outgoingTrade: null, incomingTrade: null, tradeResult: null,
   }),

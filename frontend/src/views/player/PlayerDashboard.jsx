@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   BookOpen, Backpack, Swords, Sparkles, User, Bell, Gift,
-  X, Wifi, WifiOff, Star, Shield, Handshake, ArrowLeft
+  X, Wifi, WifiOff, Star, Shield, Handshake, ArrowLeft, Loader2
 } from 'lucide-react'
 import useWebSocket from '../../hooks/useWebSocket'
 import useOffline from '../../hooks/useOffline'
@@ -47,6 +47,7 @@ export default function PlayerDashboard() {
   const clearLootReceived = useSessionStore((s) => s.clearLootReceived)
   const notifications = useSessionStore((s) => s.notifications)
   const dismissNotification = useSessionStore((s) => s.dismissNotification)
+  const pendingRequest = useSessionStore((s) => s.pendingRequest)
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const getVitals = useCharacterStore((s) => s.getVitals)
   const combatActive = useCombatStore((s) => Object.keys(s.battles).length > 0)
@@ -59,6 +60,13 @@ export default function PlayerDashboard() {
   const [loadError, setLoadError] = useState(null)
 
   const { isOffline, OfflineBanner } = useOffline()
+
+  // Auto-clear stale pending requests after 2 minutes
+  useEffect(() => {
+    if (!pendingRequest) return
+    const timeout = setTimeout(() => useSessionStore.getState().clearPendingRequest(), 120000)
+    return () => clearTimeout(timeout)
+  }, [pendingRequest])
 
   const userId = user?.id
 
@@ -283,6 +291,28 @@ export default function PlayerDashboard() {
           )
         })}
       </div>
+
+      {/* ── PENDING REQUEST BANNER ── */}
+      {pendingRequest && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-dsa-gold/5 border-b border-dsa-gold/20 animate-slide-up">
+          <Loader2 className="w-3.5 h-3.5 text-dsa-gold animate-spin flex-shrink-0" />
+          <span className="flex-1 text-xs text-dsa-gold truncate">
+            Anfrage gesendet: {pendingRequest.label} — warte auf Spielleiter...
+          </span>
+          <button
+            onClick={() => {
+              sendMessage?.({
+                type: 'request_withdraw',
+                payload: { request_id: pendingRequest.id, character_name: myCharacter?.name || 'Spieler' },
+              })
+              useSessionStore.getState().clearPendingRequest()
+            }}
+            className="text-[10px] text-red-400 hover:text-red-300 border border-red-900/30 rounded-sm px-2 py-0.5 hover:bg-red-900/20 transition flex-shrink-0"
+          >
+            Zurückziehen
+          </button>
+        </div>
+      )}
 
       {/* ── TAB CONTENT ── */}
       <div className="flex-1 overflow-y-auto">

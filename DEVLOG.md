@@ -49,6 +49,14 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 - **SA Purchase** in SteigerungTab: category tabs derived from data, search, filters out owned SAs, AP cost from DB
 - **improvement_cost column** on SpellTemplate + LiturgyTemplate: correct Steigerungsfaktor for all upgrade flows
 
+### Combat Polish (3 features)
+- **AP Award Victory Screen**: GM sees gold-themed AP award panel after combat victory — surviving PC checkboxes, AP amount + reason inputs, "AP verteilen" button. Players see "+X Abenteuerpunkte" notification. Backend persists AP to characters.
+- **Creature Stat Editing**: CreatureEditModal for mid-combat NPC stat editing — name, LeP current/max, AT, PA, AW, RS, INI, weapon name/damage/reach. Pencil icon on NPC initiative bar entries. Changes broadcast to all clients.
+- **Player Request Withdraw**: Gold pending request banner in PlayerDashboard with "Zurückziehen" button. Request ID tracking, backend removes from pending queue, GM notification auto-dismissed. 2-minute auto-clear timeout.
+
+### Data Quality Fix
+- 476 SA descriptions were missing — converter read `rules` field but Optolith uses `effect` for 478 SAs. Fixed converter, now 1,434/1,438 SAs have descriptions.
+
 ### Schicksalspunkte (SchiP) Combat System
 Full fate point spending flow for players and GM:
 - **SchipMenu** component: 4 usage types — Probe wiederholen (re-roll), Verteidigung stärken (+4), Schaden halbieren, Zustand ignorieren (1 Runde)

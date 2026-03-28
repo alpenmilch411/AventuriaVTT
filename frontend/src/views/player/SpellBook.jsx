@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Sparkles, Clock, Send, Check, ChevronDown, ChevronUp, HelpCircle, Zap, Target, Shield, Star, Filter, Wand2 } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
+import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import Badge from '../../components/common/Badge'
 
@@ -208,9 +209,11 @@ function SpellBook({ sendMessage }) {
 
   const handleRequestCast = (e, name, fw, info, type = 'spell') => {
     e.stopPropagation()
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
     sendMessage?.({
       type: 'spell_cast_request',
       payload: {
+        request_id: requestId,
         character_id: myCharacter.id,
         character_name: myCharacter.name,
         spell_name: name,
@@ -219,6 +222,9 @@ function SpellBook({ sendMessage }) {
         cost: type === 'spell' ? `${info?.asp || '?'} AsP` : `${info?.kap || '?'} KaP`,
         cast_type: type,
       },
+    })
+    useSessionStore.getState().setPendingRequest({
+      id: requestId, type: 'spell', label: `${name} wirken`, timestamp: Date.now(),
     })
     setRequestedSpells(prev => ({ ...prev, [name]: 'pending' }))
     setTimeout(() => {

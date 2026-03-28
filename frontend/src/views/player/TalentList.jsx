@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
+import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import useCombatValues from '../../hooks/useCombatValues'
 import { TALENT_SF } from '../../engine/advancementCosts'
@@ -146,9 +147,11 @@ function TalentList({ sendMessage }) {
   }
 
   const sendProbeRequest = (talent, itemBonus = 0, usedItem = null) => {
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
     sendMessage?.({
       type: 'probe_request_from_player',
       payload: {
+        request_id: requestId,
         character_id: myCharacter.id,
         user_id: user?.id,
         character_name: myCharacter.name,
@@ -161,6 +164,9 @@ function TalentList({ sendMessage }) {
         be: talent.encumbrance ? be : 0,
         item_bonus: itemBonus > 0 ? { value: itemBonus, item_name: usedItem?.name } : undefined,
       },
+    })
+    useSessionStore.getState().setPendingRequest({
+      id: requestId, type: 'probe', label: `${talent.name} proben`, timestamp: Date.now(),
     })
     setRequestedTalents(prev => ({ ...prev, [talent.key]: 'pending' }))
     setTimeout(() => {

@@ -15,6 +15,7 @@ const useCombatStore = create((set, get) => ({
   activeBattleId: null,
   combatLog: EMPTY_LOG,
   combatResult: null,       // { result: 'victory'|'defeat', summary, fallen, survivors, rounds } — shown after combat ends
+  apAwarded: null,          // { amount, reason, character_name } — AP received after combat victory
   pendingDiceRequest: null,
   pendingDefense: null,
   myCharacterId: null,
@@ -230,7 +231,9 @@ const useCombatStore = create((set, get) => ({
   clearPendingPlayerAction: () => set({ pendingPlayerAction: null }),
   setLastDiceResult: (result) => set({ lastDiceResult: result }),
   clearLastDiceResult: () => set({ lastDiceResult: null }),
-  clearCombatResult: () => set({ combatResult: null }),
+  clearCombatResult: () => set({ combatResult: null, apAwarded: null }),
+  setApAwarded: (award) => set({ apAwarded: award }),
+  clearApAwarded: () => set({ apAwarded: null }),
 
   startCombat: (initiativeOrder) => {
     const id = get().createBattle('Kampf')
@@ -377,8 +380,8 @@ const useCombatStore = create((set, get) => ({
 
   reset: () => set({
     battles: {}, activeBattleId: null,
-    combatLog: EMPTY_LOG, combatResult: null, pendingDiceRequest: null,
-    pendingDefense: null, myCharacterId: null,
+    combatLog: EMPTY_LOG, combatResult: null, apAwarded: null,
+    pendingDiceRequest: null, pendingDefense: null, myCharacterId: null,
   }),
 }))
 

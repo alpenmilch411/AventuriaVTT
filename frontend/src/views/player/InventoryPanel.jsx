@@ -456,9 +456,11 @@ function InventoryPanel({ sendMessage }) {
 
     // For other actions (drop, transfer), send to GM
     const ACTION_LABELS = { use: 'Benutzen', equip: 'Anlegen', unequip: 'Ablegen', transfer: 'Übergeben', drop: 'Fallen lassen' }
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
     sendMessage?.({
       type: 'action_request',
       payload: {
+        request_id: requestId,
         character_id: myCharacter.id,
         character_name: myCharacter.name,
         action_type: action.id,
@@ -467,6 +469,9 @@ function InventoryPanel({ sendMessage }) {
         quantity,
         effects: item.effects || null,
       },
+    })
+    useSessionStore.getState().setPendingRequest({
+      id: requestId, type: 'action', label: `${ACTION_LABELS[action.id]}: ${item.name}`, timestamp: Date.now(),
     })
     setActionResult(`Aktion angefragt: ${quantity}x ${item.name} — ${ACTION_LABELS[action.id]}`)
     setActionModal(null)
@@ -481,9 +486,11 @@ function InventoryPanel({ sendMessage }) {
     // Herbs require a Heilkunde probe — send request to GM and consume
     if (resolved.requiresProbe) {
       resultText = `${item.name}: ${resolved.probeSkill}-Probe erforderlich. ${resolved.description}`
+      const probeReqId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
       sendMessage?.({
         type: 'probe_request_from_player',
         payload: {
+          request_id: probeReqId,
           character_id: myCharacter.id,
           character_name: myCharacter.name,
           probe_type: resolved.probeSkill,
@@ -491,6 +498,9 @@ function InventoryPanel({ sendMessage }) {
           item_effects: item.effects,
           description: `${myCharacter.name} möchte ${item.name} anwenden (${resolved.probeSkill})`,
         },
+      })
+      useSessionStore.getState().setPendingRequest({
+        id: probeReqId, type: 'probe', label: `${item.name} anwenden`, timestamp: Date.now(),
       })
       // Consume the herb (used whether probe succeeds or not)
       if (resolved.consumed) {

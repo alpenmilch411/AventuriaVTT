@@ -119,6 +119,8 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       // Player receives a dice prompt from the GM
       console.log('[WS] Received dice_request, setting pendingDiceRequest:', payload)
       useCombatStore.getState().setPendingDiceRequest(payload)
+      // GM sent a dice request — our pending request was implicitly approved
+      useSessionStore.getState().clearPendingRequest()
     }
     else if (type === 'probe_result') {
       // Broadcast probe result — log it
@@ -153,9 +155,9 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
 
     // ── Action requests (player → GM) ──
     else if (type === 'action_request' || type === 'probe_request_from_player' || type === 'spell_cast_request') {
-      // GM receives a request from a player
+      // GM receives a request from a player — use request_id as notification id for withdraw matching
       useSessionStore.getState().addNotification({
-        id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        id: payload.request_id || `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
         type: msg.type,
         from: payload.character_name || payload.from_user || 'Spieler',
         text: type === 'probe_request_from_player'
@@ -651,6 +653,8 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
           }
         }
       }
+      // Clear player's pending request on approval
+      useSessionStore.getState().clearPendingRequest()
     }
     // ── Probe consequence (GM applied consequences after probe) ──
     else if (type === 'probe_consequence') {
@@ -679,6 +683,19 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       }
     }
 
+    // ── Request withdrawn (player withdrew any request — GM side) ──
+    else if (type === 'request_withdrawn') {
+      const reqId = payload.request_id
+      if (reqId) {
+        useSessionStore.getState().dismissNotification(reqId)
+      }
+    }
+
+    // ── Request withdraw confirmed (backend → player) ──
+    else if (type === 'request_withdraw_confirmed') {
+      useSessionStore.getState().clearPendingRequest()
+    }
+
     else if (type === 'action_declined') {
       useSessionStore.getState().addNotification({
         id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -691,6 +708,8 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       if (payload.talent_name || payload.type === 'probe_request_from_player') {
         useCombatStore.getState().setPendingDiceRequest(null)
       }
+      // Clear player's pending request
+      useSessionStore.getState().clearPendingRequest()
     }
 
     // ── Session control ──
@@ -719,6 +738,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     // ── AP Award (GM → player) ──
     else if (type === 'ap_award') {
       const myId = useAuthStore?.getState?.()?.user?.id
+      const charState = useCharacterStore.getState()
       const myAward = (payload.awards || []).find(a => a.user_id === myId)
       if (myAward) {
         useSessionStore.getState().addNotification({
@@ -726,6 +746,27 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
           text: `${myAward.amount} Abenteuerpunkte erhalten${myAward.reason ? `: ${myAward.reason}` : ''}`,
           timestamp: msg.timestamp,
         })
+        // Update available_ap on own character
+        if (charState.myCharacter) {
+          const cur = charState.myCharacter.available_ap || 0
+          const tot = charState.myCharacter.total_ap || 0
+          charState.updateCharacterField('available_ap', cur + myAward.amount)
+          charState.updateCharacterField('total_ap', tot + myAward.amount)
+        }
+        // Store AP award in combatStore for victory screen display
+        useCombatStore.getState().setApAwarded(myAward)
+      }
+      // GM side: update allCharacters with new AP
+      for (const award of (payload.awards || [])) {
+        if (award.character_id) {
+          const existing = charState.allCharacters.find(c => c.id === award.character_id)
+          if (existing) {
+            charState.updateCharacterInList(award.character_id, {
+              available_ap: (existing.available_ap || 0) + award.amount,
+              total_ap: (existing.total_ap || 0) + award.amount,
+            })
+          }
+        }
       }
     }
 
@@ -1043,7 +1084,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       wsRef.current.send(JSON.stringify(message))
     } else {
       // Queue critical messages for retry on reconnect
-      const criticalTypes = ['dice_result', 'probe_request_from_player', 'vitals_update', 'conditions_update', 'inventory_change', 'probe_cancel']
+      const criticalTypes = ['dice_result', 'probe_request_from_player', 'vitals_update', 'conditions_update', 'inventory_change', 'probe_cancel', 'request_withdraw']
       if (criticalTypes.includes(message.type)) {
         messageQueueRef.current.push(message)
         console.warn('[WS] Queued for retry:', message.type, `(${messageQueueRef.current.length} queued)`)

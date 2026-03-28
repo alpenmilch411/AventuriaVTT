@@ -34,9 +34,10 @@
 - [x] Stale "Äxte" combat technique in CreateEntryModal.jsx — removed, added all 21 DSA5 CTs
 - [x] Stale "Äxte"/"Zweihandäxte" in DatenbankDetail.jsx + combatManeuvers.js — removed/renamed to Zweihandhiebwaffen (Hammerschlag/Windmühle maneuvers were broken)
 - [x] Missing model exports in backend/models/__init__.py — 8 Session 13-14 models not exported
-- [ ] Combat victory screen — AP award + loot exist, no dedicated victory UI after combat
-- [ ] Creature stat editing mid-combat
-- [ ] Player pending requests withdraw option — system works, dismiss/withdraw UX needs polish
+- [x] Combat victory screen — GM AP award panel after victory (gold theme, PC checkboxes, amount + reason), player notification with "+X AP" display
+- [x] Creature stat editing mid-combat — CreatureEditModal (name, LeP, AT/PA/AW/RS, INI, weapon), edit icon on NPC initiative bar entries
+- [x] Player pending requests withdraw option — gold pending banner in PlayerDashboard, "Zurückziehen" button, request_id tracking, GM notification auto-dismissed
+- [x] 476 SA descriptions missing — converter was reading `rules` but not `effect` field from Optolith; fixed, now 1,434/1,438 SAs have descriptions
 - [ ] Mobile responsive header
 - [ ] Opposed probes UI — backend supports it, UI selector missing
 - [ ] In-game time tracking UI — backend handler exists (`_handle_time_advance`), no frontend

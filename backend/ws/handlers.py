@@ -865,14 +865,42 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         logger.info("Player %s cancelled probe %s in %s", user_id, request_id, session_code)
         return
 
+    # Request withdraw — player withdraws any pending request (action, probe, spell)
+    if event_type == "request_withdraw":
+        request_id = payload.get("request_id", "")
+        character_name = payload.get("character_name", "Spieler")
+        # Remove from pending requests
+        pending = state.get("pending_requests", {})
+        to_remove = [k for k, v in pending.items() if v.get("from_user") == user_id and (k == request_id or v.get("request_id") == request_id)]
+        for k in to_remove:
+            del pending[k]
+        # Notify GM
+        await manager.broadcast_to_room(session_code, _msg("request_withdrawn", {
+            "request_id": request_id,
+            "character_name": character_name,
+            "from_user": user_id,
+        }, from_user=user_id), target="gm")
+        # Confirm back to player
+        await manager.send_to_user(user_id, _msg("request_withdraw_confirmed", {
+            "request_id": request_id,
+        }))
+        # Log to Protokoll
+        await _append_session_log(session_code, "system", f"{character_name} zieht Anfrage zurück.", icon="x")
+        logger.info("Player %s withdrew request %s in %s", user_id, request_id, session_code)
+        return
+
     relay_to_gm = {
         "action_request", "probe_request_from_player", "spell_cast_request",
         "item_use", "item_equip", "item_drop", "item_transfer",
     }
     if event_type in relay_to_gm:
         payload["from_user"] = user_id
-        # Store probe requests in pending_requests for reconnect persistence
-        if event_type == "probe_request_from_player":
+        # Store requests in pending_requests for reconnect persistence
+        if payload.get("request_id"):
+            state.setdefault("pending_requests", {})[payload["request_id"]] = {
+                **payload, "from_user": user_id, "type": event_type, "timestamp": datetime.utcnow().isoformat(),
+            }
+        elif event_type == "probe_request_from_player":
             req_id = f"probe_{user_id}_{payload.get('talent_key', '')}"
             state.setdefault("pending_requests", {})[req_id] = {
                 **payload, "from_user": user_id, "type": event_type, "timestamp": datetime.utcnow().isoformat(),
@@ -1470,7 +1498,7 @@ async def _handle_attention_release(session_code: str, user_id: str, payload: di
 async def _handle_ap_award(session_code: str, user_id: str, payload: dict, state: dict):
     """Award adventure points to one or more characters."""
     awards = payload.get("awards", [])
-    # awards: [{character_id, amount, reason}, ...]
+    # awards: [{character_id, amount, reason, character_name?, user_id?}, ...]
     msg = _msg(EventType.AP_AWARD, {"awards": awards}, from_user=user_id)
     # Notify each player individually about their award
     for award in awards:
@@ -1483,6 +1511,15 @@ async def _handle_ap_award(session_code: str, user_id: str, payload: dict, state
             }, from_user=user_id))
     # Also broadcast summary to everyone
     await manager.broadcast_to_room(session_code, msg)
+    # Log to Protokoll
+    if awards:
+        names = ", ".join(a.get("character_name", "?") for a in awards if a.get("amount", 0) > 0)
+        amount = awards[0].get("amount", 0) if awards else 0
+        reason = awards[0].get("reason", "") if awards else ""
+        log_text = f"AP verteilt: {amount} AP an {names}"
+        if reason:
+            log_text += f" ({reason})"
+        await _append_session_log(session_code, "system", log_text, icon="star")
     # Persist AP awards to the database
     if awards:
         _safe_create_task(
