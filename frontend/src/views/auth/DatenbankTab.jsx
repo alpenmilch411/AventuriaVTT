@@ -372,6 +372,11 @@ export default function DatenbankTab() {
           >
             <Layers className={clsx('w-3.5 h-3.5 flex-shrink-0', isAllTab ? 'text-dsa-gold' : 'text-dsa-parchment-dark/60')} />
             <span className="flex-1 text-left">Alle</span>
+            {Object.keys(categoryCounts).length > 0 && (
+              <span className={clsx('text-[9px] font-mono', isAllTab ? 'text-dsa-gold/70' : 'text-dsa-parchment-dark/40')}>
+                {Object.values(categoryCounts).reduce((s, n) => s + (n || 0), 0).toLocaleString('de-DE')}
+              </span>
+            )}
           </button>
 
           {CATEGORIES.map((cat) => {
