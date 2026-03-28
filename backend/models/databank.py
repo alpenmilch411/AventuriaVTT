@@ -412,6 +412,7 @@ class SpecialAbilityTemplate(Base):
     applicable_techniques: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     rules_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    source_book: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
 
     # User-contribution fields
     created_by_user_id: Mapped[Optional[str]] = mapped_column(
@@ -495,6 +496,7 @@ class AdvantageTemplate(Base):
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     rules_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True,
         comment="Mechanical effect text")
+    source_book: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
 
     # User-contribution fields
     created_by_user_id: Mapped[Optional[str]] = mapped_column(
@@ -527,6 +529,7 @@ class DisadvantageTemplate(Base):
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     rules_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True,
         comment="Mechanical effect text")
+    source_book: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
 
     # User-contribution fields
     created_by_user_id: Mapped[Optional[str]] = mapped_column(

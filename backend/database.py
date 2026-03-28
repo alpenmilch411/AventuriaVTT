@@ -67,6 +67,7 @@ async def init_db():
             await conn.run_sync(_migrate_create_cantrip_blessing_tables)
             await conn.run_sync(_migrate_add_enhancements_property_variants)
             await conn.run_sync(_migrate_add_character_variant_columns)
+            await conn.run_sync(_migrate_add_source_book_to_adv_dis_sa)
 
 
 def _migrate_add_character_variant_columns(connection):
@@ -85,6 +86,21 @@ def _migrate_add_character_variant_columns(connection):
         if col_name not in existing_cols:
             connection.execute(
                 text(f"ALTER TABLE characters ADD COLUMN {col_name} {col_type}")
+            )
+
+
+def _migrate_add_source_book_to_adv_dis_sa(connection):
+    """Add source_book column to advantage, disadvantage, and special_ability templates."""
+    from sqlalchemy import text
+
+    for table in ["advantage_templates", "disadvantage_templates", "special_ability_templates"]:
+        result = connection.execute(text(f"PRAGMA table_info({table})"))
+        existing_cols = {row[1] for row in result.fetchall()}
+        if not existing_cols:
+            continue
+        if "source_book" not in existing_cols:
+            connection.execute(
+                text(f"ALTER TABLE {table} ADD COLUMN source_book VARCHAR(64)")
             )
 
 

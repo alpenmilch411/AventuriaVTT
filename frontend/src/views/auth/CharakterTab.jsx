@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   Plus, Upload, Download, Pencil, TrendingUp, Trash2,
-  Loader2, AlertCircle, User, X, Check, FileUp, Swords, Wand2, Shield, Eye
+  Loader2, AlertCircle, User, X, Check, FileUp, Swords, Wand2, Shield, Eye, Skull, Lock
 } from 'lucide-react'
 import clsx from 'clsx'
 import useAuthStore from '../../stores/authStore'
@@ -32,11 +32,24 @@ const GRADE_LABELS = {
 }
 
 const STATUS_BADGE = {
-  created: { variant: 'default', label: 'Erstellt' },
-  active: { variant: 'success', label: 'Aktiv' },
-  resting: { variant: 'warning', label: 'Ruhend' },
-  retired: { variant: 'default', label: 'Im Ruhestand' },
+  created: { variant: 'default', label: 'Verfügbar' },
+  active: { variant: 'success', label: 'Verfügbar' },
+  resting: { variant: 'success', label: 'Verfügbar' },   // legacy: treat as available
+  retired: { variant: 'success', label: 'Verfügbar' },    // legacy: treat as available
   dead: { variant: 'danger', label: 'Verstorben' },
+}
+
+// Determine effective character status for display
+function getEffectiveStatus(character) {
+  if (character.status === 'dead') return 'dead'
+  if (character.locked_session_id) return 'in_session'
+  return 'available'
+}
+
+const DISPLAY_STATUS = {
+  available: { variant: 'success', label: 'Verfügbar', icon: null },
+  in_session: { variant: 'warning', label: 'In Sitzung', icon: Lock },
+  dead: { variant: 'danger', label: 'Verstorben', icon: Skull },
 }
 
 const ARCHETYPES = [
@@ -372,10 +385,17 @@ function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelet
   const grade = (character.experience_grade || 'erfahren').toLowerCase()
   const gradeLabel = GRADE_LABELS[grade] || character.experience_grade || 'Erfahren'
   const gradeVariant = GRADE_COLORS[grade] || 'default'
-  const statusInfo = STATUS_BADGE[character.status] || STATUS_BADGE.active
   const availableAP = character.available_ap || 0
-  const isDimmed = character.status === 'retired' || character.status === 'dead'
-  const isEditable = !isDimmed
+
+  const effectiveStatus = getEffectiveStatus(character)
+  const displayStatus = DISPLAY_STATUS[effectiveStatus]
+  const isDead = effectiveStatus === 'dead'
+  const isLocked = effectiveStatus === 'in_session'
+  const isEditable = !isDead && !isLocked
+  const isDimmed = isDead
+
+  // Show "Aktivieren" only for legacy non-active statuses (created/resting/retired)
+  const showActivate = !isDead && !isLocked && character.status !== 'active' && character.status !== 'dead'
 
   return (
     <div className={clsx(
@@ -385,17 +405,24 @@ function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelet
       <div className="p-4">
         <div className="flex items-start gap-3">
           {/* Portrait / Avatar */}
-          {character.portrait_url ? (
-            <img
-              src={character.portrait_url}
-              alt={character.name}
-              className={clsx('w-14 h-14 rounded object-cover border border-dsa-bg-medium flex-shrink-0', isDimmed && 'grayscale')}
-            />
-          ) : (
-            <div className="w-14 h-14 rounded bg-dsa-bg-medium border border-dsa-bg-medium flex items-center justify-center flex-shrink-0">
-              <User className="w-6 h-6 text-dsa-parchment-dark/40" />
-            </div>
-          )}
+          <div className="relative flex-shrink-0">
+            {character.portrait_url ? (
+              <img
+                src={character.portrait_url}
+                alt={character.name}
+                className={clsx('w-14 h-14 rounded object-cover border border-dsa-bg-medium', isDead && 'grayscale')}
+              />
+            ) : (
+              <div className="w-14 h-14 rounded bg-dsa-bg-medium border border-dsa-bg-medium flex items-center justify-center">
+                <User className="w-6 h-6 text-dsa-parchment-dark/40" />
+              </div>
+            )}
+            {isDead && (
+              <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-900 border border-red-700 flex items-center justify-center">
+                <Skull className="w-3 h-3 text-red-400" />
+              </div>
+            )}
+          </div>
 
           <div className="flex-1 min-w-0">
             {/* Name */}
@@ -411,39 +438,27 @@ function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelet
             {/* Badges row */}
             <div className="flex flex-wrap items-center gap-1.5 mt-2">
               <Badge variant={gradeVariant} size="sm">{gradeLabel}</Badge>
-              <Badge variant={statusInfo.variant} size="sm">{statusInfo.label}</Badge>
-              {availableAP > 0 && (
+              {(() => {
+                const StatusIcon = displayStatus.icon
+                return (
+                  <Badge variant={displayStatus.variant} size="sm">
+                    {StatusIcon && <StatusIcon className="w-3 h-3 inline mr-0.5" />}
+                    {displayStatus.label}
+                  </Badge>
+                )
+              })()}
+              {availableAP > 0 && !isDead && (
                 <Badge variant="gold" size="sm">{availableAP} AP</Badge>
               )}
             </div>
 
-            {/* Status change buttons */}
-            {onStatusChange && (
+            {/* Status change buttons — only "Aktivieren" for legacy non-active characters */}
+            {onStatusChange && showActivate && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {(character.status === 'active' || character.status === 'created') && (
-                  <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'resting') }}
-                    className="text-[9px] px-1.5 py-0.5 rounded bg-amber-900/20 text-amber-400 border border-amber-800/20 hover:bg-amber-900/30 transition">
-                    Ruhend stellen
-                  </button>
-                )}
-                {(character.status === 'resting' || character.status === 'created') && (
-                  <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'active') }}
-                    className="text-[9px] px-1.5 py-0.5 rounded bg-green-900/20 text-green-400 border border-green-800/20 hover:bg-green-900/30 transition">
-                    Aktivieren
-                  </button>
-                )}
-                {character.status !== 'retired' && character.status !== 'dead' && (
-                  <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'retired') }}
-                    className="text-[9px] px-1.5 py-0.5 rounded bg-dsa-bg-medium text-dsa-parchment-dark border border-dsa-bg-light/20 hover:text-dsa-parchment transition">
-                    In Ruhestand
-                  </button>
-                )}
-                {isDimmed && (
-                  <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'active') }}
-                    className="text-[9px] px-1.5 py-0.5 rounded bg-green-900/20 text-green-400 border border-green-800/20 hover:bg-green-900/30 transition">
-                    Reaktivieren
-                  </button>
-                )}
+                <button onClick={(e) => { e.stopPropagation(); onStatusChange(character, 'active') }}
+                  className="text-[9px] px-1.5 py-0.5 rounded bg-green-900/20 text-green-400 border border-green-800/20 hover:bg-green-900/30 transition">
+                  Aktivieren
+                </button>
               </div>
             )}
           </div>
@@ -488,13 +503,15 @@ function CharacterCard({ character, onView, onEdit, onLevelUp, onExport, onDelet
           <Download className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Export</span>
         </button>
-        <button
-          onClick={() => onDelete(character)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-red-400 hover:bg-red-900/10 transition"
-          title="Loschen"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+        {!isDead && (
+          <button
+            onClick={() => onDelete(character)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-dsa-parchment-dark hover:text-red-400 hover:bg-red-900/10 transition"
+            title="Loschen"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   )

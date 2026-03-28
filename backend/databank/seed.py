@@ -695,11 +695,13 @@ def seed(database_url: Optional[str] = None) -> Dict[str, int]:
             _migrate_add_user_contribution_columns,
             _migrate_add_character_creation_fields,
             _migrate_add_species_extra_columns,
+            _migrate_add_source_book_to_adv_dis_sa,
         )
         with engine.connect() as conn:
             _migrate_add_user_contribution_columns(conn)
             _migrate_add_character_creation_fields(conn)
             _migrate_add_species_extra_columns(conn)
+            _migrate_add_source_book_to_adv_dis_sa(conn)
             conn.commit()
 
     results: Dict[str, int] = {}

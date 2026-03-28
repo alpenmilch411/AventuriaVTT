@@ -933,16 +933,19 @@ export default function CharacterCreator({ onClose, onCreated, editCharacter }) 
   // Render steps
   // ────────────────────────────────────────────────────────────────────────
 
+  // Default "Nur Grundregeln" toggle: on for beginners, off for experienced
+  const defaultGrw = grade === 'unerfahren' || grade === 'durchschnittlich'
+
   const renderStep = () => {
     switch (step) {
       case 0: return <StepGrade grade={grade} setGrade={setGrade} />
       case 1: return <StepName name={name} setName={setName} nickname={nickname} setNickname={setNickname} />
       case 2: return <StepSpecies species={species} setSpecies={setSpecies} speciesVariant={speciesVariant} setSpeciesVariant={setSpeciesVariant} speciesFreePoints={speciesFreePoints} setSpeciesFreePoints={setSpeciesFreePoints} speciesFreeUsed={speciesFreeUsed} freeAttrPoints={freeAttrPoints} gradeData={gradeData} speciesAll={speciesAll} loading={apiLoading.species} error={apiError.species} onRetry={loadSpecies} />
       case 3: return <StepCulture culture={culture} setCulture={setCulture} cultures={filteredCultures} loading={apiLoading.cultures} error={apiError.cultures} onRetry={loadCultures} />
-      case 4: return <StepProfession profession={profession} setProfession={setProfession} professionVariant={professionVariant} setProfessionVariant={setProfessionVariant} professions={filteredProfessions} gradeData={gradeData} loading={apiLoading.professions} error={apiError.professions} onRetry={loadProfessions} talentsAll={talentsAll} />
-      case 5: return <StepVorNachteile vorteile={vorteile} setVorteile={setVorteile} nachteile={nachteile} setNachteile={setNachteile} apBudget={apBudget} species={species} advantagesAll={advantagesAll} disadvantagesAll={disadvantagesAll} loadingAdv={apiLoading.advantages} loadingDis={apiLoading.disadvantages} errorAdv={apiError.advantages} errorDis={apiError.disadvantages} onRetryAdv={loadAdvantages} onRetryDis={loadDisadvantages} />
+      case 4: return <StepProfession profession={profession} setProfession={setProfession} professionVariant={professionVariant} setProfessionVariant={setProfessionVariant} professions={filteredProfessions} gradeData={gradeData} loading={apiLoading.professions} error={apiError.professions} onRetry={loadProfessions} talentsAll={talentsAll} defaultGrw={defaultGrw} />
+      case 5: return <StepVorNachteile vorteile={vorteile} setVorteile={setVorteile} nachteile={nachteile} setNachteile={setNachteile} apBudget={apBudget} species={species} advantagesAll={advantagesAll} disadvantagesAll={disadvantagesAll} loadingAdv={apiLoading.advantages} loadingDis={apiLoading.disadvantages} errorAdv={apiError.advantages} errorDis={apiError.disadvantages} onRetryAdv={loadAdvantages} onRetryDis={loadDisadvantages} defaultGrw={defaultGrw} />
       case 6: return <StepAttributes baseAttributes={baseAttributes} attrUpgrades={attrUpgrades} setAttrUpgrades={setAttrUpgrades} gradeData={gradeData} apBudget={apBudget} derivedValues={derivedValues} />
-      case 7: return <StepTalentsKT baseSkills={baseSkills} talentUpgrades={talentUpgrades} setTalentUpgrades={setTalentUpgrades} baseKT={baseKT} ktUpgrades={ktUpgrades} setKtUpgrades={setKtUpgrades} atPaSplits={atPaSplits} setAtPaSplits={setAtPaSplits} gradeData={gradeData} apBudget={apBudget} isMagic={isMagic} isBlessed={isBlessed} professionSpells={profession?.spells} professionLiturgies={profession?.liturgies} selectedSpells={selectedSpells} setSelectedSpells={setSelectedSpells} selectedLiturgies={selectedLiturgies} setSelectedLiturgies={setSelectedLiturgies} professionSAs={profession?.special_abilities} purchasedSAs={purchasedSAs} setPurchasedSAs={setPurchasedSAs} specialAbilitiesAll={specialAbilitiesAll} loadingSAs={apiLoading.specialAbilities} errorSAs={apiError.specialAbilities} onRetrySAs={loadSpecialAbilities} talentCategories={talentCategories} ktData={ktData} />
+      case 7: return <StepTalentsKT baseSkills={baseSkills} talentUpgrades={talentUpgrades} setTalentUpgrades={setTalentUpgrades} baseKT={baseKT} ktUpgrades={ktUpgrades} setKtUpgrades={setKtUpgrades} atPaSplits={atPaSplits} setAtPaSplits={setAtPaSplits} gradeData={gradeData} apBudget={apBudget} isMagic={isMagic} isBlessed={isBlessed} professionSpells={profession?.spells} professionLiturgies={profession?.liturgies} selectedSpells={selectedSpells} setSelectedSpells={setSelectedSpells} selectedLiturgies={selectedLiturgies} setSelectedLiturgies={setSelectedLiturgies} professionSAs={profession?.special_abilities} purchasedSAs={purchasedSAs} setPurchasedSAs={setPurchasedSAs} specialAbilitiesAll={specialAbilitiesAll} loadingSAs={apiLoading.specialAbilities} errorSAs={apiError.specialAbilities} onRetrySAs={loadSpecialAbilities} talentCategories={talentCategories} ktData={ktData} talentsAll={talentsAll} defaultGrw={defaultGrw} />
       case 8: return <StepDerived derivedValues={derivedValues} derivationBreakdown={derivationBreakdown} isMagic={isMagic} isBlessed={isBlessed} />
       case 9: return <StepSummary name={name} nickname={nickname} species={species} culture={culture} profession={profession} grade={grade} gradeData={gradeData} finalAttributes={finalAttributes} derivedValues={derivedValues} derivationBreakdown={derivationBreakdown} apBudget={apBudget} vorteile={vorteile} nachteile={nachteile} isMagic={isMagic} isBlessed={isBlessed} submitError={submitError} baseSkills={baseSkills} talentUpgrades={talentUpgrades} talentCategories={talentCategories} baseKT={baseKT} ktUpgrades={ktUpgrades} ktData={ktData} atPaSplits={atPaSplits} selectedSpells={selectedSpells} selectedLiturgies={selectedLiturgies} purchasedSAs={purchasedSAs} background={background} setBackground={setBackground} />
       default: return null
@@ -1209,6 +1212,8 @@ function StepName({ name, setName, nickname, setNickname }) {
 
 // ── Step 3: Species (from API) ──
 function StepSpecies({ species, setSpecies, speciesVariant, setSpeciesVariant, speciesFreePoints, setSpeciesFreePoints, speciesFreeUsed, freeAttrPoints, gradeData, speciesAll, loading, error, onRetry }) {
+  const [detailSpecies, setDetailSpecies] = useState(null)
+
   if (error) return <LoadError message={error} onRetry={onRetry} />
   if (loading && speciesAll.length === 0) {
     return (
@@ -1235,11 +1240,11 @@ function StepSpecies({ species, setSpecies, speciesVariant, setSpeciesVariant, s
         {speciesAll.map((sp) => {
           const baseAttrs = sp.base_attributes || {}
           return (
-            <button
+            <div
               key={sp.id || sp.name}
               onClick={() => setSpecies(sp)}
               className={clsx(
-                'text-left p-4 rounded border transition-all',
+                'text-left p-4 rounded border transition-all cursor-pointer',
                 species?.name === sp.name
                   ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
                   : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-dsa-gold/40'
@@ -1247,7 +1252,16 @@ function StepSpecies({ species, setSpecies, speciesVariant, setSpeciesVariant, s
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="font-display font-semibold text-dsa-parchment">{sp.name}</span>
-                <span className="text-xs font-mono text-dsa-gold">{sp.ap_cost || 0} AP</span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setDetailSpecies(sp) }}
+                    className="p-1 rounded text-dsa-parchment-dark/50 hover:text-dsa-parchment hover:bg-dsa-bg-medium transition-colors"
+                    title="Details anzeigen"
+                  >
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-xs font-mono text-dsa-gold">{sp.ap_cost || 0} AP</span>
+                </div>
               </div>
               <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
                 <p><TipAbbr term="GS" /> {sp.gs_base || 8} | <TipAbbr term="SK" />-Mod {sp.sk_modifier || 0} | <TipAbbr term="ZK" />-Mod {sp.zk_modifier || 0}</p>
@@ -1262,10 +1276,13 @@ function StepSpecies({ species, setSpecies, speciesVariant, setSpeciesVariant, s
                 {sp.blessed_capable && <p className="text-dsa-karma">Geweiht</p>}
                 {sp.description && <p className="text-dsa-parchment-dark/50 italic line-clamp-2">{sp.description}</p>}
               </div>
-            </button>
+            </div>
           )
         })}
       </div>
+
+      {/* Species Detail Modal */}
+      {detailSpecies && <SpeciesDetailModal sp={detailSpecies} onClose={() => setDetailSpecies(null)} />}
 
       {/* Species Variant picker */}
       {species && Array.isArray(species.variants) && species.variants.length > 0 && (
@@ -1367,6 +1384,7 @@ function StepSpecies({ species, setSpecies, speciesVariant, setSpeciesVariant, s
 // ── Step 4: Culture (from API) ──
 function StepCulture({ culture, setCulture, cultures, loading, error, onRetry }) {
   const [searchText, setSearchText] = useState('')
+  const [detailCulture, setDetailCulture] = useState(null)
 
   const filtered = useMemo(() => {
     const q = searchText.toLowerCase().trim()
@@ -1410,11 +1428,11 @@ function StepCulture({ culture, setCulture, cultures, loading, error, onRetry })
               {filtered.map((c) => {
                 const langs = (c.languages || []).map(l => typeof l === 'string' ? l : `${l.name} (${l.level})`).join(', ')
                 return (
-                  <button
+                  <div
                     key={c.id || c.name}
                     onClick={() => setCulture(c)}
                     className={clsx(
-                      'text-left p-4 rounded border transition-all',
+                      'text-left p-4 rounded border transition-all cursor-pointer',
                       culture?.name === c.name
                         ? 'border-dsa-gold bg-dsa-gold/10 ring-1 ring-dsa-gold/30'
                         : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-dsa-gold/40'
@@ -1422,7 +1440,16 @@ function StepCulture({ culture, setCulture, cultures, loading, error, onRetry })
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-display font-semibold text-dsa-parchment">{c.name}</span>
-                      <span className="text-xs font-mono text-dsa-gold">{c.ap_cost || 0} <TipAbbr term="AP" /></span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDetailCulture(c) }}
+                          className="p-1 rounded text-dsa-parchment-dark/50 hover:text-dsa-parchment hover:bg-dsa-bg-medium transition-colors"
+                          title="Details anzeigen"
+                        >
+                          <Info className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-xs font-mono text-dsa-gold">{c.ap_cost || 0} <TipAbbr term="AP" /></span>
+                      </div>
                     </div>
                     <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
                       {c.skill_bonuses && Object.keys(c.skill_bonuses).length > 0 && (
@@ -1431,13 +1458,16 @@ function StepCulture({ culture, setCulture, cultures, loading, error, onRetry })
                       {langs && <p>Sprachen: {langs}</p>}
                       {c.description && <p className="text-dsa-parchment-dark/50 italic line-clamp-2">{c.description}</p>}
                     </div>
-                  </button>
+                  </div>
                 )
               })}
             </div>
           )}
         </>
       )}
+
+      {/* Culture Detail Modal */}
+      {detailCulture && <CultureDetailModal c={detailCulture} onClose={() => setDetailCulture(null)} />}
     </div>
   )
 }
@@ -1728,15 +1758,332 @@ function Section({ title, icon, children }) {
   )
 }
 
+// ── Reusable detail modal shell ──
+function DetailModalShell({ onClose, title, subtitle, headerExtra, children }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose?.() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [onClose])
+
+  return (
+    <div className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="relative z-10 bg-dsa-bg border border-dsa-bg-medium rounded-xl shadow-2xl w-full max-w-xl max-h-[85vh] flex flex-col animate-fade-in"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="px-5 py-4 bg-gradient-to-r from-dsa-gold/15 via-dsa-gold/5 to-transparent flex-shrink-0 rounded-t-xl border-b border-dsa-bg-medium">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-xl font-display font-bold leading-tight mb-1 text-dsa-gold truncate">{title}</h2>
+              {subtitle && <p className="text-xs text-dsa-parchment-dark mb-1">{subtitle}</p>}
+              {headerExtra}
+            </div>
+            <button onClick={onClose} className="p-1.5 text-dsa-parchment-dark hover:text-dsa-parchment transition-colors rounded shrink-0" title="Schließen">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4 text-xs">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Species Detail Modal ──
+function SpeciesDetailModal({ sp, onClose }) {
+  if (!sp) return null
+  const baseAttrs = sp.base_attributes || {}
+  const adjustments = sp.attribute_adjustments || []
+  const autoAdvs = sp.auto_advantages || []
+  const variants = sp.variants || []
+
+  return (
+    <DetailModalShell
+      onClose={onClose}
+      title={sp.name}
+      headerExtra={
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-mono text-dsa-gold">{sp.ap_cost || 0} AP</span>
+        </div>
+      }
+    >
+      {sp.description && <p className="text-dsa-parchment/80 italic">{sp.description}</p>}
+
+      <Section title="Grundwerte">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+          <div className="flex justify-between"><span className="text-dsa-parchment-dark"><TipAbbr term="LeP" /> Basis</span><span className="font-mono text-dsa-gold">{sp.lep_base || 0}</span></div>
+          <div className="flex justify-between"><span className="text-dsa-parchment-dark"><TipAbbr term="GS" /> Basis</span><span className="font-mono text-dsa-gold">{sp.gs_base || 8}</span></div>
+          <div className="flex justify-between"><span className="text-dsa-parchment-dark"><TipAbbr term="SK" /> Mod.</span><span className="font-mono text-dsa-gold">{sp.sk_modifier ?? sp.sk_base ?? 0}</span></div>
+          <div className="flex justify-between"><span className="text-dsa-parchment-dark"><TipAbbr term="ZK" /> Mod.</span><span className="font-mono text-dsa-gold">{sp.zk_modifier ?? sp.zk_base ?? 0}</span></div>
+        </div>
+      </Section>
+
+      <Section title="Basisattribute">
+        <div className="grid grid-cols-4 gap-2">
+          {ATTR_KEYS.map(k => (
+            <div key={k} className="flex items-center justify-between bg-dsa-bg rounded px-2 py-1">
+              <span className={clsx('font-semibold', ATTR_META[k].color)}>{k}</span>
+              <span className={clsx('font-mono', (baseAttrs[k] || 8) !== 8 ? 'text-dsa-gold' : 'text-dsa-parchment')}>{baseAttrs[k] || 8}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {adjustments.length > 0 && (
+        <Section title="Eigenschaftsmodifikatoren">
+          <div className="space-y-0.5">
+            {adjustments.map((adj, i) =>
+              adj.choice ? (
+                <p key={i} className="text-dsa-parchment-dark">Wahl: +{adj.value} auf {(adj.options || []).join(', ')}</p>
+              ) : (
+                <p key={i} className="text-dsa-parchment-dark">{adj.attr} {adj.value > 0 ? '+' : ''}{adj.value}</p>
+              )
+            )}
+          </div>
+        </Section>
+      )}
+
+      {autoAdvs.length > 0 && (
+        <Section title="Automatische Vorteile">
+          <div className="flex flex-wrap gap-1.5">
+            {autoAdvs.map(name => (
+              <span key={name} className="px-2 py-0.5 rounded bg-green-900/20 text-green-400 border border-green-800/30">{name}</span>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {sp.common_cultures && sp.common_cultures.length > 0 && (
+        <Section title="Kompatible Kulturen">
+          <p className="text-dsa-parchment-dark">{sp.common_cultures.length} Kulturen verfügbar</p>
+        </Section>
+      )}
+
+      {variants.length > 0 && (
+        <Section title={`Varianten (${variants.length})`}>
+          <div className="space-y-2">
+            {variants.map((v, i) => (
+              <div key={v.id || i} className="p-2 rounded border border-dsa-bg-medium bg-dsa-bg-card">
+                <span className="font-semibold text-dsa-parchment">{v.name}</span>
+                {v.common_advantages && <p className="text-[10px] text-green-400/70 mt-0.5">Übliche Vorteile: {v.common_advantages}</p>}
+                {v.common_disadvantages && <p className="text-[10px] text-red-400/70">Übliche Nachteile: {v.common_disadvantages}</p>}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      <div className="flex items-center gap-3 text-[10px] text-dsa-parchment-dark/50 pt-2 border-t border-dsa-bg-medium">
+        {sp.magic_capable && <span className="text-dsa-mana">Magisch begabt</span>}
+        {sp.blessed_capable && <span className="text-dsa-karma">Geweiht</span>}
+      </div>
+    </DetailModalShell>
+  )
+}
+
+// ── Culture Detail Modal ──
+function CultureDetailModal({ c, onClose }) {
+  if (!c) return null
+  const langs = (c.languages || []).map(l => typeof l === 'string' ? l : `${l.name} (Stufe ${l.level})`).join(', ')
+  const scripts = (c.scripts || []).join(', ')
+  const skills = c.skill_bonuses || {}
+
+  return (
+    <DetailModalShell
+      onClose={onClose}
+      title={c.name}
+      headerExtra={
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-mono text-dsa-gold">{c.ap_cost || 0} AP</span>
+          {c.source_book && <span className="text-[10px] text-dsa-parchment-dark/50">{c.source_book}</span>}
+        </div>
+      }
+    >
+      {c.description && <p className="text-dsa-parchment/80 italic">{c.description}</p>}
+
+      {Object.keys(skills).length > 0 && (
+        <Section title="Kulturpaket (Talentboni)" icon={<BookOpen className="w-3.5 h-3.5 text-blue-400" />}>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+            {Object.entries(skills).sort(([a],[b]) => a.localeCompare(b)).map(([name, val]) => (
+              <div key={name} className="flex items-center justify-between">
+                <span className="text-dsa-parchment truncate">{name}</span>
+                <span className="font-mono text-dsa-gold shrink-0 ml-1">+{val}</span>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {langs && (
+        <Section title="Sprachen">
+          <p className="text-dsa-parchment">{langs}</p>
+        </Section>
+      )}
+
+      {scripts && (
+        <Section title="Schriften">
+          <p className="text-dsa-parchment">{scripts}</p>
+        </Section>
+      )}
+
+      {c.compatible_species && c.compatible_species.length > 0 && (
+        <Section title="Kompatible Spezies">
+          <div className="flex flex-wrap gap-1.5">
+            {c.compatible_species.map(name => (
+              <span key={name} className="px-2 py-0.5 rounded bg-dsa-bg-medium text-dsa-parchment border border-dsa-bg-medium">{name}</span>
+            ))}
+          </div>
+        </Section>
+      )}
+    </DetailModalShell>
+  )
+}
+
+// ── Advantage/Disadvantage Detail Modal ──
+function AdvDisDetailModal({ item, onClose, isAdvantage }) {
+  if (!item) return null
+  const catMeta = ADV_CATEGORY_META[item.category] || ADV_CATEGORY_META.allgemein
+
+  return (
+    <DetailModalShell
+      onClose={onClose}
+      title={item.name}
+      headerExtra={
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className={clsx('text-xs px-2 py-0.5 rounded-full border', catMeta.color, 'border-current/20')} style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+            {catMeta.label}
+          </span>
+          <span className={clsx('text-xs font-mono', isAdvantage ? 'text-red-400' : 'text-green-400')}>
+            {item.ap_cost || item.ap || 0} AP
+          </span>
+          {item.levels > 1 && (
+            <span className="text-[10px] text-dsa-parchment-dark">bis Stufe {item.levels}</span>
+          )}
+        </div>
+      }
+    >
+      {item.rules_text && (
+        <Section title="Regel">
+          <p className="text-dsa-parchment/80 leading-relaxed whitespace-pre-line">{item.rules_text}</p>
+        </Section>
+      )}
+
+      {!item.rules_text && item.description && (
+        <Section title="Beschreibung">
+          <p className="text-dsa-parchment/80 leading-relaxed">{item.description}</p>
+        </Section>
+      )}
+
+      {item.prerequisites && typeof item.prerequisites === 'object' && Object.keys(item.prerequisites).length > 0 && (
+        <Section title="Voraussetzungen">
+          <p className="text-dsa-parchment-dark">{JSON.stringify(item.prerequisites)}</p>
+        </Section>
+      )}
+
+      {item.source_book && (
+        <p className="text-[10px] text-dsa-parchment-dark/40 pt-2 border-t border-dsa-bg-medium">Quelle: {item.source_book}</p>
+      )}
+    </DetailModalShell>
+  )
+}
+
+// ── Talent Detail Modal ──
+function TalentDetailModal({ talent, onClose }) {
+  if (!talent) return null
+  const catMeta = TALENT_CATEGORY_META[talent.category] || { label: talent.category, color: 'text-dsa-parchment' }
+
+  return (
+    <DetailModalShell
+      onClose={onClose}
+      title={talent.name}
+      headerExtra={
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className={clsx('text-xs', catMeta.color)}>{catMeta.label}</span>
+          {talent.improvement_cost && <span className="text-[10px] text-dsa-parchment-dark"><TipAbbr term="SF" /> {talent.improvement_cost}</span>}
+        </div>
+      }
+    >
+      {talent.probe && talent.probe.length > 0 && (
+        <Section title="Probe (3W20)">
+          <div className="flex items-center gap-2">
+            {talent.probe.map((attr, i) => (
+              <span key={i} className={clsx('font-mono font-semibold px-2 py-1 rounded bg-dsa-bg-medium', ATTR_META[attr]?.color || 'text-dsa-parchment')}>
+                {attr}
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {talent.applications && talent.applications.length > 0 && (
+        <Section title="Einsatzgebiete">
+          <div className="flex flex-wrap gap-1.5">
+            {talent.applications.map((app, i) => (
+              <span key={i} className="px-2 py-0.5 rounded bg-dsa-bg-medium text-dsa-parchment border border-dsa-bg-medium">
+                {typeof app === 'string' ? app : app.name || app}
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      <Section title="Behinderung">
+        <p className="text-dsa-parchment">{talent.encumbrance === 'ja' ? 'Ja (BE wirkt als Erschwernis)' : talent.encumbrance === 'nein' ? 'Nein' : talent.encumbrance || 'Nein'}</p>
+      </Section>
+
+      {talent.description && (
+        <Section title="Beschreibung">
+          <p className="text-dsa-parchment/80 leading-relaxed">{talent.description}</p>
+        </Section>
+      )}
+    </DetailModalShell>
+  )
+}
+
+// ── GRW (Grundregeln) Toggle ──
+function GrwToggle({ checked, onChange }) {
+  return (
+    <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+      <span className="relative">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={e => onChange(e.target.checked)}
+          className="sr-only peer"
+        />
+        <div className="w-8 h-4 rounded-full bg-dsa-bg-medium peer-checked:bg-dsa-gold/40 transition-colors" />
+        <div className="absolute left-0.5 top-0.5 w-3 h-3 rounded-full bg-dsa-parchment-dark peer-checked:bg-dsa-gold peer-checked:translate-x-4 transition-all" />
+      </span>
+      <span className="text-[10px] text-dsa-parchment-dark">Nur Grundregeln</span>
+    </label>
+  )
+}
+
+// ── Helper: check if entity is from core rulebook ──
+function isGrundregeln(entity) {
+  const sb = entity?.source_book
+  if (!sb) return false
+  return sb === 'Regelwerk' || sb === 'Grundregelwerk' || sb.includes('US25001')
+}
+
 // ── Step 5: Profession (from API) ──
-function StepProfession({ profession, setProfession, professionVariant, setProfessionVariant, professions, gradeData, loading, error, onRetry, talentsAll }) {
+function StepProfession({ profession, setProfession, professionVariant, setProfessionVariant, professions, gradeData, loading, error, onRetry, talentsAll, defaultGrw }) {
   const [searchText, setSearchText] = useState('')
   const [activeCat, setActiveCat] = useState('alle')
   const [detailProf, setDetailProf] = useState(null)
+  const [grwOnly, setGrwOnly] = useState(defaultGrw ?? false)
+
+  const displayProfs = useMemo(() => {
+    if (!grwOnly) return professions
+    return professions.filter(p => isGrundregeln(p))
+  }, [professions, grwOnly])
 
   const filtered = useMemo(() => {
     const q = searchText.toLowerCase().trim()
-    const result = professions.filter(p => {
+    const result = displayProfs.filter(p => {
       if (activeCat !== 'alle' && getProfCategory(p) !== activeCat) return false
       if (q && !p.name.toLowerCase().includes(q)) return false
       return true
@@ -1750,7 +2097,7 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
       })
     }
     return result
-  }, [professions, searchText, activeCat])
+  }, [displayProfs, searchText, activeCat])
 
   if (error) return <LoadError message={error} onRetry={onRetry} />
   if (loading && professions.length === 0) {
@@ -1779,16 +2126,19 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
       ) : (
         <>
           <SearchInput value={searchText} onChange={setSearchText} placeholder="Profession suchen..." />
-          <CategoryTabs
-            activeCat={activeCat}
-            setActiveCat={setActiveCat}
-            categoryOrder={PROF_CATEGORY_ORDER}
-            categoryMeta={PROF_CATEGORY_META}
-            items={professions}
-            getCat={getProfCategory}
-          />
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <CategoryTabs
+              activeCat={activeCat}
+              setActiveCat={setActiveCat}
+              categoryOrder={PROF_CATEGORY_ORDER}
+              categoryMeta={PROF_CATEGORY_META}
+              items={displayProfs}
+              getCat={getProfCategory}
+            />
+            <GrwToggle checked={grwOnly} onChange={setGrwOnly} />
+          </div>
           <p className="text-[10px] text-dsa-parchment-dark/60">
-            {filtered.length} von {professions.length} Professionen
+            {filtered.length} von {displayProfs.length} Professionen
           </p>
           {filtered.length === 0 ? (
             <p className="text-xs text-dsa-parchment-dark/60 py-4 text-center">Keine Treffer für diese Suche.</p>
@@ -1927,7 +2277,7 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
 }
 
 // ── Expandable advantage/disadvantage card ──
-function AdvDisCard({ item, active, onToggle, apColor, activeClass, inactiveClass }) {
+function AdvDisCard({ item, active, onToggle, apColor, activeClass, inactiveClass, onDetail }) {
   const [expanded, setExpanded] = useState(false)
   const rulesText = item.rules_text || item.description || ''
   const catMeta = ADV_CATEGORY_META[item.category] || ADV_CATEGORY_META.allgemein
@@ -1947,6 +2297,15 @@ function AdvDisCard({ item, active, onToggle, apColor, activeClass, inactiveClas
         </div>
         <div className="flex items-center gap-1.5 shrink-0 ml-2">
           <span className={clsx('font-mono text-[11px]', apColor)}>{item.ap} <TipAbbr term="AP" /></span>
+          {onDetail && (
+            <button
+              onClick={e => { e.stopPropagation(); onDetail(item) }}
+              className="text-dsa-parchment-dark/50 hover:text-dsa-parchment transition-colors"
+              title="Details anzeigen"
+            >
+              <Info className="w-3.5 h-3.5" />
+            </button>
+          )}
           {rulesText && (
             <button
               onClick={e => { e.stopPropagation(); setExpanded(!expanded) }}
@@ -1970,18 +2329,26 @@ function AdvDisCard({ item, active, onToggle, apColor, activeClass, inactiveClas
 }
 
 // ── Filterable advantage/disadvantage list ──
-function AdvDisList({ items, selected, onToggle, loading, error, onRetry, loadingLabel, accentColor }) {
+function AdvDisList({ items, selected, onToggle, loading, error, onRetry, loadingLabel, accentColor, defaultGrw }) {
   const [searchText, setSearchText] = useState('')
   const [activeCat, setActiveCat] = useState('alle')
+  const [grwOnly, setGrwOnly] = useState(defaultGrw ?? false)
+  const [detailItem, setDetailItem] = useState(null)
+
+  const displayItems = useMemo(() => {
+    let result = items
+    if (grwOnly) result = result.filter(v => isGrundregeln(v))
+    return result
+  }, [items, grwOnly])
 
   const filtered = useMemo(() => {
     const q = searchText.toLowerCase().trim()
-    return items.filter(v => {
+    return displayItems.filter(v => {
       if (activeCat !== 'alle' && v.category !== activeCat) return false
       if (q && !v.name.toLowerCase().includes(q)) return false
       return true
     })
-  }, [items, searchText, activeCat])
+  }, [displayItems, searchText, activeCat])
 
   if (error) return <LoadError message={error} onRetry={onRetry} />
   if (loading) return <div className="flex items-center gap-2 py-4 text-xs text-dsa-parchment-dark"><Loader2 className="w-4 h-4 animate-spin" />{loadingLabel}</div>
@@ -1994,16 +2361,19 @@ function AdvDisList({ items, selected, onToggle, loading, error, onRetry, loadin
   return (
     <div className="space-y-2">
       <SearchInput value={searchText} onChange={setSearchText} placeholder={isAdvantage ? 'Vorteil suchen...' : 'Nachteil suchen...'} />
-      <CategoryTabs
-        activeCat={activeCat}
-        setActiveCat={setActiveCat}
-        categoryOrder={ADV_CATEGORY_ORDER}
-        categoryMeta={ADV_CATEGORY_META}
-        items={items}
-        getCat={v => v.category}
-      />
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <CategoryTabs
+          activeCat={activeCat}
+          setActiveCat={setActiveCat}
+          categoryOrder={ADV_CATEGORY_ORDER}
+          categoryMeta={ADV_CATEGORY_META}
+          items={displayItems}
+          getCat={v => v.category}
+        />
+        <GrwToggle checked={grwOnly} onChange={setGrwOnly} />
+      </div>
       <p className="text-[10px] text-dsa-parchment-dark/60">
-        {filtered.length} von {items.length} {isAdvantage ? 'Vorteile' : 'Nachteile'}
+        {filtered.length} von {displayItems.length} {isAdvantage ? 'Vorteile' : 'Nachteile'}
         {selected.length > 0 && <span className="text-dsa-gold ml-2">&middot; {selected.length} gewählt</span>}
       </p>
       <div className="space-y-1 max-h-[50vh] overflow-y-auto pr-1">
@@ -2011,7 +2381,7 @@ function AdvDisList({ items, selected, onToggle, loading, error, onRetry, loadin
           <p className="text-xs text-dsa-parchment-dark/60 py-4 text-center">Keine Treffer für diese Suche.</p>
         ) : filtered.map(v => {
           const active = selected.some(x => x.name === v.name)
-          const displayItem = { ...v, ap: isAdvantage ? v.ap : v.ap }
+          const displayItem = { ...v, ap: v.ap }
           return (
             <AdvDisCard
               key={v.name}
@@ -2021,27 +2391,29 @@ function AdvDisList({ items, selected, onToggle, loading, error, onRetry, loadin
               apColor={apColor}
               activeClass={activeClass}
               inactiveClass={inactiveClass}
+              onDetail={setDetailItem}
             />
           )
         })}
       </div>
+      {detailItem && <AdvDisDetailModal item={detailItem} onClose={() => setDetailItem(null)} isAdvantage={isAdvantage} />}
     </div>
   )
 }
 
 // ── Step 6: Vor- & Nachteile ──
-function StepVorNachteile({ vorteile, setVorteile, nachteile, setNachteile, apBudget, species, advantagesAll, disadvantagesAll, loadingAdv, loadingDis, errorAdv, errorDis, onRetryAdv, onRetryDis }) {
+function StepVorNachteile({ vorteile, setVorteile, nachteile, setNachteile, apBudget, species, advantagesAll, disadvantagesAll, loadingAdv, loadingDis, errorAdv, errorDis, onRetryAdv, onRetryDis, defaultGrw }) {
   const autoAdvantages = species?.auto_advantages || []
   const totalVorteilCost = vorteile.reduce((s, v) => s + v.ap, 0)
   const totalNachteilRefund = nachteile.reduce((s, n) => s + n.ap, 0)
   const cappedRefund = Math.min(80, totalNachteilRefund)
 
   const advPresets = useMemo(() =>
-    advantagesAll.map(a => ({ name: a.name, ap: a.ap_cost, id: a.id, category: a.category, description: a.description, rules_text: a.rules_text })),
+    advantagesAll.map(a => ({ name: a.name, ap: a.ap_cost, id: a.id, category: a.category, description: a.description, rules_text: a.rules_text, source_book: a.source_book, levels: a.levels, prerequisites: a.prerequisites })),
     [advantagesAll]
   )
   const disPresets = useMemo(() =>
-    disadvantagesAll.map(d => ({ name: d.name, ap: d.ap_cost, id: d.id, category: d.category, description: d.description, rules_text: d.rules_text })),
+    disadvantagesAll.map(d => ({ name: d.name, ap: d.ap_cost, id: d.id, category: d.category, description: d.description, rules_text: d.rules_text, source_book: d.source_book, levels: d.levels, prerequisites: d.prerequisites })),
     [disadvantagesAll]
   )
 
@@ -2120,6 +2492,7 @@ function StepVorNachteile({ vorteile, setVorteile, nachteile, setNachteile, apBu
             onRetry={onRetryAdv}
             loadingLabel="Lade Vorteile..."
             accentColor="green"
+            defaultGrw={defaultGrw}
           />
         </div>
         <div>
@@ -2133,6 +2506,7 @@ function StepVorNachteile({ vorteile, setVorteile, nachteile, setNachteile, apBu
             onRetry={onRetryDis}
             loadingLabel="Lade Nachteile..."
             accentColor="red"
+            defaultGrw={defaultGrw}
           />
         </div>
       </div>
@@ -2374,22 +2748,28 @@ function getProfCategory(p) {
 }
 
 // ── SA Selector with search & category filter ──
-function SASelector({ professionSAs, purchasedSAs, setPurchasedSAs, specialAbilitiesAll, loadingSAs, errorSAs, onRetrySAs, apBudget }) {
+function SASelector({ professionSAs, purchasedSAs, setPurchasedSAs, specialAbilitiesAll, loadingSAs, errorSAs, onRetrySAs, apBudget, defaultGrw }) {
   const [searchText, setSearchText] = useState('')
   const [activeCat, setActiveCat] = useState('alle')
+  const [grwOnly, setGrwOnly] = useState(defaultGrw ?? false)
 
-  // Filter SAs by search + category, excluding profession-granted ones
+  // Filter SAs by GRW, search + category, excluding profession-granted ones
+  const displaySAs = useMemo(() => {
+    let base = specialAbilitiesAll.filter(sa => !(professionSAs && professionSAs.includes(sa.name)))
+    if (grwOnly) base = base.filter(sa => isGrundregeln(sa))
+    return base
+  }, [specialAbilitiesAll, professionSAs, grwOnly])
+
   const filteredSAs = useMemo(() => {
     const query = searchText.toLowerCase().trim()
-    return specialAbilitiesAll.filter(sa => {
-      if (professionSAs && professionSAs.includes(sa.name)) return false
+    return displaySAs.filter(sa => {
       if (activeCat !== 'alle' && sa.category !== activeCat) return false
       if (query && !sa.name.toLowerCase().includes(query)) return false
       return true
     })
-  }, [specialAbilitiesAll, professionSAs, searchText, activeCat])
+  }, [displaySAs, searchText, activeCat])
 
-  const totalAvailable = specialAbilitiesAll.filter(sa => !(professionSAs && professionSAs.includes(sa.name))).length
+  const totalAvailable = displaySAs.length
 
   return (
     <div className="space-y-4">
@@ -2449,13 +2829,14 @@ function SASelector({ professionSAs, purchasedSAs, setPurchasedSAs, specialAbili
               )}
             </div>
 
-            {/* Category filter tabs */}
-            <div className="flex flex-wrap gap-1 mb-3">
+            {/* Category filter tabs + GRW toggle */}
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
+              <div className="flex flex-wrap gap-1">
               {SA_CATEGORY_ORDER.map(cat => {
                 const meta = SA_CATEGORY_META[cat]
                 const count = cat === 'alle'
                   ? totalAvailable
-                  : specialAbilitiesAll.filter(sa => sa.category === cat && !(professionSAs && professionSAs.includes(sa.name))).length
+                  : displaySAs.filter(sa => sa.category === cat).length
                 if (cat !== 'alle' && count === 0) return null
                 return (
                   <button
@@ -2472,6 +2853,8 @@ function SASelector({ professionSAs, purchasedSAs, setPurchasedSAs, specialAbili
                   </button>
                 )
               })}
+              </div>
+              <GrwToggle checked={grwOnly} onChange={setGrwOnly} />
             </div>
 
             {/* Result count */}
@@ -2534,9 +2917,17 @@ function SASelector({ professionSAs, purchasedSAs, setPurchasedSAs, specialAbili
 }
 
 // ── Step 8: Talente & Kampftechniken ──
-function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, ktUpgrades, setKtUpgrades, atPaSplits, setAtPaSplits, gradeData, apBudget, isMagic, isBlessed, professionSpells, professionLiturgies, selectedSpells, setSelectedSpells, selectedLiturgies, setSelectedLiturgies, professionSAs, purchasedSAs, setPurchasedSAs, specialAbilitiesAll, loadingSAs, errorSAs, onRetrySAs, talentCategories, ktData }) {
+function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, ktUpgrades, setKtUpgrades, atPaSplits, setAtPaSplits, gradeData, apBudget, isMagic, isBlessed, professionSpells, professionLiturgies, selectedSpells, setSelectedSpells, selectedLiturgies, setSelectedLiturgies, professionSAs, purchasedSAs, setPurchasedSAs, specialAbilitiesAll, loadingSAs, errorSAs, onRetrySAs, talentCategories, ktData, talentsAll, defaultGrw }) {
   const hasSpellsOrLiturgies = (isMagic && professionSpells && Object.keys(professionSpells).length > 0) || (isBlessed && professionLiturgies && Object.keys(professionLiturgies).length > 0)
   const [activeTab, setActiveTab] = useState('talents')
+  const [detailTalent, setDetailTalent] = useState(null)
+
+  // Lookup map for talent details
+  const talentLookup = useMemo(() => {
+    const m = {}
+    for (const t of (talentsAll || [])) m[t.name] = t
+    return m
+  }, [talentsAll])
 
   return (
     <div className="space-y-4">
@@ -2619,10 +3010,20 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
                   const val = base + delta
                   const atMax = gradeData && val >= gradeData.skill
                   const nextCost = getSkillCost(val, cat.sf)
+                  const talentObj = talentLookup[talent]
                   return (
                     <div key={talent} className="flex items-center justify-between bg-dsa-bg-card border border-dsa-bg-medium rounded px-3 py-1.5">
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-xs text-dsa-parchment truncate">{talent}</span>
+                        {talentObj && (
+                          <button
+                            onClick={() => setDetailTalent(talentObj)}
+                            className="p-0.5 rounded text-dsa-parchment-dark/40 hover:text-dsa-parchment hover:bg-dsa-bg-medium transition-colors shrink-0"
+                            title="Details anzeigen"
+                          >
+                            <Info className="w-3 h-3" />
+                          </button>
+                        )}
                         {base > 0 && (
                           <span className="inline-flex items-center gap-0.5 text-[9px] text-dsa-gold/70 bg-dsa-gold/10 rounded px-1 shrink-0">
                             <Shield className="w-2.5 h-2.5" />Beruf {base}
@@ -2845,8 +3246,12 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
           errorSAs={errorSAs}
           onRetrySAs={onRetrySAs}
           apBudget={apBudget}
+          defaultGrw={defaultGrw}
         />
       ) : null}
+
+      {/* Talent Detail Modal */}
+      {detailTalent && <TalentDetailModal talent={detailTalent} onClose={() => setDetailTalent(null)} />}
     </div>
   )
 }

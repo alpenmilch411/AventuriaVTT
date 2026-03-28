@@ -7,7 +7,8 @@
     "levels": 3,
     "prerequisites": null,
     "description": "Der Held ist angesehen, genießt die Privilegien des Adels und kann vom Meister Erleichterungen zugesprochen bekommen, wenn er gegenüber Rangniedrigeren agiert. Genaueres hierzu siehe **Regelwerk** Sei",
-    "rules_text": "Der Held ist angesehen, genießt die Privilegien des Adels und kann vom Meister Erleichterungen zugesprochen bekommen, wenn er gegenüber Rangniedrigeren agiert. Genaueres hierzu siehe **Regelwerk** Seite **338**."
+    "rules_text": "Der Held ist angesehen, genießt die Privilegien des Adels und kann vom Meister Erleichterungen zugesprochen bekommen, wenn er gegenüber Rangniedrigeren agiert. Genaueres hierzu siehe **Regelwerk** Seite **338**.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "altersresistenz",
@@ -17,7 +18,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held ist immun gegen natürliche wie magische Alterungserscheinungen. Negative Auswirkungen des Alters werden bei ihm nicht berücksichtigt.",
-    "rules_text": "Der Held ist immun gegen natürliche wie magische Alterungserscheinungen. Negative Auswirkungen des Alters werden bei ihm nicht berücksichtigt."
+    "rules_text": "Der Held ist immun gegen natürliche wie magische Alterungserscheinungen. Negative Auswirkungen des Alters werden bei ihm nicht berücksichtigt.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "angenehmer_geruch",
@@ -27,7 +29,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Fertigkeitsproben auf *Betören (Anbändeln, Liebeskünste)* sind um 1 erleichtert.",
-    "rules_text": "Fertigkeitsproben auf *Betören (Anbändeln, Liebeskünste)* sind um 1 erleichtert."
+    "rules_text": "Fertigkeitsproben auf *Betören (Anbändeln, Liebeskünste)* sind um 1 erleichtert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "begabung",
@@ -37,7 +40,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Ein begabter Abenteurer kann bei jeder Probe auf eine bestimmte Fertigkeit einen W20 neu würfeln. Der Spieler kann zunächst die 3W20 würfeln und sich eines der drei Ergebnisse aussuchen, dass er neu w",
-    "rules_text": "Ein begabter Abenteurer kann bei jeder Probe auf eine bestimmte Fertigkeit einen W20 neu würfeln. Der Spieler kann zunächst die 3W20 würfeln und sich eines der drei Ergebnisse aussuchen, dass er neu würfeln kann. Es gilt das bessere Ergebnis beider Würfe. Eine Begabung muss für jede Fertigkeit einzeln gewählt werden, also zum Beispiel auf ein bestimmtes Talent, einen Zauber oder eine Liturgie. Man kann nicht mehrfach in einer Fertigkeit begabt sein und somit zwei oder gar drei W20- Würfe in einer Probe wiederholen. Fällt eine Doppel-20 oder Dreifach-20 kann man diesen Vorteil nicht nutzen. Eine Begabung kann nur für eine Fertigkeit, nicht aber für eine Kampftechnik gewählt werden (dafür gibt es jedoch den Vorteil Waffenbegabung). Ein Einsatz von Schicksalspunkten ist vor oder nach dem Einsatz einer Begabung erlaubt (siehe **Regelwerk** Seite **29**). Dadurch ist es möglich, mehrfach neu zu würfeln oder eine andere Wirkung der Schicksalspunkte mit der Begabung zu kombinieren."
+    "rules_text": "Ein begabter Abenteurer kann bei jeder Probe auf eine bestimmte Fertigkeit einen W20 neu würfeln. Der Spieler kann zunächst die 3W20 würfeln und sich eines der drei Ergebnisse aussuchen, dass er neu würfeln kann. Es gilt das bessere Ergebnis beider Würfe. Eine Begabung muss für jede Fertigkeit einzeln gewählt werden, also zum Beispiel auf ein bestimmtes Talent, einen Zauber oder eine Liturgie. Man kann nicht mehrfach in einer Fertigkeit begabt sein und somit zwei oder gar drei W20- Würfe in einer Probe wiederholen. Fällt eine Doppel-20 oder Dreifach-20 kann man diesen Vorteil nicht nutzen. Eine Begabung kann nur für eine Fertigkeit, nicht aber für eine Kampftechnik gewählt werden (dafür gibt es jedoch den Vorteil Waffenbegabung). Ein Einsatz von Schicksalspunkten ist vor oder nach dem Einsatz einer Begabung erlaubt (siehe **Regelwerk** Seite **29**). Dadurch ist es möglich, mehrfach neu zu würfeln oder eine andere Wirkung der Schicksalspunkte mit der Begabung zu kombinieren.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "beidhaendig",
@@ -47,7 +51,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held erleidet keine Erschwernisse bei Fertigkeitsproben, wenn er die falsche Hand benutzt. Im Kampf hebt der Vorteil alle Abzüge auf, die durch das Führen einer Waffe mit der falschen Hand anfalle",
-    "rules_text": "Der Held erleidet keine Erschwernisse bei Fertigkeitsproben, wenn er die falsche Hand benutzt. Im Kampf hebt der Vorteil alle Abzüge auf, die durch das Führen einer Waffe mit der falschen Hand anfallen (siehe **Regelwerk** Seite **238**)."
+    "rules_text": "Der Held erleidet keine Erschwernisse bei Fertigkeitsproben, wenn er die falsche Hand benutzt. Im Kampf hebt der Vorteil alle Abzüge auf, die durch das Führen einer Waffe mit der falschen Hand anfallen (siehe **Regelwerk** Seite **238**).",
+    "source_book": "Regelwerk"
   },
   {
     "id": "dunkelsicht",
@@ -57,7 +62,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Auf Stufe I werden Erschwernisse durch Dunkelheit um eine Stufe gesenkt, auf Stufe II können alle Erschwernisse durch Dunkelheit ignoriert werden. Bei vollständiger Finsternis ist aber Dunkelsicht (eg",
-    "rules_text": "Auf Stufe I werden Erschwernisse durch Dunkelheit um eine Stufe gesenkt, auf Stufe II können alle Erschwernisse durch Dunkelheit ignoriert werden. Bei vollständiger Finsternis ist aber Dunkelsicht (egal ob Stufe I oder II) wirkungslos und es gelten die Abzüge für vollständige Finsternis."
+    "rules_text": "Auf Stufe I werden Erschwernisse durch Dunkelheit um eine Stufe gesenkt, auf Stufe II können alle Erschwernisse durch Dunkelheit ignoriert werden. Bei vollständiger Finsternis ist aber Dunkelsicht (egal ob Stufe I oder II) wirkungslos und es gelten die Abzüge für vollständige Finsternis.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "eisenaffine_aura",
@@ -67,7 +73,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Wer diesen Vorteil aufweist, erleidet durch den Bann des Eisens lediglich pro vollen 4 Stein Gewicht Erschwernisse, anstatt bereits bei 2 vollen Stein.",
-    "rules_text": "Wer diesen Vorteil aufweist, erleidet durch den Bann des Eisens lediglich pro vollen 4 Stein Gewicht Erschwernisse, anstatt bereits bei 2 vollen Stein."
+    "rules_text": "Wer diesen Vorteil aufweist, erleidet durch den Bann des Eisens lediglich pro vollen 4 Stein Gewicht Erschwernisse, anstatt bereits bei 2 vollen Stein.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "entfernungssinn",
@@ -77,7 +84,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf Fernkampf mit Schusswaffen (und nur mit Schusswaffen) sind bei der Entfernungskategorie Weit nur um 1 anstatt um 2 erschwert.",
-    "rules_text": "Proben auf Fernkampf mit Schusswaffen (und nur mit Schusswaffen) sind bei der Entfernungskategorie Weit nur um 1 anstatt um 2 erschwert."
+    "rules_text": "Proben auf Fernkampf mit Schusswaffen (und nur mit Schusswaffen) sind bei der Entfernungskategorie Weit nur um 1 anstatt um 2 erschwert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "flink",
@@ -87,7 +95,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Durch Flink bekommt ein Held 1 Punkt auf seinen Geschwindigkeit-Grundwert hinzu.",
-    "rules_text": "Durch Flink bekommt ein Held 1 Punkt auf seinen Geschwindigkeit-Grundwert hinzu."
+    "rules_text": "Durch Flink bekommt ein Held 1 Punkt auf seinen Geschwindigkeit-Grundwert hinzu.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "fuchssinn",
@@ -97,7 +106,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held kann Fallen erspüren, die mit den herkömmlichen Sinnen nicht entdeckt werden können. Durch den Vorteil wird das Anwendungsgebiet *Fuchssinn* im Talent *Sinnesschärfe* erworben.",
-    "rules_text": "Der Held kann Fallen erspüren, die mit den herkömmlichen Sinnen nicht entdeckt werden können. Durch den Vorteil wird das Anwendungsgebiet *Fuchssinn* im Talent *Sinnesschärfe* erworben."
+    "rules_text": "Der Held kann Fallen erspüren, die mit den herkömmlichen Sinnen nicht entdeckt werden können. Durch den Vorteil wird das Anwendungsgebiet *Fuchssinn* im Talent *Sinnesschärfe* erworben.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "geborener_redner",
@@ -107,7 +117,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf das Talent *Bekehren & Überzeugen (öffentliche Rede)* sind um 1 erleichtert.",
-    "rules_text": "Proben auf das Talent *Bekehren & Überzeugen (öffentliche Rede)* sind um 1 erleichtert."
+    "rules_text": "Proben auf das Talent *Bekehren & Überzeugen (öffentliche Rede)* sind um 1 erleichtert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "geweihter",
@@ -117,7 +128,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Geweihte erhält als Karmaenergie-Grundwert 20 KaP. Der Vorteil beinhaltet nicht die Sonderfertigkeit Tradition. Diese muss einzeln erworben werden. Jeder Geweihte muss mit einer Tradition starten ",
-    "rules_text": "Der Geweihte erhält als Karmaenergie-Grundwert 20 KaP. Der Vorteil beinhaltet nicht die Sonderfertigkeit Tradition. Diese muss einzeln erworben werden. Jeder Geweihte muss mit einer Tradition starten (eine Tradition ist eine spezielle Sonderfertigkeit). Ein Held kann auch im späteren Verlauf seines Lebens diesen Vorteil erwerben und Geweihter werden. Allerdings kann man nur eine geweihte Tradition besitzen."
+    "rules_text": "Der Geweihte erhält als Karmaenergie-Grundwert 20 KaP. Der Vorteil beinhaltet nicht die Sonderfertigkeit Tradition. Diese muss einzeln erworben werden. Jeder Geweihte muss mit einer Tradition starten (eine Tradition ist eine spezielle Sonderfertigkeit). Ein Held kann auch im späteren Verlauf seines Lebens diesen Vorteil erwerben und Geweihter werden. Allerdings kann man nur eine geweihte Tradition besitzen.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "giftresistenz",
@@ -127,7 +139,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Eine Giftresistenz verbessert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Giften zu widerstehen.",
-    "rules_text": "Eine Giftresistenz verbessert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Giften zu widerstehen."
+    "rules_text": "Eine Giftresistenz verbessert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Giften zu widerstehen.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "glueck",
@@ -137,7 +150,8 @@
     "levels": 3,
     "prerequisites": null,
     "description": "Das für den Helden erreichbare Maximum an Schicksalspunkten steigt hierdurch um 1 je Stufe und der Held er erhält diesen Schip gleich zu Spielbeginn zu seinem Vorrat.",
-    "rules_text": "Das für den Helden erreichbare Maximum an Schicksalspunkten steigt hierdurch um 1 je Stufe und der Held er erhält diesen Schip gleich zu Spielbeginn zu seinem Vorrat."
+    "rules_text": "Das für den Helden erreichbare Maximum an Schicksalspunkten steigt hierdurch um 1 je Stufe und der Held er erhält diesen Schip gleich zu Spielbeginn zu seinem Vorrat.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "gutaussehend",
@@ -147,7 +161,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Jede Stufe des Vorteils gibt dem Helden eine Erleichterung von 1 auf *Betören (Anbändeln, Liebeskünste)*, *Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln)* und *Handel (Feilschen)*.",
-    "rules_text": "Jede Stufe des Vorteils gibt dem Helden eine Erleichterung von 1 auf *Betören (Anbändeln, Liebeskünste)*, *Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln)* und *Handel (Feilschen)*."
+    "rules_text": "Jede Stufe des Vorteils gibt dem Helden eine Erleichterung von 1 auf *Betören (Anbändeln, Liebeskünste)*, *Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln)* und *Handel (Feilschen)*.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "herausragende_fertigkeit",
@@ -157,7 +172,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Durch den Vorteil Herausragende Fertigkeit verschiebt sich das Maximum in einer Fertigkeit um 1 nach oben, sowohl beim Maximum der Heldenerschaffung als auch beim endgültigen Maximum (abhängig von der",
-    "rules_text": "Durch den Vorteil Herausragende Fertigkeit verschiebt sich das Maximum in einer Fertigkeit um 1 nach oben, sowohl beim Maximum der Heldenerschaffung als auch beim endgültigen Maximum (abhängig von der höchsten beteiligten Eigenschaft). Zwar erhält ein Held nicht automatisch einen Fertigkeitspunkt dazu, aber er kann zu Spielbeginn zum Beispiel bei Erfahrungsgrad Erfahren mit einem Wert von 11 starten (anstatt 10) und auch sein absolutes Maximum in der Fertigkeit ist um 1 erhöht. Der Vorteil kann bis zu viermal gewählt werden, wobei keine Fertigkeit mehr als zweimal gewählt werden kann. Bei zweifacher Zuteilung auf eine Fertigkeit erhöht der Vorteil das Maximum um 2."
+    "rules_text": "Durch den Vorteil Herausragende Fertigkeit verschiebt sich das Maximum in einer Fertigkeit um 1 nach oben, sowohl beim Maximum der Heldenerschaffung als auch beim endgültigen Maximum (abhängig von der höchsten beteiligten Eigenschaft). Zwar erhält ein Held nicht automatisch einen Fertigkeitspunkt dazu, aber er kann zu Spielbeginn zum Beispiel bei Erfahrungsgrad Erfahren mit einem Wert von 11 starten (anstatt 10) und auch sein absolutes Maximum in der Fertigkeit ist um 1 erhöht. Der Vorteil kann bis zu viermal gewählt werden, wobei keine Fertigkeit mehr als zweimal gewählt werden kann. Bei zweifacher Zuteilung auf eine Fertigkeit erhöht der Vorteil das Maximum um 2.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "herausragende_kampftechnik",
@@ -167,7 +183,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Durch den Vorteil Herausragende Kampftechnik verschiebt sich das Maximum in einer Kampftechnik um 1 nach oben, sowohl beim Maximum der Heldenerschaffung als auch beim endgültigen Maximum (abhängig von",
-    "rules_text": "Durch den Vorteil Herausragende Kampftechnik verschiebt sich das Maximum in einer Kampftechnik um 1 nach oben, sowohl beim Maximum der Heldenerschaffung als auch beim endgültigen Maximum (abhängig von der Leiteigenschaft). Zwar erhält der Held nicht automatisch einen Kampftechnikpunkt dazu, aber er kann zu Spielbeginn zum Beispiel bei Erfahrungsgrad *Erfahren* mit einem Wert von 13 starten (anstatt 12) und auch das absolute Maximum in der Kampftechnik ist um 1 erhöht. Der Vorteil kann bis zu zweimal gewählt werden, wobei jede Kampftechnik nur einmal gewählt werden kann."
+    "rules_text": "Durch den Vorteil Herausragende Kampftechnik verschiebt sich das Maximum in einer Kampftechnik um 1 nach oben, sowohl beim Maximum der Heldenerschaffung als auch beim endgültigen Maximum (abhängig von der Leiteigenschaft). Zwar erhält der Held nicht automatisch einen Kampftechnikpunkt dazu, aber er kann zu Spielbeginn zum Beispiel bei Erfahrungsgrad *Erfahren* mit einem Wert von 13 starten (anstatt 12) und auch das absolute Maximum in der Kampftechnik ist um 1 erhöht. Der Vorteil kann bis zu zweimal gewählt werden, wobei jede Kampftechnik nur einmal gewählt werden kann.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "herausragender_sinn",
@@ -177,7 +194,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Wer über einen Herausragenden Sinn verfügt, dessen Proben auf *Sinnesschärfe* sind um 1 erleichtert, wenn die Probe den entsprechenden Sinn betrifft. Folgende Sinne können gewählt werden: Sicht, Gehör",
-    "rules_text": "Wer über einen Herausragenden Sinn verfügt, dessen Proben auf *Sinnesschärfe* sind um 1 erleichtert, wenn die Probe den entsprechenden Sinn betrifft. Folgende Sinne können gewählt werden: Sicht, Gehör, Geruch & Geschmack, Tastsinn. Herausragender Sinn ist mehrfach für die verschiedenen Sinne wählbar, nicht aber für einen einzelnen."
+    "rules_text": "Wer über einen Herausragenden Sinn verfügt, dessen Proben auf *Sinnesschärfe* sind um 1 erleichtert, wenn die Probe den entsprechenden Sinn betrifft. Folgende Sinne können gewählt werden: Sicht, Gehör, Geruch & Geschmack, Tastsinn. Herausragender Sinn ist mehrfach für die verschiedenen Sinne wählbar, nicht aber für einen einzelnen.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "hitzeresistenz",
@@ -187,7 +205,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Hitzestufen werden für den Helden um 1 Stufe reduziert, bis zu einem Minimum von Hitzestufe 1.",
-    "rules_text": "Hitzestufen werden für den Helden um 1 Stufe reduziert, bis zu einem Minimum von Hitzestufe 1."
+    "rules_text": "Hitzestufen werden für den Helden um 1 Stufe reduziert, bis zu einem Minimum von Hitzestufe 1.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "hohe_astralkraft",
@@ -197,7 +216,8 @@
     "levels": 7,
     "prerequisites": null,
     "description": "Der AE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils.",
-    "rules_text": "Der AE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils."
+    "rules_text": "Der AE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "hohe_karmalkraft",
@@ -207,7 +227,8 @@
     "levels": 7,
     "prerequisites": null,
     "description": "Der KE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils.",
-    "rules_text": "Der KE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils."
+    "rules_text": "Der KE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "hohe_lebenskraft",
@@ -217,7 +238,8 @@
     "levels": 7,
     "prerequisites": null,
     "description": "Der LE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils.",
-    "rules_text": "Der LE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils."
+    "rules_text": "Der LE-Grundwert steigt durch diesen Vorteil um 1 Punkt pro Stufe des Vorteils.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "hohe_seelenkraft",
@@ -227,7 +249,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der SK-Grundwert des Helden ist um 1 besser.",
-    "rules_text": "Der SK-Grundwert des Helden ist um 1 besser."
+    "rules_text": "Der SK-Grundwert des Helden ist um 1 besser.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "hohe_zaehigkeit",
@@ -237,7 +260,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der ZK-Grundwert des Helden ist um 1 besser.",
-    "rules_text": "Der ZK-Grundwert des Helden ist um 1 besser."
+    "rules_text": "Der ZK-Grundwert des Helden ist um 1 besser.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "immunitaet_gegen",
@@ -247,7 +271,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Wer immun gegen ein bestimmtes Gift ist, auf den hat dieses Gift keinerlei Wirkung. Eine Immunität muss für jedes Gift einzeln erworben werden.",
-    "rules_text": "Wer immun gegen ein bestimmtes Gift ist, auf den hat dieses Gift keinerlei Wirkung. Eine Immunität muss für jedes Gift einzeln erworben werden."
+    "rules_text": "Wer immun gegen ein bestimmtes Gift ist, auf den hat dieses Gift keinerlei Wirkung. Eine Immunität muss für jedes Gift einzeln erworben werden.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "kaelteresistenz",
@@ -257,7 +282,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Kältestufen werden für den Helden um 1 Stufe reduziert, bis zu einem Minimum von 0.",
-    "rules_text": "Kältestufen werden für den Helden um 1 Stufe reduziert, bis zu einem Minimum von 0."
+    "rules_text": "Kältestufen werden für den Helden um 1 Stufe reduziert, bis zu einem Minimum von 0.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "krankheitsresistenz",
@@ -267,7 +293,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Eine Krankheitsresistenz verbessert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Krankheiten zu widerstehen.",
-    "rules_text": "Eine Krankheitsresistenz verbessert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Krankheiten zu widerstehen."
+    "rules_text": "Eine Krankheitsresistenz verbessert Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Krankheiten zu widerstehen.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "magische_einstimmung",
@@ -277,7 +304,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Man muss sich für eine Variante des Vorteils entscheiden (Beispiele sind dem nebenstehenden Kasten zu entnehmen). In der betreffenden Umgebung oder Situation, für die der Vorteil gewählt wurde, hat de",
-    "rules_text": "Man muss sich für eine Variante des Vorteils entscheiden (Beispiele sind dem nebenstehenden Kasten zu entnehmen). In der betreffenden Umgebung oder Situation, für die der Vorteil gewählt wurde, hat der Zauberer bei magischen Fertigkeitsproben eine Erleichterung von 1."
+    "rules_text": "Man muss sich für eine Variante des Vorteils entscheiden (Beispiele sind dem nebenstehenden Kasten zu entnehmen). In der betreffenden Umgebung oder Situation, für die der Vorteil gewählt wurde, hat der Zauberer bei magischen Fertigkeitsproben eine Erleichterung von 1.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "mystiker",
@@ -287,7 +315,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Bei einem Mystiker baut sich Entrückung erst nach zwei Stunden statt einer Stunde pro Stufe ab.",
-    "rules_text": "Bei einem Mystiker baut sich Entrückung erst nach zwei Stunden statt einer Stunde pro Stufe ab."
+    "rules_text": "Bei einem Mystiker baut sich Entrückung erst nach zwei Stunden statt einer Stunde pro Stufe ab.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "nichtschlaefer",
@@ -297,7 +326,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Ein Wesen mit diesem Vorteil muss nicht regelmäßig schlafen, sondern kann bis zu einer Woche wach bleiben, ohne zu ermüden. Der Schlaf muss aber anschließend nachgeholt werden, was bei einigen Spezies",
-    "rules_text": "Ein Wesen mit diesem Vorteil muss nicht regelmäßig schlafen, sondern kann bis zu einer Woche wach bleiben, ohne zu ermüden. Der Schlaf muss aber anschließend nachgeholt werden, was bei einigen Spezies durch echten Schlaf, bei anderen durch Meditation oder vergleichbare Techniken erreicht wird. Während der Zeit, in der der Nichtschläfer nicht schläft, kann er auch nicht durch Ausruhen und Schlafen regenerieren (Ausnahme stellt die Verwendung von Heilkräutern und der Einsatz des Talents *Heilkunde Wunden* dar)."
+    "rules_text": "Ein Wesen mit diesem Vorteil muss nicht regelmäßig schlafen, sondern kann bis zu einer Woche wach bleiben, ohne zu ermüden. Der Schlaf muss aber anschließend nachgeholt werden, was bei einigen Spezies durch echten Schlaf, bei anderen durch Meditation oder vergleichbare Techniken erreicht wird. Während der Zeit, in der der Nichtschläfer nicht schläft, kann er auch nicht durch Ausruhen und Schlafen regenerieren (Ausnahme stellt die Verwendung von Heilkräutern und der Einsatz des Talents *Heilkunde Wunden* dar).",
+    "source_book": "Regelwerk"
   },
   {
     "id": "pragmatiker",
@@ -307,7 +337,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Bei einem Pragmatiker baut sich Entrückung bereits nach einer halben Stunde statt einer Stunde pro Stufe ab.",
-    "rules_text": "Bei einem Pragmatiker baut sich Entrückung bereits nach einer halben Stunde statt einer Stunde pro Stufe ab."
+    "rules_text": "Bei einem Pragmatiker baut sich Entrückung bereits nach einer halben Stunde statt einer Stunde pro Stufe ab.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "reich",
@@ -317,7 +348,8 @@
     "levels": 10,
     "prerequisites": null,
     "description": "Durch den Vorteil Reich erhält ein Held bei der Generierung zusätzlich 250 Silbertaler pro Stufe.",
-    "rules_text": "Durch den Vorteil Reich erhält ein Held bei der Generierung zusätzlich 250 Silbertaler pro Stufe."
+    "rules_text": "Durch den Vorteil Reich erhält ein Held bei der Generierung zusätzlich 250 Silbertaler pro Stufe.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "richtungssinn",
@@ -327,7 +359,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf *Orientierung* sind immer um 1 erleichtert.",
-    "rules_text": "Proben auf *Orientierung* sind immer um 1 erleichtert."
+    "rules_text": "Proben auf *Orientierung* sind immer um 1 erleichtert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "schlangenmensch",
@@ -337,7 +370,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf *Körperbeherrschung (Akrobatik, Entwinden)* sind um 1 erleichtert.",
-    "rules_text": "Proben auf *Körperbeherrschung (Akrobatik, Entwinden)* sind um 1 erleichtert."
+    "rules_text": "Proben auf *Körperbeherrschung (Akrobatik, Entwinden)* sind um 1 erleichtert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "schwer_zu_verzaubern",
@@ -347,7 +381,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Viele Zauber, die auf den Helden gesprochen werden können, die auf ihn wirken, sind um 1 erschwert. Dies gilt für alle Zauber und magischen Effekte mit den Merkmalen Einfluss, Heilung, Hellsicht und V",
-    "rules_text": "Viele Zauber, die auf den Helden gesprochen werden können, die auf ihn wirken, sind um 1 erschwert. Dies gilt für alle Zauber und magischen Effekte mit den Merkmalen Einfluss, Heilung, Hellsicht und Verwandlung sowie für solche, die durch Seelenkraft oder Zähigkeit modifiziert werden. Diese Erschwernis gilt auch dann, wenn der Held sich verzaubern lassen möchte."
+    "rules_text": "Viele Zauber, die auf den Helden gesprochen werden können, die auf ihn wirken, sind um 1 erschwert. Dies gilt für alle Zauber und magischen Effekte mit den Merkmalen Einfluss, Heilung, Hellsicht und Verwandlung sowie für solche, die durch Seelenkraft oder Zähigkeit modifiziert werden. Diese Erschwernis gilt auch dann, wenn der Held sich verzaubern lassen möchte.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "soziale_anpassungsfaehigkeit",
@@ -357,7 +392,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Personen mit Sozialer Anpassungsfähigkeit können Erschwernisse auf Gesellschaftstalente ignorieren, die durch Standesunterschiede entstehen. Die Soziale Anpassungsfähigkeit täuscht aber keine Personen",
-    "rules_text": "Personen mit Sozialer Anpassungsfähigkeit können Erschwernisse auf Gesellschaftstalente ignorieren, die durch Standesunterschiede entstehen. Die Soziale Anpassungsfähigkeit täuscht aber keine Personen des Hochadels."
+    "rules_text": "Personen mit Sozialer Anpassungsfähigkeit können Erschwernisse auf Gesellschaftstalente ignorieren, die durch Standesunterschiede entstehen. Die Soziale Anpassungsfähigkeit täuscht aber keine Personen des Hochadels.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "unscheinbar",
@@ -367,7 +403,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Helden mit diesem Vorteil erhalten eine Erleichterung von 1 auf *Gassenwissen (Beschatten)*.",
-    "rules_text": "Helden mit diesem Vorteil erhalten eine Erleichterung von 1 auf *Gassenwissen (Beschatten)*."
+    "rules_text": "Helden mit diesem Vorteil erhalten eine Erleichterung von 1 auf *Gassenwissen (Beschatten)*.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "verbesserte_regeneration_astralenergie",
@@ -377,7 +414,8 @@
     "levels": 3,
     "prerequisites": null,
     "description": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert.",
-    "rules_text": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert."
+    "rules_text": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "verbesserte_regeneration_karmaenergie",
@@ -387,7 +425,8 @@
     "levels": 3,
     "prerequisites": null,
     "description": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert.",
-    "rules_text": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert."
+    "rules_text": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "verbesserte_regeneration_lebensenergie",
@@ -397,7 +436,8 @@
     "levels": 3,
     "prerequisites": null,
     "description": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert.",
-    "rules_text": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert."
+    "rules_text": "Für jede Stufe des Vorteils bekommt der Held 1 zusätzlichen Punkt dazu, wenn er regeneriert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "verhuellte_aura",
@@ -407,7 +447,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Bei ungerichteter magischer Wahrnehmungerscheint der Zauberkundige immer als nicht magisch. Wer gezielt versucht, den Zauberkundigen zu entdecken oder zu analysieren, beispielsweisemit dem Zauber ODEM",
-    "rules_text": "Bei ungerichteter magischer Wahrnehmungerscheint der Zauberkundige immer als nicht magisch. Wer gezielt versucht, den Zauberkundigen zu entdecken oder zu analysieren, beispielsweisemit dem Zauber ODEM oder der Liturgie Magiesicht, muss eine Erschwernis von 3 hinnehmen."
+    "rules_text": "Bei ungerichteter magischer Wahrnehmungerscheint der Zauberkundige immer als nicht magisch. Wer gezielt versucht, den Zauberkundigen zu entdecken oder zu analysieren, beispielsweisemit dem Zauber ODEM oder der Liturgie Magiesicht, muss eine Erschwernis von 3 hinnehmen.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "vertrauenerweckend",
@@ -417,7 +458,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf *Bekehren & Überzeugen (öffentliche Rede, Einzelgespräch, Diskussionsführung)*, *Überreden (Betteln, Manipulieren, Schmeicheln)* und *Handel (Feilschen)* sind um 1 erleichtert.",
-    "rules_text": "Proben auf *Bekehren & Überzeugen (öffentliche Rede, Einzelgespräch, Diskussionsführung)*, *Überreden (Betteln, Manipulieren, Schmeicheln)* und *Handel (Feilschen)* sind um 1 erleichtert."
+    "rules_text": "Proben auf *Bekehren & Überzeugen (öffentliche Rede, Einzelgespräch, Diskussionsführung)*, *Überreden (Betteln, Manipulieren, Schmeicheln)* und *Handel (Feilschen)* sind um 1 erleichtert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "waffenbegabung",
@@ -427,7 +469,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Eine Waffenbegabung erlaubt bei Kritischen Erfolgen und Patzern bei einer Probe auf eine Kampftechnik eine Wiederholung des Bestätigungswurfs.",
-    "rules_text": "Eine Waffenbegabung erlaubt bei Kritischen Erfolgen und Patzern bei einer Probe auf eine Kampftechnik eine Wiederholung des Bestätigungswurfs."
+    "rules_text": "Eine Waffenbegabung erlaubt bei Kritischen Erfolgen und Patzern bei einer Probe auf eine Kampftechnik eine Wiederholung des Bestätigungswurfs.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "wohlklang",
@@ -437,7 +480,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Fertigkeitsproben auf *Singen* sind um 1 erleichtert.",
-    "rules_text": "Fertigkeitsproben auf *Singen* sind um 1 erleichtert."
+    "rules_text": "Fertigkeitsproben auf *Singen* sind um 1 erleichtert.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "zaeher_hund",
@@ -447,7 +491,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Dieser Vorteil sorgt dafür, dass der Held die Auswirkungen der höchsten Stufe des Zustands *Schmerz* ignorieren darf. Er erleidet lediglich die Auswirkungen der nächstniedrigeren Stufe. Wenn ein Held ",
-    "rules_text": "Dieser Vorteil sorgt dafür, dass der Held die Auswirkungen der höchsten Stufe des Zustands *Schmerz* ignorieren darf. Er erleidet lediglich die Auswirkungen der nächstniedrigeren Stufe. Wenn ein Held also beispielsweise drei Stufen *Schmerz* erlitten hat, gelten für ihn nur die Auswirkungen von Stufe II. Bei *Schmerz* Stufe IV wird der Held dennoch handlungsunfähig. *Schmerz* Stufe I wird so behandelt, als hätte der Held keine Stufe *Schmerz*."
+    "rules_text": "Dieser Vorteil sorgt dafür, dass der Held die Auswirkungen der höchsten Stufe des Zustands *Schmerz* ignorieren darf. Er erleidet lediglich die Auswirkungen der nächstniedrigeren Stufe. Wenn ein Held also beispielsweise drei Stufen *Schmerz* erlitten hat, gelten für ihn nur die Auswirkungen von Stufe II. Bei *Schmerz* Stufe IV wird der Held dennoch handlungsunfähig. *Schmerz* Stufe I wird so behandelt, als hätte der Held keine Stufe *Schmerz*.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "zauberer",
@@ -457,7 +502,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Zauberer erhält als Astralenergie-Grundwert 20 AsP. Der Vorteil beinhaltet nicht die Sonderfertigkeit Tradition (siehe **Regelwerk** Seite **275**). Diese muss einzeln erworben werden. Jeder Zaube",
-    "rules_text": "Der Zauberer erhält als Astralenergie-Grundwert 20 AsP. Der Vorteil beinhaltet nicht die Sonderfertigkeit Tradition (siehe **Regelwerk** Seite **275**). Diese muss einzeln erworben werden. Jeder Zauberer muss mit einer Tradition starten (eine Tradition ist eine spezielle Sonderfertigkeit). Dieser Vorteil lässt sich im späteren Spielverlauf nicht mehr erwerben."
+    "rules_text": "Der Zauberer erhält als Astralenergie-Grundwert 20 AsP. Der Vorteil beinhaltet nicht die Sonderfertigkeit Tradition (siehe **Regelwerk** Seite **275**). Diese muss einzeln erworben werden. Jeder Zauberer muss mit einer Tradition starten (eine Tradition ist eine spezielle Sonderfertigkeit). Dieser Vorteil lässt sich im späteren Spielverlauf nicht mehr erwerben.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "zeitgefuehl",
@@ -467,7 +513,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Charakter hat ein ausgezeichnetes Zeitgefühl und kann, ohne den Stand der Sonne zu sehen oder auf andere Hilfsmittel zurückzugreifen, die Tageszeit genau bestimmen.",
-    "rules_text": "Der Charakter hat ein ausgezeichnetes Zeitgefühl und kann, ohne den Stand der Sonne zu sehen oder auf andere Hilfsmittel zurückzugreifen, die Tageszeit genau bestimmen."
+    "rules_text": "Der Charakter hat ein ausgezeichnetes Zeitgefühl und kann, ohne den Stand der Sonne zu sehen oder auf andere Hilfsmittel zurückzugreifen, die Tageszeit genau bestimmen.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "zweistimmiger_gesang",
@@ -477,7 +524,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Ein Held kann den Zweistimmigen Gesang singen und hat somit die Möglichkeit, Elfenlieder zu erlernen. Durch den Vorteil erwirbt der Held das Anwendungsgebiet *Zweistimmiger Gesang* im Talent *Singen*.",
-    "rules_text": "Ein Held kann den Zweistimmigen Gesang singen und hat somit die Möglichkeit, Elfenlieder zu erlernen. Durch den Vorteil erwirbt der Held das Anwendungsgebiet *Zweistimmiger Gesang* im Talent *Singen*."
+    "rules_text": "Ein Held kann den Zweistimmigen Gesang singen und hat somit die Möglichkeit, Elfenlieder zu erlernen. Durch den Vorteil erwirbt der Held das Anwendungsgebiet *Zweistimmiger Gesang* im Talent *Singen*.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "zwergennase",
@@ -487,7 +535,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Abenteurer erhält bei Proben auf *Sinnesschärfe* zur Entdeckung von Geheimtüren, Hohlräumen, versteckten Schubladen und Ähnlichem eine Erleichterung von 1.",
-    "rules_text": "Der Abenteurer erhält bei Proben auf *Sinnesschärfe* zur Entdeckung von Geheimtüren, Hohlräumen, versteckten Schubladen und Ähnlichem eine Erleichterung von 1."
+    "rules_text": "Der Abenteurer erhält bei Proben auf *Sinnesschärfe* zur Entdeckung von Geheimtüren, Hohlräumen, versteckten Schubladen und Ähnlichem eine Erleichterung von 1.",
+    "source_book": "Regelwerk"
   },
   {
     "id": "eisern",
@@ -497,7 +546,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Wundschwelle des Helden steigt durch den Vorteil um 1.",
-    "rules_text": "Die Wundschwelle des Helden steigt durch den Vorteil um 1."
+    "rules_text": "Die Wundschwelle des Helden steigt durch den Vorteil um 1.",
+    "source_book": "Aventurisches Kompendium I"
   },
   {
     "id": "hart_im_nehmen",
@@ -507,7 +557,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Muss eine Probe auf *Selbstbeherrschung* (*Handlungsfähigkeit bewahren* oder *Störungen ignorieren*) bei Wundeffekten abgelegt werden, bekommt die Spielerin eine Erleichterung von 1.",
-    "rules_text": "Muss eine Probe auf *Selbstbeherrschung* (*Handlungsfähigkeit bewahren* oder *Störungen ignorieren*) bei Wundeffekten abgelegt werden, bekommt die Spielerin eine Erleichterung von 1."
+    "rules_text": "Muss eine Probe auf *Selbstbeherrschung* (*Handlungsfähigkeit bewahren* oder *Störungen ignorieren*) bei Wundeffekten abgelegt werden, bekommt die Spielerin eine Erleichterung von 1.",
+    "source_book": "Aventurisches Kompendium I"
   },
   {
     "id": "affinitaet_zu_daemonen",
@@ -517,7 +568,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held kann Dämonen leichter zu einem Dienst überreden, wenn er sie selbst beschworen hat. Der Dämon erfüllt ihm einen zusätzlichen Dienst (bis zu einem Maximum von 6 Diensten).",
-    "rules_text": "Der Held kann Dämonen leichter zu einem Dienst überreden, wenn er sie selbst beschworen hat. Der Dämon erfüllt ihm einen zusätzlichen Dienst (bis zu einem Maximum von 6 Diensten)."
+    "rules_text": "Der Held kann Dämonen leichter zu einem Dienst überreden, wenn er sie selbst beschworen hat. Der Dämon erfüllt ihm einen zusätzlichen Dienst (bis zu einem Maximum von 6 Diensten).",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "affinitaet_zu_elementaren",
@@ -527,7 +579,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held kann Elementare leichter zu einem Dienst überreden, wenn er sie selbst beschworen hat. Das Elementar erfüllt ihm einen zusätzlichen Dienst (bis zu einem Maximum von 6 Diensten).",
-    "rules_text": "Der Held kann Elementare leichter zu einem Dienst überreden, wenn er sie selbst beschworen hat. Das Elementar erfüllt ihm einen zusätzlichen Dienst (bis zu einem Maximum von 6 Diensten)."
+    "rules_text": "Der Held kann Elementare leichter zu einem Dienst überreden, wenn er sie selbst beschworen hat. Das Elementar erfüllt ihm einen zusätzlichen Dienst (bis zu einem Maximum von 6 Diensten).",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "grosse_zauberauswahl",
@@ -537,7 +590,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Die Heldin kann pro Stufe des Vorteils einen zusätzlichen Zauber aktivieren und damit die Begrenzung von maximal 3 Zaubern übersteigen. Ob sie diese Zauber zu Spielbeginn oder später aktiviert, ist ih",
-    "rules_text": "Die Heldin kann pro Stufe des Vorteils einen zusätzlichen Zauber aktivieren und damit die Begrenzung von maximal 3 Zaubern übersteigen. Ob sie diese Zauber zu Spielbeginn oder später aktiviert, ist ihr überlassen."
+    "rules_text": "Die Heldin kann pro Stufe des Vorteils einen zusätzlichen Zauber aktivieren und damit die Begrenzung von maximal 3 Zaubern übersteigen. Ob sie diese Zauber zu Spielbeginn oder später aktiviert, ist ihr überlassen.",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "kein_bann_des_eisen",
@@ -547,7 +601,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held kann die Erschwernisse durch Bann des Eisens (siehe **Regelwerk** Seite **256**) ignorieren. Er ist weder durch das Tragen von Eisen in Form von Waffen, Rüstungen oder Ausrüstung betroffen, n",
-    "rules_text": "Der Held kann die Erschwernisse durch Bann des Eisens (siehe **Regelwerk** Seite **256**) ignorieren. Er ist weder durch das Tragen von Eisen in Form von Waffen, Rüstungen oder Ausrüstung betroffen, noch erleidet er irgendwelche Nachteile dadurch, dass er mit dem Material arbeitet."
+    "rules_text": "Der Held kann die Erschwernisse durch Bann des Eisens (siehe **Regelwerk** Seite **256**) ignorieren. Er ist weder durch das Tragen von Eisen in Form von Waffen, Rüstungen oder Ausrüstung betroffen, noch erleidet er irgendwelche Nachteile dadurch, dass er mit dem Material arbeitet.",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "machtvolle_zaubermelodien",
@@ -557,7 +612,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Abenteurer kann Personen bis zu SK 3 durch seine Zaubermelodien verzaubern (statt nur bis zu SK 2).",
-    "rules_text": "Der Abenteurer kann Personen bis zu SK 3 durch seine Zaubermelodien verzaubern (statt nur bis zu SK 2)."
+    "rules_text": "Der Abenteurer kann Personen bis zu SK 3 durch seine Zaubermelodien verzaubern (statt nur bis zu SK 2).",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "machtvolle_zaubertaenze",
@@ -567,7 +623,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin kann Personen bis zu SK 3 durch ihre Zaubertänze verzaubern (statt nur bis zu SK 2).",
-    "rules_text": "Die Heldin kann Personen bis zu SK 3 durch ihre Zaubertänze verzaubern (statt nur bis zu SK 2)."
+    "rules_text": "Die Heldin kann Personen bis zu SK 3 durch ihre Zaubertänze verzaubern (statt nur bis zu SK 2).",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "schutzgeist",
@@ -577,7 +634,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Wer über einen Schutzgeist verfügt, der kann die folgenden Optionen einsetzen. Sie kosten weder eine Aktion noch eine freie Aktion, sondern können jederzeit eingesetzt werden.<br>\nBei einem Patzer kan",
-    "rules_text": "Wer über einen Schutzgeist verfügt, der kann die folgenden Optionen einsetzen. Sie kosten weder eine Aktion noch eine freie Aktion, sondern können jederzeit eingesetzt werden.<br>\nBei einem Patzer kann der Held einen Schip einsetzen. Das Ergebnis gilt einfach als misslungen, ist aber kein Patzer.<br>\nWenn der Held nur noch 5 oder weniger LeP besitzt, kann er 1 Schip einsetzen, um 1W6 LeP zurückzubekommen. Der Einsatz dieser Option ist nur einmal am Tag gestattet."
+    "rules_text": "Wer über einen Schutzgeist verfügt, der kann die folgenden Optionen einsetzen. Sie kosten weder eine Aktion noch eine freie Aktion, sondern können jederzeit eingesetzt werden.<br>\nBei einem Patzer kann der Held einen Schip einsetzen. Das Ergebnis gilt einfach als misslungen, ist aber kein Patzer.<br>\nWenn der Held nur noch 5 oder weniger LeP besitzt, kann er 1 Schip einsetzen, um 1W6 LeP zurückzubekommen. Der Einsatz dieser Option ist nur einmal am Tag gestattet.",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "weitreichende_zaubermelodien",
@@ -587,7 +645,8 @@
     "levels": 3,
     "prerequisites": null,
     "description": "Die Zaubermelodien des Abenteurers reichen pro Stufe des Vorteils 2 Schritt weiter als üblich.",
-    "rules_text": "Die Zaubermelodien des Abenteurers reichen pro Stufe des Vorteils 2 Schritt weiter als üblich."
+    "rules_text": "Die Zaubermelodien des Abenteurers reichen pro Stufe des Vorteils 2 Schritt weiter als üblich.",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "weitreichende_zaubertaenze",
@@ -597,7 +656,8 @@
     "levels": 3,
     "prerequisites": null,
     "description": "Die Zaubertänze der Abenteurerin reichen pro Stufe des Vorteils 2 Schritt weiter als üblich.",
-    "rules_text": "Die Zaubertänze der Abenteurerin reichen pro Stufe des Vorteils 2 Schritt weiter als üblich."
+    "rules_text": "Die Zaubertänze der Abenteurerin reichen pro Stufe des Vorteils 2 Schritt weiter als üblich.",
+    "source_book": "Aventurische Magie I"
   },
   {
     "id": "basiliskentoeter",
@@ -607,7 +667,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Basiliskentöter werden respektvoll behandelt, erhalten regelmäßig Einladungen zu Festen der gehobenen Gesellschaft und oftmals kostenlos Speis und Trank in Tavernen. Der Held wird so behandelt, als hä",
-    "rules_text": "Basiliskentöter werden respektvoll behandelt, erhalten regelmäßig Einladungen zu Festen der gehobenen Gesellschaft und oftmals kostenlos Speis und Trank in Tavernen. Der Held wird so behandelt, als hätte er einen um 2 höheren sozialen Rang als üblich (siehe **Regelwerk** Seite **338**). Das Gegenüber muss aber wissen oder zumindest glauben, dass der Held ein Basiliskentöter ist, damit der Bonus zählt."
+    "rules_text": "Basiliskentöter werden respektvoll behandelt, erhalten regelmäßig Einladungen zu Festen der gehobenen Gesellschaft und oftmals kostenlos Speis und Trank in Tavernen. Der Held wird so behandelt, als hätte er einen um 2 höheren sozialen Rang als üblich (siehe **Regelwerk** Seite **338**). Das Gegenüber muss aber wissen oder zumindest glauben, dass der Held ein Basiliskentöter ist, damit der Bonus zählt.",
+    "source_book": "Aventurisches Bestiarium I"
   },
   {
     "id": "drachentoeter",
@@ -617,7 +678,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Drachentöter werden respektvoll behandelt, erhalten regelmäßig Einladungen zu Festen der gehobenen Gesellschaft und oftmals kostenlos Speis und Trank in Tavernen. Der Held wird so behandelt, als hätte",
-    "rules_text": "Drachentöter werden respektvoll behandelt, erhalten regelmäßig Einladungen zu Festen der gehobenen Gesellschaft und oftmals kostenlos Speis und Trank in Tavernen. Der Held wird so behandelt, als hätte er einen um 1 höheren sozialen Rang als üblich (siehe **Regelwerk** Seite **338**). Das Gegenüber muss aber wissen oder zumindest glauben, dass der Held ein Drachentöter ist, damit der Bonus zählt. Der Held erhält zudem einen Bonus von +1 TP gegen alle Drachen, sowohl gegenüber echten als auch niederen Drachen."
+    "rules_text": "Drachentöter werden respektvoll behandelt, erhalten regelmäßig Einladungen zu Festen der gehobenen Gesellschaft und oftmals kostenlos Speis und Trank in Tavernen. Der Held wird so behandelt, als hätte er einen um 1 höheren sozialen Rang als üblich (siehe **Regelwerk** Seite **338**). Das Gegenüber muss aber wissen oder zumindest glauben, dass der Held ein Drachentöter ist, damit der Bonus zählt. Der Held erhält zudem einen Bonus von +1 TP gegen alle Drachen, sowohl gegenüber echten als auch niederen Drachen.",
+    "source_book": "Aventurisches Bestiarium I"
   },
   {
     "id": "feenfreund",
@@ -627,7 +689,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf *Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln)*, um Feen freundlich zu stimmen, gelten bei Gelingen der Probe als um 1 QS besser. Allerdings kann sich so die QS nie über ",
-    "rules_text": "Proben auf *Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln)*, um Feen freundlich zu stimmen, gelten bei Gelingen der Probe als um 1 QS besser. Allerdings kann sich so die QS nie über 6 hinaus erhöhen."
+    "rules_text": "Proben auf *Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln)*, um Feen freundlich zu stimmen, gelten bei Gelingen der Probe als um 1 QS besser. Allerdings kann sich so die QS nie über 6 hinaus erhöhen.",
+    "source_book": "Aventurisches Bestiarium I"
   },
   {
     "id": "hass_auf",
@@ -637,7 +700,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held richtet gegen eine Art von Wesen, das beim Erwerb dieses Vorteils festgelegt werden muss, +1 TP im Nahkampf an. Der Typus des Wesens muss dabei näher spezifiziert werden. Je häufiger der Typu",
-    "rules_text": "Der Held richtet gegen eine Art von Wesen, das beim Erwerb dieses Vorteils festgelegt werden muss, +1 TP im Nahkampf an. Der Typus des Wesens muss dabei näher spezifiziert werden. Je häufiger der Typus des Wesens in Aventurien vorkommt, desto teurer der APWert für diesen Vorteil. Ausgeschlossen als wählbare Typen sind die Oberkategorien Lebewesen und Nicht Lebende. Neben dem im **Regelwerk** aufgeführten Typen und Unterkategorien kann man auch Spezies und Kulturen wählen. Die eigene Spezies/Kultur ist prinzipiell wählbar, jedoch sind Helden mit Hass auf die eigene Spezies/Kultur oft nur schwer spielbar. Der Meister hat das letzte Wort bezüglich der Wählbarkeit eines Hassobjektes. Je kleinteiliger ein Typus gewählt wird und je seltener eine potenzielle Begegnung mit ihm ist, desto niedriger die AP-Kosten für den Vorteil. Mehr zu den Typen und ihren Unterkategorien siehe **Regelwerk** Seite **355**."
+    "rules_text": "Der Held richtet gegen eine Art von Wesen, das beim Erwerb dieses Vorteils festgelegt werden muss, +1 TP im Nahkampf an. Der Typus des Wesens muss dabei näher spezifiziert werden. Je häufiger der Typus des Wesens in Aventurien vorkommt, desto teurer der APWert für diesen Vorteil. Ausgeschlossen als wählbare Typen sind die Oberkategorien Lebewesen und Nicht Lebende. Neben dem im **Regelwerk** aufgeführten Typen und Unterkategorien kann man auch Spezies und Kulturen wählen. Die eigene Spezies/Kultur ist prinzipiell wählbar, jedoch sind Helden mit Hass auf die eigene Spezies/Kultur oft nur schwer spielbar. Der Meister hat das letzte Wort bezüglich der Wählbarkeit eines Hassobjektes. Je kleinteiliger ein Typus gewählt wird und je seltener eine potenzielle Begegnung mit ihm ist, desto niedriger die AP-Kosten für den Vorteil. Mehr zu den Typen und ihren Unterkategorien siehe **Regelwerk** Seite **355**.",
+    "source_book": "Aventurisches Bestiarium I"
   },
   {
     "id": "saumagen",
@@ -647,7 +711,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Mit Saumagen kann der Held zähes Fleisch problemlos essen, so als ob es normales Fleisch wäre. Bei Stufe II kann er sogar ungenießbares Fleisch verzehren. Es wird ihm nicht sonderlich schmecken, aber ",
-    "rules_text": "Mit Saumagen kann der Held zähes Fleisch problemlos essen, so als ob es normales Fleisch wäre. Bei Stufe II kann er sogar ungenießbares Fleisch verzehren. Es wird ihm nicht sonderlich schmecken, aber er kann es verdauen, ohne dass ihm übel wird und er sich erbrechen muss. Gifte und Krankheitskeime können jedoch nicht durch den Vorteil umgangen werden. Ähnliches gilt auch für pflanzliche Nahrungsmittel. Schwerverdauliche Kost ist essbar, ohne dass es weitere Auswirkungen hat."
+    "rules_text": "Mit Saumagen kann der Held zähes Fleisch problemlos essen, so als ob es normales Fleisch wäre. Bei Stufe II kann er sogar ungenießbares Fleisch verzehren. Es wird ihm nicht sonderlich schmecken, aber er kann es verdauen, ohne dass ihm übel wird und er sich erbrechen muss. Gifte und Krankheitskeime können jedoch nicht durch den Vorteil umgangen werden. Ähnliches gilt auch für pflanzliche Nahrungsmittel. Schwerverdauliche Kost ist essbar, ohne dass es weitere Auswirkungen hat.",
+    "source_book": "Aventurisches Bestiarium I"
   },
   {
     "id": "tierfreund",
@@ -657,7 +722,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf *Tierkunde (domestizierte Tiere, Wildtiere)* gelten bei Gelingen der Probe als um 1 QS besser, allerdings kann sich die QS dabei nie über 6 erhöhen.",
-    "rules_text": "Proben auf *Tierkunde (domestizierte Tiere, Wildtiere)* gelten bei Gelingen der Probe als um 1 QS besser, allerdings kann sich die QS dabei nie über 6 erhöhen."
+    "rules_text": "Proben auf *Tierkunde (domestizierte Tiere, Wildtiere)* gelten bei Gelingen der Probe als um 1 QS besser, allerdings kann sich die QS dabei nie über 6 erhöhen.",
+    "source_book": "Aventurisches Bestiarium I"
   },
   {
     "id": "wasserlebewesen",
@@ -667,7 +733,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Wesen mit diesem Vorteil erhalten automatisch die Sonderfertigkeit Unterwasserkampf (die Kosten der SF sind in diesem Vorteil einberechnet). Wasserlebewesen können unter Wasser atmen. Außerdem können ",
-    "rules_text": "Wesen mit diesem Vorteil erhalten automatisch die Sonderfertigkeit Unterwasserkampf (die Kosten der SF sind in diesem Vorteil einberechnet). Wasserlebewesen können unter Wasser atmen. Außerdem können sie sich darin mit Leichtigkeit fortbewegen, da es sich um ihr natürliches Element handelt. Sie müssen keine Proben ablegen, um nicht zu ertrinken."
+    "rules_text": "Wesen mit diesem Vorteil erhalten automatisch die Sonderfertigkeit Unterwasserkampf (die Kosten der SF sind in diesem Vorteil einberechnet). Wasserlebewesen können unter Wasser atmen. Außerdem können sie sich darin mit Leichtigkeit fortbewegen, da es sich um ihr natürliches Element handelt. Sie müssen keine Proben ablegen, um nicht zu ertrinken.",
+    "source_book": "Aventurisches Bestiarium I"
   },
   {
     "id": "allerweltsname",
@@ -677,7 +744,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Ein Held mit diesem Vorteil ist schwer ausfindig zu machen, weil sich niemand seinen Namen merken kann oder ihn mit einem Träger eines ähnlichen Namens verwechselt. Die Teilprobe auf Klugheit bei Prob",
-    "rules_text": "Ein Held mit diesem Vorteil ist schwer ausfindig zu machen, weil sich niemand seinen Namen merken kann oder ihn mit einem Träger eines ähnlichen Namens verwechselt. Die Teilprobe auf Klugheit bei Proben auf *Gassenwissen (Informationsbeschaffung)* ist um 1 erschwert, wenn es darum geht, den Helden ausfindig zu machen oder Informationen über ihn zu sammeln."
+    "rules_text": "Ein Held mit diesem Vorteil ist schwer ausfindig zu machen, weil sich niemand seinen Namen merken kann oder ihn mit einem Träger eines ähnlichen Namens verwechselt. Die Teilprobe auf Klugheit bei Proben auf *Gassenwissen (Informationsbeschaffung)* ist um 1 erschwert, wenn es darum geht, den Helden ausfindig zu machen oder Informationen über ihn zu sammeln.",
+    "source_book": "Aventurische Namen"
   },
   {
     "id": "gutes_namensgedaechtnis",
@@ -687,7 +755,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Abenteurerin kann sich an so gut wie jeden Namen (samt Titel, Ränge und Ämter) erinnern. Der Meister sollte voraussetzen, dass die Heldin Personen immer den korrekten Namen zuordnen kann, auch wen",
-    "rules_text": "Die Abenteurerin kann sich an so gut wie jeden Namen (samt Titel, Ränge und Ämter) erinnern. Der Meister sollte voraussetzen, dass die Heldin Personen immer den korrekten Namen zuordnen kann, auch wenn der Spieler der Heldin sich nicht immer erinnert. Zudem kann der Meister in passenden Situationen, z. B. auf Festen oder wenn der korrekte Name eine wichtige Rolle spielt, dem Spieler eine Erleichterung von 1 bei der Teilprobe auf Klugheit bei *Etikette* (*Heraldik & Stammbäume* oder *Klatsch & Tratsch*) zugestehen."
+    "rules_text": "Die Abenteurerin kann sich an so gut wie jeden Namen (samt Titel, Ränge und Ämter) erinnern. Der Meister sollte voraussetzen, dass die Heldin Personen immer den korrekten Namen zuordnen kann, auch wenn der Spieler der Heldin sich nicht immer erinnert. Zudem kann der Meister in passenden Situationen, z. B. auf Festen oder wenn der korrekte Name eine wichtige Rolle spielt, dem Spieler eine Erleichterung von 1 bei der Teilprobe auf Klugheit bei *Etikette* (*Heraldik & Stammbäume* oder *Klatsch & Tratsch*) zugestehen.",
+    "source_book": "Aventurische Namen"
   },
   {
     "id": "heldenhafter_name",
@@ -697,7 +766,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Abenteurer mit einem heldenhaften Namen werden respektvoller behandelt als andere Menschen und man glaubt ihnen eher. Teilproben auf Charisma bei *Bekehren & Überzeugen* und *Überreden* sind um 1 erle",
-    "rules_text": "Abenteurer mit einem heldenhaften Namen werden respektvoller behandelt als andere Menschen und man glaubt ihnen eher. Teilproben auf Charisma bei *Bekehren & Überzeugen* und *Überreden* sind um 1 erleichtert. Voraussetzung dafür ist, dass das Gegenüber des Helden den Namen als den Namen eines Helden kennt."
+    "rules_text": "Abenteurer mit einem heldenhaften Namen werden respektvoller behandelt als andere Menschen und man glaubt ihnen eher. Teilproben auf Charisma bei *Bekehren & Überzeugen* und *Überreden* sind um 1 erleichtert. Voraussetzung dafür ist, dass das Gegenüber des Helden den Namen als den Namen eines Helden kennt.",
+    "source_book": "Aventurische Namen"
   },
   {
     "id": "schnell_wieder_auf_den_beinen",
@@ -707,7 +777,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Mit diesem Vorteil benötigt man nur noch die Hälfte der Zeit, bis eine Stufe des Zustands *Betäubung* oder *Berauscht*, der durch Alkohol verursacht wurde, abgebaut ist.",
-    "rules_text": "Mit diesem Vorteil benötigt man nur noch die Hälfte der Zeit, bis eine Stufe des Zustands *Betäubung* oder *Berauscht*, der durch Alkohol verursacht wurde, abgebaut ist."
+    "rules_text": "Mit diesem Vorteil benötigt man nur noch die Hälfte der Zeit, bis eine Stufe des Zustands *Betäubung* oder *Berauscht*, der durch Alkohol verursacht wurde, abgebaut ist.",
+    "source_book": "Kneipen & Tavernen"
   },
   {
     "id": "akoluth",
@@ -717,7 +788,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Ein Akoluth verfügt über die Fähigkeit, einen Geweihten einer einzigen ausgewählten Kirche bei Liturgien zu unterstützen. Es muss sich um die Kirche handeln, für die er vorher die *Prinzipientreue* un",
-    "rules_text": "Ein Akoluth verfügt über die Fähigkeit, einen Geweihten einer einzigen ausgewählten Kirche bei Liturgien zu unterstützen. Es muss sich um die Kirche handeln, für die er vorher die *Prinzipientreue* und die *Verpflichtungen* erworben hat. Sollte ein Akoluth bei einer Liturgie genauso viele Aktionen aufwenden, wie für die Liturgiedauer notwendig sind, erhält der Geweihte eine Erleichterung von 1 für die Liturgie. Der Akoluth muss sich in einem Radius von 3 Schritt um den Geweihten aufhalten, damit die Unterstützung funktioniert. Dieser Effekt ist nicht kumulativ mit weiteren Akoluthen."
+    "rules_text": "Ein Akoluth verfügt über die Fähigkeit, einen Geweihten einer einzigen ausgewählten Kirche bei Liturgien zu unterstützen. Es muss sich um die Kirche handeln, für die er vorher die *Prinzipientreue* und die *Verpflichtungen* erworben hat. Sollte ein Akoluth bei einer Liturgie genauso viele Aktionen aufwenden, wie für die Liturgiedauer notwendig sind, erhält der Geweihte eine Erleichterung von 1 für die Liturgie. Der Akoluth muss sich in einem Radius von 3 Schritt um den Geweihten aufhalten, damit die Unterstützung funktioniert. Dieser Effekt ist nicht kumulativ mit weiteren Akoluthen.",
+    "source_book": "Aventurisches Götterwirken I"
   },
   {
     "id": "prediger",
@@ -727,7 +799,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held bekommt eine neue Einsatzmöglichkeit für *Bekehren & Überzeugen (öffentliche Rede)*. Er kann bis zu drei Predigt-Sonderfertigkeiten erlernen, auch wenn er nicht über den Vorteil *Geweihter* v",
-    "rules_text": "Der Held bekommt eine neue Einsatzmöglichkeit für *Bekehren & Überzeugen (öffentliche Rede)*. Er kann bis zu drei Predigt-Sonderfertigkeiten erlernen, auch wenn er nicht über den Vorteil *Geweihter* verfügt. Der Zelot muss eine Gottheit auswählen, wenn er sich für diesen Vorteil entscheidet. Lässt sich ein Prediger im späteren Verlauf seines Lebens der ausgewählten Gottheit weihen, bekommt er die 10 AP dieses Vorteils wieder zurück bzw. kann sie mit Geweihter verrechnen."
+    "rules_text": "Der Held bekommt eine neue Einsatzmöglichkeit für *Bekehren & Überzeugen (öffentliche Rede)*. Er kann bis zu drei Predigt-Sonderfertigkeiten erlernen, auch wenn er nicht über den Vorteil *Geweihter* verfügt. Der Zelot muss eine Gottheit auswählen, wenn er sich für diesen Vorteil entscheidet. Lässt sich ein Prediger im späteren Verlauf seines Lebens der ausgewählten Gottheit weihen, bekommt er die 10 AP dieses Vorteils wieder zurück bzw. kann sie mit Geweihter verrechnen.",
+    "source_book": "Aventurisches Götterwirken I"
   },
   {
     "id": "visionaer",
@@ -737,7 +810,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin bekommt eine neue Einsatzmöglichkeit für *Götter & Kulte (eigene Gottheit)*. Sie kann bis zu drei Vision-Sonderfertigkeiten erlernen, auch wenn sie nicht über den Vorteil *Geweihter* verfüg",
-    "rules_text": "Die Heldin bekommt eine neue Einsatzmöglichkeit für *Götter & Kulte (eigene Gottheit)*. Sie kann bis zu drei Vision-Sonderfertigkeiten erlernen, auch wenn sie nicht über den Vorteil *Geweihter* verfügt. Die Zelotin muss eine Gottheit auswählen, wenn sie sich für diesen Vorteil entscheidet. Lässt sich eine Visionärin im späteren Verlauf ihres Lebens der ausgewählten Gottheit weihen, bekommt sie die 10 AP dieses Vorteils wieder zurück bzw. kann sie mit *Geweihter* verrechnen."
+    "rules_text": "Die Heldin bekommt eine neue Einsatzmöglichkeit für *Götter & Kulte (eigene Gottheit)*. Sie kann bis zu drei Vision-Sonderfertigkeiten erlernen, auch wenn sie nicht über den Vorteil *Geweihter* verfügt. Die Zelotin muss eine Gottheit auswählen, wenn sie sich für diesen Vorteil entscheidet. Lässt sich eine Visionärin im späteren Verlauf ihres Lebens der ausgewählten Gottheit weihen, bekommt sie die 10 AP dieses Vorteils wieder zurück bzw. kann sie mit *Geweihter* verrechnen.",
+    "source_book": "Aventurisches Götterwirken I"
   },
   {
     "id": "zahlreiche_predigten",
@@ -747,7 +821,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Bei Stufe I kann der Zelot 4 Predigt-Sonderfertigkeiten beherrschen, bei Stufe II sogar 5.",
-    "rules_text": "Bei Stufe I kann der Zelot 4 Predigt-Sonderfertigkeiten beherrschen, bei Stufe II sogar 5."
+    "rules_text": "Bei Stufe I kann der Zelot 4 Predigt-Sonderfertigkeiten beherrschen, bei Stufe II sogar 5.",
+    "source_book": "Aventurisches Götterwirken I"
   },
   {
     "id": "zahlreiche_visionen",
@@ -757,7 +832,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Bei Stufe I kann der Zelot 4 Vision-Sonderfertigkeiten beherrschen, bei Stufe II sogar 5.",
-    "rules_text": "Bei Stufe I kann der Zelot 4 Vision-Sonderfertigkeiten beherrschen, bei Stufe II sogar 5."
+    "rules_text": "Bei Stufe I kann der Zelot 4 Vision-Sonderfertigkeiten beherrschen, bei Stufe II sogar 5.",
+    "source_book": "Aventurisches Götterwirken I"
   },
   {
     "id": "feenblut_bluetenfee",
@@ -767,7 +843,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin erhält bei Proben auf alle Gesellschaftstalente (außer *Einschüchtern* und *Willenskraft*) eine Erleichterung von 1 bei Teilproben auf IN. Sie kann zudem Angriffen besser ausweichen und bek",
-    "rules_text": "Die Heldin erhält bei Proben auf alle Gesellschaftstalente (außer *Einschüchtern* und *Willenskraft*) eine Erleichterung von 1 bei Teilproben auf IN. Sie kann zudem Angriffen besser ausweichen und bekommt einen Bonus von +1 AW, solange sie maximal Kleidung mit einem RS von bis zu 1 trägt. Bei *Wissenstalenten* erhält sie eine Erschwernis von 1 auf alle Teilproben, die auf KL gehen."
+    "rules_text": "Die Heldin erhält bei Proben auf alle Gesellschaftstalente (außer *Einschüchtern* und *Willenskraft*) eine Erleichterung von 1 bei Teilproben auf IN. Sie kann zudem Angriffen besser ausweichen und bekommt einen Bonus von +1 AW, solange sie maximal Kleidung mit einem RS von bis zu 1 trägt. Bei *Wissenstalenten* erhält sie eine Erschwernis von 1 auf alle Teilproben, die auf KL gehen.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "feenblut_dryade",
@@ -777,7 +854,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin hat ein gutes Gespür für Bäume und wirkt auf alle humanoiden Spezies verführerisch. Sie erhält bei einer gelungenen Probe auf *Pflanzenkunde* +1 QS (bis zu einem Maximum von 6 QS), wenn es ",
-    "rules_text": "Die Heldin hat ein gutes Gespür für Bäume und wirkt auf alle humanoiden Spezies verführerisch. Sie erhält bei einer gelungenen Probe auf *Pflanzenkunde* +1 QS (bis zu einem Maximum von 6 QS), wenn es um Bäume geht, und bei Proben auf Betören einen Bonus von +1 auf beide Teilproben von CH. Dafür erleidet sie eine Erschwernis von 1 bei Proben auf *Willenskraft (Betören widerstehen)*."
+    "rules_text": "Die Heldin hat ein gutes Gespür für Bäume und wirkt auf alle humanoiden Spezies verführerisch. Sie erhält bei einer gelungenen Probe auf *Pflanzenkunde* +1 QS (bis zu einem Maximum von 6 QS), wenn es um Bäume geht, und bei Proben auf Betören einen Bonus von +1 auf beide Teilproben von CH. Dafür erleidet sie eine Erschwernis von 1 bei Proben auf *Willenskraft (Betören widerstehen)*.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "feenblut_grosser_eberbiestinger",
@@ -787,7 +865,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held erhält bei einer gelungenen Probe auf *Tierkunde* +1 FP (bis zu einem Maximum von 18 FP). Außerdem friert er kaum, da ihm selbst im Winter aufgrund eines dichten Fells am Körper warm ist. Bei",
-    "rules_text": "Der Held erhält bei einer gelungenen Probe auf *Tierkunde* +1 FP (bis zu einem Maximum von 18 FP). Außerdem friert er kaum, da ihm selbst im Winter aufgrund eines dichten Fells am Körper warm ist. Bei der Bestimmung von Kälteschaden schützt der Vorteil wie Dicke Wollsachen (Kältestufe –1, **Regelwerk** Seite **346**). Bei Proben auf *Willenskraft*, die zum Widerstehen von *Einschüchtern (Provokation)* dienen, erleidet der Held eine zusätzliche Erschwernis von 1."
+    "rules_text": "Der Held erhält bei einer gelungenen Probe auf *Tierkunde* +1 FP (bis zu einem Maximum von 18 FP). Außerdem friert er kaum, da ihm selbst im Winter aufgrund eines dichten Fells am Körper warm ist. Bei der Bestimmung von Kälteschaden schützt der Vorteil wie Dicke Wollsachen (Kältestufe –1, **Regelwerk** Seite **346**). Bei Proben auf *Willenskraft*, die zum Widerstehen von *Einschüchtern (Provokation)* dienen, erleidet der Held eine zusätzliche Erschwernis von 1.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "feenblut_nixer",
@@ -797,7 +876,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Haut des Helden fühlt sich feucht an, als würde er gerade aus dem Wasser kommen. Haltegriffe gegen ihn sind daher um 2 erschwert, und Proben auf *Fesseln (Fesselungen)* gegen ihn sind zusätzlich z",
-    "rules_text": "Die Haut des Helden fühlt sich feucht an, als würde er gerade aus dem Wasser kommen. Haltegriffe gegen ihn sind daher um 2 erschwert, und Proben auf *Fesseln (Fesselungen)* gegen ihn sind zusätzlich zu allen weiteren Modifikatoren um 1 Punkt erschwert. Der Held erhält bei einer gelungenen Probe auf *Schwimmen* +2 FP (bis zu einem Maximum von 18 FP). Bei Schaden durch Feuer werden die TP gegen den Helden um 2 erhöht."
+    "rules_text": "Die Haut des Helden fühlt sich feucht an, als würde er gerade aus dem Wasser kommen. Haltegriffe gegen ihn sind daher um 2 erschwert, und Proben auf *Fesseln (Fesselungen)* gegen ihn sind zusätzlich zu allen weiteren Modifikatoren um 1 Punkt erschwert. Der Held erhält bei einer gelungenen Probe auf *Schwimmen* +2 FP (bis zu einem Maximum von 18 FP). Bei Schaden durch Feuer werden die TP gegen den Helden um 2 erhöht.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "animalische_kraft",
@@ -807,7 +887,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Einmal am Tag kann der Held eine Probe auf *Selbstbeherrschung* ablegen. Er erhält bei Gelingen für 1 Minute QS/2 zu seiner Körperkraft. Dies kann auch den Schadensbonus erhöhen, ändert aber nichts an",
-    "rules_text": "Einmal am Tag kann der Held eine Probe auf *Selbstbeherrschung* ablegen. Er erhält bei Gelingen für 1 Minute QS/2 zu seiner Körperkraft. Dies kann auch den Schadensbonus erhöhen, ändert aber nichts an weiteren abgeleiteten Werten. Diese Fähigkeit zu aktivieren dauert 1 Aktion. Nach dem Ende der Wirkung erhält der Held 1 Stufe Betäubung."
+    "rules_text": "Einmal am Tag kann der Held eine Probe auf *Selbstbeherrschung* ablegen. Er erhält bei Gelingen für 1 Minute QS/2 zu seiner Körperkraft. Dies kann auch den Schadensbonus erhöhen, ändert aber nichts an weiteren abgeleiteten Werten. Diese Fähigkeit zu aktivieren dauert 1 Aktion. Nach dem Ende der Wirkung erhält der Held 1 Stufe Betäubung.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "blumenduft",
@@ -817,7 +898,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin riecht immer nach einer bestimmten wohlriechenden Blumenart. Sie kann nie unter dem Status Übler Geruch leiden, und sie erhält bei Proben auf Überreden einen Bonus von +1 auf CH, wenn ihr G",
-    "rules_text": "Die Heldin riecht immer nach einer bestimmten wohlriechenden Blumenart. Sie kann nie unter dem Status Übler Geruch leiden, und sie erhält bei Proben auf Überreden einen Bonus von +1 auf CH, wenn ihr Gegenüber den Blütengeruch mag (ansonsten kann die Probe auch um 1 erschwert sein)."
+    "rules_text": "Die Heldin riecht immer nach einer bestimmten wohlriechenden Blumenart. Sie kann nie unter dem Status Übler Geruch leiden, und sie erhält bei Proben auf Überreden einen Bonus von +1 auf CH, wenn ihr Gegenüber den Blütengeruch mag (ansonsten kann die Probe auch um 1 erschwert sein).",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "dickes_fell",
@@ -827,7 +909,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held weist einen natürlichen RS von 1 auf. Dieser kann mit dem RS von Rüstungen kombiniert werden, aber nur bis zu einem Wert von insgesamt RS 4.",
-    "rules_text": "Der Held weist einen natürlichen RS von 1 auf. Dieser kann mit dem RS von Rüstungen kombiniert werden, aber nur bis zu einem Wert von insgesamt RS 4."
+    "rules_text": "Der Held weist einen natürlichen RS von 1 auf. Dieser kann mit dem RS von Rüstungen kombiniert werden, aber nur bis zu einem Wert von insgesamt RS 4.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "einblicke_ins_verborgene",
@@ -837,7 +920,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin bekommt im Talent *Sinnesschärfe* eine Erleichterung von 1, wenn sie Zauber mit dem Merkmal Illusion durchschauen will.",
-    "rules_text": "Die Heldin bekommt im Talent *Sinnesschärfe* eine Erleichterung von 1, wenn sie Zauber mit dem Merkmal Illusion durchschauen will."
+    "rules_text": "Die Heldin bekommt im Talent *Sinnesschärfe* eine Erleichterung von 1, wenn sie Zauber mit dem Merkmal Illusion durchschauen will.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "glatte_haut",
@@ -847,7 +931,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Haut des Helden ist elastisch und glatt. Dadurch gleiten alle Nahkampfwaffen im Kampf ab, wenn bei der TP-Bestimmung das minimale Ergebnis erwürfelt wurde. Der Held erleidet dann keinen Schaden. D",
-    "rules_text": "Die Haut des Helden ist elastisch und glatt. Dadurch gleiten alle Nahkampfwaffen im Kampf ab, wenn bei der TP-Bestimmung das minimale Ergebnis erwürfelt wurde. Der Held erleidet dann keinen Schaden. Diese Regel findet jedoch nur Anwendung, wenn der RS des Helden maximal 2 beträgt."
+    "rules_text": "Die Haut des Helden ist elastisch und glatt. Dadurch gleiten alle Nahkampfwaffen im Kampf ab, wenn bei der TP-Bestimmung das minimale Ergebnis erwürfelt wurde. Der Held erleidet dann keinen Schaden. Diese Regel findet jedoch nur Anwendung, wenn der RS des Helden maximal 2 beträgt.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "harmonie_des_waldes",
@@ -857,7 +942,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Befindet die Heldin sich in einem Wald, so kann sie einmal am Tag eine Probe auf Willenskraft ablegen, um QS/2 Zustandsstufen von *Betäubung*, *Furcht*, *Paralyse* oder *Schmerz* abzubauen. Wenn mehre",
-    "rules_text": "Befindet die Heldin sich in einem Wald, so kann sie einmal am Tag eine Probe auf Willenskraft ablegen, um QS/2 Zustandsstufen von *Betäubung*, *Furcht*, *Paralyse* oder *Schmerz* abzubauen. Wenn mehrere Stufen auf diese Weise aufgehoben werden können, können diese zwischen den Zuständen aufgeteilt werden (z. B. 1 Stufe *Furcht* und 2 Stufen *Betäubung*). Die Probe abzulegen dauert 1 Minute."
+    "rules_text": "Befindet die Heldin sich in einem Wald, so kann sie einmal am Tag eine Probe auf Willenskraft ablegen, um QS/2 Zustandsstufen von *Betäubung*, *Furcht*, *Paralyse* oder *Schmerz* abzubauen. Wenn mehrere Stufen auf diese Weise aufgehoben werden können, können diese zwischen den Zuständen aufgeteilt werden (z. B. 1 Stufe *Furcht* und 2 Stufen *Betäubung*). Die Probe abzulegen dauert 1 Minute.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "kraft_der_baeume",
@@ -867,7 +953,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Schläft die Heldin unter einem Baum, kann sie einmal am Tag einen Teil von dessen Lebenskraft in sich aufnehmen. Sie regeneriert dadurch 1W3 LeP. Hierfür muss sie jedoch mindestens eine halbe Stunde u",
-    "rules_text": "Schläft die Heldin unter einem Baum, kann sie einmal am Tag einen Teil von dessen Lebenskraft in sich aufnehmen. Sie regeneriert dadurch 1W3 LeP. Hierfür muss sie jedoch mindestens eine halbe Stunde unter dem Baum schlafen."
+    "rules_text": "Schläft die Heldin unter einem Baum, kann sie einmal am Tag einen Teil von dessen Lebenskraft in sich aufnehmen. Sie regeneriert dadurch 1W3 LeP. Hierfür muss sie jedoch mindestens eine halbe Stunde unter dem Baum schlafen.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "leichter_gang",
@@ -877,7 +964,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin kann sich schneller bewegen als normale Menschen. Ihre GS erhält einen Bonus von 1. Zudem erhält sie + 1FP bei gelungenen Proben auf *Tanzen* (bis zu einem Maximum von 18 FP).",
-    "rules_text": "Die Heldin kann sich schneller bewegen als normale Menschen. Ihre GS erhält einen Bonus von 1. Zudem erhält sie + 1FP bei gelungenen Proben auf *Tanzen* (bis zu einem Maximum von 18 FP)."
+    "rules_text": "Die Heldin kann sich schneller bewegen als normale Menschen. Ihre GS erhält einen Bonus von 1. Zudem erhält sie + 1FP bei gelungenen Proben auf *Tanzen* (bis zu einem Maximum von 18 FP).",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "seesprache",
@@ -887,7 +975,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held kann sich mit allen Süß- und Salzwassertieren unterhalten. Je nach KL des Tiers kann es unterschiedlich gut Auskunft geben, das Gespräch ist dabei jedoch immer durch die tierische Intelligenz",
-    "rules_text": "Der Held kann sich mit allen Süß- und Salzwassertieren unterhalten. Je nach KL des Tiers kann es unterschiedlich gut Auskunft geben, das Gespräch ist dabei jedoch immer durch die tierische Intelligenz begrenzt. Tiefgreifende Diskussionen sind daher nicht zu erwarten."
+    "rules_text": "Der Held kann sich mit allen Süß- und Salzwassertieren unterhalten. Je nach KL des Tiers kann es unterschiedlich gut Auskunft geben, das Gespräch ist dabei jedoch immer durch die tierische Intelligenz begrenzt. Tiefgreifende Diskussionen sind daher nicht zu erwarten.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "tierische_kampfgefaehrten",
@@ -897,7 +986,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Gelingt dem Helden eine Probe auf *Tierkunde (Wildtiere)*, so stürzen sich Säugetiere und/oder Vögel der Größenkategorie winzig auf bis zu 3 vom Helden benannte Feinde, die nicht weiter als 16 Schritt",
-    "rules_text": "Gelingt dem Helden eine Probe auf *Tierkunde (Wildtiere)*, so stürzen sich Säugetiere und/oder Vögel der Größenkategorie winzig auf bis zu 3 vom Helden benannte Feinde, die nicht weiter als 16 Schritt von ihm entfernt sein dürfen. Die Gegner erleiden durch die kleinen Tiere für QS/2 KR eine Erschwernis von 1 auf alle Proben inklusive AT, PA, AW und FK. Nach diesem Zeitraum ziehen sich die Tiere wieder zurück. Diese Fähigkeit kann nur einmal am Tag genutzt werden und setzt zudem die Anwesenheit der Tiere in einer Umgebung von bis zu 64 Schritt Radius um den Helden voraus. Der Meister kann bei einer zu kleinen Zahl an Tieren auch die Anzahl der abgelenkten Feinde begrenzen (auch auf bis zu 0). Der Einsatz kostet 1 freie Aktion."
+    "rules_text": "Gelingt dem Helden eine Probe auf *Tierkunde (Wildtiere)*, so stürzen sich Säugetiere und/oder Vögel der Größenkategorie winzig auf bis zu 3 vom Helden benannte Feinde, die nicht weiter als 16 Schritt von ihm entfernt sein dürfen. Die Gegner erleiden durch die kleinen Tiere für QS/2 KR eine Erschwernis von 1 auf alle Proben inklusive AT, PA, AW und FK. Nach diesem Zeitraum ziehen sich die Tiere wieder zurück. Diese Fähigkeit kann nur einmal am Tag genutzt werden und setzt zudem die Anwesenheit der Tiere in einer Umgebung von bis zu 64 Schritt Radius um den Helden voraus. Der Meister kann bei einer zu kleinen Zahl an Tieren auch die Anzahl der abgelenkten Feinde begrenzen (auch auf bis zu 0). Der Einsatz kostet 1 freie Aktion.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "verfuehrerische_gestalt",
@@ -907,7 +997,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Dieser Vorteil eröffnet eine Einsatzmöglichkeit des Talents *Betören (Anbändeln)*. Wenn die Heldin sich verführerisch und charmant gibt, kann sie mehrere Personen in ihren Bann ziehen, sodass diese al",
-    "rules_text": "Dieser Vorteil eröffnet eine Einsatzmöglichkeit des Talents *Betören (Anbändeln)*. Wenn die Heldin sich verführerisch und charmant gibt, kann sie mehrere Personen in ihren Bann ziehen, sodass diese als leicht abgelenkt gelten und sie z. B. bei Proben auf *Sinnesschärfe* eine Erschwernis von 1 erhalten. Die Spielerin würfelt hierzu eine Probe auf *Betören (Anbändeln)*. Die Reichweite der Wirkung liegt bei QS x 3 Schritt, maximal kann die Abenteurerin QS Personen ihrer Wahl durch die Wirkung beeinflussen. Die Wirkung hält 5 Minuten an und kann nicht in einem Kampf eingesetzt werden."
+    "rules_text": "Dieser Vorteil eröffnet eine Einsatzmöglichkeit des Talents *Betören (Anbändeln)*. Wenn die Heldin sich verführerisch und charmant gibt, kann sie mehrere Personen in ihren Bann ziehen, sodass diese als leicht abgelenkt gelten und sie z. B. bei Proben auf *Sinnesschärfe* eine Erschwernis von 1 erhalten. Die Spielerin würfelt hierzu eine Probe auf *Betören (Anbändeln)*. Die Reichweite der Wirkung liegt bei QS x 3 Schritt, maximal kann die Abenteurerin QS Personen ihrer Wahl durch die Wirkung beeinflussen. Die Wirkung hält 5 Minuten an und kann nicht in einem Kampf eingesetzt werden.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "wasser_des_lebens",
@@ -917,7 +1008,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Gelangt der Held in Kontakt mit einer größeren Menge an Wasser (z. B.: aus Meer, Bach, Fluss oder See), kann er eine Regenerationsphase des angebrochenen Tages sofort nutzen. Die nächste reguläre Rege",
-    "rules_text": "Gelangt der Held in Kontakt mit einer größeren Menge an Wasser (z. B.: aus Meer, Bach, Fluss oder See), kann er eine Regenerationsphase des angebrochenen Tages sofort nutzen. Die nächste reguläre Regenerationsphase danach entfällt für diesen Helden dann jedoch. Die Regeneration dauert 5 Minuten."
+    "rules_text": "Gelangt der Held in Kontakt mit einer größeren Menge an Wasser (z. B.: aus Meer, Bach, Fluss oder See), kann er eine Regenerationsphase des angebrochenen Tages sofort nutzen. Die nächste reguläre Regenerationsphase danach entfällt für diesen Helden dann jedoch. Die Regeneration dauert 5 Minuten.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "unbeschwertes_zaubern",
@@ -927,7 +1019,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Schelm kann eine SK und ZK seiner Ziele von bis zu 2 bei seinen Schelmenstreichen ignorieren. Dieser Vorteil ist mit der Sonderfertigkeit *Lockeres Zaubern* (siehe **Aventurische Magie II** Seite ",
-    "rules_text": "Der Schelm kann eine SK und ZK seiner Ziele von bis zu 2 bei seinen Schelmenstreichen ignorieren. Dieser Vorteil ist mit der Sonderfertigkeit *Lockeres Zaubern* (siehe **Aventurische Magie II** Seite **72**) kombinierbar, sodass SK und ZK von bis zu 3 ignoriert werden können."
+    "rules_text": "Der Schelm kann eine SK und ZK seiner Ziele von bis zu 2 bei seinen Schelmenstreichen ignorieren. Dieser Vorteil ist mit der Sonderfertigkeit *Lockeres Zaubern* (siehe **Aventurische Magie II** Seite **72**) kombinierbar, sodass SK und ZK von bis zu 3 ignoriert werden können.",
+    "source_book": "Aventurische Magie II"
   },
   {
     "id": "begabte_r_aufreisser_in",
@@ -937,7 +1030,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Beim Abschleppen (siehe **Aventurisches Kompendium** Seite **36**) hat der Held mehr Erfolg als andere Personen. Bei der Probe auf *Betören (Liebeskünste)* zum Abschleppen bekommt er +1 FP (bis zu ein",
-    "rules_text": "Beim Abschleppen (siehe **Aventurisches Kompendium** Seite **36**) hat der Held mehr Erfolg als andere Personen. Bei der Probe auf *Betören (Liebeskünste)* zum Abschleppen bekommt er +1 FP (bis zu einem Maximum von 18 FP).<br>\nAlternativ kann der Spieler auch beschließen, mehrere Personen gleichzeitig abzuschleppen. Die Probe ist dann jedoch pro Person, die er abschleppen will, um 2 erschwert.<br>\nDieser Vorteil kann mit der Sonderfertigkeit *Abschleppspezialist/in* (siehe **Aventurisches Kompedium II** Seite **41**) kombiniert werden. Damit bekommt der Held +2 FP oder die Probe zum Abschleppen von mehreren Personen ist pro Person nur um 1 erschwert."
+    "rules_text": "Beim Abschleppen (siehe **Aventurisches Kompendium** Seite **36**) hat der Held mehr Erfolg als andere Personen. Bei der Probe auf *Betören (Liebeskünste)* zum Abschleppen bekommt er +1 FP (bis zu einem Maximum von 18 FP).<br>\nAlternativ kann der Spieler auch beschließen, mehrere Personen gleichzeitig abzuschleppen. Die Probe ist dann jedoch pro Person, die er abschleppen will, um 2 erschwert.<br>\nDieser Vorteil kann mit der Sonderfertigkeit *Abschleppspezialist/in* (siehe **Aventurisches Kompedium II** Seite **41**) kombiniert werden. Damit bekommt der Held +2 FP oder die Probe zum Abschleppen von mehreren Personen ist pro Person nur um 1 erschwert.",
+    "source_book": "Aventurisches Kompendium II"
   },
   {
     "id": "einkommen",
@@ -947,7 +1041,8 @@
     "levels": 6,
     "prerequisites": null,
     "description": "Für jede Stufe dieses Vorteils bekommt der Held die gleiche Stufe als dauerhaften Lebensstil. Das verdiente Geld des Vorteils fließt ausschließlich in den Erhalt des Lebensstils. Extrakosten wie Waffe",
-    "rules_text": "Für jede Stufe dieses Vorteils bekommt der Held die gleiche Stufe als dauerhaften Lebensstil. Das verdiente Geld des Vorteils fließt ausschließlich in den Erhalt des Lebensstils. Extrakosten wie Waffen, Rüstungen und andere Ausrüstung muss der Held von seinem Startkapital oder seinen Erwerbungen während des Spiels bezahlen. Alles was über den Lebensstil hinausgeht, muss allerdings extra gezahlt werden."
+    "rules_text": "Für jede Stufe dieses Vorteils bekommt der Held die gleiche Stufe als dauerhaften Lebensstil. Das verdiente Geld des Vorteils fließt ausschließlich in den Erhalt des Lebensstils. Extrakosten wie Waffen, Rüstungen und andere Ausrüstung muss der Held von seinem Startkapital oder seinen Erwerbungen während des Spiels bezahlen. Alles was über den Lebensstil hinausgeht, muss allerdings extra gezahlt werden.",
+    "source_book": "Aventurisches Kompendium II"
   },
   {
     "id": "natuerlicher_ruestungsschutz",
@@ -957,7 +1052,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Das Wesen verfügt pro Stufe des Vorteils über einen natürlichen Rüstungsschutz, der mit anderen Rüstungen kombiniert werden kann.",
-    "rules_text": "Das Wesen verfügt pro Stufe des Vorteils über einen natürlichen Rüstungsschutz, der mit anderen Rüstungen kombiniert werden kann."
+    "rules_text": "Das Wesen verfügt pro Stufe des Vorteils über einen natürlichen Rüstungsschutz, der mit anderen Rüstungen kombiniert werden kann.",
+    "source_book": "Aventurisches Bestiarium II"
   },
   {
     "id": "ausdauernde_r_liebhaber_in",
@@ -967,7 +1063,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Erreicht die Heldin während des Liebesspiels *Erregung* V, kann ihre Spielerin eine Probe auf *Willenskraft* ablegen. Bei Gelingen kann sie bis zu QS/2 Stufen *Erregung* ihrer Heldin abbauen, sie muss",
-    "rules_text": "Erreicht die Heldin während des Liebesspiels *Erregung* V, kann ihre Spielerin eine Probe auf *Willenskraft* ablegen. Bei Gelingen kann sie bis zu QS/2 Stufen *Erregung* ihrer Heldin abbauen, sie muss aber nicht alle QS/2 dazu benutzen. Obwohl die Heldin kurz *Erregung* IV erreicht hat, bekommt sie bei dem Einsatz dieser Fähigkeit weder einen Orgasmus, noch sinkt die *Erregung* automatisch auf 0."
+    "rules_text": "Erreicht die Heldin während des Liebesspiels *Erregung* V, kann ihre Spielerin eine Probe auf *Willenskraft* ablegen. Bei Gelingen kann sie bis zu QS/2 Stufen *Erregung* ihrer Heldin abbauen, sie muss aber nicht alle QS/2 dazu benutzen. Obwohl die Heldin kurz *Erregung* IV erreicht hat, bekommt sie bei dem Einsatz dieser Fähigkeit weder einen Orgasmus, noch sinkt die *Erregung* automatisch auf 0.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "erotische_ausstrahlung",
@@ -977,7 +1074,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Vorteil gibt dem Helden eine Erleichterung von 1 auf *Betören (Anbändeln oder Aufhübschen)* bei der Vorbereitung zur Anbahnung (siehe Seite **85**).",
-    "rules_text": "Der Vorteil gibt dem Helden eine Erleichterung von 1 auf *Betören (Anbändeln oder Aufhübschen)* bei der Vorbereitung zur Anbahnung (siehe Seite **85**)."
+    "rules_text": "Der Vorteil gibt dem Helden eine Erleichterung von 1 auf *Betören (Anbändeln oder Aufhübschen)* bei der Vorbereitung zur Anbahnung (siehe Seite **85**).",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "erotische_stimme",
@@ -987,7 +1085,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf *Betören (Anbändeln)* sind um 1 erleichtert, und ebenso Proben auf *Betören (Liebeskünste)*, wenn die Heldin die Sexpraktik Verbalerotik (siehe Seite **104**) einsetzt.",
-    "rules_text": "Proben auf *Betören (Anbändeln)* sind um 1 erleichtert, und ebenso Proben auf *Betören (Liebeskünste)*, wenn die Heldin die Sexpraktik Verbalerotik (siehe Seite **104**) einsetzt."
+    "rules_text": "Proben auf *Betören (Anbändeln)* sind um 1 erleichtert, und ebenso Proben auf *Betören (Liebeskünste)*, wenn die Heldin die Sexpraktik Verbalerotik (siehe Seite **104**) einsetzt.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "freudenfluss",
@@ -997,7 +1096,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Bekommt die Heldin einen Orgasmus, bedeutet dies, dass sie eine größere Flüssigkeitsmenge ejakuliert. Die Probe auf *Betören (Liebeskünste)* ist für sie im nächsten Durchgang um 1 erleichtert.\n  Außer",
-    "rules_text": "Bekommt die Heldin einen Orgasmus, bedeutet dies, dass sie eine größere Flüssigkeitsmenge ejakuliert. Die Probe auf *Betören (Liebeskünste)* ist für sie im nächsten Durchgang um 1 erleichtert.\n  Außerdem kann sie bei der Sexpraktik Samenspiele die aktive Position übernehmen."
+    "rules_text": "Bekommt die Heldin einen Orgasmus, bedeutet dies, dass sie eine größere Flüssigkeitsmenge ejakuliert. Die Probe auf *Betören (Liebeskünste)* ist für sie im nächsten Durchgang um 1 erleichtert.\n  Außerdem kann sie bei der Sexpraktik Samenspiele die aktive Position übernehmen.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "fruchtbar",
@@ -1007,7 +1107,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held oder die Heldin ist besonders fruchtbar. Die Zeugungs- oder Empfängniswahrscheinlichkeit steigt um 10 % (siehe Seite **111/112**).",
-    "rules_text": "Der Held oder die Heldin ist besonders fruchtbar. Die Zeugungs- oder Empfängniswahrscheinlichkeit steigt um 10 % (siehe Seite **111/112**)."
+    "rules_text": "Der Held oder die Heldin ist besonders fruchtbar. Die Zeugungs- oder Empfängniswahrscheinlichkeit steigt um 10 % (siehe Seite **111/112**).",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "grosse_blase",
@@ -1017,7 +1118,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Bei der Sexpraktik Wasserspiele wird beim Würfelergebnis, das feststellen soll, ob die Blase des Helden leer ist, 1 Punkt abgezogen.",
-    "rules_text": "Bei der Sexpraktik Wasserspiele wird beim Würfelergebnis, das feststellen soll, ob die Blase des Helden leer ist, 1 Punkt abgezogen."
+    "rules_text": "Bei der Sexpraktik Wasserspiele wird beim Würfelergebnis, das feststellen soll, ob die Blase des Helden leer ist, 1 Punkt abgezogen.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "guter_geschmack",
@@ -1027,7 +1129,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Wenn der Held sich mittels einer Probe auf *Betören (Aufhübschen)* zurechtmachen will, erhält er eine Erleichterung von 1.",
-    "rules_text": "Wenn der Held sich mittels einer Probe auf *Betören (Aufhübschen)* zurechtmachen will, erhält er eine Erleichterung von 1."
+    "rules_text": "Wenn der Held sich mittels einer Probe auf *Betören (Aufhübschen)* zurechtmachen will, erhält er eine Erleichterung von 1.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "hypnotische_s_brueste_gesaess_gemaecht",
@@ -1037,7 +1140,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Alle Personen in einem Radius von 10 Schritt um die Heldin, die an ihrem Geschlecht und ihrer Spezies interessiert sind, erleiden bei Fertigkeiten eine Erschwernis von 1 auf alle KL-Teilproben, solang",
-    "rules_text": "Alle Personen in einem Radius von 10 Schritt um die Heldin, die an ihrem Geschlecht und ihrer Spezies interessiert sind, erleiden bei Fertigkeiten eine Erschwernis von 1 auf alle KL-Teilproben, solange das ausgewählte Körperteil gut zu sehen ist. Es reicht dabei aus, wenn es sich durch das Tragen enger Kleidung auffällig abbildet. Dieser Vorteil muss für Brüste, Gesäß und Gemächt einzeln erworben werden. Es können auch andere Körperteile nach Meisterentscheid gewählt werden."
+    "rules_text": "Alle Personen in einem Radius von 10 Schritt um die Heldin, die an ihrem Geschlecht und ihrer Spezies interessiert sind, erleiden bei Fertigkeiten eine Erschwernis von 1 auf alle KL-Teilproben, solange das ausgewählte Körperteil gut zu sehen ist. Es reicht dabei aus, wenn es sich durch das Tragen enger Kleidung auffällig abbildet. Dieser Vorteil muss für Brüste, Gesäß und Gemächt einzeln erworben werden. Es können auch andere Körperteile nach Meisterentscheid gewählt werden.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "jungfrau",
@@ -1047,7 +1151,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin bekommt bei Proben auf *Betören* und*Überreden* gegenüber Einhörnern eine Erleichterung von 1.<br>\nDrachen können einer Jungfrau alle 24 Stunden durch eine 20 KR währende Berührung bis zu 1",
-    "rules_text": "Die Heldin bekommt bei Proben auf *Betören* und*Überreden* gegenüber Einhörnern eine Erleichterung von 1.<br>\nDrachen können einer Jungfrau alle 24 Stunden durch eine 20 KR währende Berührung bis zu 1W20 LeP rauben und sich diese als AsP gutschreiben. Der Drache muss nicht alle ausgewürfelten LeP rauben. Wird der Drache dabei unterbrochen, kommt die Übertragung nicht zustande. Der Drache kann nicht mehr AsP erhalten als sein Höchstwert. Er kann nur so viele LeP umwandeln, wie die Jungfrau LeP hat. Die Jungfrau kann bei dem Vorgang auf 0 LeP gelangen und liegt anschließend im Sterben. Verfügt die Heldin über die Sonderfertigkeit *Tradition (Gildenmagier)* oder *Tradition (Druiden)*, kann sie bei jeder Regenerationsphase +1 AsP regenerieren."
+    "rules_text": "Die Heldin bekommt bei Proben auf *Betören* und*Überreden* gegenüber Einhörnern eine Erleichterung von 1.<br>\nDrachen können einer Jungfrau alle 24 Stunden durch eine 20 KR währende Berührung bis zu 1W20 LeP rauben und sich diese als AsP gutschreiben. Der Drache muss nicht alle ausgewürfelten LeP rauben. Wird der Drache dabei unterbrochen, kommt die Übertragung nicht zustande. Der Drache kann nicht mehr AsP erhalten als sein Höchstwert. Er kann nur so viele LeP umwandeln, wie die Jungfrau LeP hat. Die Jungfrau kann bei dem Vorgang auf 0 LeP gelangen und liegt anschließend im Sterben. Verfügt die Heldin über die Sonderfertigkeit *Tradition (Gildenmagier)* oder *Tradition (Druiden)*, kann sie bei jeder Regenerationsphase +1 AsP regenerieren.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "levthangekuesst",
@@ -1057,7 +1162,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Der Held kann bei der Sexpraktik Samenspiele für jede Stufe einen zusätzlichen Teilnehmer bei Vergießen seines Samens benennen, der dann ebenfalls so tun kann, als ob er 1 Durchgang länger durchgehalt",
-    "rules_text": "Der Held kann bei der Sexpraktik Samenspiele für jede Stufe einen zusätzlichen Teilnehmer bei Vergießen seines Samens benennen, der dann ebenfalls so tun kann, als ob er 1 Durchgang länger durchgehalten hätte.<br>\nDie Probe auf *Betören (Liebeskünste)* ist für Teilnehmer, die durch den Vorteil den Samen erhalten haben, bis zum Ende des Liebesspiels wie üblich um 1 erschwert. Außerdem steigt die Wahrscheinlichkeit, dass ihm eine Zeugung gelingt pro Stufe um 5 % (siehe Seite **111**)."
+    "rules_text": "Der Held kann bei der Sexpraktik Samenspiele für jede Stufe einen zusätzlichen Teilnehmer bei Vergießen seines Samens benennen, der dann ebenfalls so tun kann, als ob er 1 Durchgang länger durchgehalten hätte.<br>\nDie Probe auf *Betören (Liebeskünste)* ist für Teilnehmer, die durch den Vorteil den Samen erhalten haben, bis zum Ende des Liebesspiels wie üblich um 1 erschwert. Außerdem steigt die Wahrscheinlichkeit, dass ihm eine Zeugung gelingt pro Stufe um 5 % (siehe Seite **111**).",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "potent",
@@ -1067,7 +1173,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held baut erst alle 2 Durchgänge eine Stufe *Erregung* ab (außerhalb des Liebesspiels: alle 5 Minuten). Dies bedeutet, dass er in der Regel beim Liebesspiel erst nach 2 Durchgängen eine Erregungss",
-    "rules_text": "Der Held baut erst alle 2 Durchgänge eine Stufe *Erregung* ab (außerhalb des Liebesspiels: alle 5 Minuten). Dies bedeutet, dass er in der Regel beim Liebesspiel erst nach 2 Durchgängen eine Erregungsstufe verliert, wenn seine *Erregung* weder erfolgreich gehalten noch gesteigert wird.<br>\nAußerdem sind Proben auf *Selbstbeherrschung* für die Feststellung des Durchhaltevermögens (siehe Seite **93**) für ihn um 1 erleichtert."
+    "rules_text": "Der Held baut erst alle 2 Durchgänge eine Stufe *Erregung* ab (außerhalb des Liebesspiels: alle 5 Minuten). Dies bedeutet, dass er in der Regel beim Liebesspiel erst nach 2 Durchgängen eine Erregungsstufe verliert, wenn seine *Erregung* weder erfolgreich gehalten noch gesteigert wird.<br>\nAußerdem sind Proben auf *Selbstbeherrschung* für die Feststellung des Durchhaltevermögens (siehe Seite **93**) für ihn um 1 erleichtert.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "rahjagekuesst",
@@ -1077,7 +1184,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Wenn die Heldin ihren ekstatischen Höhepunkt (siehe Seite **105**) erreicht, kann sie sich für folgende Optionen entscheiden:\n\n- Sie kann Teilnehmern des Liebespiels jeweils 1 Stufe *Erregung* verscha",
-    "rules_text": "Wenn die Heldin ihren ekstatischen Höhepunkt (siehe Seite **105**) erreicht, kann sie sich für folgende Optionen entscheiden:\n\n- Sie kann Teilnehmern des Liebespiels jeweils 1 Stufe *Erregung* verschaffen. Sie muss dabei nicht allen *Erregung* verschaffen, sondern sie kann sich beliebige Teilnehmer aussuchen.\n- Sie kann ihre verzückende Belohnung (siehe Seite **105**) nach dem Liebesspiel einem Teilnehmer schenken, der den ekstatischen Höhepunkt nicht von selbst erreicht hat.\n- Statt die verzückende Belohnung ihres Belohnungsgrades zu wählen, kann sie zwei Belohnungen niedriger Grade aussuchen. Es müssen verschiedene Belohnungen sein."
+    "rules_text": "Wenn die Heldin ihren ekstatischen Höhepunkt (siehe Seite **105**) erreicht, kann sie sich für folgende Optionen entscheiden:\n\n- Sie kann Teilnehmern des Liebespiels jeweils 1 Stufe *Erregung* verschaffen. Sie muss dabei nicht allen *Erregung* verschaffen, sondern sie kann sich beliebige Teilnehmer aussuchen.\n- Sie kann ihre verzückende Belohnung (siehe Seite **105**) nach dem Liebesspiel einem Teilnehmer schenken, der den ekstatischen Höhepunkt nicht von selbst erreicht hat.\n- Statt die verzückende Belohnung ihres Belohnungsgrades zu wählen, kann sie zwei Belohnungen niedriger Grade aussuchen. Es müssen verschiedene Belohnungen sein.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "resistenz_gegen_geschlechtskrankheiten",
@@ -1087,7 +1195,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Die Sonderfertigkeit verbessert die Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Geschlechtskrankheiten zu widerstehen (siehe Seite **116**).",
-    "rules_text": "Die Sonderfertigkeit verbessert die Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Geschlechtskrankheiten zu widerstehen (siehe Seite **116**)."
+    "rules_text": "Die Sonderfertigkeit verbessert die Zähigkeit und Seelenkraft um 1 pro Stufe, wenn es darum geht, Geschlechtskrankheiten zu widerstehen (siehe Seite **116**).",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "stattlicher_penis",
@@ -1097,7 +1206,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Setzt der Held die Sexpraktiken Analverkehr (aktiv), Fellatio (passiv), Coitus (aktiv), Mammalverkehr (aktiv) oder Fingerspiele (passiv) ein, erhält er eine Erleichterung von 1 bei der Probe auf *Betö",
-    "rules_text": "Setzt der Held die Sexpraktiken Analverkehr (aktiv), Fellatio (passiv), Coitus (aktiv), Mammalverkehr (aktiv) oder Fingerspiele (passiv) ein, erhält er eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*."
+    "rules_text": "Setzt der Held die Sexpraktiken Analverkehr (aktiv), Fellatio (passiv), Coitus (aktiv), Mammalverkehr (aktiv) oder Fingerspiele (passiv) ein, erhält er eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "traumhafter_po",
@@ -1107,7 +1217,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Setzt eine Heldin die Sexpraktik Analverkehr (passiv), Küssen & Lecken (passiv), Reiben & Streicheln ein, erhält sie eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*.",
-    "rules_text": "Setzt eine Heldin die Sexpraktik Analverkehr (passiv), Küssen & Lecken (passiv), Reiben & Streicheln ein, erhält sie eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*."
+    "rules_text": "Setzt eine Heldin die Sexpraktik Analverkehr (passiv), Küssen & Lecken (passiv), Reiben & Streicheln ein, erhält sie eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "treu_i_ii",
@@ -1117,7 +1228,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Der Held erhält bei Proben auf *Willenskraft (Betören widerstehen)* eine Erleichterung von 1 pro Stufe der Sonderfertigkeit gegenüber Personen, die nicht sein Partner sind.",
-    "rules_text": "Der Held erhält bei Proben auf *Willenskraft (Betören widerstehen)* eine Erleichterung von 1 pro Stufe der Sonderfertigkeit gegenüber Personen, die nicht sein Partner sind."
+    "rules_text": "Der Held erhält bei Proben auf *Willenskraft (Betören widerstehen)* eine Erleichterung von 1 pro Stufe der Sonderfertigkeit gegenüber Personen, die nicht sein Partner sind.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "vorliebe_sexpraktik",
@@ -1127,7 +1239,8 @@
     "levels": 2,
     "prerequisites": null,
     "description": "Die Heldin hat eine Vorliebe für eine bestimmte Sexpraktik (siehe Seite **100**). Pro Stufe ist die Probe auf *Betören (Liebeskünste)* für andere Teilnehmer des Liebesspiels um 1 erleichtert, wenn sie",
-    "rules_text": "Die Heldin hat eine Vorliebe für eine bestimmte Sexpraktik (siehe Seite **100**). Pro Stufe ist die Probe auf *Betören (Liebeskünste)* für andere Teilnehmer des Liebesspiels um 1 erleichtert, wenn sie diese Sexpraktik bei der Heldin einsetzen.\n\n- Eine Heldin kann maximal über drei Vorlieben verfügen."
+    "rules_text": "Die Heldin hat eine Vorliebe für eine bestimmte Sexpraktik (siehe Seite **100**). Pro Stufe ist die Probe auf *Betören (Liebeskünste)* für andere Teilnehmer des Liebesspiels um 1 erleichtert, wenn sie diese Sexpraktik bei der Heldin einsetzen.\n\n- Eine Heldin kann maximal über drei Vorlieben verfügen.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "wohlgeformte_brueste",
@@ -1137,7 +1250,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Bei Proben auf *Betören (Anbändeln oder Aufhübschen)* erhält die Heldin einen Bonus +1 FP (bis zu einem Maximum von 18 FP).\n\n- Setzt die Heldin die Sexpraktik Küssen & Lecken (passiv), Mammalverkehr (",
-    "rules_text": "Bei Proben auf *Betören (Anbändeln oder Aufhübschen)* erhält die Heldin einen Bonus +1 FP (bis zu einem Maximum von 18 FP).\n\n- Setzt die Heldin die Sexpraktik Küssen & Lecken (passiv), Mammalverkehr (passiv) oder Reiben & Streicheln (aktiv und passiv) ein, erhält sie eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*."
+    "rules_text": "Bei Proben auf *Betören (Anbändeln oder Aufhübschen)* erhält die Heldin einen Bonus +1 FP (bis zu einem Maximum von 18 FP).\n\n- Setzt die Heldin die Sexpraktik Küssen & Lecken (passiv), Mammalverkehr (passiv) oder Reiben & Streicheln (aktiv und passiv) ein, erhält sie eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "wunderschoene_vagina",
@@ -1147,7 +1261,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Setzt eine Heldin die Sexpraktik Cunnilingus (passiv), Coitus (passiv), Faustverkehr (passiv) oder Fingerspiele (passiv) ein, erhält sie eine Erleichterung von 1 bei der Probe auf *Betören (Liebesküns",
-    "rules_text": "Setzt eine Heldin die Sexpraktik Cunnilingus (passiv), Coitus (passiv), Faustverkehr (passiv) oder Fingerspiele (passiv) ein, erhält sie eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*."
+    "rules_text": "Setzt eine Heldin die Sexpraktik Cunnilingus (passiv), Coitus (passiv), Faustverkehr (passiv) oder Fingerspiele (passiv) ein, erhält sie eine Erleichterung von 1 bei der Probe auf *Betören (Liebeskünste)*.",
+    "source_book": "Wege der Vereinigungen"
   },
   {
     "id": "wolfsblut",
@@ -1157,7 +1272,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held verfügt über feine Sinne und hat ein Talent darin, Spuren zu folgen. Er erhält bei einer gelungenen Probe auf *Fährtensuchen* und *Sinnesschärfe* +1 QS (bis zu einem Maximum von 6 QS).\n\nAller",
-    "rules_text": "Der Held verfügt über feine Sinne und hat ein Talent darin, Spuren zu folgen. Er erhält bei einer gelungenen Probe auf *Fährtensuchen* und *Sinnesschärfe* +1 QS (bis zu einem Maximum von 6 QS).\n\nAllerdings lenkt ihn der Vollmond so stark ab, dass alle Proben in der Vollmondnacht und an dem Tag davor und danach um 1 erschwert sind."
+    "rules_text": "Der Held verfügt über feine Sinne und hat ein Talent darin, Spuren zu folgen. Er erhält bei einer gelungenen Probe auf *Fährtensuchen* und *Sinnesschärfe* +1 QS (bis zu einem Maximum von 6 QS).\n\nAllerdings lenkt ihn der Vollmond so stark ab, dass alle Proben in der Vollmondnacht und an dem Tag davor und danach um 1 erschwert sind.",
+    "source_book": "Aventurische Magie III"
   },
   {
     "id": "wolfsgebiss",
@@ -1167,7 +1283,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held kann sich innerhalb 1 Aktion ein Wolfsgebiss wachsen lassen und damit im Nahkampf mehr Schaden verursachen. Er benutzt dazu eine Raufen-AT und richtet +1 TP im Waffenlosen Kampf an. Zudem kan",
-    "rules_text": "Der Held kann sich innerhalb 1 Aktion ein Wolfsgebiss wachsen lassen und damit im Nahkampf mehr Schaden verursachen. Er benutzt dazu eine Raufen-AT und richtet +1 TP im Waffenlosen Kampf an. Zudem kann er die Sonderfertigkeit *Verbeißen* einsetzen. Die Rückverwandlung zu einem normalen Gebiss dauert ebenfalls 1 Aktion. Außerdem erzielt er, während die Verwandlung andauert, bei Proben auf *Einschüchtern* +1 FP (bis zu einem Maximum von 18 FP)."
+    "rules_text": "Der Held kann sich innerhalb 1 Aktion ein Wolfsgebiss wachsen lassen und damit im Nahkampf mehr Schaden verursachen. Er benutzt dazu eine Raufen-AT und richtet +1 TP im Waffenlosen Kampf an. Zudem kann er die Sonderfertigkeit *Verbeißen* einsetzen. Die Rückverwandlung zu einem normalen Gebiss dauert ebenfalls 1 Aktion. Außerdem erzielt er, während die Verwandlung andauert, bei Proben auf *Einschüchtern* +1 FP (bis zu einem Maximum von 18 FP).",
+    "source_book": "Aventurische Magie III"
   },
   {
     "id": "wolfskind",
@@ -1177,7 +1294,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin kann sich in einen Grimwolf verwandeln (siehe **Aventurischer Almanach** Seite **168**). Dazu benötigt sie 4 Aktionen. Während der Wirkungsdauer verwendet die Heldin die körperlichen Werte ",
-    "rules_text": "Die Heldin kann sich in einen Grimwolf verwandeln (siehe **Aventurischer Almanach** Seite **168**). Dazu benötigt sie 4 Aktionen. Während der Wirkungsdauer verwendet die Heldin die körperlichen Werte des Tieres, einschließlich seiner Eigenschaften, Talente und Kampfwerte. Eine niedrige LE wird bei der Verwandlung anteilsmäßig angerechnet, gleiches geschieht bei der Rückverwandlung. Die geistigen Werte der Heldin bleiben ebenso wie ihr Bewusstsein erhalten. Die Verwandlung betrifft nur die Heldin selbst, nicht ihre Kleidung oder Ausrüstung. Die Wirkungsdauer beträgt 1 Stunde. Die Heldin kann sich nicht willentlich zurückverwandeln. Am Ende der Wirkungsdauer erleidet die Heldin 1 Stufe *Betäubung*"
+    "rules_text": "Die Heldin kann sich in einen Grimwolf verwandeln (siehe **Aventurischer Almanach** Seite **168**). Dazu benötigt sie 4 Aktionen. Während der Wirkungsdauer verwendet die Heldin die körperlichen Werte des Tieres, einschließlich seiner Eigenschaften, Talente und Kampfwerte. Eine niedrige LE wird bei der Verwandlung anteilsmäßig angerechnet, gleiches geschieht bei der Rückverwandlung. Die geistigen Werte der Heldin bleiben ebenso wie ihr Bewusstsein erhalten. Die Verwandlung betrifft nur die Heldin selbst, nicht ihre Kleidung oder Ausrüstung. Die Wirkungsdauer beträgt 1 Stunde. Die Heldin kann sich nicht willentlich zurückverwandeln. Am Ende der Wirkungsdauer erleidet die Heldin 1 Stufe *Betäubung*",
+    "source_book": "Aventurische Magie III"
   },
   {
     "id": "dschinnenblut_rosendschinn",
@@ -1187,7 +1305,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Wenn eine Heldin mit diesem Vorteil während einer Regenerationsphase auf Erdboden schläft, regeneriert sie +2 LeP. Sie darf dabei leichte Kleidung tragen (keine Kleidung oder Rüstung mit RS) oder eine",
-    "rules_text": "Wenn eine Heldin mit diesem Vorteil während einer Regenerationsphase auf Erdboden schläft, regeneriert sie +2 LeP. Sie darf dabei leichte Kleidung tragen (keine Kleidung oder Rüstung mit RS) oder eine Decke benutzen.<br>\nIhre Haut ist dafür allerdings sehr empfindlich gegenüber Klingenwaffen. Alle Waffen, die eine Klinge aufweisen (Schwerter, Äxte, Speere), richten bei ihr +1 TP an."
+    "rules_text": "Wenn eine Heldin mit diesem Vorteil während einer Regenerationsphase auf Erdboden schläft, regeneriert sie +2 LeP. Sie darf dabei leichte Kleidung tragen (keine Kleidung oder Rüstung mit RS) oder eine Decke benutzen.<br>\nIhre Haut ist dafür allerdings sehr empfindlich gegenüber Klingenwaffen. Alle Waffen, die eine Klinge aufweisen (Schwerter, Äxte, Speere), richten bei ihr +1 TP an.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "feenblut_levschy",
@@ -1197,7 +1316,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Ein Held, in dessen Adern das Blut eines Levschy strömt, ist in einer Entfernung von 10 Schritt gut zu riechen. Alle an seinem Geschlecht interessierten Kulturschaffenden erhalten eine Erschwernis von",
-    "rules_text": "Ein Held, in dessen Adern das Blut eines Levschy strömt, ist in einer Entfernung von 10 Schritt gut zu riechen. Alle an seinem Geschlecht interessierten Kulturschaffenden erhalten eine Erschwernis von 2 auf Proben auf *Willenskraft (Betören widerstehen)*.<br>\nLeider ist er so gut zu riechen, dass Proben auf *Verbergen* für ihn um 1 erschwert sind, wenn sich Kulturschaffende innerhalb des Duftradius von 10 Schritt befinden."
+    "rules_text": "Ein Held, in dessen Adern das Blut eines Levschy strömt, ist in einer Entfernung von 10 Schritt gut zu riechen. Alle an seinem Geschlecht interessierten Kulturschaffenden erhalten eine Erschwernis von 2 auf Proben auf *Willenskraft (Betören widerstehen)*.<br>\nLeider ist er so gut zu riechen, dass Proben auf *Verbergen* für ihn um 1 erschwert sind, wenn sich Kulturschaffende innerhalb des Duftradius von 10 Schritt befinden.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "feenblut_vila",
@@ -1207,7 +1327,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Befindet sich eine Vila in der Ahnenreihe der Heldin, so verfügt sie über ein gutes Gespür für Tiere. Sie erhält bei einer gelungenen Probe auf *Tierkunde (Wildtiere)* +1 QS (bis zu einem Maximum von ",
-    "rules_text": "Befindet sich eine Vila in der Ahnenreihe der Heldin, so verfügt sie über ein gutes Gespür für Tiere. Sie erhält bei einer gelungenen Probe auf *Tierkunde (Wildtiere)* +1 QS (bis zu einem Maximum von 6 QS), und bei Proben auf *Betören* einen Bonus von +2 auf beide Teilproben von CH.<br>\nDafür erleidet sie eine Erschwernis von 1 bei Proben auf *Willenskraft (Betören widerstehen)*."
+    "rules_text": "Befindet sich eine Vila in der Ahnenreihe der Heldin, so verfügt sie über ein gutes Gespür für Tiere. Sie erhält bei einer gelungenen Probe auf *Tierkunde (Wildtiere)* +1 QS (bis zu einem Maximum von 6 QS), und bei Proben auf *Betören* einen Bonus von +2 auf beide Teilproben von CH.<br>\nDafür erleidet sie eine Erschwernis von 1 bei Proben auf *Willenskraft (Betören widerstehen)*.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "betoerender_duft",
@@ -1217,7 +1338,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Die Heldin riecht immer nach einer bestimmten wohlriechenden Blumenart. Sie kann nie unter dem Status *Übler Geruch* leiden, und sie erhält bei Proben auf *Betören* einen Bonus von +1 auf CH, wenn ihr",
-    "rules_text": "Die Heldin riecht immer nach einer bestimmten wohlriechenden Blumenart. Sie kann nie unter dem Status *Übler Geruch* leiden, und sie erhält bei Proben auf *Betören* einen Bonus von +1 auf CH, wenn ihr Gegenüber den Blütengeruch mag (ansonsten kann die Probe auch um 1 erschwert sein)."
+    "rules_text": "Die Heldin riecht immer nach einer bestimmten wohlriechenden Blumenart. Sie kann nie unter dem Status *Übler Geruch* leiden, und sie erhält bei Proben auf *Betören* einen Bonus von +1 auf CH, wenn ihr Gegenüber den Blütengeruch mag (ansonsten kann die Probe auch um 1 erschwert sein).",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "muttererde",
@@ -1227,7 +1349,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Solange sich die Heldin barfuß auf Erde bewegt, dauert es nur halb so lange, eine Stufe *Betäubung, Furcht, Paralyse* oder *Verwirrung* abzubauen wie üblich. Sollte sie zwischenzeitlich den Erdboden v",
-    "rules_text": "Solange sich die Heldin barfuß auf Erde bewegt, dauert es nur halb so lange, eine Stufe *Betäubung, Furcht, Paralyse* oder *Verwirrung* abzubauen wie üblich. Sollte sie zwischenzeitlich den Erdboden verlassen, so dauert der Abbau der Stufe wieder so lang wie üblich. Die verkürzte Zeit für den Abbau gilt nach dem erneuten Betreten von Erdboden dann erst wieder für die nächste Zustandsstufe der Zustände."
+    "rules_text": "Solange sich die Heldin barfuß auf Erde bewegt, dauert es nur halb so lange, eine Stufe *Betäubung, Furcht, Paralyse* oder *Verwirrung* abzubauen wie üblich. Sollte sie zwischenzeitlich den Erdboden verlassen, so dauert der Abbau der Stufe wieder so lang wie üblich. Die verkürzte Zeit für den Abbau gilt nach dem erneuten Betreten von Erdboden dann erst wieder für die nächste Zustandsstufe der Zustände.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "rosenliebe",
@@ -1237,7 +1360,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Bei den Sexpraktiken Küssen & Lecken, Mammalverkehr und Reiben & Streicheln und Verbalerotik erhält die Heldin eine Erleichterung von 1 auf beide CH-Teilprobe bei *Betören (Liebeskünste)*. Der andere ",
-    "rules_text": "Bei den Sexpraktiken Küssen & Lecken, Mammalverkehr und Reiben & Streicheln und Verbalerotik erhält die Heldin eine Erleichterung von 1 auf beide CH-Teilprobe bei *Betören (Liebeskünste)*. Der andere Teilnehmer hingegen verliert durch Dornenstiche pro Durchgang 1 LeP, solange diese Fähigkeit mit den entsprechenden Praktiken eingesetzt wird."
+    "rules_text": "Bei den Sexpraktiken Küssen & Lecken, Mammalverkehr und Reiben & Streicheln und Verbalerotik erhält die Heldin eine Erleichterung von 1 auf beide CH-Teilprobe bei *Betören (Liebeskünste)*. Der andere Teilnehmer hingegen verliert durch Dornenstiche pro Durchgang 1 LeP, solange diese Fähigkeit mit den entsprechenden Praktiken eingesetzt wird.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "ekstatisches_verlangen",
@@ -1247,7 +1371,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Besitzt ein Held diese Fähigkeit, so endet das Liebesspiel, nachdem er Erregungsstufe IV erreicht hat, nicht nach 3 weiteren Durchgängen, sondern es geht für ihn solange weiter, bis eine andere Beding",
-    "rules_text": "Besitzt ein Held diese Fähigkeit, so endet das Liebesspiel, nachdem er Erregungsstufe IV erreicht hat, nicht nach 3 weiteren Durchgängen, sondern es geht für ihn solange weiter, bis eine andere Bedingungen für das Ende des Liebesspiels eingetreten ist. Er kann weiterhin Erregungsstufen erreichen und weitere Orgasmen bekommen."
+    "rules_text": "Besitzt ein Held diese Fähigkeit, so endet das Liebesspiel, nachdem er Erregungsstufe IV erreicht hat, nicht nach 3 weiteren Durchgängen, sondern es geht für ihn solange weiter, bis eine andere Bedingungen für das Ende des Liebesspiels eingetreten ist. Er kann weiterhin Erregungsstufen erreichen und weitere Orgasmen bekommen.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "gabe_der_sonne",
@@ -1257,7 +1382,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Einmal alle 24 Stunden kann eine Heldin mit diesem Vorteil eine halbe Stunde in der Sonne meditieren und bekommt dafür 1W3 LeP zurück. Während der Meditation darf sie keine anderen Handlungen vornehme",
-    "rules_text": "Einmal alle 24 Stunden kann eine Heldin mit diesem Vorteil eine halbe Stunde in der Sonne meditieren und bekommt dafür 1W3 LeP zurück. Während der Meditation darf sie keine anderen Handlungen vornehmen, also weder Rituale vorbereiten, kämpfen noch lesen. Wird sie während der Meditation unterbrochen, so scheitert die zusätzliche Regeneration. Im Zweifelsfall entscheidet eine Probe auf *Selbstbeherrschung (Störungen ignorieren)* darüber, ob sie ihre Konzentration verliert."
+    "rules_text": "Einmal alle 24 Stunden kann eine Heldin mit diesem Vorteil eine halbe Stunde in der Sonne meditieren und bekommt dafür 1W3 LeP zurück. Während der Meditation darf sie keine anderen Handlungen vornehmen, also weder Rituale vorbereiten, kämpfen noch lesen. Wird sie während der Meditation unterbrochen, so scheitert die zusätzliche Regeneration. Im Zweifelsfall entscheidet eine Probe auf *Selbstbeherrschung (Störungen ignorieren)* darüber, ob sie ihre Konzentration verliert.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "lustvolle_ausschweifung",
@@ -1267,7 +1393,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Bei *Flotter Dreier* und *Orgien* kann der Held ein zweites Liebesspiel mit den gleichen Teilnehmern oder einer anderen Orgien-Gruppe beginnen, und alle Teilnehmer können erneut verzückende Belohnunge",
-    "rules_text": "Bei *Flotter Dreier* und *Orgien* kann der Held ein zweites Liebesspiel mit den gleichen Teilnehmern oder einer anderen Orgien-Gruppe beginnen, und alle Teilnehmer können erneut verzückende Belohnungen erhalten. Diese verzückende Belohnung gilt zusätzlich zu den ansonsten erspielten verzückenden Belohnungen eines Liebesspiels. Der Held und die Teilnehmer können nur eine verzückende Belohnung wählen, die sie schon als Belohnung nach dem regulären Einsatz des Liebesspiels dazugewonnen haben. Diese Fähigkeit verursacht am Ende des zweiten Liebesspiels 1 Stufe *Betäubung* beim Helden und allen Teilnehmern, die zwei Liebesspiele durchgestanden haben."
+    "rules_text": "Bei *Flotter Dreier* und *Orgien* kann der Held ein zweites Liebesspiel mit den gleichen Teilnehmern oder einer anderen Orgien-Gruppe beginnen, und alle Teilnehmer können erneut verzückende Belohnungen erhalten. Diese verzückende Belohnung gilt zusätzlich zu den ansonsten erspielten verzückenden Belohnungen eines Liebesspiels. Der Held und die Teilnehmer können nur eine verzückende Belohnung wählen, die sie schon als Belohnung nach dem regulären Einsatz des Liebesspiels dazugewonnen haben. Diese Fähigkeit verursacht am Ende des zweiten Liebesspiels 1 Stufe *Betäubung* beim Helden und allen Teilnehmern, die zwei Liebesspiele durchgestanden haben.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "rausch_der_leidenschaft",
@@ -1277,7 +1404,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Eine Heldin mit diesem Vorteil kann jedes Mal, wenn sie mit einem Kulturschaffenden schläft, gleich ob sie den gewöhnlichen Beischlaf oder das Liebesspiel vollzieht, diesem 1W6 LeP ihrer Lebensenergie",
-    "rules_text": "Eine Heldin mit diesem Vorteil kann jedes Mal, wenn sie mit einem Kulturschaffenden schläft, gleich ob sie den gewöhnlichen Beischlaf oder das Liebesspiel vollzieht, diesem 1W6 LeP ihrer Lebensenergie übertragen (bis zum Maximum der LeP des Kulturschaffenden). Die LeP werden von der Lebensenergie der Heldin abgezogen und ihrem Partner gutgeschrieben. Die Heldin erleidet bei der Übertragung der Lebensenergie 1 Stufe *Betäubung*."
+    "rules_text": "Eine Heldin mit diesem Vorteil kann jedes Mal, wenn sie mit einem Kulturschaffenden schläft, gleich ob sie den gewöhnlichen Beischlaf oder das Liebesspiel vollzieht, diesem 1W6 LeP ihrer Lebensenergie übertragen (bis zum Maximum der LeP des Kulturschaffenden). Die LeP werden von der Lebensenergie der Heldin abgezogen und ihrem Partner gutgeschrieben. Die Heldin erleidet bei der Übertragung der Lebensenergie 1 Stufe *Betäubung*.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "reigen_der_liebe",
@@ -1287,7 +1415,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Immer, wenn die Heldin mit einem anderen Kulturschaffenden schläft, gleich ob es ein gewöhnlicher Beischlaf oder ein Liebesspiel ist, kann sie eine verzückende Belohnung der Stufe I für sich aussuchen",
-    "rules_text": "Immer, wenn die Heldin mit einem anderen Kulturschaffenden schläft, gleich ob es ein gewöhnlicher Beischlaf oder ein Liebesspiel ist, kann sie eine verzückende Belohnung der Stufe I für sich aussuchen (siehe **Wege der Vereinigungen** Seite **105**). Diese verzückende Belohnung gilt zusätzlich zu den ansonsten erspielten verzückenden Belohnungen eines Liebesspiels. Sie kann nur eine verzückende Belohnung wählen, die sie schon als Belohnung nach dem regulären Einsatz des Liebesspiels dazugewonnen hat. Nach dem Einsatz dieser Fähigkeit erleidet die Heldin 1 Stufe *Betäubung*."
+    "rules_text": "Immer, wenn die Heldin mit einem anderen Kulturschaffenden schläft, gleich ob es ein gewöhnlicher Beischlaf oder ein Liebesspiel ist, kann sie eine verzückende Belohnung der Stufe I für sich aussuchen (siehe **Wege der Vereinigungen** Seite **105**). Diese verzückende Belohnung gilt zusätzlich zu den ansonsten erspielten verzückenden Belohnungen eines Liebesspiels. Sie kann nur eine verzückende Belohnung wählen, die sie schon als Belohnung nach dem regulären Einsatz des Liebesspiels dazugewonnen hat. Nach dem Einsatz dieser Fähigkeit erleidet die Heldin 1 Stufe *Betäubung*.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "wilde_erregung",
@@ -1297,7 +1426,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held bekommt durch Erregungsstufen Boni: Bei Stufe I +1 AT, bei Stufe II +1 TP, bei Stufe III +1 AW. Die Boni sind kumulativ, ein Held mit *Erregung* Stufe III hat also alle aufgeführten Boni. Bei",
-    "rules_text": "Der Held bekommt durch Erregungsstufen Boni: Bei Stufe I +1 AT, bei Stufe II +1 TP, bei Stufe III +1 AW. Die Boni sind kumulativ, ein Held mit *Erregung* Stufe III hat also alle aufgeführten Boni. Bei Stufe IV bekommt der Held 1 KR lang auf alle drei Werte den doppelten Bonus."
+    "rules_text": "Der Held bekommt durch Erregungsstufen Boni: Bei Stufe I +1 AT, bei Stufe II +1 TP, bei Stufe III +1 AW. Die Boni sind kumulativ, ein Held mit *Erregung* Stufe III hat also alle aufgeführten Boni. Bei Stufe IV bekommt der Held 1 KR lang auf alle drei Werte den doppelten Bonus.",
+    "source_book": "Lustschlösser & Zauberwesen"
   },
   {
     "id": "koboldfreund",
@@ -1307,7 +1437,8 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Proben auf Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln), um einen Kobold/Klabauter freundlich zu stimmen, gelten bei Gelingen der Probe als um 1 QS besser. Allerdings kann sich die",
-    "rules_text": "Proben auf Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln), um einen Kobold/Klabauter freundlich zu stimmen, gelten bei Gelingen der Probe als um 1 QS besser. Allerdings kann sich die QS so nie über 6 hinaus erhöhen."
+    "rules_text": "Proben auf Überreden (Aufschwatzen, Herausreden, Manipulieren, Schmeicheln), um einen Kobold/Klabauter freundlich zu stimmen, gelten bei Gelingen der Probe als um 1 QS besser. Allerdings kann sich die QS so nie über 6 hinaus erhöhen.",
+    "source_book": "Die Siebenwindküste"
   },
   {
     "id": "blutzauberer",
@@ -1317,6 +1448,7 @@
     "levels": 1,
     "prerequisites": null,
     "description": "Der Held wird zum Zauberer, obwohl er nicht mit der Gabe der Zauberei geboren wurde. Er verfügt nicht über einen eigenen AsP-Vorrat, sondern zaubert stattdessen mit seiner Lebensenergie. Dabei sind Le",
-    "rules_text": "Der Held wird zum Zauberer, obwohl er nicht mit der Gabe der Zauberei geboren wurde. Er verfügt nicht über einen eigenen AsP-Vorrat, sondern zaubert stattdessen mit seiner Lebensenergie. Dabei sind Lebenspunkte doppelt so viel Wert wie AsP, sodass ein Zauber, der 7 AsP kosten würde, den Helden nur 4 LeP kosten. Hat der Held einen eigenen AsP-Vorrat, kann er sich bei jedem Zauber entscheiden, ob er mit AsP oder LeP zaubern möchte."
+    "rules_text": "Der Held wird zum Zauberer, obwohl er nicht mit der Gabe der Zauberei geboren wurde. Er verfügt nicht über einen eigenen AsP-Vorrat, sondern zaubert stattdessen mit seiner Lebensenergie. Dabei sind Lebenspunkte doppelt so viel Wert wie AsP, sodass ein Zauber, der 7 AsP kosten würde, den Helden nur 4 LeP kosten. Hat der Held einen eigenen AsP-Vorrat, kann er sich bei jedem Zauber entscheiden, ob er mit AsP oder LeP zaubern möchte.",
+    "source_book": "Aventurische Magie III"
   }
 ]

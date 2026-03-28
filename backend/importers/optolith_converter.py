@@ -684,6 +684,7 @@ def convert_advantages(data: OptolithData) -> list[dict]:
             "prerequisites": None,
             "description": rules[:200] if rules else None,
             "rules_text": rules if rules else None,
+            "source_book": data.source_book_for(de),
         }
         records.append(record)
 
@@ -723,6 +724,7 @@ def convert_disadvantages(data: OptolithData) -> list[dict]:
             "prerequisites": None,
             "description": rules[:200] if rules else None,
             "rules_text": rules if rules else None,
+            "source_book": data.source_book_for(de),
         }
         records.append(record)
 
@@ -943,6 +945,7 @@ def convert_special_abilities(data: OptolithData) -> list[dict]:
             "applicable_techniques": [],
             "description": rules[:300] if rules else None,
             "rules_text": rules if rules else None,
+            "source_book": data.source_book_for(de),
         }
         records.append(record)
 
