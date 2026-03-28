@@ -33,6 +33,8 @@ class EventType(str, Enum):
     AP_AWARD = "ap_award"
     QUEST_UPDATE = "quest_update"
     LORE_REVEAL = "lore_reveal"
+    REST_START = "rest_start"
+    REST_END = "rest_end"
     # Trade / Transfer
     TRADE_PROPOSE = "trade_propose"
     TRADE_ACCEPT = "trade_accept"

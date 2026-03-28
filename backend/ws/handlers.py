@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import random
 import time
 import uuid
 from datetime import datetime
@@ -699,6 +700,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.COMBAT_NEXT_TURN: _handle_combat_next_turn,
         EventType.PROBE_REQUEST: _handle_probe_request,
         EventType.GROUP_PROBE_REQUEST: _handle_group_probe_request,
+        EventType.OPPOSED_PROBE_REQUEST: _handle_opposed_probe_request,
         EventType.WHISPER: _handle_whisper,
         EventType.HALT: _handle_halt,
         EventType.HALT_RELEASE: _handle_halt_release,
@@ -712,6 +714,8 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.AP_AWARD: _handle_ap_award,
         EventType.QUEST_UPDATE: _handle_quest_update,
         EventType.LORE_REVEAL: _handle_lore_reveal,
+        EventType.REST_START: _handle_rest_start,
+        EventType.REST_END: _handle_rest_end,
         EventType.SESSION_START: _handle_session_start,
         EventType.SESSION_PAUSE: _handle_session_pause,
         EventType.SESSION_END: _handle_session_end,
@@ -1386,6 +1390,181 @@ async def _handle_group_probe_request(session_code: str, user_id: str, payload: 
     }, from_user=user_id))
 
 
+async def _handle_opposed_probe_request(session_code: str, user_id: str, payload: dict, state: dict):
+    """GM initiates an opposed probe (Vergleichsprobe) between two characters.
+
+    Payload:
+        initiator_id: str       — user_id (player) or character_id (NPC)
+        target_id: str          — user_id (player) or character_id (NPC)
+        initiator_skill: str    — talent name for initiator (e.g. Einschüchtern)
+        target_skill: str       — talent name for target (e.g. Willenskraft)
+        initiator_name: str     — display name
+        target_name: str        — display name
+        modifier: int           — optional difficulty modifier
+        initiator_fw: int       — talent value for initiator
+        target_fw: int          — talent value for target
+        initiator_probe: list   — 3-attribute probe array (e.g. ["MU","IN","CH"])
+        target_probe: list      — 3-attribute probe array
+        npc_auto_roll: dict     — if set, NPC result: {side: "initiator"|"target", qs: int, success: bool}
+    """
+    import uuid as _uuid
+
+    initiator_id = payload.get("initiator_id")
+    target_id = payload.get("target_id")
+    initiator_skill = payload.get("initiator_skill", "Probe")
+    target_skill = payload.get("target_skill", "Probe")
+    initiator_name = payload.get("initiator_name", "Initiator")
+    target_name = payload.get("target_name", "Ziel")
+    modifier = payload.get("modifier", 0)
+
+    if not initiator_id or not target_id:
+        await manager.send_to_user(user_id, _error("opposed_probe_request requires initiator_id and target_id"))
+        return
+
+    probe_id = f"opposed_{_uuid.uuid4().hex[:12]}"
+    opposed = state.setdefault("opposed_probes", {})
+    opposed[probe_id] = {
+        "initiator_id": initiator_id,
+        "target_id": target_id,
+        "initiator_skill": initiator_skill,
+        "target_skill": target_skill,
+        "initiator_name": initiator_name,
+        "target_name": target_name,
+        "modifier": modifier,
+        "results": {},  # side ("initiator"|"target") -> {qs, success, critical, patzer}
+        "gm_user_id": user_id,
+    }
+
+    # Build dice request base
+    base_request = {
+        "type": "talent_probe",
+        "opposed": True,
+        "probe_id": probe_id,
+        "difficulty": modifier,
+    }
+
+    # Handle NPC auto-roll (GM pre-rolled for NPC)
+    npc_auto = payload.get("npc_auto_roll")
+    if npc_auto:
+        side = npc_auto.get("side", "target")
+        opposed[probe_id]["results"][side] = {
+            "qs": npc_auto.get("qs", 0),
+            "success": npc_auto.get("success", False),
+            "critical": npc_auto.get("critical", False),
+            "patzer": npc_auto.get("patzer", False),
+        }
+
+    # Send dice requests to players who need to roll
+    for side, uid, skill, name, fw, probe_attrs in [
+        ("initiator", initiator_id, initiator_skill, initiator_name, payload.get("initiator_fw", 0), payload.get("initiator_probe", [])),
+        ("target", target_id, target_skill, target_name, payload.get("target_fw", 0), payload.get("target_probe", [])),
+    ]:
+        if side not in opposed[probe_id]["results"]:
+            # This side needs to roll — send dice_request
+            req = {
+                **base_request,
+                "target_user_id": uid,
+                "talent_name": skill,
+                "label": f"Vergleichsprobe: {skill}",
+                "character_name": name,
+                "fw": fw,
+                "probe": probe_attrs,
+                "opposed_side": side,
+            }
+            await manager.send_to_user(uid, _msg(EventType.DICE_REQUEST, req, from_user=user_id))
+            # Store in pending_requests for reconnect persistence
+            state.setdefault("pending_requests", {})[f"opposed_{uid}_{probe_id}"] = {
+                **req, "type": "dice_request", "timestamp": _ts(),
+            }
+
+    # Check if auto-roll already completed both sides (NPC vs NPC)
+    if len(opposed[probe_id]["results"]) >= 2:
+        await _resolve_opposed_probe(session_code, probe_id, state)
+        return
+
+    # Confirm to GM
+    await manager.send_to_user(user_id, _msg(EventType.OPPOSED_PROBE_REQUEST, {
+        "probe_id": probe_id,
+        "initiator_name": initiator_name,
+        "target_name": target_name,
+        "initiator_skill": initiator_skill,
+        "target_skill": target_skill,
+        "status": "sent",
+    }, from_user=user_id))
+
+    logger.info("Opposed probe %s started in %s: %s (%s) vs %s (%s)",
+                probe_id, session_code, initiator_name, initiator_skill, target_name, target_skill)
+
+
+async def _resolve_opposed_probe(session_code: str, probe_id: str, state: dict):
+    """Resolve an opposed probe once both sides have submitted results.
+
+    DSA5 rules: Higher QS wins. On tie, defender (target) wins.
+    Failed probes get QS 0 for comparison purposes.
+    """
+    opposed = state.get("opposed_probes", {})
+    probe = opposed.get(probe_id)
+    if not probe:
+        return
+
+    init_result = probe["results"].get("initiator", {})
+    target_result = probe["results"].get("target", {})
+
+    init_qs = init_result.get("qs", 0) if init_result.get("success") else 0
+    target_qs = target_result.get("qs", 0) if target_result.get("success") else 0
+
+    # DSA5: ties go to defender (target)
+    if init_qs > target_qs:
+        winner = "initiator"
+        winner_name = probe["initiator_name"]
+    else:
+        winner = "target"
+        winner_name = probe["target_name"]
+
+    result_payload = {
+        "probe_id": probe_id,
+        "winner": winner,
+        "winner_name": winner_name,
+        "initiator_name": probe["initiator_name"],
+        "target_name": probe["target_name"],
+        "initiator_skill": probe["initiator_skill"],
+        "target_skill": probe["target_skill"],
+        "initiator_qs": init_qs,
+        "target_qs": target_qs,
+        "initiator_success": init_result.get("success", False),
+        "target_success": target_result.get("success", False),
+        "initiator_critical": init_result.get("critical", False),
+        "target_critical": target_result.get("critical", False),
+        "initiator_patzer": init_result.get("patzer", False),
+        "target_patzer": target_result.get("patzer", False),
+    }
+
+    # Broadcast result to all
+    await manager.broadcast_to_room(session_code, _msg(
+        EventType.OPPOSED_PROBE_RESULT, result_payload,
+    ))
+
+    # Log to Protokoll
+    init_label = f"{probe['initiator_name']} {probe['initiator_skill']} (QS {init_qs})"
+    target_label = f"{probe['target_name']} {probe['target_skill']} (QS {target_qs})"
+    await _append_session_log(
+        session_code, "dice",
+        f"Vergleichsprobe: {init_label} vs {target_label} — {winner_name} gewinnt!",
+        icon="swords",
+    )
+
+    # Clean up
+    del opposed[probe_id]
+    # Remove pending requests for this probe
+    pending = state.get("pending_requests", {})
+    to_remove = [k for k in pending if probe_id in k]
+    for k in to_remove:
+        del pending[k]
+
+    logger.info("Opposed probe %s resolved in %s: %s wins (QS %d vs %d)",
+                probe_id, session_code, winner_name, init_qs, target_qs)
+
+
 async def _handle_whisper(session_code: str, user_id: str, payload: dict, state: dict):
     """GM sends a private whisper to a player."""
     target_user = payload.get("target_user")
@@ -1469,20 +1648,225 @@ async def _handle_handout_push(session_code: str, user_id: str, payload: dict, s
 
 
 async def _handle_time_advance(session_code: str, user_id: str, payload: dict, state: dict):
-    """Advance the in-game clock."""
-    state["in_game_time"] = payload.get("new_time")
+    """Advance the in-game clock.
+
+    Payload:
+        new_time: str            — new world time (ISO-ish, e.g. "14:30" or "1037-06-15T14:30")
+        advanced_by_minutes: int — how many minutes were advanced (for logging)
+    """
+    new_time = payload.get("new_time")
+    if not new_time or not isinstance(new_time, str):
+        await manager.send_to_user(user_id, _error("time_advance requires 'new_time' (string)"))
+        return
+    advanced_by_minutes = payload.get("advanced_by_minutes", 0)
+    if not isinstance(advanced_by_minutes, (int, float)):
+        advanced_by_minutes = 0
+
+    state["in_game_time"] = new_time
     msg = _msg(EventType.TIME_ADVANCE, {
-        "new_time": state["in_game_time"],
+        "new_time": new_time,
+        "advanced_by_minutes": int(advanced_by_minutes),
+        # Keep legacy field for frontend compatibility
         "advanced_by": payload.get("advanced_by", ""),
     }, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
 
+    # Log significant time changes
+    if advanced_by_minutes >= 60:
+        hours = int(advanced_by_minutes) // 60
+        mins = int(advanced_by_minutes) % 60
+        label = f"{hours}h" + (f" {mins}min" if mins else "")
+        await _append_session_log(session_code, "system", f"Zeit vorgerückt um {label} → {new_time}", icon="clock")
+
+
+ALLOWED_WEATHER = {"klar", "bewölkt", "bewoelkt", "regen", "sturm", "schnee", "nebel", "hagel", "gewitter"}
+
 
 async def _handle_weather_change(session_code: str, user_id: str, payload: dict, state: dict):
-    """Change the current weather."""
-    state["weather"] = payload.get("weather")
-    msg = _msg(EventType.WEATHER_CHANGE, {"weather": state["weather"]}, from_user=user_id)
+    """Change the current weather.
+
+    Payload:
+        weather: str — one of the allowed weather types
+    """
+    weather = payload.get("weather")
+    if not weather or not isinstance(weather, str):
+        await manager.send_to_user(user_id, _error("weather_change requires 'weather' (string)"))
+        return
+    weather_lower = weather.lower().strip()
+    if weather_lower not in ALLOWED_WEATHER:
+        await manager.send_to_user(user_id, _error(
+            f"Unknown weather '{weather}'. Allowed: {', '.join(sorted(ALLOWED_WEATHER))}"
+        ))
+        return
+
+    state["weather"] = weather
+    msg = _msg(EventType.WEATHER_CHANGE, {"weather": weather}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
+    await _append_session_log(session_code, "system", f"Wetter: {weather}", icon="cloud")
+
+
+async def _handle_rest_start(session_code: str, user_id: str, payload: dict, state: dict):
+    """GM triggers a rest period for selected characters.
+
+    Payload:
+        character_ids: list[str] — characters who are resting
+        duration_hours: int      — rest duration (default 8)
+    """
+    character_ids = payload.get("character_ids", [])
+    duration_hours = payload.get("duration_hours", 8)
+    if not character_ids:
+        await manager.send_to_user(user_id, _error("rest_start requires 'character_ids' list"))
+        return
+    if not isinstance(duration_hours, (int, float)) or duration_hours < 1:
+        duration_hours = 8
+
+    state["rest"] = {
+        "character_ids": character_ids,
+        "duration_hours": int(duration_hours),
+        "started_at": _ts(),
+    }
+
+    msg = _msg(EventType.REST_START, {
+        "character_ids": character_ids,
+        "duration_hours": int(duration_hours),
+    }, from_user=user_id)
+    await manager.broadcast_to_room(session_code, msg)
+    names = []
+    for cid in character_ids:
+        names.append(_get_character_name(session_code, cid))
+    await _append_session_log(
+        session_code, "system",
+        f"Rast beginnt ({duration_hours}h) — {', '.join(names)}",
+        icon="moon",
+    )
+    logger.info("Rest started in %s for %d characters (%dh)", session_code, len(character_ids), duration_hours)
+
+
+async def _handle_rest_end(session_code: str, user_id: str, payload: dict, state: dict):
+    """Resolve rest: roll regeneration, heal vitals, reduce conditions.
+
+    DSA5 regeneration (simplified):
+        - LeP: +1W6 (if character has LeP < LeP_max)
+        - AsP: +1W6 (if character has AsP_max > 0 and AsP < AsP_max)
+        - KaP: +1W6 (if character has KaP_max > 0 and KaP < KaP_max)
+        - Conditions: reduce Schmerz and Betäubung by 1 level each (if present)
+    """
+    rest = state.get("rest")
+    character_ids = payload.get("character_ids") or (rest or {}).get("character_ids", [])
+    duration_hours = payload.get("duration_hours") or (rest or {}).get("duration_hours", 8)
+
+    if not character_ids:
+        await manager.send_to_user(user_id, _error("No characters to rest"))
+        return
+
+    results = []
+    for cid in character_ids:
+        async with _get_char_lock(cid):
+            await _cache_character_vitals(session_code, cid)
+            vitals = state.setdefault("vitals", {}).get(cid, {})
+            max_v = state.get("max_vitals", {}).get(cid, {})
+            conditions = list(state.get("conditions", {}).get(cid, []))
+            char_name = _get_character_name(session_code, cid)
+
+            regen = {}
+            regen_log = []
+
+            # LeP regeneration: 1W6
+            lep_max = max_v.get("LeP_max", 0)
+            current_lep = vitals.get("lep", 0)
+            if lep_max > 0 and current_lep < lep_max:
+                roll = random.randint(1, 6)
+                new_lep = min(lep_max, current_lep + roll)
+                gained = new_lep - current_lep
+                if gained > 0:
+                    regen["lep"] = new_lep
+                    regen_log.append(f"+{gained} LeP")
+
+            # AsP regeneration: 1W6 (only for magic users)
+            asp_max = max_v.get("AsP_max", 0)
+            current_asp = vitals.get("asp", 0)
+            if asp_max > 0 and current_asp < asp_max:
+                roll = random.randint(1, 6)
+                new_asp = min(asp_max, current_asp + roll)
+                gained = new_asp - current_asp
+                if gained > 0:
+                    regen["asp"] = new_asp
+                    regen_log.append(f"+{gained} AsP")
+
+            # KaP regeneration: 1W6 (only for blessed)
+            kap_max = max_v.get("KaP_max", 0)
+            current_kap = vitals.get("kap", 0)
+            if kap_max > 0 and current_kap < kap_max:
+                roll = random.randint(1, 6)
+                new_kap = min(kap_max, current_kap + roll)
+                gained = new_kap - current_kap
+                if gained > 0:
+                    regen["kap"] = new_kap
+                    regen_log.append(f"+{gained} KaP")
+
+            # Condition recovery: reduce Schmerz and Betäubung by 1
+            cond_log = []
+            reducible = {"Schmerz", "Betäubung", "Betaeubung"}
+            new_conditions = []
+            for c in conditions:
+                if c.get("name") in reducible and c.get("level", 1) > 0:
+                    new_level = c["level"] - 1
+                    if new_level > 0:
+                        new_conditions.append({**c, "level": new_level})
+                    cond_log.append(f"-1 {c['name']}")
+                else:
+                    new_conditions.append(c)
+
+            # Apply changes
+            if regen:
+                state["vitals"][cid] = {**vitals, **regen}
+                _safe_create_task(_persist_vitals(cid, regen), name=f"persist_rest_{cid[:8]}")
+            if cond_log:
+                state["conditions"][cid] = new_conditions
+                _safe_create_task(_persist_conditions(cid, new_conditions), name=f"persist_rest_cond_{cid[:8]}")
+
+            # Broadcast updated vitals and conditions
+            if regen:
+                _bump_version(state)
+                await manager.broadcast_to_room(session_code, _msg("vitals_update", {
+                    "character_id": cid,
+                    "vitals": state["vitals"][cid],
+                    "state_version": state["state_version"],
+                }, from_user=user_id))
+            if cond_log:
+                await manager.broadcast_to_room(session_code, _msg("conditions_update", {
+                    "character_id": cid,
+                    "conditions": new_conditions,
+                }, from_user=user_id))
+
+            summary_parts = regen_log + cond_log
+            results.append({
+                "character_id": cid,
+                "character_name": char_name,
+                "regen": regen,
+                "conditions_reduced": cond_log,
+                "summary": ", ".join(summary_parts) if summary_parts else "keine Erholung",
+            })
+
+    # Broadcast rest results to all
+    msg = _msg(EventType.REST_END, {
+        "results": results,
+        "duration_hours": int(duration_hours),
+    }, from_user=user_id)
+    await manager.broadcast_to_room(session_code, msg)
+
+    # Log to Protokoll — one line per character
+    for r in results:
+        await _append_session_log(
+            session_code, "system",
+            f"Rast — {r['character_name']}: {r['summary']}",
+            icon="heart",
+        )
+
+    # Clear rest state
+    state.pop("rest", None)
+    _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_rest_{session_code}")
+    logger.info("Rest ended in %s: %d characters healed", session_code, len(results))
 
 
 
@@ -1658,9 +2042,33 @@ async def _handle_dice_result(session_code: str, user_id: str, payload: dict, st
     """Player submits dice roll results (for a probe or attack)."""
     # Clear pending requests so probe doesn't reappear on reconnect/refresh
     pending = state.get("pending_requests", {})
-    to_remove = [k for k in pending if k.startswith(f"dice_{user_id}") or k.startswith(f"probe_{user_id}")]
+    to_remove = [k for k in pending if k.startswith(f"dice_{user_id}") or k.startswith(f"probe_{user_id}") or k.startswith(f"opposed_{user_id}")]
     for k in to_remove:
         del pending[k]
+
+    # Check if this result belongs to an opposed probe (Vergleichsprobe)
+    probe_id = payload.get("probe_id")
+    opposed_side = payload.get("opposed_side")
+    if probe_id and opposed_side:
+        opposed = state.get("opposed_probes", {})
+        probe = opposed.get(probe_id)
+        if probe:
+            success = payload.get("result", {}).get("success") if isinstance(payload.get("result"), dict) else payload.get("success")
+            qs = payload.get("result", {}).get("qs") if isinstance(payload.get("result"), dict) else payload.get("qs", 0)
+            probe["results"][opposed_side] = {
+                "qs": qs or 0,
+                "success": bool(success),
+                "critical": payload.get("critical", False),
+                "patzer": payload.get("patzer", False),
+            }
+            # Forward result to GM so they see individual rolls
+            await manager.broadcast_to_room(session_code, _msg(
+                EventType.DICE_RESULT, {**payload, "user_id": user_id}, from_user=user_id,
+            ), target="gm")
+            # Resolve if both sides are in
+            if len(probe["results"]) >= 2:
+                await _resolve_opposed_probe(session_code, probe_id, state)
+            return  # Don't fall through to normal dice_result handling
 
     # Forward the full payload to GM — don't strip fields
     result = {**payload, "user_id": user_id}
@@ -2336,9 +2744,18 @@ async def handle_disconnect(session_code: str, user_id: str):
     # Cancel any pending requests from this user (dice, probe, action) to prevent soft-locks
     pending = state.get("pending_requests", {})
     cancelled = [k for k, v in pending.items()
-                 if v.get("from_user") == user_id or k.startswith(f"dice_{user_id}") or k.startswith(f"probe_{user_id}")]
+                 if v.get("from_user") == user_id or k.startswith(f"dice_{user_id}") or k.startswith(f"probe_{user_id}") or k.startswith(f"opposed_{user_id}")]
     for k in cancelled:
         del pending[k]
+
+    # Cancel any opposed probes waiting on this user
+    opposed = state.get("opposed_probes", {})
+    opposed_to_remove = [pid for pid, p in opposed.items()
+                         if p.get("initiator_id") == user_id or p.get("target_id") == user_id]
+    for pid in opposed_to_remove:
+        del opposed[pid]
+    if opposed_to_remove:
+        cancelled.extend(opposed_to_remove)
 
     # Notify GM with player name if the disconnected user had pending actions or is in combat
     if cancelled or _combat_snapshot(state) is not None:

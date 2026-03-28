@@ -22,6 +22,7 @@ export default function ProbePopup({ request, character, sendMessage, onComplete
   const [consequenceRolls, setConsequenceRolls] = useState({})
   const [consequenceInput, setConsequenceInput] = useState('')
   const [allDone, setAllDone] = useState(false)
+  const diceRefs = useRef([])
 
   if (!request) return null
 
@@ -318,9 +319,19 @@ export default function ProbePopup({ request, character, sendMessage, onComplete
                 </div>
 
                 <input
+                  ref={el => diceRefs.current[i] = el}
                   type="number" min="1" max="20"
                   value={diceInputs[i]}
                   onChange={(e) => { const n = [...diceInputs]; n[i] = e.target.value; setDiceInputs(n) }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (i < probe.length - 1) diceRefs.current[i + 1]?.focus()
+                      else if (allFilled) handleSubmit()
+                    } else if (e.key === 'Escape') {
+                      if (canAbort) onComplete?.()
+                    }
+                  }}
                   className={clsx(
                     'w-16 h-16 rounded text-center text-3xl font-mono focus:outline-none focus:ring-4 transition-all',
                     roll === null ? 'bg-dsa-bg-light border-2 border-dsa-bg-medium text-dsa-parchment focus:border-dsa-gold focus:ring-dsa-gold/20' :

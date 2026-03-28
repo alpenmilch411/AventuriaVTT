@@ -22,7 +22,6 @@ import TalentList from './TalentList'
 import CombatActions from './CombatActions'
 import ArmoryTab from './ArmoryTab'
 import TradeTab from './TradeTab'
-// import SteigerungTab from './SteigerungTab' // kept as backup — AP spending between sessions
 import ProbePopup from './ProbePopup'
 import clsx from 'clsx'
 

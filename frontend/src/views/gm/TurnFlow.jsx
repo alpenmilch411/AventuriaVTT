@@ -15,6 +15,7 @@ import { getCreatureAttackModifiers, getOnHitEffects, getImmunities, getDamageMu
 import { getReachModifier, getAbilityModifiers, getManeuverModifiers, getHolyDamageMultiplier, getRangedDistanceMod } from '../../engine/weaponProperties'
 import { MANEUVERS } from '../../engine/combatManeuvers'
 import Badge from '../../components/common/Badge'
+import { ATTR_NAMES, ATTR_TEXT_COLORS } from '../../constants/attributes'
 import clsx from 'clsx'
 
 /**
@@ -1063,15 +1064,6 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
       : (combatant.asp ?? charData?.current_vitals?.asp ?? 0)
     const entries = Object.entries(spellList)
 
-    const ATTR_NAMES_SHORT = {
-      MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
-      FF: 'Fingerfert.', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Koerperkraft',
-    }
-    const ATTR_TEXT_COLORS_LOCAL = {
-      MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
-      FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
-    }
-
     return (
       <div className="space-y-2">
         <StepHeader title={isLiturgy ? 'Liturgie wählen' : 'Zauber wählen'} step="1/4" onBack={() => setStep('action')} />
@@ -1127,7 +1119,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
                             {probe.map((a, i) => (
                               <span key={i}>
                                 {i > 0 && '/'}
-                                <span className={ATTR_TEXT_COLORS_LOCAL[a]}>{a}</span>
+                                <span className={ATTR_TEXT_COLORS[a]}>{a}</span>
                                 <span className="text-dsa-parchment-dark/60 font-mono">({attrs[a] || '?'})</span>
                               </span>
                             ))}
@@ -1237,15 +1229,6 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
     const IconComp = isLiturgy ? Sun : Sparkles
     const costLabel = isLiturgy ? 'KaP' : 'AsP'
 
-    const ATTR_TEXT_COLORS_LOCAL = {
-      MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
-      FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
-    }
-    const ATTR_NAMES_LOCAL = {
-      MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
-      FF: 'Fingerfert.', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Koerperkraft',
-    }
-
     return (
       <div className="space-y-3">
         <StepHeader title="Modifikator festlegen" step="3/4" onBack={() => setStep('spell_target')} />
@@ -1271,7 +1254,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
               const modifiedVal = baseVal + spellModifier
               return (
                 <div key={i} className="text-center">
-                  <div className={`text-xs font-medium ${ATTR_TEXT_COLORS_LOCAL[attr]}`}>{ATTR_NAMES_LOCAL[attr]}</div>
+                  <div className={`text-xs font-medium ${ATTR_TEXT_COLORS[attr]}`}>{ATTR_NAMES[attr]}</div>
                   <div className="text-[9px] text-dsa-parchment-dark">{attr}</div>
                   <div className="text-lg font-mono font-bold text-dsa-gold">{modifiedVal}</div>
                   {spellModifier !== 0 && (
@@ -1339,15 +1322,6 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
     const targets = probeAttrs.map(a => (attrs[a] || 10) + spellModifier)
     const colorClass = isLiturgy ? 'text-purple-400' : 'text-blue-400'
     const IconComp = isLiturgy ? Sun : Sparkles
-
-    const ATTR_TEXT_COLORS_LOCAL = {
-      MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
-      FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
-    }
-    const ATTR_NAMES_LOCAL = {
-      MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
-      FF: 'Fingerfert.', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Koerperkraft',
-    }
 
     const allFilled = spellRolls.length === 3 && spellRolls.every(d => d && parseInt(d) >= 1 && parseInt(d) <= 20)
 
@@ -1446,7 +1420,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
 
               return (
                 <div key={i} className="text-center space-y-1">
-                  <div className={`text-xs font-medium ${ATTR_TEXT_COLORS_LOCAL[attr]}`}>{ATTR_NAMES_LOCAL[attr]}</div>
+                  <div className={`text-xs font-medium ${ATTR_TEXT_COLORS[attr]}`}>{ATTR_NAMES[attr]}</div>
                   <div className="text-[9px] text-dsa-parchment-dark">
                     Ziel: <span className="font-mono text-dsa-gold">{targetVal}</span>
                   </div>

@@ -246,8 +246,9 @@ function CombatActions({ sendMessage }) {
           <span className="font-semibold">{currentCombatant?.name}</span> ist am Zug
         </p>
         {turnsLeft > 0 && (
-          <p className="text-xs text-dsa-parchment-dark mt-1">
-            Noch {turnsLeft} {turnsLeft === 1 ? 'Zug' : 'Züge'} bis du dran bist
+          <p className="text-xs mt-1.5 px-3 py-1 bg-dsa-bg-card border border-dsa-bg-medium rounded-full inline-block">
+            <span className="text-dsa-gold font-mono font-bold">{turnsLeft}</span>
+            <span className="text-dsa-parchment-dark"> {turnsLeft === 1 ? 'Zug' : 'Züge'} bis du dran bist</span>
           </p>
         )}
         <span className="inline-block mt-2 text-[10px] font-mono text-dsa-parchment-dark bg-dsa-bg-medium px-2 py-0.5 rounded-full">

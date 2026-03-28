@@ -4,27 +4,7 @@ import useCharacterStore from '../../stores/characterStore'
 import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import Badge from '../../components/common/Badge'
-
-const ATTR_NAMES = {
-  MU: 'Mut', KL: 'Klugheit', IN: 'Intuition', CH: 'Charisma',
-  FF: 'Fingerfertigkeit', GE: 'Gewandtheit', KO: 'Konstitution', KK: 'Koerperkraft',
-}
-
-const ATTR_TEXT_COLORS = {
-  MU: 'text-red-400', KL: 'text-blue-400', IN: 'text-violet-400', CH: 'text-pink-400',
-  FF: 'text-emerald-400', GE: 'text-cyan-400', KO: 'text-orange-400', KK: 'text-amber-400',
-}
-
-const ATTR_COLORS = {
-  MU: 'from-red-900/30 to-red-950/10 border-red-800/20',
-  KL: 'from-blue-900/30 to-blue-950/10 border-blue-800/20',
-  IN: 'from-violet-900/30 to-violet-950/10 border-violet-800/20',
-  CH: 'from-pink-900/30 to-pink-950/10 border-pink-800/20',
-  FF: 'from-emerald-900/30 to-emerald-950/10 border-emerald-800/20',
-  GE: 'from-cyan-900/30 to-cyan-950/10 border-cyan-800/20',
-  KO: 'from-orange-900/30 to-orange-950/10 border-orange-800/20',
-  KK: 'from-amber-900/30 to-amber-950/10 border-amber-800/20',
-}
+import { ATTR_NAMES, ATTR_TEXT_COLORS, ATTR_COLORS } from '../../constants/attributes'
 
 // Property → color mapping for Merkmal badges
 const PROPERTY_COLORS = {
@@ -244,7 +224,7 @@ function SpellBook({ sendMessage }) {
 
     return (
       <div className="space-y-2">
-        {entries.sort(([,a], [,b]) => b - a).map(([name, fw]) => {
+        {entries.sort(([nameA, a], [nameB, b]) => b !== a ? b - a : nameA.localeCompare(nameB)).map(([name, fw]) => {
           const info = infoMap[name]
           const isExpanded = expandedSpell === name
           const reqState = requestedSpells[name]
