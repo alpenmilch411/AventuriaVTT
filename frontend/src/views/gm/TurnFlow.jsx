@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Swords, Shield, Footprints, Sparkles, Package, ArrowRight,
   LogOut, Dice5, ChevronRight, X, Heart, AlertTriangle,
-  Target, Crosshair, Eye, Zap, Check, Sun
+  Target, Crosshair, Eye, Zap, Check, Sun, Clock
 } from 'lucide-react'
 import useCombatStore from '../../stores/combatStore'
 import useCharacterStore from '../../stores/characterStore'
@@ -101,6 +101,7 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
   const [damageResult, setDamageResult] = useState(null)
   const [offHandDone, setOffHandDone] = useState(false) // tracks if off-hand attack has been used this turn
   const [confirmRoll, setConfirmRoll] = useState('') // confirmation roll for critical/Patzer
+  const [gmIntervene, setGmIntervene] = useState(false) // GM takes over player turn
   const [confirmResult, setConfirmResult] = useState(null) // { confirmed, type: 'critical'|'patzer' }
   const [fumbleRoll, setFumbleRoll] = useState('') // 2W6 roll for fumble table
   const [fumbleResult, setFumbleResult] = useState(null) // lookupFumble result
@@ -506,6 +507,30 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
   // Who enters the dice?
   const attackerLabel = isPlayerTurn ? `${combatant.name} (Spieler würfelt)` : `${combatant.name} (SL würfelt)`
   const defenderLabel = isTargetPlayer ? `${selectedTarget?.name} (Spieler würfelt)` : `${selectedTarget?.name} (SL würfelt)`
+
+  // ── Player turn: GM waits unless intervening ──
+  if (isPlayerTurn && !gmIntervene && step === 'action') {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="text-xs font-semibold text-green-400 flex items-center gap-1">
+            <Clock className="w-3 h-3 animate-pulse" /> {combatant.name} ist am Zug
+          </h4>
+          <button onClick={onComplete} className="text-[9px] text-dsa-parchment-dark hover:text-dsa-parchment">Überspringen</button>
+        </div>
+        <div className="bg-green-900/10 border border-green-800/20 rounded-lg p-4 text-center">
+          <p className="text-sm text-dsa-parchment mb-1">Warte auf Spieleraktion...</p>
+          <p className="text-[10px] text-dsa-parchment-dark">Der Spieler wählt seine Aktion auf seinem Gerät.</p>
+        </div>
+        <button
+          onClick={() => setGmIntervene(true)}
+          className="btn-ghost text-[10px] w-full text-yellow-400 border-yellow-800/30 hover:bg-yellow-900/10"
+        >
+          Eingreifen (SL übernimmt Steuerung)
+        </button>
+      </div>
+    )
+  }
 
   // ── Step: ACTION ──
   if (step === 'action') {
