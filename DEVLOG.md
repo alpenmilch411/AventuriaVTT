@@ -93,7 +93,7 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 - **SA Purchase** in SteigerungTab: category tabs derived from data, search, filters out owned SAs, AP cost from DB
 - **improvement_cost column** on SpellTemplate + LiturgyTemplate: correct Steigerungsfaktor for all upgrade flows
 
-### Continuous Improvement Cycles (5 cycles)
+### Continuous Improvement Cycles (10 cycles, Sessions 15-16)
 **Cycle 1**: Escape key on modals, modal overflow fix (7 components), loading states, umlaut search, mobile header responsive, session transition banner, group probe closure bug, snapshot debounce 5→2s, Pydantic validation, vital clamping, disconnect combat cleanup.
 
 **Cycle 2**: Enter key in 3W20 probes, shared attribute constants (extracted from 4 files), combat turn clarity ("X Züge bis du dran bist"), sort consistency, dead code cleanup.
@@ -103,6 +103,16 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 **Cycle 4**: Session vitals restored on rejoin (was overwriting snapshot). Completion view: AP badge + action buttons. Import inventory validation (strips unknown template_ids). Export completeness (all fields, version 2, re-importable).
 
 **Cycle 5 (QA)**: 6 critical character bugs fixed — Pydantic dict→list coercion (root cause of save failures), isMagic based on species not profession, edit mode not restoring upgrades, quick template missing derived values, species attribute_adjustments array format, edit mode effects firing during restore.
+
+**Cycle 6**: Opposed probe UI (Vergleichsprobe toggle + attacker/defender selectors in ProbeSetupPopup), debug console.log removal (9 frontend + 10 backend logging level fixes).
+
+**Cycle 7**: Weather/time UI (8 weather types, time advance controls, player info bar). REST/regeneration UI (GM rest panel with presets, server-side healing, player toast).
+
+**Cycle 8**: Group inventory (GM panel + player "Gruppeninventar" section). Character lifecycle UI (5 states, badges, change buttons, visual dimming). Campaign/session export endpoints (JSON + Markdown). Shop system backend (5 WS handlers, DSA5 currency math).
+
+**Cycle 9**: Shop frontend (GM ShopCreateModal + player ShopTab with buy/sell). DatenbankTab entry counts per category. Character death memorial backend.
+
+**Cycle 10**: Session feedback & voting (stars, MVP, comments in CompletionView). Inventory carry-over verified. Health check endpoint + startup validation.
 
 ### Character Creator UX Overhaul
 - **Search/filter** on cultures (33), professions (180+), advantages (161), disadvantages (92) — text search + category tabs (mundane/magical/blessed for professions; kampf/magisch/karmal/allgemein/sozial for adv/dis)

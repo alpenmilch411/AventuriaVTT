@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 2.4.0
+**Version:** 3.0.0
 **Last updated:** 2026-03-28
-**Status:** Production-ready (Sessions 14-15) — 3,638 entities, full combat system (SchiP, opposed probes, REST), character creator 5/5, mobile responsive, 5 improvement cycles completed
+**Status:** Production-ready (Sessions 14-16) — 3,638 entities, full combat (SchiP, opposed probes), shop system, weather/time/rest, group inventory, character lifecycle, session feedback, exports, 10 improvement cycles completed
 
 ---
 
