@@ -58,6 +58,13 @@ Full fate point spending flow for players and GM:
 - **VitalsBar**: Interactive SchiP dots (click to open menu), last-SchiP warning ring, gold flash animation on spend
 - **WS events**: `schip_use`, `schip_used`, `schip_error` message types
 
+### Bug Fixes (Post-Integration Audit)
+- InventoryPanel.jsx: stray `)}` brackets broke JSX rendering
+- CreateEntryModal.jsx: hardcoded "Äxte" CT still present, added all 21 DSA5 CTs
+- DatenbankDetail.jsx + combatManeuvers.js: "Äxte"/"Zweihandäxte" references → "Zweihandhiebwaffen" (Hammerschlag/Windmühle maneuvers were silently broken)
+- backend/models/__init__.py: 8 new model classes missing from exports (CantripTemplate, BlessingTemplate, etc.)
+- Full audit verified: all imports, migrations, seed data, cross-references, null safety, React keys clean
+
 ### Code Quality: Shared Engine Modules
 Extracted 4 shared modules from 13 files of duplicated code:
 - `combatManeuvers.js` — MANEUVERS + PLAYER_MANEUVERS (fixed CombatOverlay bug: wrong Wuchtschlag/Finte values)

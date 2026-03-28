@@ -30,6 +30,10 @@
 - [ ] Export (character, campaign, session log)
 
 ## Open Bugs & Polish
+- [x] InventoryPanel.jsx JSX syntax error (stray brackets causing DOM render issue) — fixed Session 14
+- [x] Stale "Äxte" combat technique in CreateEntryModal.jsx — removed, added all 21 DSA5 CTs
+- [x] Stale "Äxte"/"Zweihandäxte" in DatenbankDetail.jsx + combatManeuvers.js — removed/renamed to Zweihandhiebwaffen (Hammerschlag/Windmühle maneuvers were broken)
+- [x] Missing model exports in backend/models/__init__.py — 8 Session 13-14 models not exported
 - [ ] Combat victory screen — AP award + loot exist, no dedicated victory UI after combat
 - [ ] Creature stat editing mid-combat
 - [ ] Player pending requests withdraw option — system works, dismiss/withdraw UX needs polish

@@ -48,7 +48,15 @@ from models.databank import (
     LiturgyTemplate,
     SpecialAbilityTemplate,
     TalentTemplate,
+    CombatTechniqueTemplate,
     RulesSnippet,
+    SpeciesTemplate,
+    CultureTemplate,
+    ProfessionTemplate,
+    AdvantageTemplate,
+    DisadvantageTemplate,
+    CantripTemplate,
+    BlessingTemplate,
 )
 
 __all__ = [
@@ -87,5 +95,13 @@ __all__ = [
     "LiturgyTemplate",
     "SpecialAbilityTemplate",
     "TalentTemplate",
+    "CombatTechniqueTemplate",
     "RulesSnippet",
+    "SpeciesTemplate",
+    "CultureTemplate",
+    "ProfessionTemplate",
+    "AdvantageTemplate",
+    "DisadvantageTemplate",
+    "CantripTemplate",
+    "BlessingTemplate",
 ]

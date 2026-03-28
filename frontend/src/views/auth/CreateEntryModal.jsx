@@ -9,9 +9,11 @@ import useDatenbankStore from '../../stores/datenbankStore'
 const ATTR_KEYS = ['MU', 'KL', 'IN', 'CH', 'FF', 'GE', 'KO', 'KK']
 
 const COMBAT_TECHNIQUES = [
-  'Armbrüste', 'Äxte', 'Blasrohre', 'Bögen', 'Dolche', 'Fechtwaffen',
-  'Hiebwaffen', 'Kettenwaffen', 'Raufen', 'Schwerter', 'Stangenwaffen',
-  'Wurfwaffen', 'Zweihandäxte', 'Zweihandschwerter',
+  'Armbrüste', 'Blasrohre', 'Bögen', 'Diskusse', 'Dolche',
+  'Fächer', 'Fechtwaffen', 'Feuerspeien', 'Hiebwaffen',
+  'Kettenwaffen', 'Lanzen', 'Peitschen', 'Raufen', 'Schilde',
+  'Schleudern', 'Schwerter', 'Spießwaffen', 'Stangenwaffen',
+  'Wurfwaffen', 'Zweihandhiebwaffen', 'Zweihandschwerter',
 ]
 
 const WEAPON_PROPERTIES = [

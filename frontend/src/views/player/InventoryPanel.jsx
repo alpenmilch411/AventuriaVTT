@@ -1044,9 +1044,7 @@ function InventoryPanel({ sendMessage }) {
                           </div>
                         )
                       })}
-                      )
-                    })}
-                  </div>
+                    </div>
                 )}
               </div>
             )

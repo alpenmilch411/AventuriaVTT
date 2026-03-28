@@ -187,8 +187,10 @@ export const SUBCATEGORY_LABELS = {
   schwerter: 'Schwerter', stangenwaffen: 'Stangenwaffen', hiebwaffen: 'Hiebwaffen',
   wurfwaffen: 'Wurfwaffen', 'bögen': 'Bögen', 'armbrüste': 'Armbrüste',
   dolche: 'Dolche', fechtwaffen: 'Fechtwaffen', kettenwaffen: 'Kettenwaffen',
-  zweihandschwerter: 'Zweihandschwerter', 'äxte': 'Äxte', blasrohre: 'Blasrohre',
-  raufen: 'Raufen', 'zweihandäxte': 'Zweihandäxte',
+  zweihandschwerter: 'Zweihandschwerter', blasrohre: 'Blasrohre',
+  raufen: 'Raufen', zweihandhiebwaffen: 'Zweihandhiebwaffen', lanzen: 'Lanzen', schilde: 'Schilde',
+  'fächer': 'Fächer', peitschen: 'Peitschen', 'spießwaffen': 'Spießwaffen',
+  diskusse: 'Diskusse', schleudern: 'Schleudern', feuerspeien: 'Feuerspeien',
   // Equipment meta categories
   waffe: 'Waffen', ruestung: 'Rüstung',
 }

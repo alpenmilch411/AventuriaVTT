@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 2.1.0
-**Last updated:** 2026-03-27
-**Status:** Full Optolith integration (Session 14) — 3,638 entities, cantrips, blessings, spell/liturgy enhancements, profession/species variants, Merkmal filtering, all game data from DB
+**Version:** 2.2.0
+**Last updated:** 2026-03-28
+**Status:** Full Optolith integration + SchiP combat system (Session 14) — 3,638 entities, cantrips, blessings, enhancements, variants, Schicksalspunkte spending flow, all game data from DB
 
 ---
 
