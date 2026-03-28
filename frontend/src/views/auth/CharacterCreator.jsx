@@ -12,14 +12,46 @@ import { composeBackgroundDraft } from '../../engine/backgroundSnippets'
 const ATTR_KEYS = ['MU','KL','IN','CH','FF','GE','KO','KK']
 
 const ATTR_META = {
-  MU: { name: 'Mut',              color: 'text-red-400' },
-  KL: { name: 'Klugheit',         color: 'text-blue-400' },
-  IN: { name: 'Intuition',        color: 'text-violet-400' },
-  CH: { name: 'Charisma',         color: 'text-pink-400' },
-  FF: { name: 'Fingerfertigkeit', color: 'text-emerald-400' },
-  GE: { name: 'Gewandtheit',      color: 'text-cyan-400' },
-  KO: { name: 'Konstitution',     color: 'text-orange-400' },
-  KK: { name: 'Körperkraft',      color: 'text-amber-400' },
+  MU: { name: 'Mut',              color: 'text-red-400',     desc: 'Willenskraft & Furchtlosigkeit. Beeinflusst Initiative und Seelenkraft.' },
+  KL: { name: 'Klugheit',         color: 'text-blue-400',    desc: 'Logik & Wissen. Beeinflusst Seelenkraft und Karmapunkte.' },
+  IN: { name: 'Intuition',        color: 'text-violet-400',  desc: 'Bauchgefühl & Wahrnehmung. Beeinflusst AsP, KaP und Seelenkraft.' },
+  CH: { name: 'Charisma',         color: 'text-pink-400',    desc: 'Ausstrahlung & Überzeugungskraft. Beeinflusst Astralpunkte.' },
+  FF: { name: 'Fingerfertigkeit', color: 'text-emerald-400', desc: 'Feinmotorik & Präzision. Für Schlösserknacken, Taschendiebstahl, Handwerk.' },
+  GE: { name: 'Gewandtheit',      color: 'text-cyan-400',    desc: 'Beweglichkeit & Reflexe. Beeinflusst Initiative, Ausweichen und GS.' },
+  KO: { name: 'Konstitution',     color: 'text-orange-400',  desc: 'Ausdauer & Widerstandskraft. Bestimmt Lebenspunkte und Zähigkeit.' },
+  KK: { name: 'Körperkraft',      color: 'text-amber-400',   desc: 'Rohe Stärke. Beeinflusst Schadensbonus und Zähigkeit.' },
+}
+
+// ── Beginner-recommended professions (shown first, with badge) ──
+const BEGINNER_PROFESSIONS = new Set([
+  'Krieger', 'Jäger', 'Streuner', 'Praiosgeweihter', 'Weißmagier',
+])
+
+// ── Short gameplay taglines for profession cards (UI flavor, not game data) ──
+const PROFESSION_GAMEPLAY_TAGS = {
+  'Krieger':           'Nahkämpfer in schwerer Rüstung — stark im direkten Gefecht.',
+  'Jäger':             'Fernkämpfer und Wildnisexperte — stark in Natur und Überleben.',
+  'Streuner':          'Schlitzohr und Taschendieb — stark in Heimlichkeit und Gesellschaft.',
+  'Praiosgeweihter':   'Priester des Sonnengottes — heilt, schützt und bekämpft Dämonen.',
+  'Weißmagier':        'Gildenmagier — vielseitiger Zauberer mit breitem Spruchrepertoire.',
+  'Söldner':           'Kampferprobter Klingenträger — flexibel und erfahren im Gefecht.',
+  'Gardist':           'Stadtwache und Ordnungshüter — solider Nahkämpfer.',
+  'Ritter':            'Ehrenhafter Kämpfer — schwere Rüstung, Reiten, Kodex.',
+  'Gladiator':         'Arenakämpfer — spektakulärer und unberechenbarer Kampfstil.',
+  'Soldat':            'Militärisch ausgebildet — disziplinierter Nahkämpfer.',
+  'Barde':             'Musiker und Geschichtenerzähler — stark in Gesellschaft und Wissen.',
+  'Händler':           'Reisender Kaufmann — stark in Gesellschaft und Handwerk.',
+  'Heiler':            'Kräuterkundiger — heilt ohne Magie mit Wissen und Geschick.',
+  'Gelehrter':         'Forscher und Wissender — stark in Wissens- und Handwerkstalenten.',
+  'Seefahrer':         'Matrose und Entdecker — zu Hause auf See und in der Wildnis.',
+  'Höfling':           'Meister der Intrige und Diplomatie — stark in Gesellschaft.',
+  'Rondrageweihter':   'Krieger-Priester — kampfstark mit göttlichem Segen.',
+  'Borongeweihter':    'Totenhüter — Geweihter gegen Untote und dunkle Mächte.',
+  'Graumagier':        'Gelehrter Magier — breites Wissen und vielseitige Zauberkunst.',
+  'Schwarzmagier':     'Dunkler Magier — mächtig, aber gefährlich und umstritten.',
+  'Druide':            'Naturhüter — erdverbundene Magie jenseits der Gilden.',
+  'Wildnisläufer':     'Naturmagier und Überlebenskünstler — Magie der Wildnis.',
+  'Adliger':           'Von edlem Geblüt — Autorität, Reiten und Gesellschaftstalente.',
 }
 
 // Vorteile/Nachteile presets are now fetched from the DB at runtime
@@ -1315,11 +1347,20 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
 
   const filtered = useMemo(() => {
     const q = searchText.toLowerCase().trim()
-    return professions.filter(p => {
+    const result = professions.filter(p => {
       if (activeCat !== 'alle' && getProfCategory(p) !== activeCat) return false
       if (q && !p.name.toLowerCase().includes(q)) return false
       return true
     })
+    // Sort beginner-recommended professions first when no search is active
+    if (!q) {
+      result.sort((a, b) => {
+        const aB = BEGINNER_PROFESSIONS.has(a.name) ? 0 : 1
+        const bB = BEGINNER_PROFESSIONS.has(b.name) ? 0 : 1
+        return aB - bB
+      })
+    }
+    return result
   }, [professions, searchText, activeCat])
 
   if (error) return <LoadError message={error} onRetry={onRetry} />
@@ -1380,13 +1421,19 @@ function StepProfession({ profession, setProfession, professionVariant, setProfe
                         : 'border-dsa-bg-medium bg-dsa-bg-card hover:border-dsa-gold/40'
                     )}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="font-display font-semibold text-dsa-parchment">{p.name}</span>
                         <span className={clsx('text-[9px] shrink-0', catMeta.color)}>{catMeta.label}</span>
+                        {BEGINNER_PROFESSIONS.has(p.name) && (
+                          <span className="text-[9px] bg-green-900/30 text-green-400 border border-green-700/30 rounded px-1.5 py-0.5 shrink-0">Einsteiger</span>
+                        )}
                       </div>
-                      <span className="text-xs font-mono text-dsa-gold">{p.ap_cost || 0} <TipAbbr term="AP" /></span>
+                      <span className="text-xs font-mono text-dsa-gold shrink-0 ml-2">{p.ap_cost || 0} <TipAbbr term="AP" /></span>
                     </div>
+                    {PROFESSION_GAMEPLAY_TAGS[p.name] && (
+                      <p className="text-[10px] text-dsa-parchment/70 mb-1">{PROFESSION_GAMEPLAY_TAGS[p.name]}</p>
+                    )}
                     <div className="text-[10px] text-dsa-parchment-dark space-y-0.5">
                       {Object.keys(ct).length > 0 && (
                         <p>KT: {Object.entries(ct).map(([k,v]) => `${k} ${v}`).join(', ')}</p>
@@ -1503,6 +1550,9 @@ function AdvDisCard({ item, active, onToggle, apColor, activeClass, inactiveClas
           )}
         </div>
       </button>
+      {rulesText && !expanded && (
+        <div className="px-3 pb-1.5 text-[10px] text-dsa-parchment-dark/50 line-clamp-1">{rulesText}</div>
+      )}
       {expanded && rulesText && (
         <div className="px-3 pb-2 text-[10px] text-dsa-parchment-dark/70 leading-relaxed border-t border-dsa-bg-medium/50 pt-1.5">
           {rulesText}
@@ -1713,9 +1763,12 @@ function StepAttributes({ baseAttributes, attrUpgrades, setAttrUpgrades, gradeDa
                 atMax ? 'border-red-800/40' : 'border-dsa-bg-medium'
               )}
             >
-              <div className="flex items-center gap-2">
-                <TipAbbr term={attr} className={clsx('text-sm font-semibold', ATTR_META[attr].color)} />
-                <span className="text-xs text-dsa-parchment-dark">{ATTR_META[attr].name}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <TipAbbr term={attr} className={clsx('text-sm font-semibold', ATTR_META[attr].color)} />
+                  <span className="text-xs text-dsa-parchment-dark">{ATTR_META[attr].name}</span>
+                </div>
+                <p className="text-[10px] text-dsa-parchment-dark/50 leading-tight mt-0.5">{ATTR_META[attr].desc}</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-dsa-parchment-dark/50">Basis: {base}</span>
@@ -2204,7 +2257,7 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
                 </div>
                 {/* AT/PA split for melee techniques with KTW > 6 */}
                 {needsSplit && (
-                  <div className="flex items-center gap-3 mt-1.5 pl-2">
+                  <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-1.5 pl-2">
                     <span className="text-[10px] text-dsa-parchment-dark"><TipAbbr term="AT" />/<TipAbbr term="PA" />-Verteilung:</span>
                     <div className="flex items-center gap-1">
                       <label className="text-[10px] text-red-400 font-semibold"><TipAbbr term="AT" /></label>
@@ -2240,6 +2293,9 @@ function StepTalentsKT({ baseSkills, talentUpgrades, setTalentUpgrades, baseKT, 
                         <AlertTriangle className="w-3 h-3" />
                         Summe muss {val} ergeben
                       </span>
+                    )}
+                    {splitValid && (
+                      <span className="text-[10px] text-dsa-parchment-dark/40">(Offensiv: mehr AT — Defensiv: mehr PA)</span>
                     )}
                   </div>
                 )}
