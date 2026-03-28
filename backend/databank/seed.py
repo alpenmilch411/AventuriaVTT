@@ -458,16 +458,20 @@ def _create_test_characters(session: Session, user_ids: Dict[str, str]):
             "advantages": {"Zäher Hund": {"ap": 20}, "Hohe Zähigkeit": {"ap": 15}},
             "disadvantages": {"Schlechte Eigenschaft (Jähzorn)": {"ap": 10}, "Schlechte Eigenschaft (Goldgier)": {"ap": 5}},
             "current_vitals": {"lep": 34, "asp": 0, "kap": 0, "schip": 3},
-            "basis_inventory": [
-                {"name": "Streitaxt", "template_id": "streitaxt", "quantity": 1, "weight": 1.5, "equipped": True},
-                {"name": "Buckler", "template_id": "faustschild", "quantity": 1, "weight": 0.5, "equipped": True},
-                {"name": "Kettenhemd", "template_id": "kettenhemd", "quantity": 1, "weight": 8.0, "equipped": True},
-                {"name": "Proviant (7 Tage)", "template_id": "proviant_tag", "quantity": 7, "weight": 2.0},
-                {"name": "Schlafsack", "template_id": "schlafsack", "quantity": 1, "weight": 1.0},
-                {"name": "Seil (10 Schritt)", "template_id": "seil", "quantity": 1, "weight": 1.0},
-                {"name": "Silbertaler", "template_id": "silbermuenze", "quantity": 47, "weight": 0.3},
-                {"name": "Elixier der Stärke", "template_id": "elixier_der_staerke", "quantity": 3, "weight": 0.2},
-            ],
+            "basis_inventory": {
+                "items": [
+                    {"template_id": "streitaxt", "quantity": 1, "equipped": True},
+                    {"template_id": "faustschild", "quantity": 1, "equipped": True},
+                    {"template_id": "kettenhemd", "quantity": 1, "equipped": True},
+                    {"template_id": "proviant_tag", "quantity": 7, "equipped": False},
+                    {"template_id": "schlafsack", "quantity": 1, "equipped": False},
+                    {"template_id": "seil", "quantity": 1, "equipped": False},
+                    {"template_id": "fackel", "quantity": 3, "equipped": False},
+                    {"template_id": "heiltrank_klein", "quantity": 2, "equipped": False},
+                    {"template_id": "elixier_der_staerke", "quantity": 1, "equipped": False},
+                ],
+                "purse": {"dukaten": 4, "silber": 7, "heller": 0, "kreuzer": 0}
+            },
         },
         {
             "user_id": user_ids.get("player2@test.de"),

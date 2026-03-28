@@ -4,6 +4,7 @@ import {
 } from 'lucide-react'
 import useAuthStore from '../../stores/authStore'
 import Badge from '../../components/common/Badge'
+import DataBrowser from './DataBrowser'
 import clsx from 'clsx'
 
 // Currency helpers
@@ -29,6 +30,7 @@ export default function ShopCreateModal({ sendMessage, onClose }) {
   const [searchResults, setSearchResults] = useState([])
   const [searching, setSearching] = useState(false)
   const [sending, setSending] = useState(false)
+  const [showBrowser, setShowBrowser] = useState(null) // null or 'items'|'weapons'|'armor'|'shields'
 
   const handleSearch = async (query) => {
     setSearchQuery(query)
@@ -140,6 +142,14 @@ export default function ShopCreateModal({ sendMessage, onClose }) {
         {/* Search items from databank */}
         <div>
           <label className="text-[10px] text-dsa-parchment-dark mb-1 block">Gegenstand hinzufügen</label>
+          <div className="flex gap-2 mb-2 flex-wrap">
+            {['items', 'weapons', 'armor', 'shields'].map(cat => (
+              <button key={cat} onClick={() => setShowBrowser(cat)}
+                className="btn-ghost text-[10px] px-2 py-1">
+                {({items: 'Gegenstände', weapons: 'Waffen', armor: 'Rüstungen', shields: 'Schilde'})[cat]} durchsuchen
+              </button>
+            ))}
+          </div>
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-dsa-parchment-dark/50" />
             <input
@@ -238,6 +248,23 @@ export default function ShopCreateModal({ sendMessage, onClose }) {
           Laden eröffnen
         </button>
       </div>
+
+      {/* DataBrowser overlay for browsing full catalog */}
+      {showBrowser && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="w-full max-w-3xl max-h-[85vh] bg-dsa-bg rounded border border-dsa-bg-medium shadow-2xl overflow-hidden">
+            <DataBrowser
+              type={showBrowser}
+              title={`${({items: 'Gegenstände', weapons: 'Waffen', armor: 'Rüstungen', shields: 'Schilde'})[showBrowser]} auswählen`}
+              onSelect={(item) => {
+                addItem({ ...item, _type: showBrowser })
+                setShowBrowser(null)
+              }}
+              onClose={() => setShowBrowser(null)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
