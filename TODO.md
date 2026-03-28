@@ -1,5 +1,5 @@
 # Aventuria VTT — TODO
-**Last updated:** 2026-03-27 (Session 14)
+**Last updated:** 2026-03-28 (Session 15)
 
 ---
 
@@ -46,6 +46,13 @@
 - [x] Wizard UX: advantages/disadvantages now affect derived values (Hohe Lebenskraft→+1 LeP, Flink→+1 GS, Glück→+1 SchiP, etc.)
 - [x] Wizard UX: derivation breakdown popup — click any derived value to see step-by-step calculation
 - [x] Wizard UX: complete summary step — talents, KTs, spells, liturgies, SAs, advantages, disadvantages, languages, equipment, derived values with breakdown
+- [x] Wizard UX: auto-generated background story from character choices (species + culture + profession + traits, authentic Aventurien lore)
+- [x] Wizard UX: beginner guidance — "Einsteiger" profession badges, "Empfohlen" grade badge, gameplay taglines on professions, attribute descriptions
+- [x] Wizard UX: advantage/disadvantage preview text visible without expanding
+- [x] Wizard UX: AT/PA split helper text
+- [x] Wizard UX: grade card max values were blank (field name mismatch) — fixed
+- [x] Fix AsP/KaP formulas: was ceil(/3), now ceil(/2) per GRW — affected all mages/priests (frontend + backend + test characters)
+- [x] Wizard tested with beginner + veteran personas — all 10 steps rated 4-5/5, no DSA5 rule violations
 - [ ] Mobile responsive header
 - [ ] Opposed probes UI — backend supports it, UI selector missing
 - [ ] In-game time tracking UI — backend handler exists (`_handle_time_advance`), no frontend

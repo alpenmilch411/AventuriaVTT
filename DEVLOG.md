@@ -4,6 +4,50 @@
 
 ---
 
+## Session 15 — Character Creator UX + Combat Polish (2026-03-28)
+**Type:** Claude Code — multi-agent teams (iterative testing)
+
+### SchiP Combat System
+Full Schicksalspunkte spending flow: SchipMenu component (4 usage types: reroll, defense boost, halve damage, ignore condition), backend WS handler with validation + deduction + Protokoll logging, auto-deduct on additional reactions, GM quick +/- buttons, interactive VitalsBar dots, gold flash animation, session statistics tracking.
+
+### Combat Polish
+- AP Award Victory Screen: GM awards AP after combat, players see notification
+- CreatureEditModal: mid-combat NPC stat editing (name, LeP, AT/PA/AW/RS, INI, weapon)
+- Player Request Withdraw: gold pending banner + "Zurückziehen" button
+
+### Character Creator UX Overhaul
+- Search/filter on cultures (33), professions (180), advantages (161), disadvantages (92)
+- Expandable descriptions on advantages/disadvantages (replacing broken HTML tooltips)
+- DSA5 abbreviation tooltips (TipAbbr) across all 10 steps
+- Advantages/disadvantages wired into derived values (14 types: Hohe Lebenskraft, Flink, Glück, etc.)
+- Derivation breakdown popup: click any derived value for step-by-step formula
+- Complete summary step: 13 sections (talents, KTs, spells, SAs, languages, equipment, etc.)
+- Auto-generated background story from character choices (authentic Aventurien lore from wiki-aventurica.de)
+- Beginner guidance: "Einsteiger" profession badges (5 classics), "Empfohlen" grade badge, gameplay taglines, attribute descriptions
+- AT/PA split helper, advantage preview text, FW/SF guides
+
+### Formula Fixes
+- AsP_max: was `round(sum/3)`, now `ceil(sum/2)` per GRW — every mage was 7 AsP too low
+- KaP_max: same fix — every priest was 7 KaP too low
+- Fixed in frontend (CharacterCreator, CharacterViewer) + backend (_recompute_derived) + test characters
+
+### CRUD Fixes
+- Character delete: was soft-retiring, now actually deletes
+- Character import: was 422 (content-type mismatch), now accepts JSON body
+- combat_techniques: wasn't saved to DB from wizard — fixed
+- species_variant/profession_variant: silently dropped — added DB columns + migration
+- current_vitals: not initialized on creation — fixed
+
+### Data Quality
+- 476 SA descriptions were missing (converter read `rules` not `effect`) — fixed, now 1,434/1,438 have text
+- 5 bugs fixed: stale Äxte refs, broken JSX, missing model exports
+- Grade card max values blank (field name mismatch) — fixed
+
+### Testing
+Iterative beginner+veteran testing: all 10 wizard steps rated 4-5/5 by both personas. No DSA5 rule violations remaining.
+
+---
+
 ## Session 14 — Optolith Data Integration (2026-03-27)
 **Type:** Claude Code — multi-agent teams (12 agents across 4 teams)
 

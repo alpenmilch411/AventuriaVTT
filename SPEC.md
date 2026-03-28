@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
-**Version:** 2.2.0
+**Version:** 2.3.0
 **Last updated:** 2026-03-28
-**Status:** Full Optolith integration + SchiP combat system (Session 14) — 3,638 entities, cantrips, blessings, enhancements, variants, Schicksalspunkte spending flow, all game data from DB
+**Status:** Full Optolith integration + combat polish + wizard UX overhaul (Sessions 14-15) — 3,638 entities, SchiP combat system, AP awards, creature editing, character creator tested 5/5 by beginner+veteran, auto-generated backgrounds with Aventurien lore
 
 ---
 
