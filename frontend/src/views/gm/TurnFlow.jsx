@@ -1991,16 +1991,28 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
                 const defCritical = roll === 1
                 const defPatzer = roll === 20
                 setDefenseResult({ success, roll, critical: defCritical, patzer: defPatzer })
+                // SchiP deduction for additional reactions (2nd+ defense in same round)
+                const wasAdditionalReaction = targetReactionCount > 0
                 if (selectedTarget) {
                   selectedTarget._reactionsThisRound = (selectedTarget._reactionsThisRound || 0) + 1
                 }
+                if (wasAdditionalReaction && selectedTarget) {
+                  const cid = selectedTarget.characterId || selectedTarget.id
+                  const curSchip = selectedTarget.schip ?? selectedTarget.currentSchiP ?? 0
+                  if (curSchip > 0) {
+                    sendMessage?.({
+                      type: 'schip_use',
+                      payload: { character_id: cid, usage: 'additional_reaction' },
+                    })
+                  }
+                }
                 addBattleLogEntry(battleId, {
                   type: defCritical ? 'critical' : success ? 'defense' : 'damage',
-                  text: `${selectedTarget.name} ${defenseType.label}: ${roll} ${success ? '≤' : '>'} ${target} — ${defCritical ? 'Kritische Verteidigung!' : defPatzer ? 'Patzer bei Verteidigung!' : success ? 'Verteidigung gelingt!' : 'Verteidigung misslingt!'}`,
+                  text: `${selectedTarget.name} ${defenseType.label}: ${roll} ${success ? '≤' : '>'} ${target} — ${defCritical ? 'Kritische Verteidigung!' : defPatzer ? 'Patzer bei Verteidigung!' : success ? 'Verteidigung gelingt!' : 'Verteidigung misslingt!'}${wasAdditionalReaction ? ' (1 SchiP verbraucht)' : ''}`,
                 })
                 sendMessage?.({ type: 'combat_log_entry', payload: {
                   type: defCritical ? 'critical' : success ? 'defense' : 'damage',
-                  text: `${selectedTarget.name} ${defenseType.label}: ${defCritical ? 'Kritische Verteidigung!' : defPatzer ? 'Verteidigungspatzer!' : success ? 'Verteidigung gelingt!' : 'Verteidigung misslingt!'}`,
+                  text: `${selectedTarget.name} ${defenseType.label}: ${defCritical ? 'Kritische Verteidigung!' : defPatzer ? 'Verteidigungspatzer!' : success ? 'Verteidigung gelingt!' : 'Verteidigung misslingt!'}${wasAdditionalReaction ? ' (1 SchiP verbraucht)' : ''}`,
                 }})
                 // Defense critical/Patzer → confirmation step
                 if (defPatzer) {

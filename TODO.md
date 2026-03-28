@@ -4,11 +4,9 @@
 ---
 
 ## Phase 2: Combat & Polish (remaining)
-- [ ] Fernkampf range brackets UI (engine built, UI pending)
-- [ ] Schicksalspunkte usage flow in combat UI
+- [x] Schicksalspunkte usage flow in combat UI — SchipMenu component, 4 usage types (reroll, defense boost, halve damage, ignore condition), auto-deduct on additional reactions, GM quick +/-, SchiP reset at session start, Protokoll logging, session statistics
 - [ ] Guided combat flow (Basic complexity mode with step-by-step hints)
 - [ ] Group inventory
-- [ ] Map editor: draw tool, difficult terrain painting, fog brush
 
 ## Phase 3: Persistence & Campaign (remaining)
 - [ ] Session recap (AI-generated) — API stub exists

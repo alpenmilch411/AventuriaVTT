@@ -117,6 +117,7 @@ function VitalsBar({
   portraitUrl = null, characterName = null,
   lep = 0, lepMax = 30, asp = 0, aspMax = 0, kap = 0, kapMax = 0,
   schip = 0, schipMax = 3, conditions = [], characterId = null,
+  onSchipClick = null,
   compact = false, className,
   weight = null, weightMax = null, money = null,
   sk = null, zk = null, rs = null, be = null,
@@ -218,13 +219,23 @@ function VitalsBar({
                 </div>
               } tip={`${label}${active ? ` = ${cur} / ${max}.` : ' — nicht verfügbar für diesen Charakter.'}`} />
             ))}
-            {/* Schicksalspunkte — segmented bar */}
+            {/* Schicksalspunkte — segmented bar (clickable if onSchipClick provided) */}
             <TipLabel label={
-              <div className="flex items-center gap-1">
+              <div
+                className={clsx('flex items-center gap-1', onSchipClick && schip > 0 && 'cursor-pointer group')}
+                onClick={onSchipClick && schip > 0 ? onSchipClick : undefined}
+              >
                 <FateDiamond />
                 <div className="flex-1 flex gap-0.5">
                   {Array.from({ length: schipMax }, (_, i) => (
-                    <div key={i} className={clsx('flex-1 h-2.5 rounded-sm transition-all', i < schip ? 'bg-dsa-gold shadow-[0_0_4px_rgba(201,168,76,0.4)]' : 'bg-dsa-bg-medium/60')} />
+                    <div key={i} className={clsx(
+                      'flex-1 h-2.5 rounded-sm transition-all',
+                      i < schip
+                        ? 'bg-dsa-gold shadow-[0_0_4px_rgba(201,168,76,0.4)]'
+                        : 'bg-dsa-bg-medium/60',
+                      onSchipClick && schip > 0 && i < schip && 'group-hover:shadow-[0_0_8px_rgba(201,168,76,0.6)]',
+                      schip === 1 && i === 0 && 'ring-1 ring-yellow-500/40',
+                    )} />
                   ))}
                 </div>
                 <span className="text-[9px] text-dsa-parchment font-mono w-[32px] text-right">{schip}/{schipMax}</span>

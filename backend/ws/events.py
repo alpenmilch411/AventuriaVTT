@@ -75,6 +75,11 @@ class EventType(str, Enum):
     ACTION_DECLINED = "action_declined"
     ITEM_TRANSFERRED = "item_transferred"
 
+    # Schicksalspunkte (SchiP)
+    SCHIP_USE = "schip_use"
+    SCHIP_USED = "schip_used"
+    SCHIP_ERROR = "schip_error"
+
     # Buffs
     BUFF_APPLY = "buff_apply"
     BUFF_REMOVE = "buff_remove"

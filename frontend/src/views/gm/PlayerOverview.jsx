@@ -508,7 +508,37 @@ function PlayerDetailView({ player, sendMessage, gmControls, onClose, databankTe
         )}
         <div className="flex items-center gap-2">
           <Star className="w-4 h-4 text-dsa-gold flex-shrink-0" />
-          <span className="text-[9px] text-dsa-parchment-dark">Schicksalspunkte: {v.schip}/{mv.schipMax}</span>
+          <span className="text-[9px] text-dsa-parchment-dark">Schicksalspunkte:</span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                if (v.schip <= 0) return
+                sendMessage?.({ type: 'vitals_update', payload: { character_id: player.characterId, vitals: { schip: v.schip - 1 } } })
+              }}
+              disabled={v.schip <= 0}
+              className="w-5 h-5 flex items-center justify-center bg-red-900/30 text-red-400 rounded text-xs hover:bg-red-900/50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+              title="-1 SchiP"
+            >
+              <Minus className="w-2.5 h-2.5" />
+            </button>
+            <div className="flex gap-0.5">
+              {Array.from({ length: mv.schipMax }, (_, i) => (
+                <div key={i} className={clsx('w-2.5 h-2.5 rounded-sm transition-all', i < v.schip ? 'bg-dsa-gold shadow-[0_0_4px_rgba(201,168,76,0.4)]' : 'bg-dsa-bg-medium/60')} />
+              ))}
+            </div>
+            <button
+              onClick={() => {
+                if (v.schip >= mv.schipMax) return
+                sendMessage?.({ type: 'vitals_update', payload: { character_id: player.characterId, vitals: { schip: v.schip + 1 } } })
+              }}
+              disabled={v.schip >= mv.schipMax}
+              className="w-5 h-5 flex items-center justify-center bg-green-900/30 text-green-400 rounded text-xs hover:bg-green-900/50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+              title="+1 SchiP"
+            >
+              <Plus className="w-2.5 h-2.5" />
+            </button>
+            <span className="text-[9px] text-dsa-parchment-dark font-mono">{v.schip}/{mv.schipMax}</span>
+          </div>
           <span className="text-[9px] text-dsa-parchment-dark ml-auto">Abenteuerpunkte: {char.total_ap ?? '-'} ({char.available_ap ?? 0} frei)</span>
         </div>
       </div>

@@ -13,6 +13,7 @@ import ProgressBar from '../../components/common/ProgressBar'
 import DiceInput from '../../components/common/DiceInput'
 import Badge from '../../components/common/Badge'
 import ActiveBuffs from '../../components/common/ActiveBuffs'
+import SchipMenu from '../../components/common/SchipMenu'
 import TurnFlow from '../gm/TurnFlow'
 import { getCreatureIcon } from '../../utils/icons'
 import clsx from 'clsx'
@@ -46,6 +47,7 @@ function CombatActions({ sendMessage }) {
   const [selectedDefense, setSelectedDefense] = useState(null)
   const [useSchip, setUseSchip] = useState(false)
   const [showTurnFlow, setShowTurnFlow] = useState(false)
+  const [showSchipMenu, setShowSchipMenu] = useState(false)
 
   const currentCombatant = initiativeOrder[currentTurnIndex]
   const turnsLeft = turnsUntilMine()
@@ -159,15 +161,32 @@ function CombatActions({ sendMessage }) {
               )}
             </div>
           ) : (
-            <DiceInput
-              label={selectedDefense === 'parry' ? 'Parade würfeln' : selectedDefense === 'dodge' ? 'Ausweichen würfeln' : ''}
-              targetValue={selectedDefense === 'parry' ? dynCombat.pa : selectedDefense === 'dodge' ? dynCombat.aw : null}
-              onSubmit={(value) => {
-                sendMessage?.({ category: 'combat', type: 'defense_result', payload: { defense_type: selectedDefense, value, use_schip: useSchip } })
-                clearPendingDefense(); setSelectedDefense(null); setUseSchip(false)
-              }}
-              onCancel={() => setSelectedDefense(null)}
-            />
+            <>
+              <DiceInput
+                label={selectedDefense === 'parry' ? 'Parade würfeln' : selectedDefense === 'dodge' ? 'Ausweichen würfeln' : ''}
+                targetValue={selectedDefense === 'parry' ? (dynCombat.pa + (useSchip ? 4 : 0)) : selectedDefense === 'dodge' ? (dynCombat.aw + (useSchip ? 4 : 0)) : null}
+                onSubmit={(value) => {
+                  sendMessage?.({
+                    category: 'combat',
+                    type: 'defense_result',
+                    payload: {
+                      defense_type: selectedDefense,
+                      value,
+                      use_schip: useSchip,
+                      character_id: myCharacter?.id,
+                    },
+                  })
+                  if (useSchip) {
+                    useCharacterStore.getState().updateVitals({ schip: Math.max(0, vitals.schip - 1) })
+                  }
+                  clearPendingDefense(); setSelectedDefense(null); setUseSchip(false)
+                }}
+                onCancel={() => setSelectedDefense(null)}
+              />
+              {useSchip && (
+                <p className="text-[9px] text-dsa-gold text-center mt-1">+4 Verteidigung durch Schicksalspunkt</p>
+              )}
+            </>
           )}
         </div>
       )
@@ -222,6 +241,21 @@ function CombatActions({ sendMessage }) {
         <span className="inline-block mt-2 text-[10px] font-mono text-dsa-parchment-dark bg-dsa-bg-medium px-2 py-0.5 rounded-full">
           Runde {currentRound}
         </span>
+        {/* SchiP quick-use while waiting */}
+        {vitals.schip > 0 && (
+          <div className="mt-4 w-full max-w-xs">
+            {showSchipMenu ? (
+              <SchipMenu sendMessage={sendMessage} onClose={() => setShowSchipMenu(false)} characterId={myCharacter?.id} />
+            ) : (
+              <button
+                onClick={() => setShowSchipMenu(true)}
+                className="flex items-center justify-center gap-1.5 w-full px-3 py-2 bg-dsa-gold/5 border border-dsa-gold/20 rounded-sm text-xs text-dsa-gold hover:bg-dsa-gold/10 transition"
+              >
+                <Star className="w-3.5 h-3.5" /> Schicksalspunkt einsetzen ({vitals.schip})
+              </button>
+            )}
+          </div>
+        )}
       </div>
     )
   }

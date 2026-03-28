@@ -885,6 +885,58 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       }
     }
 
+    // ── SchiP usage confirmation/error ──
+    else if (type === 'schip_used') {
+      // Update vitals (remaining SchiP)
+      const cid = payload.character_id
+      if (cid) {
+        const charState = useCharacterStore.getState()
+        if (charState.myCharacter?.id === cid && payload.remaining !== undefined) {
+          charState.updateVitals({ schip: payload.remaining })
+        }
+        if (payload.remaining !== undefined) {
+          charState.updateCharacterInList(cid, { schip: payload.remaining })
+          // Also sync to sessionStore players
+          const players = useSessionStore.getState().players || []
+          const pidx = players.findIndex(p => p.characterId === cid || p.character?.id === cid)
+          if (pidx !== -1) {
+            const updated = [...players]
+            updated[pidx] = {
+              ...updated[pidx],
+              currentSchiP: payload.remaining,
+              current_vitals: { ...(updated[pidx].current_vitals || {}), schip: payload.remaining },
+            }
+            useSessionStore.getState().setPlayers(updated)
+          }
+        }
+      }
+      // Log to Protokoll
+      const effectLabels = {
+        reroll: 'Probe wiederholen',
+        defense_boost: 'Verteidigung stärken (+4)',
+        halve_damage: 'Schaden halbieren',
+        ignore_condition: 'Zustand ignorieren',
+        additional_reaction: 'Zusätzliche Verteidigung',
+      }
+      const effectText = effectLabels[payload.usage] || payload.effect || payload.usage
+      const name = payload.character_name || 'Held'
+      logCombatAndSession({
+        type: 'system',
+        text: `${name} setzt SchiP ein: ${effectText}. (${payload.remaining ?? '?'} SchiP verbleibend)`,
+        timestamp: msg.timestamp,
+      })
+    }
+    else if (type === 'schip_error') {
+      useSessionStore.getState().addNotification({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        type: 'error',
+        from: 'System',
+        text: payload.message || 'Schicksalspunkt konnte nicht eingesetzt werden.',
+        timestamp: msg.timestamp,
+        dismissAfter: 5000,
+      })
+    }
+
     // ── Sound play ──
     else if (type === 'sound_play') {
       // Could trigger audio playback here if implemented

@@ -49,6 +49,15 @@ Built `backend/importers/optolith_converter.py` (1,148 lines) — reads Optolith
 - **SA Purchase** in SteigerungTab: category tabs derived from data, search, filters out owned SAs, AP cost from DB
 - **improvement_cost column** on SpellTemplate + LiturgyTemplate: correct Steigerungsfaktor for all upgrade flows
 
+### Schicksalspunkte (SchiP) Combat System
+Full fate point spending flow for players and GM:
+- **SchipMenu** component: 4 usage types — Probe wiederholen (re-roll), Verteidigung stärken (+4), Schaden halbieren, Zustand ignorieren (1 Runde)
+- **Backend**: `_handle_schip_use()` WS handler validates, deducts, persists, broadcasts, logs to Protokoll, increments session stats. `_handle_defense_choice()` processes `use_schip` flag for defense boost.
+- **Auto-deduct**: TurnFlow sends `schip_use` for 2nd+ reactions. SchiP reset to max at session start.
+- **GM controls**: Quick +/- buttons on PlayerOverview SchiP display
+- **VitalsBar**: Interactive SchiP dots (click to open menu), last-SchiP warning ring, gold flash animation on spend
+- **WS events**: `schip_use`, `schip_used`, `schip_error` message types
+
 ### Code Quality: Shared Engine Modules
 Extracted 4 shared modules from 13 files of duplicated code:
 - `combatManeuvers.js` — MANEUVERS + PLAYER_MANEUVERS (fixed CombatOverlay bug: wrong Wuchtschlag/Finte values)

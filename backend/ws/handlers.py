@@ -573,6 +573,66 @@ async def _broadcast_enriched_inventory(session_code: str, event_type: str, payl
         await manager.broadcast_to_room(session_code, msg)
 
 
+def _get_character_name(session_code: str, character_id: str) -> str:
+    """Return the character's name from combat state or a fallback."""
+    state = _ensure_state(session_code)
+    combat = state.get("combat")
+    if combat:
+        combatant = combat.get("combatants", {}).get(character_id)
+        if combatant:
+            return combatant.get("name", character_id[:8])
+        # Also check initiative_order
+        for c in combat.get("initiative_order", []):
+            cid = c.get("id") or c.get("characterId") or c.get("character_id")
+            if cid == character_id:
+                return c.get("name", character_id[:8])
+    return character_id[:8]
+
+
+async def _increment_session_stat(session_code: str, character_id: str, user_id: str, stat_name: str, amount: int = 1):
+    """Increment a counter on SessionStatistics for this session+character.
+
+    Creates the record if it doesn't exist.  Runs under a character lock.
+    """
+    async with _get_char_lock(character_id):
+        try:
+            from database import async_session
+            from sqlalchemy import select
+            from models.session_state import GameSession, SessionStatistics
+
+            async with async_session() as db:
+                sess_result = await db.execute(
+                    select(GameSession).where(GameSession.session_code == session_code)
+                )
+                session_obj = sess_result.scalar_one_or_none()
+                if not session_obj:
+                    logger.warning("Cannot increment stat — session not found for code %s", session_code)
+                    return
+
+                result = await db.execute(
+                    select(SessionStatistics).where(
+                        SessionStatistics.session_id == session_obj.id,
+                        SessionStatistics.character_id == character_id,
+                    )
+                )
+                stats = result.scalar_one_or_none()
+                if stats:
+                    current = getattr(stats, stat_name, 0) or 0
+                    setattr(stats, stat_name, current + amount)
+                else:
+                    stats = SessionStatistics(
+                        session_id=session_obj.id,
+                        character_id=character_id,
+                        user_id=user_id,
+                    )
+                    setattr(stats, stat_name, amount)
+                    db.add(stats)
+                await db.commit()
+                logger.debug("Incremented %s by %d for character %s in session %s", stat_name, amount, character_id, session_code)
+        except Exception as e:
+            logger.error("Failed to increment stat %s for %s: %s", stat_name, character_id, e)
+
+
 def _is_current_turn(state: dict, user_id: str) -> bool:
     """Check whether *user_id* is the active combatant."""
     combat = _combat_snapshot(state)
@@ -695,9 +755,14 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     # Player self-updates (item use effects) — persist and broadcast
 
     # Halt gate — block player state mutations while session is halted
-    halt_gated_events = {"vitals_update", "conditions_update", "inventory_change", "combat_log_entry", "buff_apply", "buff_add", "buff_remove", "buff_edit", "buff_clear_expired"}
+    halt_gated_events = {"vitals_update", "conditions_update", "inventory_change", "combat_log_entry", "buff_apply", "buff_add", "buff_remove", "buff_edit", "buff_clear_expired", "schip_use"}
     if event_type in halt_gated_events and not _is_gm(session_code, user_id) and manager.is_halted(session_code):
         await manager.send_to_user(user_id, _error("Session is halted — please wait for the GM"))
+        return
+
+    # ---- SchiP usage (player or GM) ----
+    if event_type == "schip_use":
+        await _handle_schip_use(session_code, user_id, payload, state)
         return
 
     if event_type == "vitals_update" and not _is_gm(session_code, user_id) and payload.get("character_id"):
@@ -1473,6 +1538,19 @@ async def _handle_session_start(session_code: str, user_id: str, payload: dict, 
     """Transition the session from lobby to active."""
     state["status"] = "active"
     state["connected_users"] = manager.get_connected_users(session_code)
+
+    # Reset SchiP to max for all characters in this session
+    character_ids = payload.get("character_ids", [])
+    for cid in character_ids:
+        await _cache_character_vitals(session_code, cid)
+        max_vals = state.get("max_vitals", {}).get(cid, {})
+        schip_max = max_vals.get("Schip", 3)
+        vitals = state.setdefault("vitals", {}).setdefault(cid, {})
+        vitals["schip"] = schip_max
+        _safe_create_task(_persist_vitals(cid, {"schip": schip_max}), name=f"reset_schip_{cid[:8]}")
+    if character_ids:
+        logger.info("Reset SchiP to max for %d characters in session %s", len(character_ids), session_code)
+
     msg = _msg(EventType.SESSION_START, {
         "session_code": session_code,
         "connected_users": state["connected_users"],
@@ -1592,11 +1670,48 @@ async def _handle_defense_choice(session_code: str, user_id: str, payload: dict,
         await manager.send_to_user(user_id, _error("No active combat"))
         return
 
+    character_id = payload.get("character_id")
+    use_schip = payload.get("use_schip", False)
+
+    # If player is spending a SchiP for defense boost, deduct and apply +4
+    schip_applied = False
+    if use_schip and character_id:
+        async with _get_char_lock(character_id):
+            await _cache_character_vitals(session_code, character_id)
+            vitals = state.setdefault("vitals", {}).get(character_id, {})
+            current_schip = vitals.get("schip", 0)
+            if current_schip > 0:
+                vitals["schip"] = current_schip - 1
+                state["vitals"][character_id] = vitals
+                _bump_version(state)
+                schip_applied = True
+                _safe_create_task(_persist_vitals(character_id, {"schip": vitals["schip"]}), name=f"persist_schip_def_{character_id[:8]}")
+
+        if schip_applied:
+            # Broadcast updated vitals
+            await manager.broadcast_to_room(session_code, _msg("vitals_update", {
+                "character_id": character_id,
+                "vitals": state["vitals"][character_id],
+                "state_version": state["state_version"],
+            }))
+            # Log SchiP usage
+            char_name = _get_character_name(session_code, character_id)
+            await _append_session_log(
+                session_code, "schip",
+                f"{char_name} setzt Schicksalspunkt ein: Verteidigung +4. ({vitals['schip']} SchiP verbleibend)",
+                icon="star",
+            )
+            _safe_create_task(
+                _increment_session_stat(session_code, character_id, user_id, "schip_spent"),
+                name=f"stat_schip_def_{character_id[:8]}",
+            )
+
     defense = {
         "user_id": user_id,
         "defense_type": payload.get("defense_type"),  # "parade" | "ausweichen" | "none"
         "roll": payload.get("roll"),
         "result": payload.get("result", {}),
+        "schip_used": schip_applied,
     }
     # Send to GM
     await manager.broadcast_to_room(session_code, _msg(
@@ -1611,6 +1726,7 @@ async def _handle_defense_choice(session_code: str, user_id: str, payload: dict,
             "success": defense["result"].get("success"),
             "critical": defense["result"].get("critical", False),
             "patzer": defense["result"].get("patzer", False),
+            "schip_used": schip_applied,
         }, from_user=user_id,
     ))
     combat.setdefault("log", []).append({
@@ -1619,6 +1735,97 @@ async def _handle_defense_choice(session_code: str, user_id: str, payload: dict,
         "data": defense,
         "timestamp": _ts(),
     })
+    if schip_applied:
+        _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_schip_def_{session_code}")
+
+
+async def _handle_schip_use(session_code: str, user_id: str, payload: dict, state: dict):
+    """Handle Schicksalspunkt spending.
+
+    Payload:
+        character_id: str
+        usage: "reroll" | "defense_boost" | "halve_damage" | "ignore_condition" | "additional_reaction"
+        condition: str (only for ignore_condition)
+    """
+    character_id = payload.get("character_id")
+    usage = payload.get("usage")
+    if not character_id or not usage:
+        await manager.send_to_user(user_id, _error("schip_use requires character_id and usage"))
+        return
+
+    valid_usages = {"reroll", "defense_boost", "halve_damage", "ignore_condition", "additional_reaction"}
+    if usage not in valid_usages:
+        await manager.send_to_user(user_id, _error(f"Invalid SchiP usage: {usage}"))
+        return
+
+    async with _get_char_lock(character_id):
+        await _cache_character_vitals(session_code, character_id)
+        vitals = state.setdefault("vitals", {}).get(character_id, {})
+        current_schip = vitals.get("schip", 0)
+
+        if current_schip <= 0:
+            await manager.send_to_user(user_id, _msg(EventType.SCHIP_ERROR, {
+                "message": "Keine Schicksalspunkte verfügbar.",
+            }))
+            return
+
+        # Deduct 1 SchiP
+        vitals["schip"] = current_schip - 1
+        state["vitals"][character_id] = vitals
+        _bump_version(state)
+
+        # Apply effect based on usage type
+        effect_label = {
+            "defense_boost": "Verteidigung +4",
+            "halve_damage": "Schaden halbiert",
+            "reroll": "Probe wiederholt",
+            "additional_reaction": "Zusätzliche Verteidigung",
+        }.get(usage, usage)
+
+        if usage == "defense_boost":
+            # Flag: next defense for this character gets +4
+            state.setdefault("schip_effects", {})[character_id] = {
+                "type": "defense_boost", "value": 4,
+            }
+        elif usage == "ignore_condition":
+            condition = payload.get("condition", "")
+            effect_label = f"Zustand '{condition}' ignoriert (1 KR)"
+
+        # Persist vitals in background
+        _safe_create_task(_persist_vitals(character_id, {"schip": vitals["schip"]}), name=f"persist_schip_{character_id[:8]}")
+
+    # Broadcast updated vitals to all
+    await manager.broadcast_to_room(session_code, _msg("vitals_update", {
+        "character_id": character_id,
+        "vitals": state["vitals"][character_id],
+        "state_version": state["state_version"],
+    }))
+
+    # Broadcast SchiP usage event (for UI feedback)
+    char_name = _get_character_name(session_code, character_id)
+    await manager.broadcast_to_room(session_code, _msg(EventType.SCHIP_USED, {
+        "character_id": character_id,
+        "character_name": char_name,
+        "usage": usage,
+        "effect": effect_label,
+        "remaining": vitals["schip"],
+    }))
+
+    # Log to session log (Protokoll)
+    await _append_session_log(
+        session_code, "schip",
+        f"{char_name} setzt Schicksalspunkt ein: {effect_label}. ({vitals['schip']} SchiP verbleibend)",
+        icon="star",
+    )
+
+    # Increment session statistics
+    _safe_create_task(
+        _increment_session_stat(session_code, character_id, user_id, "schip_spent"),
+        name=f"stat_schip_{character_id[:8]}",
+    )
+
+    _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_schip_{session_code}")
+    logger.info("SchiP used by %s (%s): %s — %d remaining", char_name, character_id, usage, vitals["schip"])
 
 
 async def _handle_item_use(session_code: str, user_id: str, payload: dict, state: dict):
