@@ -298,11 +298,33 @@ export function isIncapacitated(conditions) {
 
 /**
  * Calculate Schmerz (pain) level from current HP.
- * DSA5: Pain thresholds at 75%, 50%, 25%, 5 LeP remaining.
+ *
+ * DSA5 Grundregelwerk: Wundschwelle = ceil(KO / 2).
+ * Pain levels trigger at each multiple of Wundschwelle in damage taken:
+ *   1x WS → Schmerz I, 2x WS → Schmerz II, 3x WS → Schmerz III, 4x WS → Schmerz IV.
+ *
+ * If KO is not available (e.g. NPCs without full stats), falls back to
+ * percentage-based thresholds: 75%/50%/25%/5 LeP remaining.
+ *
+ * @param {number} currentLeP - Current life points
+ * @param {number} maxLeP - Maximum life points
+ * @param {number} [ko] - Konstitution attribute value (optional, enables DSA5-accurate calculation)
  * @returns {number} Pain level 0-4
  */
-export function calculatePainLevel(currentLeP, maxLeP) {
+export function calculatePainLevel(currentLeP, maxLeP, ko) {
   if (maxLeP <= 0) return 0
+  if (currentLeP <= 0) return 4
+
+  // If KO is provided, use DSA5 Wundschwelle formula
+  if (ko && ko > 0) {
+    const wundschwelle = Math.ceil(ko / 2)
+    const damageTaken = maxLeP - currentLeP
+    if (damageTaken <= 0) return 0
+    const level = Math.min(4, Math.floor(damageTaken / wundschwelle))
+    return level
+  }
+
+  // Fallback: percentage-based approximation (for NPCs without KO)
   const pct = currentLeP / maxLeP
   if (currentLeP <= 5) return 4
   if (pct <= 0.25) return 3

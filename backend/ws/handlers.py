@@ -214,7 +214,7 @@ def _sync_vitals_to_combat(state: dict, character_id: str, vitals: dict, token_i
     combat = state.get("combat")
     if not combat:
         return
-    vital_keys = ("lep", "asp", "kap")
+    vital_keys = ("lep", "asp", "kap", "schip")
     # Update initiative_order entries (match by characterId, character_id, id, or token_id)
     for c in combat.get("initiative_order", []):
         cid = c.get("characterId") or c.get("character_id") or c.get("id")
@@ -1340,10 +1340,20 @@ async def _handle_combat_start(session_code: str, user_id: str, payload: dict, s
 
 
 async def _handle_combat_end(session_code: str, user_id: str, payload: dict, state: dict):
-    """End combat."""
+    """End combat — forward the full payload (result, survivors, fallen, rounds) to all clients."""
     summary = payload.get("summary", "")
     state["combat"] = None
-    msg = _msg(EventType.COMBAT_END, {"summary": summary}, from_user=user_id)
+    # Forward the entire payload so players receive result/fallen/survivors/rounds for the
+    # victory/defeat screen.  The GM client constructs these fields in CombatOverlay.handleNextTurn.
+    broadcast_payload = {
+        "summary": summary,
+        "battle_id": payload.get("battle_id"),
+        "result": payload.get("result"),          # 'victory' | 'defeat' | None
+        "fallen": payload.get("fallen", []),
+        "survivors": payload.get("survivors", []),
+        "rounds": payload.get("rounds"),
+    }
+    msg = _msg(EventType.COMBAT_END, broadcast_payload, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     await _append_session_log(session_code, "combat", f"Kampf beendet. {summary}", icon="flag")
     logger.info("Combat ended in session %s", session_code)
@@ -1376,6 +1386,8 @@ async def _handle_combat_next_turn(session_code: str, user_id: str, payload: dic
                 c["asp"] = v["asp"]
             if "kap" in v:
                 c["kap"] = v["kap"]
+            if "schip" in v:
+                c["schip"] = v["schip"]
 
     idx = combat.get("current_turn_index", 0) + 1
     round_number = combat.get("round_number", 1)

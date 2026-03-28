@@ -15,6 +15,7 @@ import { getCreatureIcon } from '../../utils/icons'
 import ActiveBuffs from '../../components/common/ActiveBuffs'
 import Modal from '../../components/common/Modal'
 import { PLAYER_MANEUVERS } from '../../engine/combatManeuvers'
+import { tickConditions, calculatePainLevel, addCondition } from '../../engine/conditionsEngine'
 import clsx from 'clsx'
 
 /**
@@ -215,10 +216,36 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
       return
     }
 
+    const prevRound = battle.round
     nextTurn(battleId)
     // Broadcast full combat state to all players
     const updatedBattle = useCombatStore.getState().battles[battleId]
     if (updatedBattle) {
+      // Tick conditions at round start: reduce durations, apply poison DoT, remove expired
+      if (updatedBattle.round > prevRound) {
+        for (const c of updatedBattle.initiativeOrder) {
+          if (!c.conditions || c.conditions.length === 0) continue
+          const { conditions: remaining, poisonDamage, expired } = tickConditions([...c.conditions])
+          if (expired.length > 0) {
+            addBattleLogEntry(battleId, { type: 'system', text: `${c.name}: ${expired.join(', ')} abgeklungen.` })
+            sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${c.name}: ${expired.join(', ')} abgeklungen.` } })
+          }
+          if (poisonDamage > 0) {
+            const oldLep = c.lep ?? c.lepMax ?? 30
+            const newLep = Math.max(0, oldLep - poisonDamage)
+            updateCombatant(c.id, { lep: newLep, conditions: remaining })
+            addBattleLogEntry(battleId, { type: 'damage', text: `${c.name}: ${poisonDamage} Giftschaden (LeP ${oldLep} → ${newLep})` })
+            sendMessage?.({ type: 'vitals_update', payload: { character_id: c.characterId || c.id, token_id: c.id, vitals: { lep: newLep } } })
+            sendMessage?.({ type: 'combat_log_entry', payload: { type: 'damage', text: `${c.name}: ${poisonDamage} Giftschaden` } })
+          } else if (expired.length > 0) {
+            updateCombatant(c.id, { conditions: remaining })
+          }
+          if (c.characterId) {
+            sendMessage?.({ type: 'conditions_update', payload: { character_id: c.characterId, conditions: remaining } })
+          }
+        }
+      }
+
       const nextCombatant = updatedBattle.initiativeOrder[updatedBattle.currentTurnIndex]
       sendMessage?.({
         type: 'combat_next_turn',
@@ -255,13 +282,35 @@ export default function CombatOverlay({ battleId, onClose, onVictoryLoot, sendMe
     // Broadcast to all — updates map tokens, player vitals, and combat display
     sendMessage?.({ type: 'vitals_update', payload: { character_id: c.characterId || c.id, token_id: c.id, vitals: { lep: newLep } } })
     sendMessage?.({ type: 'combat_log_entry', payload: { text: val > 0 ? `${c.name} erleidet ${val} Schadenspunkte!` : `${c.name} wird um ${Math.abs(val)} geheilt.`, type: val > 0 ? 'damage' : 'heal' } })
-    // Pain thresholds
+    // Pain thresholds — calculate using DSA5 Wundschwelle when KO is available
     if (val > 0 && c.lepMax) {
-      const pct = newLep / c.lepMax
-      if (newLep <= 0) addBattleLogEntry(battleId, { type: 'critical', text: `💀 ${c.name} ist bewusstlos!` })
-      else if (pct <= 0.25 && oldLep / c.lepMax > 0.25) addBattleLogEntry(battleId, { type: 'system', text: `⚠️ ${c.name}: Schmerz 3` })
-      else if (pct <= 0.5 && oldLep / c.lepMax > 0.5) addBattleLogEntry(battleId, { type: 'system', text: `${c.name}: Schmerz 2` })
-      else if (pct <= 0.75 && oldLep / c.lepMax > 0.75) addBattleLogEntry(battleId, { type: 'system', text: `${c.name}: Schmerz 1` })
+      const allChars = useCharacterStore.getState().allCharacters || []
+      const charData = allChars.find(ch => ch.id === c.characterId)
+      const targetKO = charData?.attributes?.KO
+      const painLevel = calculatePainLevel(newLep, c.lepMax, targetKO)
+      const oldPainLevel = calculatePainLevel(oldLep, c.lepMax, targetKO)
+      if (newLep <= 0) {
+        addBattleLogEntry(effectiveBattleId, { type: 'critical', text: `${c.name} ist bewusstlos!` })
+        const updConds = addCondition(c.conditions || [], 'Bewusstlos', 1)
+        updateCombatant(c.id, { conditions: updConds })
+        if (c.characterId) {
+          sendMessage?.({ type: 'conditions_update', payload: { character_id: c.characterId, conditions: updConds } })
+        }
+      } else if (painLevel > oldPainLevel) {
+        addBattleLogEntry(effectiveBattleId, { type: 'system', text: `${c.name}: Schmerz ${['','I','II','III','IV'][painLevel]}` })
+        sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${c.name}: Schmerz ${['','I','II','III','IV'][painLevel]}` } })
+        let updConds = [...(c.conditions || [])]
+        const existingPain = updConds.find(cond => cond.name === 'Schmerz')
+        if (existingPain) {
+          existingPain.level = Math.max(existingPain.level || 1, painLevel)
+        } else {
+          updConds.push({ name: 'Schmerz', level: painLevel })
+        }
+        updateCombatant(c.id, { conditions: updConds })
+        if (c.characterId) {
+          sendMessage?.({ type: 'conditions_update', payload: { character_id: c.characterId, conditions: updConds } })
+        }
+      }
     }
   }
 

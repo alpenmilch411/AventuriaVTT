@@ -298,10 +298,34 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
           }
         }
 
-        // Check pain threshold
-        const painLevel = calculatePainLevel(newLep, selectedTarget?.lepMax || 30)
-        if (painLevel > 0) {
-          addBattleLogEntry(battleId, { type: 'system', text: `${selectedTarget.name}: Schmerz ${['','I','II','III','IV'][painLevel]} (LeP ${newLep}/${selectedTarget?.lepMax})` })
+        // Check pain threshold and apply Schmerz condition
+        {
+          const targetCharData = useCharacterStore.getState().allCharacters.find(c => c.id === selectedTarget?.characterId)
+          const targetKO = targetCharData?.attributes?.KO
+          const painLevel = calculatePainLevel(newLep, selectedTarget?.lepMax || 30, targetKO)
+          const oldPainLevel = calculatePainLevel(oldLep, selectedTarget?.lepMax || 30, targetKO)
+          if (newLep <= 0) {
+            addBattleLogEntry(battleId, { type: 'critical', text: `${selectedTarget.name} fällt bewusstlos!` })
+            const updConds = addCondition(selectedTarget?.conditions || [], 'Bewusstlos', 1)
+            updateCombatant(selectedTarget.id, { conditions: updConds })
+            if (selectedTarget?.characterId) {
+              sendMessage?.({ type: 'conditions_update', payload: { character_id: selectedTarget.characterId, conditions: updConds } })
+            }
+          } else if (painLevel > oldPainLevel) {
+            addBattleLogEntry(battleId, { type: 'system', text: `${selectedTarget.name}: Schmerz ${['','I','II','III','IV'][painLevel]} (Wundschwelle überschritten)` })
+            sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${selectedTarget.name}: Schmerz ${['','I','II','III','IV'][painLevel]}` } })
+            let updConds = [...(selectedTarget?.conditions || [])]
+            const existingPain = updConds.find(c => c.name === 'Schmerz')
+            if (existingPain) {
+              existingPain.level = Math.max(existingPain.level || 1, painLevel)
+            } else {
+              updConds.push({ name: 'Schmerz', level: painLevel })
+            }
+            updateCombatant(selectedTarget.id, { conditions: updConds })
+            if (selectedTarget?.characterId) {
+              sendMessage?.({ type: 'conditions_update', payload: { character_id: selectedTarget.characterId, conditions: updConds } })
+            }
+          }
         }
 
         setDamageResult({ sp, newLep, dmgMult, onHitEffects })
@@ -2371,16 +2395,40 @@ export default function TurnFlow({ combatant, battleId, allCombatants, onComplet
               const oldLep = selectedTarget?.lep ?? selectedTarget?.lepMax ?? 30
               const newLep = Math.max(0, oldLep - sp)
               updateCombatant(selectedTarget.id, { lep: newLep })
-              addBattleLogEntry(battleId, { type: 'damage', text: `${combatant.name} trifft ${selectedTarget.name} für ${sp} SP! (LeP: ${oldLep} → ${newLep})` })
-              if (selectedTarget.lepMax) {
-                const pct = newLep / selectedTarget.lepMax
-                if (newLep <= 0) addBattleLogEntry(battleId, { type: 'critical', text: `${selectedTarget.name} fällt bewusstlos!` })
-                else if (pct <= 0.25 && oldLep / selectedTarget.lepMax > 0.25) addBattleLogEntry(battleId, { type: 'system', text: `${selectedTarget.name}: Schmerz 3` })
-                else if (pct <= 0.5 && oldLep / selectedTarget.lepMax > 0.5) addBattleLogEntry(battleId, { type: 'system', text: `${selectedTarget.name}: Schmerz 2` })
-                else if (pct <= 0.75 && oldLep / selectedTarget.lepMax > 0.75) addBattleLogEntry(battleId, { type: 'system', text: `${selectedTarget.name}: Schmerz 1` })
+              const dmgLogText = `${combatant.name} trifft ${selectedTarget.name} für ${sp} SP! (LeP: ${oldLep} → ${newLep})`
+              addBattleLogEntry(battleId, { type: 'damage', text: dmgLogText })
+              // Calculate and apply Schmerz condition based on Wundschwelle
+              {
+                const targetCharData = useCharacterStore.getState().allCharacters.find(c => c.id === selectedTarget.characterId)
+                const targetKO = targetCharData?.attributes?.KO
+                const painLevel = calculatePainLevel(newLep, selectedTarget.lepMax || 30, targetKO)
+                const oldPainLevel = calculatePainLevel(oldLep, selectedTarget.lepMax || 30, targetKO)
+                if (newLep <= 0) {
+                  addBattleLogEntry(battleId, { type: 'critical', text: `${selectedTarget.name} fällt bewusstlos!` })
+                  const updConds = addCondition(selectedTarget.conditions || [], 'Bewusstlos', 1)
+                  updateCombatant(selectedTarget.id, { conditions: updConds })
+                  if (selectedTarget.characterId) {
+                    sendMessage?.({ type: 'conditions_update', payload: { character_id: selectedTarget.characterId, conditions: updConds } })
+                  }
+                } else if (painLevel > oldPainLevel) {
+                  addBattleLogEntry(battleId, { type: 'system', text: `${selectedTarget.name}: Schmerz ${['','I','II','III','IV'][painLevel]} (Wundschwelle überschritten)` })
+                  sendMessage?.({ type: 'combat_log_entry', payload: { type: 'system', text: `${selectedTarget.name}: Schmerz ${['','I','II','III','IV'][painLevel]}` } })
+                  // Apply Schmerz condition at the new level (set, not stack)
+                  let updConds = [...(selectedTarget.conditions || [])]
+                  const existingPain = updConds.find(c => c.name === 'Schmerz')
+                  if (existingPain) {
+                    existingPain.level = Math.max(existingPain.level || 1, painLevel)
+                  } else {
+                    updConds.push({ name: 'Schmerz', level: painLevel })
+                  }
+                  updateCombatant(selectedTarget.id, { conditions: updConds })
+                  if (selectedTarget.characterId) {
+                    sendMessage?.({ type: 'conditions_update', payload: { character_id: selectedTarget.characterId, conditions: updConds } })
+                  }
+                }
               }
               sendMessage?.({ type: 'vitals_update', payload: { character_id: selectedTarget.characterId || selectedTarget.id, token_id: selectedTarget.id, vitals: { lep: newLep } } })
-              sendMessage?.({ type: 'combat_log_entry', payload: { type: 'damage', text: `${combatant.name} trifft ${selectedTarget.name} für ${sp} SP! (LeP: ${oldLep} → ${newLep})` } })
+              sendMessage?.({ type: 'combat_log_entry', payload: { type: 'damage', text: dmgLogText } })
               // Weapon poison trigger
               if (combatant.poisonedWeapon && sp > 0) {
                 const pw = combatant.poisonedWeapon

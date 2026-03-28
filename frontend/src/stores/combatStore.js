@@ -164,19 +164,26 @@ const useCombatStore = create((set, get) => ({
     const len = battle.initiativeOrder.length
     let nextIndex = (battle.currentTurnIndex + 1) % len
     let newRound = nextIndex === 0 ? battle.round + 1 : battle.round
-    // Skip dead combatants (lep <= 0), but stop after one full cycle to avoid infinite loop
+    // Skip dead combatants (lep <= 0), but stop after one full cycle to avoid infinite loop.
+    // Combatants with lep === undefined are considered alive (they haven't taken damage yet).
     let skipped = 0
     while (skipped < len) {
       const c = battle.initiativeOrder[nextIndex]
-      if (!c || (c.lep !== undefined && c.lep > 0)) break
+      if (!c) break // safety: null combatant
+      if (c.lep === undefined || c.lep > 0) break // alive or never-damaged
       nextIndex = (nextIndex + 1) % len
       if (nextIndex === 0) newRound++
       skipped++
     }
+    // Reset _reactionsThisRound at the start of each new round (DSA5: reactions reset per KR)
+    let updatedOrder = battle.initiativeOrder
+    if (newRound > battle.round) {
+      updatedOrder = battle.initiativeOrder.map(c => ({ ...c, _reactionsThisRound: 0 }))
+    }
     return {
       battles: {
         ...state.battles,
-        [bid]: { ...battle, currentTurnIndex: nextIndex, round: newRound },
+        [bid]: { ...battle, initiativeOrder: updatedOrder, currentTurnIndex: nextIndex, round: newRound },
       },
       // Only clear combat-related dice requests, not talent/spell probes
       pendingDiceRequest: state.pendingDiceRequest && ['talent_probe', 'spell_probe'].includes(state.pendingDiceRequest.type) ? state.pendingDiceRequest : null,
