@@ -508,6 +508,121 @@ async def _persist_ap_awards(session_code: str, awards: list):
         logger.error("Failed to persist AP awards for session %s: %s", session_code, e)
 
 
+async def _persist_loot_awards(session_code: str, loot: list):
+    """Persist loot awards to character basis_inventory and broadcast inventory_change.
+
+    loot: [{character_id, items: [{name, quantity, template_id?}]}, ...]
+
+    Validates each row: skip non-dict rows, trim names, coerce quantity to
+    positive int, log-and-skip malformed entries. Does not fail the batch
+    on a single bad entry.
+    """
+    # NOTE: If this task runs >_SESSION_END_GRACE_SECONDS (30s) the cleanup
+    # sweep may prune _character_locks underneath us. Same limitation as
+    # _persist_ap_awards. See issue #3 (character-ownership WS checks) for
+    # the broader lifecycle cleanup.
+    if not isinstance(loot, list) or not loot:
+        return
+
+    for row in loot:
+        if not isinstance(row, dict):
+            logger.warning("Loot row is not a dict, skipping: %r", row)
+            continue
+        character_id = row.get("character_id")
+        items_in = row.get("items") or []
+        if not isinstance(character_id, str) or not character_id or not isinstance(items_in, list):
+            logger.warning("Loot row missing/invalid character_id or items, skipping: %r", row)
+            continue
+
+        # Normalize + validate each item
+        clean_items = []
+        for it in items_in:
+            if not isinstance(it, dict):
+                continue
+            raw_name = it.get("name")
+            if not isinstance(raw_name, str):
+                continue
+            name = raw_name.strip()
+            try:
+                qty = int(it.get("quantity") or 0)
+            except (TypeError, ValueError):
+                qty = 0
+            if not name or qty <= 0:
+                continue
+            entry = {"name": name, "quantity": qty}
+            tid = it.get("template_id")
+            if tid and isinstance(tid, str):
+                entry["template_id"] = tid
+            clean_items.append(entry)
+
+        if not clean_items:
+            continue
+
+        async with _get_char_lock(character_id):
+            try:
+                from database import async_session
+                from sqlalchemy import select
+                from models.character import Character
+
+                async with async_session() as db:
+                    char_result = await db.execute(
+                        select(Character).where(Character.id == character_id)
+                    )
+                    char = char_result.scalar_one_or_none()
+                    if not char:
+                        logger.warning("Loot award skipped — character %s not found", character_id)
+                        continue
+
+                    # Normalize basis_inventory shape (dict-with-items vs. bare list)
+                    raw_inv = char.basis_inventory or []
+                    if isinstance(raw_inv, dict):
+                        inv_items = list(raw_inv.get("items") or [])
+                        inv_wrap = dict(raw_inv)
+                    else:
+                        inv_items = list(raw_inv)
+                        inv_wrap = None
+
+                    # Merge: stack quantity if same name (+ same template_id if present)
+                    for new_item in clean_items:
+                        matched = False
+                        for existing in inv_items:
+                            if not isinstance(existing, dict):
+                                continue
+                            if existing.get("name") != new_item["name"]:
+                                continue
+                            if new_item.get("template_id") and existing.get("template_id") != new_item["template_id"]:
+                                continue
+                            existing["quantity"] = (existing.get("quantity") or 0) + new_item["quantity"]
+                            matched = True
+                            break
+                        if not matched:
+                            inv_items.append(dict(new_item))
+
+                    if inv_wrap is not None:
+                        inv_wrap["items"] = inv_items
+                        char.basis_inventory = inv_wrap
+                    else:
+                        char.basis_inventory = inv_items
+
+                    # Snapshot before commit — attributes may expire after flush
+                    inv_snapshot = char.basis_inventory
+                    await db.commit()
+
+                    # Broadcast inventory_change so connected clients update live
+                    msg = _msg(EventType.INVENTORY_CHANGE, {
+                        "character_id": character_id,
+                        "inventory": inv_snapshot,
+                    })
+                    await manager.broadcast_to_room(session_code, msg)
+
+                    logger.info(
+                        "Loot persisted: %d items -> character %s",
+                        len(clean_items), character_id,
+                    )
+            except Exception as e:
+                logger.error("Failed to persist loot for character %s: %s", character_id, e, exc_info=True)
+
+
 async def _persist_loot(distributions: list):
     """Persist loot items to character inventories in DB. Stacks with existing items.
 
@@ -2070,11 +2185,18 @@ async def _handle_session_end(session_code: str, user_id: str, payload: dict, st
         "ap_awards": ap_awards,
     }, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
+    loot = payload.get("loot") or []
     # Persist AP awards to the database
     if ap_awards:
         _safe_create_task(
             _persist_ap_awards(session_code, ap_awards),
             name=f"persist_ap_awards_{session_code}",
+        )
+    # Persist loot awards to character basis_inventory
+    if loot:
+        _safe_create_task(
+            _persist_loot_awards(session_code, loot),
+            name=f"persist_loot_{session_code}",
         )
     # Delay cleanup so late in-flight handlers (already holding a ref to
     # the old state dict) finish without racing a fresh empty state under
