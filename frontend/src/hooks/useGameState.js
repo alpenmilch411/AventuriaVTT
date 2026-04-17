@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import useSessionStore from '../stores/sessionStore'
 import useCombatStore from '../stores/combatStore'
 import useCharacterStore from '../stores/characterStore'
-import useCampaignStore from '../stores/campaignStore'
 
 export default function useGameState() {
   const phase = useSessionStore((s) => s.phase)
@@ -27,8 +26,8 @@ export default function useGameState() {
   const myCharacter = useCharacterStore((s) => s.myCharacter)
   const myConditions = myCharacter?.conditions || []
 
-  const worldClock = useCampaignStore((s) => s.worldClock)
-  const weather = useCampaignStore((s) => s.weather)
+  const worldClock = useSessionStore((s) => s.worldClock)
+  const weather = useSessionStore((s) => s.weather)
 
   const pendingAction = useMemo(() => {
     if (pendingDefense) return 'defense'

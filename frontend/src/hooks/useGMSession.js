@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import useAuthStore from '../stores/authStore'
 import useSessionStore from '../stores/sessionStore'
-import useCampaignStore from '../stores/campaignStore'
 import useCharacterStore from '../stores/characterStore'
 import useCombatStore from '../stores/combatStore'
 import { getConditions, getVitalsFrom, getMaxVitals } from '../utils/safeData'
@@ -35,7 +34,6 @@ export default function useGMSession(sessionCode) {
       useSessionStore.getState().reset()
       useCombatStore.getState().reset()
       useCharacterStore.getState().reset()
-      useCampaignStore.getState().reset()
     }
   }, [])
 

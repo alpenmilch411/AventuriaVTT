@@ -17,7 +17,6 @@ import useGMPopups from '../../hooks/useGMPopups'
 import useGMDatabank from '../../hooks/useGMDatabank'
 import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
-import useCampaignStore from '../../stores/campaignStore'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
 import CombatOverlay from './CombatOverlay'
@@ -25,7 +24,6 @@ import SessionPrep, { getSessionPool } from './SessionPrep'
 import CombatTracker from './CombatTracker'
 import BattleManager from './BattleManager'
 import LootPanel from './LootPanel'
-import GroupInventoryPanel from './GroupInventoryPanel'
 import ShopCreateModal from './ShopCreateModal'
 import NotificationPanel from './NotificationPanel'
 import ConditionPopup from './ConditionPopup'
@@ -35,7 +33,7 @@ import PlayerOverview, { PlayerDetailView } from './PlayerOverview'
 import Modal from '../../components/common/Modal'
 import SessionControls from './SessionControls'
 import TurnFlow from './TurnFlow'
-import QuestSessionTab from './QuestSessionTab'
+import SessionEndPanel from './SessionEndPanel'
 import Badge from '../../components/common/Badge'
 import ProgressBar from '../../components/common/ProgressBar'
 import ActiveBuffs from '../../components/common/ActiveBuffs'
@@ -83,13 +81,12 @@ export default function GMCockpit() {
     diceFormula, setDiceFormula,
     diceResult, setDiceResult,
     showNotes, setShowNotes,
-    showQuests, setShowQuests,
+    showSessionEnd, setShowSessionEnd,
     showConditionPopup, setShowConditionPopup,
     showProbePopup, setShowProbePopup,
     showVitalsPopup, setShowVitalsPopup,
     gmNotes, setGmNotes,
     detailPlayer, setDetailPlayer,
-    showGroupInventory, setShowGroupInventory,
     showShopCreate, setShowShopCreate,
   } = popups
 
@@ -105,7 +102,6 @@ export default function GMCockpit() {
   const { connected, sendMessage } = useWebSocket(sessionCode, user?.id, 'gm')
   const gmControls = useGMControls(sendMessage)
   const { phase, isHalted } = useGameState()
-  const campaign = useCampaignStore((s) => s.campaign)
   const activeBattle = battles[activeBattleId]
   const connectedCount = players.filter(p => p.connected).length
 
@@ -230,13 +226,9 @@ export default function GMCockpit() {
             className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition">
             Session-Material
           </button>
-          <button onClick={() => setShowQuests(true)}
+          <button onClick={() => setShowSessionEnd(true)}
             className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition flex items-center gap-1">
-            <Scroll className="w-3 h-3" /> Quests
-          </button>
-          <button onClick={() => setShowGroupInventory(true)}
-            className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition flex items-center gap-1">
-            <Package className="w-3 h-3" /> Inventar
+            <Scroll className="w-3 h-3" /> Session beenden
           </button>
           <button onClick={() => setShowShopCreate(true)}
             className="px-2 py-1 text-xs bg-dsa-bg text-dsa-parchment-dark border border-dsa-bg-medium rounded-sm hover:text-dsa-gold hover:border-dsa-gold/30 transition flex items-center gap-1">
@@ -721,20 +713,14 @@ export default function GMCockpit() {
       )}
 
 
-      {showQuests && (
+      {showSessionEnd && (
         <div className="fixed inset-0 z-50 bg-dsa-bg">
           <div className="h-full flex flex-col">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-dsa-bg-medium bg-dsa-bg-card">
-              <span className="text-sm font-display font-bold text-dsa-gold">Quests & Session</span>
-              <button onClick={() => setShowQuests(false)} className="text-dsa-parchment-dark hover:text-dsa-parchment"><X className="w-5 h-5" /></button>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <QuestSessionTab
-                campaignId={useCampaignStore.getState().campaign?.id}
-                sessionId={sessionId}
-                sendMessage={sendMessage}
-              />
-            </div>
+            <SessionEndPanel
+              sessionId={sessionId}
+              sendMessage={sendMessage}
+              onClose={() => setShowSessionEnd(false)}
+            />
           </div>
         </div>
       )}
@@ -807,18 +793,6 @@ export default function GMCockpit() {
         </div>
       )}
 
-      {/* Group Inventory */}
-      {showGroupInventory && campaign?.id && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setShowGroupInventory(false)}>
-          <div onClick={e => e.stopPropagation()}>
-            <GroupInventoryPanel
-              campaignId={campaign.id}
-              sendMessage={sendMessage}
-              onClose={() => setShowGroupInventory(false)}
-            />
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -2174,7 +2174,17 @@ async def _delayed_session_cleanup(session_code: str, delay: int = _SESSION_END_
 
 
 async def _handle_session_end(session_code: str, user_id: str, payload: dict, state: dict):
-    """End the session."""
+    """Broadcast session end and schedule cleanup + AP/loot persistence.
+
+    Idempotent: if session is already 'ended' (e.g. retried from client DLQ
+    after a reconnect), this is a no-op.
+    """
+    if state.get("status") == "ended":
+        logger.info(
+            "session_end received for already-ended session %s; ignoring (idempotency guard)",
+            session_code,
+        )
+        return
     state["status"] = "ended"
     _bump_version(state)
     summary = payload.get("summary", "")

@@ -28,13 +28,12 @@ export default function useGMPopups() {
   const [diceFormula, setDiceFormula] = useState('1W6')
   const [diceResult, setDiceResult] = useState(null)
   const [showNotes, setShowNotes] = useState(false)
-  const [showQuests, setShowQuests] = useState(false)
   const [showConditionPopup, setShowConditionPopup] = useState(false)
   const [showProbePopup, setShowProbePopup] = useState(false)
   const [showVitalsPopup, setShowVitalsPopup] = useState(false)
   const [gmNotes, setGmNotes] = useState(() => { try { return localStorage.getItem('aventuria_gm_notes') || '' } catch { return '' } })
   const [detailPlayer, setDetailPlayer] = useState(null) // player object for detail modal
-  const [showGroupInventory, setShowGroupInventory] = useState(false)
+  const [showSessionEnd, setShowSessionEnd] = useState(false)
   const [showShopCreate, setShowShopCreate] = useState(false)
 
   // Clear stale overlays when combat ends
@@ -64,13 +63,12 @@ export default function useGMPopups() {
     diceFormula, setDiceFormula,
     diceResult, setDiceResult,
     showNotes, setShowNotes,
-    showQuests, setShowQuests,
     showConditionPopup, setShowConditionPopup,
     showProbePopup, setShowProbePopup,
     showVitalsPopup, setShowVitalsPopup,
     gmNotes, setGmNotes,
     detailPlayer, setDetailPlayer,
-    showGroupInventory, setShowGroupInventory,
+    showSessionEnd, setShowSessionEnd,
     showShopCreate, setShowShopCreate,
   }
 }

@@ -15,6 +15,15 @@ const useSessionStore = create((set, get) => ({
   activeProcesses: [], // { id, type: 'probe'|'trade', label, data, timestamp }
   pendingRequest: null, // { id, type, label, timestamp } — player's pending request awaiting GM
 
+  // ── World state (formerly in campaignStore; owned by the session now) ──
+  weather: 'klar',
+  worldClock: { date: '1. Praios 1040 BF', time: '12:00', dayNight: 'day' },
+  restResults: null, // { results: [...], duration_hours: int } — set by rest_end WS
+
+  setWeather: (weather) => set({ weather }),
+  setWorldClock: (clock) => set({ worldClock: clock }),
+  setRestResults: (results) => set({ restResults: results }),
+
   setPendingRequest: (request) => set({ pendingRequest: request }),
   clearPendingRequest: () => set({ pendingRequest: null }),
 
@@ -106,6 +115,9 @@ const useSessionStore = create((set, get) => ({
     notifications: [], activeProcesses: [], pendingRequest: null, activeLoot: null,
     lootReceived: null, sceneContent: [], sessionLog: [],
     outgoingTrade: null, incomingTrade: null, tradeResult: null,
+    weather: 'klar',
+    worldClock: { date: '1. Praios 1040 BF', time: '12:00', dayNight: 'day' },
+    restResults: null,
   }),
 
   leaveSession: () => set({

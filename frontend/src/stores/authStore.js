@@ -2,7 +2,6 @@ import { create } from 'zustand'
 import useSessionStore from './sessionStore'
 import useCombatStore from './combatStore'
 import useCharacterStore from './characterStore'
-import useCampaignStore from './campaignStore'
 
 const API = '/api'
 
@@ -90,7 +89,6 @@ const useAuthStore = create((set, get) => ({
     useSessionStore.getState().reset()
     useCombatStore.getState().reset()
     useCharacterStore.getState().reset()
-    useCampaignStore.getState().reset()
   },
 
   fetchMe: async () => {
