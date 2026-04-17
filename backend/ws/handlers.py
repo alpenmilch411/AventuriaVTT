@@ -446,12 +446,16 @@ async def _persist_ap_awards(session_code: str, awards: list):
     """Persist AP awards to the database — create APAward records and update Character totals.
 
     awards: [{character_id, amount, reason?}, ...]
+
+    Defense in depth: filter to the session's active SessionPlayer roster so
+    a spoofed GM client (issue #2 WS auth still open) cannot grant AP to
+    characters outside the session.
     """
     try:
         from database import async_session
         from sqlalchemy import select
         from models.character import Character
-        from models.session_state import GameSession, APAward
+        from models.session_state import GameSession, SessionPlayer, APAward
 
         async with async_session() as db:
             # Resolve session_id from session_code
@@ -465,11 +469,26 @@ async def _persist_ap_awards(session_code: str, awards: list):
 
             session_id = session_obj.id
 
+            # Load active SessionPlayer roster — allow-list for character_id
+            sp_result = await db.execute(
+                select(SessionPlayer.character_id).where(
+                    SessionPlayer.session_id == session_id,
+                    SessionPlayer.status == "active",
+                )
+            )
+            allowed_character_ids = {row for (row,) in sp_result.all() if row}
+
             for award in awards:
                 character_id = award.get("character_id")
                 amount = award.get("amount", 0)
                 reason = award.get("reason", "")
                 if not character_id or amount <= 0:
+                    continue
+                if character_id not in allowed_character_ids:
+                    logger.warning(
+                        "AP award rejected — character %s not in session %s roster",
+                        character_id, session_code,
+                    )
                     continue
 
                 async with _get_char_lock(character_id):
@@ -512,6 +531,10 @@ async def _persist_loot_awards(session_code: str, loot: list):
     Validates each row: skip non-dict rows, trim names, coerce quantity to
     positive int, log-and-skip malformed entries. Does not fail the batch
     on a single bad entry.
+
+    Defense in depth: filter to the session's active SessionPlayer roster so
+    a spoofed GM client (issue #2 WS auth still open) cannot write loot to
+    characters outside the session.
     """
     # NOTE: If this task runs >_SESSION_END_GRACE_SECONDS (30s) the cleanup
     # sweep may prune _character_locks underneath us. Same limitation as
@@ -519,6 +542,29 @@ async def _persist_loot_awards(session_code: str, loot: list):
     # the broader lifecycle cleanup.
     if not isinstance(loot, list) or not loot:
         return
+
+    # Resolve session + active SessionPlayer roster once up front
+    from database import async_session
+    from sqlalchemy import select
+    from models.session_state import GameSession, SessionPlayer
+
+    async with async_session() as roster_db:
+        sess_result = await roster_db.execute(
+            select(GameSession).where(GameSession.session_code == session_code)
+        )
+        session_obj = sess_result.scalar_one_or_none()
+        if not session_obj:
+            logger.error(
+                "Cannot persist loot — session not found for code %s", session_code,
+            )
+            return
+        sp_result = await roster_db.execute(
+            select(SessionPlayer.character_id).where(
+                SessionPlayer.session_id == session_obj.id,
+                SessionPlayer.status == "active",
+            )
+        )
+        allowed_character_ids = {row for (row,) in sp_result.all() if row}
 
     for row in loot:
         if not isinstance(row, dict):
@@ -528,6 +574,12 @@ async def _persist_loot_awards(session_code: str, loot: list):
         items_in = row.get("items") or []
         if not isinstance(character_id, str) or not character_id or not isinstance(items_in, list):
             logger.warning("Loot row missing/invalid character_id or items, skipping: %r", row)
+            continue
+        if character_id not in allowed_character_ids:
+            logger.warning(
+                "Loot award rejected — character %s not in session %s roster",
+                character_id, session_code,
+            )
             continue
 
         # Normalize + validate each item
@@ -617,6 +669,96 @@ async def _persist_loot_awards(session_code: str, loot: list):
                     )
             except Exception as e:
                 logger.error("Failed to persist loot for character %s: %s", character_id, e, exc_info=True)
+
+
+async def _persist_session_complete(session_code: str) -> None:
+    """Mark the DB session complete + unlock characters + write completion_snapshot.
+
+    Mirrors REST ``complete_session`` via the shared helper in api.sessions.
+    Called from ``_handle_session_end`` so the WS session-end path produces
+    the same persistent state as the (now-unused) REST endpoint.
+
+    Idempotent at the DB level: if the session is already 'complete' we log
+    and skip so a retried session_end doesn't overwrite completed_at or the
+    snapshot.
+
+    Acquires per-character locks while finalizing so concurrent AP/loot
+    persist tasks (which also grab the same locks) don't clobber this
+    transaction's writes to Character rows (locked_session_id).
+    """
+    try:
+        from database import async_session
+        from sqlalchemy import select
+        from models.session_state import GameSession, SessionPlayer
+        from api.sessions import finalize_session_completion
+
+        async with async_session() as db:
+            from sqlalchemy import update as sa_update
+
+            sess_result = await db.execute(
+                select(GameSession).where(GameSession.session_code == session_code)
+            )
+            session_obj = sess_result.scalar_one_or_none()
+            if not session_obj:
+                logger.error(
+                    "Cannot complete session — not found for code %s", session_code,
+                )
+                return
+
+            # WS and REST both accept ("active", "paused", "lobby").
+            # Intentional: lobby is allowed here (GM may end without ever
+            # starting) — REST accepts the same set (symmetric semantics).
+            if session_obj.status not in ("active", "paused", "lobby"):
+                logger.info(
+                    "Cannot finalize session %s from status %r; skipping",
+                    session_code, session_obj.status,
+                )
+                return
+
+            # Atomic claim: set status='complete' only if not already complete.
+            # Two concurrent workers can both read "not complete" above and
+            # reach here; the UPDATE WHERE guard ensures exactly one proceeds.
+            claim_result = await db.execute(
+                sa_update(GameSession)
+                .where(GameSession.id == session_obj.id)
+                .where(GameSession.status != "complete")
+                .values(status="complete", completed_at=datetime.now(timezone.utc))
+            )
+            if claim_result.rowcount == 0:
+                logger.info(
+                    "Session %s already finalized by concurrent worker; skipping",
+                    session_code,
+                )
+                return
+
+            # Re-fetch so finalize_session_completion sees the committed state.
+            await db.refresh(session_obj)
+
+            # Acquire per-character locks for every active SessionPlayer so
+            # AP/loot persist tasks (which also grab these locks) can't race
+            # with our Character row updates.
+            sp_result = await db.execute(
+                select(SessionPlayer.character_id).where(
+                    SessionPlayer.session_id == session_obj.id,
+                    SessionPlayer.status == "active",
+                )
+            )
+            char_ids = sorted({row for (row,) in sp_result.all() if row})
+            locks = [_get_char_lock(cid) for cid in char_ids]
+            # Acquire all locks in sorted order to avoid deadlocks
+            for lock in locks:
+                await lock.acquire()
+            try:
+                await finalize_session_completion(session_obj, db)
+                await db.commit()
+            finally:
+                for lock in reversed(locks):
+                    lock.release()
+            logger.info("Session %s DB-finalized (status=complete)", session_code)
+    except Exception as e:
+        logger.error(
+            "Failed to finalize session %s in DB: %s", session_code, e, exc_info=True,
+        )
 
 
 async def _persist_loot(distributions: list):
@@ -2112,6 +2254,13 @@ async def _handle_session_end(session_code: str, user_id: str, payload: dict, st
     }, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     loot = payload.get("loot") or []
+    # Finalize DB session: status=complete, completed_at, completion_snapshot,
+    # unlock characters. Scheduled before AP/loot so roster exists when those
+    # run (they read SessionPlayer rows, not session.status).
+    _safe_create_task(
+        _persist_session_complete(session_code),
+        name=f"persist_session_complete_{session_code}",
+    )
     # Persist AP awards to the database
     if ap_awards:
         _safe_create_task(

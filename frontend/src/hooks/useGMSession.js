@@ -6,8 +6,8 @@ import useCombatStore from '../stores/combatStore'
 import { getConditions, getVitalsFrom, getMaxVitals } from '../utils/safeData'
 
 /**
- * Manages GM session lifecycle: auth check, campaign data loading,
- * session setup, and store cleanup on unmount.
+ * Manages GM session lifecycle: auth check, session setup,
+ * and store cleanup on unmount.
  */
 export default function useGMSession(sessionCode) {
   const user = useAuthStore((s) => s.user)

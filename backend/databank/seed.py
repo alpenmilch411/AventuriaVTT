@@ -781,7 +781,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--seed-test-users",
         action="store_true",
-        help="Also seed gm@test.de + 4 player accounts + demo campaign. "
+        help="Also seed gm@test.de + 4 player accounts + demo session. "
              "Dev-only. Never pass this on a public deployment.",
     )
     args = parser.parse_args()

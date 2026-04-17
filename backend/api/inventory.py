@@ -1,4 +1,4 @@
-"""Inventory management — personal and group inventory endpoints."""
+"""Inventory management — personal inventory endpoints."""
 
 import uuid
 from typing import Optional
