@@ -2,7 +2,7 @@
 
 import secrets
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -755,7 +755,7 @@ async def update_lore(
 
     for field, value in body.model_dump(exclude_unset=True).items():
         setattr(entry, field, value)
-    entry.last_updated = datetime.utcnow()
+    entry.last_updated = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(entry)
@@ -786,10 +786,10 @@ async def reveal_lore(
     reveals.append({
         "text": body.reveal_text,
         "visible_to": [str(uid) for uid in body.visible_to] if body.visible_to else None,
-        "revealed_at": datetime.utcnow().isoformat(),
+        "revealed_at": datetime.now(timezone.utc).isoformat(),
     })
     entry.reveals = reveals
-    entry.last_updated = datetime.utcnow()
+    entry.last_updated = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(entry)
@@ -1143,7 +1143,7 @@ async def export_campaign(
     return {
         "format": "aventuria_vtt_campaign",
         "version": 1,
-        "exported_at": datetime.utcnow().isoformat(),
+        "exported_at": datetime.now(timezone.utc).isoformat(),
         "campaign": {
             "name": campaign.name,
             "description": campaign.description,

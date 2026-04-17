@@ -17,7 +17,7 @@ import logging
 import random
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from ws.events import EventType, BroadcastTarget, WSMessage
@@ -107,13 +107,13 @@ async def _snapshot_session_state(session_code: str) -> None:
             existing = result.scalar_one_or_none()
             if existing:
                 existing.snapshot_json = snapshot_data
-                existing.updated_at = datetime.utcnow()
+                existing.updated_at = datetime.now(timezone.utc)
             else:
                 db.add(SessionSnapshot(
                     id=str(uuid.uuid4()),
                     session_code=session_code,
                     snapshot_json=snapshot_data,
-                    updated_at=datetime.utcnow(),
+                    updated_at=datetime.now(timezone.utc),
                 ))
             await db.commit()
 
@@ -239,7 +239,7 @@ def _sync_vitals_to_combat(state: dict, character_id: str, vitals: dict, token_i
 # ---------------------------------------------------------------------------
 
 def _ts() -> str:
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _error(detail: str) -> dict:
@@ -682,10 +682,10 @@ def _is_current_turn(state: dict, user_id: str) -> bool:
     if not order or idx >= len(order):
         return False
     current = order[idx]
-    # Check multiple possible ID fields (JS camelCase vs Python snake_case)
+    # Match on user_id only (snake_case + camelCase variants).
+    # Never compare against character_id/characterId — that's a different ID space.
     return (current.get("user_id") == user_id or
-            current.get("userId") == user_id or
-            current.get("characterId") == user_id)
+            current.get("userId") == user_id)
 
 
 # ===================================================================
@@ -947,12 +947,12 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         # Store requests in pending_requests for reconnect persistence
         if payload.get("request_id"):
             state.setdefault("pending_requests", {})[payload["request_id"]] = {
-                **payload, "from_user": user_id, "type": event_type, "timestamp": datetime.utcnow().isoformat(),
+                **payload, "from_user": user_id, "type": event_type, "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         elif event_type == "probe_request_from_player":
             req_id = f"probe_{user_id}_{payload.get('talent_key', '')}"
             state.setdefault("pending_requests", {})[req_id] = {
-                **payload, "from_user": user_id, "type": event_type, "timestamp": datetime.utcnow().isoformat(),
+                **payload, "from_user": user_id, "type": event_type, "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         msg = _msg(event_type, payload, from_user=user_id, target="gm")
         await manager.broadcast_to_room(session_code, msg, target="gm")
@@ -970,7 +970,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
                 if event_type == "dice_request":
                     req_id = f"dice_{target_user}"
                     state.setdefault("pending_requests", {})[req_id] = {
-                        **payload, "type": event_type, "timestamp": datetime.utcnow().isoformat(),
+                        **payload, "type": event_type, "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 msg = _msg(event_type, payload, from_user=user_id)
                 await manager.send_to_user(target_user, msg)
@@ -2764,7 +2764,7 @@ async def _handle_character_death(session_code: str, user_id: str, payload: dict
             # Build memorial record
             death_record = {
                 "cause_of_death": cause,
-                "death_date": datetime.utcnow().isoformat(),
+                "death_date": datetime.now(timezone.utc).isoformat(),
                 "final_vitals": char.current_vitals,
                 "final_attributes": char.attributes,
                 "total_ap": char.total_ap,

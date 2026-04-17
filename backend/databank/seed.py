@@ -758,6 +758,16 @@ def seed(database_url: Optional[str] = None, seed_test_users: Optional[bool] = N
         wiki_count = _seed_wiki_pages(session)
         results["wiki_pages.json"] = wiki_count
 
+        is_production = settings.ENV.lower() == "production"
+        if seed_test_users and is_production:
+            log.warning(
+                "Refusing to create test accounts (gm@test.de / test1234): "
+                "ENV=production. Public credentials in a production deploy are "
+                "a takeover risk. Unset ENV or use a dev environment to seed "
+                "test users."
+            )
+            seed_test_users = False
+
         if seed_test_users:
             # Create test accounts
             log.info("Creating test accounts...")
@@ -774,9 +784,9 @@ def seed(database_url: Optional[str] = None, seed_test_users: Optional[bool] = N
             _create_test_campaign(session, user_ids)
         else:
             log.info(
-                "Skipping test accounts / characters / campaign "
-                "(SEED_TEST_USERS is false). Set SEED_TEST_USERS=true or pass "
-                "--seed-test-users to create gm@test.de + 4 players."
+                "Skipping test accounts / characters / campaign. "
+                "Set SEED_TEST_USERS=true (or pass --seed-test-users) AND "
+                "keep ENV != production to create gm@test.de + 4 players."
             )
 
         session.commit()

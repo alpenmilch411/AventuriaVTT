@@ -168,10 +168,10 @@ function CombatActions({ sendMessage }) {
                 onSubmit={(value) => {
                   sendMessage?.({
                     category: 'combat',
-                    type: 'defense_result',
+                    type: 'defense_choice',
                     payload: {
                       defense_type: selectedDefense,
-                      value,
+                      roll: value,
                       use_schip: useSchip,
                       character_id: myCharacter?.id,
                     },

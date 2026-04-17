@@ -6,7 +6,7 @@ EventType enumerates every possible event; BroadcastTarget controls routing.
 
 from pydantic import BaseModel
 from typing import Optional, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 
@@ -143,4 +143,4 @@ class WSMessage(BaseModel):
 
     def model_post_init(self, __context):
         if self.timestamp is None:
-            self.timestamp = datetime.utcnow()
+            self.timestamp = datetime.now(timezone.utc)

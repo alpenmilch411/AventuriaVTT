@@ -3,7 +3,7 @@
 import json
 import math
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -46,7 +46,6 @@ def _recompute_derived(attributes: dict, spells: dict, liturgies: dict, existing
 
     is_magic = bool(spells)
     is_blessed = bool(liturgies)
-    import math
     result["AsP_max"] = (20 + math.ceil((mu + in_ + ch) / 2)) if is_magic else 0
     result["KaP_max"] = (20 + math.ceil((mu + kl + in_) / 2)) if is_blessed else 0
 
@@ -1121,7 +1120,7 @@ async def mark_character_dead(
 
     death_record = {
         "cause_of_death": body.cause_of_death,
-        "death_date": datetime.utcnow().isoformat(),
+        "death_date": datetime.now(timezone.utc).isoformat(),
         "final_vitals": char.current_vitals,
         "final_attributes": char.attributes,
         "total_ap": char.total_ap,

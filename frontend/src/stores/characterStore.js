@@ -218,22 +218,45 @@ const useCharacterStore = create((set, get) => ({
         get().updateCharacterInList(payload.character_id, payload.updates)
         break
       case 'buff_applied': {
-        // Backend confirmed a buff — add to store
+        // Backend sends the buff fields nested under payload.buff.
+        // Fall back to flat payload for legacy / defensive compatibility.
+        const b = payload.buff || payload
         const buff = {
-          id: payload.id || payload.buff_id,
-          stat: payload.stat,
-          value: payload.value,
-          expiresAt: payload.expires_at,
-          durationMinutes: payload.duration_minutes,
-          source: payload.source || 'Unbekannt',
-          characterId: payload.character_id,
-          createdAt: payload.applied_at || Date.now(),
+          id: b.id || b.buff_id,
+          stat: b.stat,
+          value: b.value,
+          expiresAt: b.expires_at,
+          durationMinutes: b.duration_minutes,
+          source: b.source || 'Unbekannt',
+          characterId: payload.character_id || b.character_id,
+          createdAt: b.applied_at || Date.now(),
         }
         get().addBuff(buff)
         break
       }
-      case 'buff_removed': {
-        const id = payload.id || payload.buff_id
+      case 'buff_edited': {
+        const b = payload.buff || payload
+        const id = b.id || payload.buff_id
+        if (!id) break
+        set((state) => ({
+          activeBuffs: state.activeBuffs.map((existing) =>
+            existing.id === id
+              ? {
+                  ...existing,
+                  stat: b.stat ?? existing.stat,
+                  value: b.value ?? existing.value,
+                  expiresAt: b.expires_at ?? existing.expiresAt,
+                  durationMinutes: b.duration_minutes ?? existing.durationMinutes,
+                  source: b.source ?? existing.source,
+                }
+              : existing
+          ),
+        }))
+        break
+      }
+      case 'buff_removed':
+      case 'buff_expired': {
+        const id = payload.buff_id || payload.id || payload?.buff?.id
         if (id) get().removeBuff(id)
         break
       }

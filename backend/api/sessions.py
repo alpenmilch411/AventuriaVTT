@@ -1,7 +1,7 @@
 """Session CRUD, player management, completion, and statistics endpoints."""
 
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -607,7 +607,7 @@ async def complete_session(
                 char.locked_session_id = None
 
     session.status = "complete"
-    session.completed_at = datetime.utcnow()
+    session.completed_at = datetime.now(timezone.utc)
     session.completion_snapshot = completion_snapshot
 
     await db.commit()
@@ -1076,7 +1076,7 @@ async def export_session(
     data = {
         "format": "aventuria_vtt_session",
         "version": 1,
-        "exported_at": datetime.utcnow().isoformat(),
+        "exported_at": datetime.now(timezone.utc).isoformat(),
         "session": {
             "id": session.id,
             "name": session.name,
