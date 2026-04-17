@@ -2615,6 +2615,10 @@ async def _execute_exchange(session_code: str, gm_user_id: str, payload: dict, s
             await manager.send_to_user(gm_user_id, _error("Exchange requires from_character_id and to_character_id"))
             return
 
+        if from_char_id == to_char_id:
+            await manager.send_to_user(gm_user_id, _error("Cannot exchange with self"))
+            return
+
         from_items = payload.get("from_items", [])
         from_money = payload.get("from_money")
         to_items = payload.get("to_items", [])

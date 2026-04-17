@@ -160,7 +160,6 @@ class SessionResponse(BaseModel):
     id: str
     name: str
     gm_user_id: str
-    campaign_id: Optional[str] = None
     session_code: str
     status: str
     started_at: Optional[datetime] = None
@@ -256,7 +255,6 @@ async def create_session(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
@@ -380,7 +378,6 @@ async def get_session_by_code(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
@@ -451,7 +448,6 @@ async def get_session(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
@@ -544,7 +540,6 @@ async def complete_session(
     completion_snapshot = {"players": []}
 
     from models.inventory import InventoryItem
-    from models.campaign import CampaignPlayer
 
     for sp in active_players:
         # Get the character
@@ -583,26 +578,6 @@ async def complete_session(
                     ),
                 })
 
-                # Update CampaignPlayer snapshot with post-session state
-                if session.campaign_id:
-                    cp_result = await db.execute(
-                        select(CampaignPlayer).where(
-                            CampaignPlayer.campaign_id == session.campaign_id,
-                            CampaignPlayer.character_id == sp.character_id,
-                        )
-                    )
-                    cp = cp_result.scalar_one_or_none()
-                    if cp:
-                        vitals = char.current_vitals or {}
-                        cp.campaign_snapshot = {
-                            "current_lep": vitals.get("lep", 0),
-                            "current_asp": vitals.get("asp", 0),
-                            "current_kap": vitals.get("kap", 0),
-                            "current_schip": vitals.get("schip", 0),
-                            "conditions": char.conditions or [],
-                            "campaign_inventory": char.basis_inventory,
-                        }
-
                 # Unlock the character
                 char.locked_session_id = None
 
@@ -626,7 +601,6 @@ async def complete_session(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
@@ -735,7 +709,6 @@ async def join_session(
             id=session.id,
             name=session.name,
             gm_user_id=session.gm_user_id,
-            campaign_id=session.campaign_id,
             session_code=session.session_code,
             status=session.status,
             started_at=session.started_at,
@@ -773,7 +746,6 @@ async def join_session(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
