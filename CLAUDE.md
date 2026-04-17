@@ -16,6 +16,7 @@ If Superpowers isn't installed: `/plugin install superpowers@claude-plugins-offi
 
 ## Session Workflow
 - **Start of session:** run `/context`. It reads this file, `GOTCHAS.md`, the last 3 `DEVLOG.md` entries, recent git log, and the Current Milestone from `ROADMAP.md`.
+- **Before starting work on a roadmap item, check GitHub Issues.** `gh issue list --state open` shows active items. If the milestone has a matching issue and it's unassigned, assign yourself (or tell the user to) as a claim marker: `gh issue edit <n> --add-assignee @me`. If it's already assigned to someone else, stop and ask the user before continuing — friends may be working on it in parallel. This applies to every session, whether the user is the repo owner or a friend working in a fork.
 - **Before touching code**, spot-check the relevant `SPEC.md` section (use the Quick Reference at the top). Don't re-read all of SPEC — it's big.
 - **End of session:** run `/log`. It checks off Done items in `ROADMAP.md`, prepends a DEVLOG entry, updates `GOTCHAS.md`/`SPEC.md` where needed, and stages the doc changes. Do not skip this.
 - **If code and SPEC disagree**, fix one of them. SPEC is source of truth for architecture; update it immediately when you change something that affects one of its sections.

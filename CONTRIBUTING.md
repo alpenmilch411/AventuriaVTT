@@ -13,6 +13,18 @@ You don't need to be a coder. The whole project was built with AI assistants (Cl
 
 Nothing lands on `main` until a PR is approved. That's the only gate.
 
+## Before you start: claim an issue
+
+So two people don't accidentally work on the same thing:
+
+1. Look at the [open issues](https://github.com/alpenmilch411/AventuriaVTT/issues).
+2. Find one with **no assignee** that interests you — the `p1` / `p2` / `p3` labels indicate priority.
+3. Click **"assign yourself"** on the right sidebar. That's your claim marker.
+4. If there's nothing matching what you want to work on, open a new issue first and assign yourself to it.
+5. If the thing you want is already assigned to someone else, pick a different issue or comment on theirs asking if they'd like help.
+
+Don't skip this step — "I'll just work on X and open a PR" leads to wasted work when two people do it at once. Claude Code / Codex sessions follow the same rule (baked into `CLAUDE.md`) so AI-assisted work also checks the Issues tab before starting.
+
 ## Step 1 — Fork the repo (one-time, ~10 seconds)
 
 1. Go to the project repo on GitHub.
