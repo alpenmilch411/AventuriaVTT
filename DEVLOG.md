@@ -8,7 +8,7 @@
 **Type:** Claude Code — autonomous, user granted "cover all technical milestones… for complex stuff challenge with codex"
 
 ### Outcome
-20 audit items closed in one session; 2 deferred with explicit rationale. Four commits (a82d6a3, eb5d6e8, cee1f1a, 2b49622) pushed to `origin/main` alongside the user's CONTRIBUTING.md commit (40c94cb).
+20 audit items closed in one session; 2 deferred with explicit rationale. Four commits (e23b2e9, d415409, f3d74ce, 62b7ef0) pushed to `origin/main` alongside the user's CONTRIBUTING.md commit (1f15f92).
 
 ### What shipped — trivial fixes
 - **S10** (HIGH → closed): seed refuses to create test users when `ENV=production`, regardless of `SEED_TEST_USERS` flag. One misconfig no longer ships `gm@test.de/test1234` live.
@@ -341,12 +341,12 @@ Full 9-tab read-only viewer: Übersicht, Eigenschaften, Abgeleitete Werte, Kampf
 - Character edit blocked during active session (locked_session_id guard)
 
 ### Commits
-- `c557888` Session 13: DB-ID inventory, buff system, unified browsers, structured effects
-- `4cccbe6` Fix React infinite loop on combat start
-- `1baebf2` Extract TODO.md from SPEC.md
-- `d7b6d03` Fix character creation: routing, wizard, DSA5 rules, seed data
-- `996115a` Add languages support
-- `3864a1f` Character viewer, wizard help, advantages/disadvantages DB, starting equipment
+- `9cb5f22` Session 13: DB-ID inventory, buff system, unified browsers, structured effects
+- `9d7405f` Fix React infinite loop on combat start
+- `565dae0` Extract TODO.md from SPEC.md
+- `10c4094` Fix character creation: routing, wizard, DSA5 rules, seed data
+- `039ae7b` Add languages support
+- `d58125e` Character viewer, wizard help, advantages/disadvantages DB, starting equipment
 
 ---
 
