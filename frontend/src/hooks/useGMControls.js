@@ -147,13 +147,6 @@ export default function useGMControls(sendMessage) {
     })
   }, [sendMessage])
 
-  const sceneActivate = useCallback((sceneId, sceneName) => {
-    sendMessage?.({
-      type: 'scene_activate',
-      payload: { scene_id: sceneId, scene_name: sceneName },
-    })
-  }, [sendMessage])
-
   const sendVitalsUpdate = useCallback((characterId, vitals) => {
     sendMessage?.({
       type: 'vitals_update',
@@ -209,7 +202,6 @@ export default function useGMControls(sendMessage) {
     moveToken,
     removeToken,
     pushHandout,
-    sceneActivate,
     sendVitalsUpdate,
     sendConditionChange,
     sendLootDisplay,

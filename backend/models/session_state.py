@@ -243,7 +243,7 @@ class SessionLog(Base):
     )
     entry_type: Mapped[str] = mapped_column(
         String(16), nullable=False
-    )  # "combat" | "probe" | "scene" | "lore" | "quest" | "whisper" | "system"
+    )  # "combat" | "probe" | "whisper" | "system"
     data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False

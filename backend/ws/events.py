@@ -12,7 +12,6 @@ from enum import Enum
 
 class EventType(str, Enum):
     # GM Commands
-    SCENE_ACTIVATE = "scene_activate"
     COMBAT_START = "combat_start"
     COMBAT_END = "combat_end"
     COMBAT_NEXT_TURN = "combat_next_turn"
@@ -28,8 +27,6 @@ class EventType(str, Enum):
     WEATHER_CHANGE = "weather_change"
     ATTENTION = "attention"
     ATTENTION_RELEASE = "attention_release"
-    QUEST_UPDATE = "quest_update"
-    LORE_REVEAL = "lore_reveal"
     REST_START = "rest_start"
     REST_END = "rest_end"
     # Trade / Transfer

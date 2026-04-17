@@ -203,16 +203,12 @@ def _ensure_state(session_code: str) -> dict[str, Any]:
     if session_code not in _session_state:
         _session_state[session_code] = {
             "status": "lobby",
-            "active_scene": None,
             "combat": None,           # None | CombatSnapshot dict
-            "tokens": [],
             "in_game_time": None,
             "weather": None,
             "halted": False,
             "attention": False,
             "connected_users": [],
-            "quests": [],
-            "lore_entries": [],
             "pending_requests": {},    # request_id -> request data
             "opposed_probes": {},      # probe_id -> {initiator, target, results, ...}
             "vitals": {},              # character_id -> {lep, asp, kap, schip}
@@ -867,7 +863,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
 
     # ---- GM-only commands ---------------------------------------------
     gm_commands = {
-        EventType.SCENE_ACTIVATE: _handle_scene_activate,
         EventType.COMBAT_START: _handle_combat_start,
         EventType.COMBAT_END: _handle_combat_end,
         EventType.COMBAT_NEXT_TURN: _handle_combat_next_turn,
@@ -882,8 +877,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.WEATHER_CHANGE: _handle_weather_change,
         EventType.ATTENTION: _handle_attention,
         EventType.ATTENTION_RELEASE: _handle_attention_release,
-        EventType.QUEST_UPDATE: _handle_quest_update,
-        EventType.LORE_REVEAL: _handle_lore_reveal,
         EventType.REST_START: _handle_rest_start,
         EventType.REST_END: _handle_rest_end,
         EventType.SESSION_START: _handle_session_start,
@@ -1396,46 +1389,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
 # ===================================================================
 # GM command handlers
 # ===================================================================
-
-async def _handle_scene_activate(session_code: str, user_id: str, payload: dict, state: dict):
-    """Activate a scene/map for all players."""
-    scene_id = payload.get("scene_id")
-    scene_name = payload.get("scene_name", "")
-    state["active_scene"] = {"scene_id": scene_id, "scene_name": scene_name}
-    state["tokens"] = payload.get("tokens", [])
-    msg = _msg(EventType.SCENE_ACTIVATE, {
-        "scene_id": scene_id,
-        "scene_name": scene_name,
-        "tokens": state["tokens"],
-    }, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
-    await _append_session_log(session_code, "scene", f"Szene: {scene_name}", icon="map")
-    # Persist current_scene_id to database so REST endpoints serve the right map
-    if scene_id:
-        try:
-            from database import async_session
-            from sqlalchemy import select, update
-            from models.session_state import GameSession
-            from models.campaign import Campaign
-
-            async with async_session() as db:
-                sess_result = await db.execute(
-                    select(GameSession).where(GameSession.session_code == session_code)
-                )
-                session_obj = sess_result.scalar_one_or_none()
-                if session_obj and session_obj.campaign_id:
-                    await db.execute(
-                        update(Campaign)
-                        .where(Campaign.id == session_obj.campaign_id)
-                        .values(current_scene_id=scene_id)
-                    )
-                    await db.commit()
-                    logger.debug("Persisted current_scene_id=%s for campaign of session %s", scene_id, session_code)
-        except Exception as e:
-            logger.error("Failed to persist scene activation: %s", e)
-    logger.info("Scene activated: %s in session %s", scene_name, session_code)
-    _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_scene_{session_code}")
-
 
 async def _handle_combat_start(session_code: str, user_id: str, payload: dict, state: dict):
     """Start combat — expects combatants with pre-rolled initiative."""
@@ -2060,43 +2013,6 @@ async def _handle_attention_release(session_code: str, user_id: str, payload: di
     _bump_version(state)
     msg = _msg(EventType.ATTENTION_RELEASE, {}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
-
-
-async def _handle_quest_update(session_code: str, user_id: str, payload: dict, state: dict):
-    """Add, update, or complete a quest."""
-    action = payload.get("action", "add")  # "add" | "update" | "complete" | "remove"
-    quest = payload.get("quest", {})
-    quest_id = quest.get("quest_id")
-
-    if action == "add":
-        state["quests"].append(quest)
-    elif action == "update":
-        state["quests"] = [q if q.get("quest_id") != quest_id else {**q, **quest}
-                           for q in state["quests"]]
-    elif action == "complete":
-        for q in state["quests"]:
-            if q.get("quest_id") == quest_id:
-                q["status"] = "completed"
-    elif action == "remove":
-        state["quests"] = [q for q in state["quests"] if q.get("quest_id") != quest_id]
-
-    msg = _msg(EventType.QUEST_UPDATE, {"action": action, "quest": quest}, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
-
-
-async def _handle_lore_reveal(session_code: str, user_id: str, payload: dict, state: dict):
-    """Reveal a lore/knowledge entry to the players."""
-    entry = {
-        "lore_id": payload.get("lore_id"),
-        "title": payload.get("title", ""),
-        "text": payload.get("text", ""),
-        "category": payload.get("category", "general"),
-        "image_url": payload.get("image_url"),
-    }
-    state["lore_entries"].append(entry)
-    target = payload.get("target", "all")
-    msg = _msg(EventType.LORE_REVEAL, entry, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg, target=target)
 
 
 
@@ -3514,16 +3430,12 @@ def get_full_sync(session_code: str) -> dict:
 
     return _msg(EventType.SYNC_FULL, {
         "status": state["status"],
-        "active_scene": state["active_scene"],
         "combat": combat_snapshot,
-        "tokens": state["tokens"],
         "in_game_time": state["in_game_time"],
         "weather": state["weather"],
         "halted": state["halted"],
         "attention": state["attention"],
         "connected_users": state["connected_users"],
-        "quests": state["quests"],
-        "lore_entries": state["lore_entries"],
         "vitals": state.get("vitals", {}),
         "conditions": state.get("conditions", {}),
         "buffs": state.get("buffs", {}),
