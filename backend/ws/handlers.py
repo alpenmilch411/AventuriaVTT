@@ -2033,12 +2033,29 @@ async def _delayed_session_cleanup(session_code: str, delay: int = _SESSION_END_
 
     The delay lets in-flight handlers (already past their `state["status"]`
     check) finish their work without recreating an empty state dict under
-    the same session_code.
+    the same session_code. Also sweeps any _character_locks held for
+    characters in this session, so long-running servers don't accumulate
+    locks for retired characters.
     """
     await asyncio.sleep(delay)
+    # Capture character IDs before we drop the state dict
+    state = _session_state.get(session_code) or {}
+    char_ids = (
+        set(state.get("vitals", {}).keys())
+        | set(state.get("conditions", {}).keys())
+        | set(state.get("max_vitals", {}).keys())
+    )
     _session_state.pop(session_code, None)
+    _seen_users.pop(session_code, None)
     await _delete_session_snapshot(session_code)
-    logger.info("Session %s state cleaned up", session_code)
+    # Sweep character locks — they'll be re-created lazily if the same
+    # character joins another session later.
+    for cid in char_ids:
+        _character_locks.pop(cid, None)
+    logger.info(
+        "Session %s state cleaned up (%d char locks swept)",
+        session_code, len(char_ids),
+    )
 
 
 async def _handle_session_end(session_code: str, user_id: str, payload: dict, state: dict):
