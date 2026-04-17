@@ -21,7 +21,6 @@ See [OVERVIEW.md](OVERVIEW.md) for the plain-language pitch.
 ## What's Rough
 
 - Automated tests are sparse — a handful of Playwright E2E scripts, no pytest suite yet
-- AI features (PDF import, NPC dialog generation, session recap) are wired up to the config but not end-to-end
 - Map / fog-of-war / token visualization is partial
 - Mobile polish is uneven
 - Dead code from earlier design pivots is still being trimmed
@@ -86,7 +85,6 @@ A demo campaign "Der Turm des Orkschamanen" (code `ORKTURM-42`) is also created.
 | `SECRET_KEY` | **Yes for prod** | dev default | JWT signing key. Refuses to start if `ENV=production` and this is unset. |
 | `ENV` | No | `development` | Set to `production` on public deployments |
 | `REDIS_URL` | No | empty (in-memory) | Redis for pub/sub + caching; falls back to in-memory |
-| `ANTHROPIC_API_KEY` | No | empty | Claude API for AI features (not yet wired end-to-end) |
 | `CORS_ORIGINS` | No | `http://localhost:5173` | Comma-separated allowed origins |
 | `SEED_TEST_USERS` | No | `false` | Dev-only flag for the seed script |
 
@@ -127,7 +125,9 @@ AventuriaVTT/
 
 ## Contributing
 
-Open an issue or PR. Keep PRs small and focused. This repo uses the kickstart / Superpowers workflow for AI-assisted changes (see `CLAUDE.md` → Session Workflow). Not required for human contributors, but the `/context` and `/log` commands document useful conventions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the fork + pull-request workflow, house rules, and the issue-claim process (so two people don't accidentally work on the same thing).
+
+This repo also uses the kickstart / Superpowers workflow for AI-assisted changes (Claude Code, Codex) — see `CLAUDE.md` → Session Workflow. The `/context` and `/log` slash commands document useful conventions.
 
 ## License
 
