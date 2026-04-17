@@ -6,16 +6,88 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Aventuria VTT — browser-based GM toolkit for Das Schwarze Auge 5th Edition (DSA5). A GM runs sessions from a cockpit (laptop), players join from phones, and a shared screen shows the map. Everything syncs in real-time via WebSocket.
 
-**Key docs:** `SPEC.md` is the authoritative technical specification. `TODO.md` is the roadmap and task list — read it at session start, update it when completing tasks. `GOTCHAS.md` lists DSA5 rules implementation traps — read it before touching engine code. `DEVLOG.md` tracks development sessions.
+## Superpowers Integration
+This project uses the Superpowers plugin for coding discipline. Project memory lives in the kickstart files alongside it.
+- **Superpowers** handles: brainstorming, implementation plans, TDD, code review, git worktrees, verification, systematic debugging.
+- **Kickstart files** handle: what to build next (`ROADMAP.md`), architecture (`SPEC.md`), session history (`DEVLOG.md`), traps (`GOTCHAS.md`).
+- Long-form phase archive lives in `SPEC.md` Section 11. Active work lives in `ROADMAP.md`.
 
-## Session Start (MANDATORY)
-At the start of every conversation, read these files before doing anything:
-1. `TODO.md` — current roadmap, open tasks, what was recently completed
-2. `SPEC.md` sections 1-3 — architecture refresher (skip if already familiar)
-3. `GOTCHAS.md` — DSA5 implementation traps
-4. Last 3 entries in `DEVLOG.md` — recent session context
+If Superpowers isn't installed: `/plugin install superpowers@claude-plugins-official`.
 
-Then confirm: "Last session completed [X]. Open tasks: [Y]. What do you want to work on?"
+## Session Workflow
+- **Start of session:** run `/context`. It reads this file, `GOTCHAS.md`, the last 3 `DEVLOG.md` entries, recent git log, and the Current Milestone from `ROADMAP.md`.
+- **Before touching code**, spot-check the relevant `SPEC.md` section (use the Quick Reference at the top). Don't re-read all of SPEC — it's big.
+- **End of session:** run `/log`. It checks off Done items in `ROADMAP.md`, prepends a DEVLOG entry, updates `GOTCHAS.md`/`SPEC.md` where needed, and stages the doc changes. Do not skip this.
+- **If code and SPEC disagree**, fix one of them. SPEC is source of truth for architecture; update it immediately when you change something that affects one of its sections.
+
+## Session Workflow Heuristics (adopted 2026-04-17)
+Process rules to avoid unnecessary overhead on routine changes. Revisit these empirically — if bugs slip through or context is lost, revert. **To reset to the prior flow:** `git revert` the commit that added this section, or delete the section.
+
+### Rule 1 — Codex two-round cap
+Cap `codex-companion.mjs task` spec-review iterations at **2 rounds**, then proceed to implementation, UNLESS any of the following apply:
+- Current round returned a HIGH or MEDIUM finding.
+- The change touches a **novel library** (first time using the library in this codebase — e.g. a new crypto lib, a new middleware framework).
+- The change crosses a **security boundary** (auth, session management, CSRF, encryption, input validation, secrets handling, WebSocket message authz).
+- The change crosses a **performance/DoS boundary** (resource caps, concurrency limits, streaming/chunking, rate limiting).
+- The change touches the **DSA5 rules engine** (`backend/engine/` or `frontend/src/engine/`) — rule bugs cascade and are hard to retroactively detect. Always want the deeper review.
+
+If any of those trigger, rounds are uncapped and continue until Codex returns zero HIGH/MEDIUM findings.
+
+### Rule 2 — Plan-skip for small inline changes
+When **all** of the following hold, skip `superpowers:writing-plans` entirely and go spec → code:
+- Execution is **inline** (not subagent-driven — subagents need the plan for context).
+- Change touches **≤3 files**.
+- Change is **≤100 lines added/modified**.
+- Spec already contains exact file paths, code blocks, and verification steps.
+- Change does NOT touch `backend/engine/` or `frontend/src/engine/` (rules engine always gets a plan).
+
+For subagent-driven execution, or changes larger than the above thresholds, continue using `superpowers:writing-plans` normally.
+
+### Rule 3 — Decennial audit (every 10th closed milestone)
+Every 10 closed milestones (counting from 2026-04-17 onward), trigger an independent in-depth audit before `/log` on the 10th milestone's session.
+
+**Procedure:**
+1. **Independent Claude pass.** Holistic review for bugs, tech debt, inconsistencies, DSA5-rule drift, security issues, accumulated frontend/backend divergence. Write to `docs/audits/AUDIT-YYYY-MM-DD-claude.md` with HIGH/MEDIUM/LOW severities. Do NOT consult Codex before finishing.
+2. **Independent Codex pass.** Dispatch `node codex-companion.mjs task "..."` with the same brief (no reference to Claude's findings). Save to `docs/audits/AUDIT-YYYY-MM-DD-codex.md`.
+3. **Synthesis.** `docs/audits/AUDIT-YYYY-MM-DD-synthesis.md` with: (a) both-caught, (b) Claude-only, (c) Codex-only, (d) genuine disagreements (escalate to user).
+4. **Promote to ROADMAP.** Agreed HIGH/MEDIUM → new P1/P2 items. LOW → P3 or deferred with reasoning.
+
+**Counter:** count entries in `ROADMAP.md` § Completed Milestones dated `2026-04-17` or later (including the entry about to be written). When the count is a non-zero multiple of 10, run the audit before writing the DEVLOG entry.
+
+**Rationale:** Per-milestone Codex reviews catch milestone-scoped bugs but miss cross-cutting drift (accumulated tech debt, rule-engine inconsistencies, architectural erosion, outdated SPEC sections). DSA5 rules are especially prone to slow drift as new maneuvers/conditions/items get added one at a time.
+
+## Codex as Reviewer
+`node codex-companion.mjs task "..."` via Bash is the default pattern for getting a second opinion on specs or code. It's mature and reliable.
+
+**Known workaround — the `codex:rescue` slash command rejects non-trivial prompts.** Always invoke Codex through Bash, not the slash command. Full path:
+
+```bash
+node "/Users/yannik/.claude/plugins/cache/openai-codex/codex/1.0.3/scripts/codex-companion.mjs" task "..."
+```
+
+**Parser quirk:** if a prompt contains a word that looks like a model name (e.g. "unittest" interpreted as a model), Codex errors with `The 'unittest' model is not supported`. Rephrase the prompt — it's not a real failure.
+
+## Automatic SPEC.md / GOTCHAS.md Updates
+Don't wait to be asked — `/log` handles the end-of-session sweep, but during work you should already update these files the moment a trigger fires:
+
+| Trigger | What to update |
+|---|---|
+| New dependency added (pip/npm install) | `SPEC.md` Tech Stack (§3) |
+| DB schema changed (new table, column, type change) | `SPEC.md` Data Models + migration |
+| Env var added/changed | `SPEC.md` External Dependencies + `README.md` |
+| New API endpoint or WS message type | `SPEC.md` relevant Architecture section (§4-§8) |
+| Architecture decision made during implementation | `SPEC.md` with rationale |
+| New file or module changes repo structure | `SPEC.md` Architecture (§4) |
+| Non-obvious behavior / DSA5 rule trap / library quirk | `GOTCHAS.md` immediately |
+| Roadmap milestone item completed | `ROADMAP.md` checkbox (and `SPEC.md` §11 archive `[x]`) |
+
+When adding to `GOTCHAS.md`, use this format:
+```
+## Short descriptive title
+Explanation of the trap, what goes wrong, the workaround.
+Affected: files / modules
+Found: YYYY-MM-DD
+```
 
 ## Commands
 
@@ -42,6 +114,34 @@ cd frontend && npx playwright test test-combat-sim.mjs
 ### Infrastructure
 ```bash
 docker-compose up -d   # PostgreSQL 16 + Redis 7 (optional — SQLite works for dev)
+```
+
+## Repo Structure
+```
+AventuriaVTT/
+├── CLAUDE.md        # This file — project rules, workflow
+├── SPEC.md          # Technical spec + phase archive (Section 11)
+├── ROADMAP.md       # Current milestone + active backlog
+├── DEVLOG.md        # Session history, newest first
+├── GOTCHAS.md       # DSA5 + implementation traps
+├── README.md        # Setup / env vars
+├── .claude/commands/{context,log,kickstart}.md
+├── backend/         # Python 3.12 + FastAPI + async SQLAlchemy + WebSockets
+│   ├── main.py, config.py, database.py
+│   ├── engine/      # DSA5 rules engine (conditions, combat, magic, inventory)
+│   ├── ws/          # WebSocket manager + handlers (bulk of game logic)
+│   ├── models/      # SQLAlchemy + Pydantic models
+│   ├── databank/    # seed.py loads databank-seed/ JSON → DB
+│   └── importers/   # Optolith + DSA Ultimate JSON importers
+├── frontend/        # React 18 + Vite + TailwindCSS + Zustand
+│   ├── src/App.jsx, main.jsx
+│   ├── src/engine/          # Mirrors backend DSA5 rules for computed values
+│   ├── src/hooks/           # useCombatValues, useWebSocket, ...
+│   ├── src/stores/          # Zustand slices (auth, session, combat, character, campaign, map)
+│   ├── src/components/      # GM Cockpit, Player Dashboard, Wizards, Databank
+│   └── src/utils/safeData.js
+├── databank-seed/   # JSON reference data (creatures, weapons, spells, ...)
+└── adventures/      # Demo adventure content
 ```
 
 ## Architecture
@@ -93,6 +193,7 @@ API, WS, and stores return player data in different shapes. Always use `getCondi
 - **Tailwind theme:** Custom `dsa-*` color palette (dsa-bg, dsa-gold, dsa-parchment, dsa-blood, dsa-forest, dsa-mana, dsa-karma). Dark mode only.
 - **Zustand selectors:** Components use `useStore((s) => s.field)` selectors. Never call `getState()` in render paths. Never call `setState()` inside a subscriber on the same store (infinite loop).
 - **Inventory scoping:** Always read from Kampagnen-Inventar during sessions, never Basis-Inventar directly.
+- **No emojis in code** unless the user asks.
 
 ## DSA5 Rules Gotchas
 

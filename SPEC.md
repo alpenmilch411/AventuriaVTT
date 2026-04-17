@@ -1,9 +1,11 @@
 # Aventuria VTT — SPEC.md
-**Version:** 3.0.0
-**Last updated:** 2026-03-28
-**Status:** Production-ready (Sessions 14-16) — 3,638 entities, full combat (SchiP, opposed probes), shop system, weather/time/rest, group inventory, character lifecycle, session feedback, exports, 10 improvement cycles completed
+**Version:** 3.1.0
+**Last updated:** 2026-04-17
+**Status:** Work in progress. Working end-to-end for the author's own group's sessions: 3,638 databank entities, full combat (SchiP, opposed probes, conditions, Manöver), shop system, weather/time/rest, group inventory, character lifecycle, session feedback, exports. A lot still needs cleanup. Not production-hardened — personal project, noncommercial (PolyForm NC 1.0.0).
 
 ---
+
+> **Device model update (2026-04-17):** Earlier revisions of this spec described three separate clients — GM Cockpit (laptop), Player Dashboard (phone), Table View (TV/projector). That framing is outdated. The actual architecture is **one responsive web app with two in-session routes**: `/gm/<session-code>` and `/play/<session-code>`. Role is a URL/login decision, not a device class. Sections 4+ still use "phone" / "TV" as example devices for specific flows; read those as illustrative, not prescriptive.
 
 ## Quick Reference
 - New Claude Code session?         → Read sections 1–3, then relevant section below
@@ -25,68 +27,64 @@
 
 ### 1.1 What This Is
 
-Aventuria VTT is a digital toolkit for Das Schwarze Auge 5th Edition that supports — but never replaces — the human Game Master. It is not a digital game. It is infrastructure for the analogue experience: the rule book that looks itself up, the character sheet that updates itself, the map that draws itself, and the GM screen that never forgets.
+Aventuria VTT is a browser-based helper for running sessions of *Das Schwarze Auge 5th Edition* (DSA5 / *The Dark Eye*). It supports — never replaces — the human Game Master. The GM stays the creative authority; the app handles bookkeeping and mechanical resolution so the table can focus on the story.
 
-The GM remains the creative authority. The app handles bookkeeping, visualization, and mechanical resolution so the GM can focus on storytelling, improvisation, and player engagement.
+It is one responsive web app. The GM signs in and opens `/gm/<session-code>`. Each player signs in and opens `/play/<session-code>`. Same codebase on every device — laptop, tablet, phone. The URL picks the role, not the device.
+
+This is a personal / vibecoded project. The author is new to DSA5 and built it primarily to support their own group's GM. It works well enough for that group's sessions; it has not been hardened for general use, and significant code cleanup is still pending.
 
 ### 1.2 The Problem
 
-A DSA5 GM simultaneously juggles:
-- **Narrative**: story, NPCs, atmosphere, improvisation
-- **Mechanics**: combat tracking, initiative, conditions, modifiers, dice resolution
-- **Bookkeeping**: LeP/AsP/KaP for 4+ players and 5+ creatures, inventory, time, provisions
-- **Reference**: looking up rules, spell effects, creature stats, talent probes
-- **Visualization**: drawing maps, placing tokens, managing fog of war
-
-The bookkeeping and reference work kills creative flow. A GM who spends 2 minutes flipping through the rulebook for a Fernkampf modifier loses the table's attention and immersion.
+A DSA5 GM juggles narrative, mechanics, bookkeeping, rules reference, and visualization simultaneously. DSA5 mechanics are fiddly in practice — condition stacking, reaction penalties, Manöver combination limits, opposed probes, SchiP accounting, spell-duration semantics — and tracking them by hand costs the table attention and flow. The bookkeeping is exactly the kind of thing a computer should do.
 
 ### 1.3 The Solution
 
 Three pillars:
 
-**Prep** (before the session): The GM builds story structure as scenes with notes, creates/imports NPCs and creatures, prepares maps, places encounters, defines handouts. Players upload or create characters, manage inventory, review spells/talents. AI assists with content import (PDFs/photos → structured data) — always as a draft the GM reviews, never auto-pilot.
+**Prep** (before the session): The GM browses the databank (3,600+ entities from Optolith), builds NPCs and encounters, sketches campaign lore, sets quests. Players create or import characters via the wizard. Characters persist across sessions, campaigns, and retirements.
 
-**Play** (at the table): The GM steers the session from a cockpit — pushing scenes, maps, and handouts to the shared screen and player phones. Combat mechanics (initiative, probes, damage, conditions) are resolved by the app based on physical dice input. The GM controls what players see. Players interact through their personal dashboard: character stats, inventory, action selection, dice input. Everyone still talks, argues, laughs, and roleplays — the app is invisible infrastructure beneath the conversation.
+**Play** (at the table): The GM starts a session; players join by code. Combat, probes, conditions, inventory, shops, trades are resolved in the app based on physical dice input. Every connected client stays in sync over WebSocket with reconnection/gap-detection safety nets. The GM controls information flow — creature HP is hidden from players unless revealed, whispers stay private.
 
-**Persist** (across sessions): Everything survives between sessions — character progression, campaign lore, NPC relationships, quest status, world timeline. Characters live across campaigns, level up, retire, or die — and their history is preserved.
+**Persist** (across sessions): Characters level up, die, retire. Campaigns accumulate lore, NPCs, quest state, a world clock, a party inventory. Session feedback and exports close each sitting.
 
 ### 1.4 Core Design Principles
 
-1. **The app follows the GM, not the other way around.** No workflow is mandatory. Everything works spontaneously. The GM can call a probe, spawn a creature, or push a handout at any moment without "setting up" first.
-2. **2-tap maximum for common actions.** If calling a probe takes more than 2 taps, the UI is wrong. The app must be faster than flipping a book page.
-3. **Physical dice, digital tracking.** Players roll real dice and input results. The app validates range and computes outcomes. The tactile experience stays.
-4. **GM sees everything, players see only what their character knows.** Strict information separation. No player ever sees another player's stats, inventory, or private GM messages.
-5. **AI assists, never decides.** AI is a whisper-assistant for the GM: NPC dialog suggestions, rule lookups, improv inspiration, content extraction from PDFs. Never visible to players. Never autonomous.
-6. **PWA with offline cache for essentials.** Character sheet, rules reference, and notes are cached locally via PWA service worker. If WiFi drops briefly during a session, the player can still see their stats and notes. Full functionality requires internet connection to the cloud server.
-7. **Progressive complexity.** Feature gating by complexity level (Basic / Standard / Advanced). A new GM sees a clean, simple interface. Features unlock as comfort grows.
+1. **The app follows the GM, not the other way around.** No workflow is mandatory. The GM can call a probe, spawn a creature, or change weather at any moment.
+2. **Role = URL, not device.** The same app runs in every browser. `/gm/CODE` is the GM view, `/play/CODE` is the player view. Layout adapts to viewport. No assumption that players are on phones or GMs are on laptops.
+3. **Physical dice, digital tracking.** Players roll real dice and enter the result; the app validates and resolves. The tactile ritual stays.
+4. **GM sees everything, players see only what their character knows.** Creature HP hidden from players, whispers private, fog of war where it matters.
+5. **DSA5 rules engine is the source of truth.** Attributes, derived values, probes, combat resolution, condition stacking, Manöver interactions, spell/liturgy costs — all computed deterministically from the rules. Both backend (`backend/engine/`) and frontend (`frontend/src/engine/`) share the same logic; drift between them is a tracked risk (GOTCHAS).
+6. **AI assists, never decides.** Claude-based suggestions are scoped to GM whispers: NPC dialog, improv, optional content extraction. Not visible to players. Not autonomous. (Currently config-wired but not end-to-end; see §9.)
+7. **Safe data shapes.** API, WebSocket, and store payloads return player data in different shapes historically. All components use `src/utils/safeData.js` helpers (`getConditions()`, `getVitalsFrom()`, `getMaxVitals()`) rather than raw field access.
 
 ### 1.5 Who It's For
 
-- **Primary**: DSA5 groups (2-6 players + 1 GM) who play at a physical table and want digital support without losing the analogue feel
-- **Secondary**: GMs preparing sessions solo (story building, encounter design, NPC management)
-- **Tertiary**: New GMs who need rule guidance and encounter balancing help
-- **Market**: ~300K active DSA players in the German-speaking PnP community
+- **Primary**: the author's own DSA5 group. Everything else is incidental.
+- **Secondary**: other DSA5 groups (2-6 players + 1 GM) willing to run a rough-around-the-edges tool.
+- **Tertiary**: contributors interested in the DSA5-rules-as-code problem.
+- **Not for**: commercial use. See `LICENSE` (PolyForm Noncommercial 1.0.0) and `NOTICE`.
 
 ---
 
 ## 2. Current State
 
-- **Status**: Fully functional — all core systems operational, SSOT refactor complete, deploying to Render
-- **Last updated**: 2026-03-25 (Session 5)
-- **Repository**: https://github.com/alpenmilch411/AventuriaVTT (private)
+- **Status**: Work in progress. Runs end-to-end for the author's own group's sessions. Not production-hardened. Significant cleanup still pending (dead code from earlier design pivots, sparse automated test coverage, partially-wired AI features).
+- **Last updated**: 2026-04-17 (Session 16 — kickstart/Superpowers workflow adoption)
+- **Repository**: https://github.com/alpenmilch411/AventuriaVTT (public, PolyForm Noncommercial 1.0.0)
 - **Key decisions locked in**:
   - Human GM, not AI GM — app is a toolkit, not a replacement
-  - DSA5 rules only (no DSA4.1 or other systems in v1)
-  - Physical dice with manual input as primary (camera recognition as future optional feature)
-  - AI as GM whisper-assistant only, never visible to players
-  - **100% browser-based** — no native app, no install. Same URL on phone, tablet, laptop, TV
-  - **Account-based** — every player/GM has a personal account. Characters, campaigns, groups travel with the account across devices and groups
-  - **Cloud-hosted** — deploying to Render with GitHub auto-deploy on push
-  - Responsive single codebase — device size determines the view (Player Dashboard, GM Cockpit, Table View)
+  - DSA5 rules only (no DSA4.1 or other systems)
+  - Physical dice with manual input — camera recognition is not on the near-term roadmap
+  - AI as GM whisper-assistant only; currently config-wired but not yet end-to-end (see §9)
+  - **100% browser-based** — no native app, no install
+  - **Account-based** — every player/GM has a personal account. Characters, campaigns, groups travel with the account
+  - **Role = URL, not device.** `/gm/<code>` and `/play/<code>` are the two in-session views. Layout is responsive; no device-gated routes. The old `/table/<code>` "Table View" route is gone — it redirects to `/dashboard`.
+  - **Cloud-hostable, locally runnable.** SQLite dev default means zero service setup. Postgres + Redis for prod.
   - All combat/probe mechanics computed deterministically — centralized `useCombatValues` hook as single source of truth
   - **Server-side delta resolution** — backend resolves vitals deltas to absolute values before broadcasting. Frontend handles both formats as fallback.
-  - **Safe data extraction** — all components use `src/utils/safeData.js` helpers (`getConditions()`, `getVitalsFrom()`, `getMaxVitals()`) instead of raw field access. API fields may be `[]`, `{}`, or `undefined`.
-  - **Reactive store subscriptions** — components use `useStore((s) => s.field)` selectors, never `getState()` in render paths
+  - **Safe data extraction** — all components use `src/utils/safeData.js` helpers (`getConditions()`, `getVitalsFrom()`, `getMaxVitals()`) instead of raw field access.
+  - **Reactive store subscriptions** — components use `useStore((s) => s.field)` selectors, never `getState()` in render paths.
+  - **Dual rules engine** (backend + frontend) is intentional: frontend computes live display values without round-tripping, backend is authoritative on persisted state. Drift is a tracked risk.
 - **What works end-to-end**:
   - Full combat workflow: initiative → action → target → maneuver → attack → defense → damage → conditions → off-hand (dual-wield)
   - Ranged attacks with distance brackets (nah/mittel/weit/extrem) applying correct FK penalties
@@ -117,13 +115,9 @@ Three pillars:
 
 **Platform**
 - **100% browser-based.** No app store, no install, no updates. Everyone opens the same URL on whatever device they bring to game night.
-- **Responsive by device:** The app detects screen size and orientation, then serves the appropriate view:
-  - Phone (portrait) → Player Dashboard
-  - Tablet (landscape) → GM Cockpit or Player Dashboard (user chooses)
-  - Laptop/Desktop → GM Cockpit or Prep Workshop
-  - TV/Projector (via browser or Chromecast/AirPlay) → Table View
-- **Any combination works.** GM on iPad + players on Android phones + Table View on a laptop connected to TV = perfectly fine. No platform lock-in.
-- **PWA (Progressive Web App)**: installable to home screen for app-like experience on mobile. Offline caching for core features (character sheet, rules reference, notes).
+- **Role = URL, not device.** Two in-session routes: `/gm/<session-code>` (GM view) and `/play/<session-code>` (player view). Both are built from the same codebase. Layout adapts to viewport — phone / tablet / laptop / desktop all work, and the choice of GM vs player is a login/role decision, not a device assumption. The previously documented separate "Table View" / TV-projector client does not exist (the `/table/<code>` route redirects to `/dashboard`).
+- **Responsive by viewport, not device class.** Tailwind `sm/md/lg/xl` breakpoints handle stacking, side-by-side, and compact views. A GM running from a tablet gets the same feature set as a GM on a laptop; a player on a laptop sees the same dashboard as a player on a phone (just with more room to breathe).
+- **PWA (Progressive Web App):** installable to home screen. Offline caching for core read-only features (character sheet, rules reference, notes) is a goal, not yet fully implemented.
 
 **Accounts**
 - Every player and GM has a personal account (email + password, future: OAuth with Google/Apple)
@@ -133,73 +127,86 @@ Three pillars:
 - **No account required for quick-play**: a GM can create a session where players join with just a room code and a name (guest mode). Characters created in guest mode can later be claimed by creating an account.
 
 **Frontend**
-- React 18 + Vite + TailwindCSS
+- React 18 + Vite + TailwindCSS + Zustand + lucide-react
 - Single codebase, responsive layouts — not separate apps per device
-- Route-based view switching: `/gm` (cockpit), `/play` (player dashboard), `/table` (shared display), `/prep` (session preparation)
-- Konva.js for canvas-based map rendering (grid, tokens, fog, drawing tools)
+- Route-based view switching:
+  - `/` → Login
+  - `/register` → Registration
+  - `/dashboard` → Account hub (characters, sessions managed/joined, session create/join)
+  - `/character/:id` → Character detail
+  - `/gm/:sessionCode` → GM Cockpit (in-session GM view)
+  - `/play/:sessionCode` → Player Dashboard (in-session player view)
+  - `/session/:id/complete` → Post-session completion / feedback
+  - (`/table/:code` redirects to `/dashboard` — legacy route, no longer a real view)
+- Konva.js for canvas-based map rendering (grid, tokens, fog, drawing tools) — partially wired
 
 **Backend**
 - Python 3.12 + FastAPI — REST API + WebSocket server
-- PostgreSQL — persistent storage (accounts, characters, campaigns, adventures, databank)
-- Redis — ephemeral session state, WebSocket pub/sub, combat state, timers
+- SQLite (dev default — zero setup) or PostgreSQL (prod) via async SQLAlchemy
+- Redis — optional for pub/sub / caching. Backend falls back to in-memory when `REDIS_URL` is empty.
 
 **AI Assist (GM-only, optional)**
-- Claude API (Sonnet) — NPC suggestions, rule lookups, improv help, content extraction
-- OpenAI Whisper API — optional future feature for dice camera recognition
+- Claude API — intended for NPC suggestions, rule lookups, improv help, PDF content extraction
+- **Status: config-wired but not end-to-end.** `ANTHROPIC_API_KEY` is read from env; live integration paths are not yet complete. See §9 for roadmap.
 
 **Infrastructure**
-- **Cloud-hosted only**: hosted service at a public URL (e.g. `aventuria-vtt.de`). Players and GMs access via browser from anywhere — during sessions at the table, and between sessions from home for character management, prep work, and lore browsing.
-- No self-hosting required. All data stored centrally, accessible from any device at any time.
-- Domain: TBD
+- **Runs locally out of the box.** SQLite default + Redis fallback means `uvicorn main:app` + `npm run dev` is sufficient to get a working dev environment.
+- **Cloud-deployable.** Production uses Postgres + (optionally) Redis. Original deploy target was Render with GitHub auto-deploy; no active public instance currently.
+- Domain: TBD (author's own group plays via dev environments / a private deploy).
 
 ### 3.2 High-Level Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                        CLIENTS                                │
+│  Same React app, browser only. Role = URL, not device.        │
 │                                                               │
-│  ┌──────────────┐  ┌──────────────┐  ┌───────────────────┐  │
-│  │  GM Cockpit  │  │ Player Phone │  │  Table View (TV)  │  │
-│  │  (Laptop)    │  │ (per player) │  │  (Projector)      │  │
-│  └──────┬───────┘  └──────┬───────┘  └────────┬──────────┘  │
-│         │   WebSocket + REST  │                │             │
-└─────────┼─────────────────────┼────────────────┼─────────────┘
-          │                     │                │
-┌─────────┼─────────────────────┼────────────────┼─────────────┐
-│         │          BACKEND (FastAPI)           │             │
-│  ┌──────┴──────────────────────────────────────┴──────────┐  │
+│  ┌──────────────────┐       ┌──────────────────┐             │
+│  │ /gm/<code>       │       │ /play/<code>     │             │
+│  │ GM Cockpit       │       │ Player Dashboard │             │
+│  │ (any viewport)   │       │ (any viewport)   │             │
+│  └──────┬───────────┘       └──────┬───────────┘             │
+│         │        WebSocket + REST  │                          │
+└─────────┼──────────────────────────┼──────────────────────────┘
+          │                          │
+┌─────────┼──────────────────────────┼──────────────────────────┐
+│         │       BACKEND (FastAPI)  │                          │
+│  ┌──────┴──────────────────────────┴──────────────────────┐  │
 │  │                  Session Manager                       │  │
-│  │  (WebSocket hub, rooms, auth, broadcast control)       │  │
+│  │  WebSocket hub · rooms · per-character asyncio locks   │  │
+│  │  snapshot debounce · gap detection · DL replay         │  │
 │  └────────────────────────┬───────────────────────────────┘  │
 │                           │                                  │
 │  ┌────────────────────────┼───────────────────────────────┐  │
-│  │               Game State Engine                        │  │
+│  │               DSA5 Rules Engine                        │  │
+│  │  (pure functions; mirrored in frontend/src/engine/)    │  │
 │  │                                                        │  │
 │  │  ┌──────────┐ ┌───────────┐ ┌───────────┐ ┌────────┐ │  │
-│  │  │ Combat   │ │ Probe     │ │ Inventory │ │ Map &  │ │  │
-│  │  │ Manager  │ │ Resolver  │ │ Manager   │ │ Tokens │ │  │
+│  │  │ Combat   │ │ Probes    │ │ Inventory │ │ Magic/ │ │  │
+│  │  │ Manöver  │ │ 1W20/3W20 │ │ Equip     │ │ Liturgy│ │  │
 │  │  ├──────────┤ ├───────────┤ ├───────────┤ ├────────┤ │  │
 │  │  │Condition │ │ Character │ │ Time &    │ │Campaign│ │  │
-│  │  │ Tracker  │ │ Manager   │ │ Weather   │ │ & Lore │ │  │
+│  │  │ stacking │ │ lifecycle │ │ Weather   │ │ & Lore │ │  │
 │  │  └──────────┘ └───────────┘ └───────────┘ └────────┘ │  │
 │  │                                                        │  │
 │  │  ┌──────────────────────────────────────────────────┐ │  │
-│  │  │              Databank (Reference Data)            │ │  │
-│  │  │  Creatures│Weapons│Spells│Items│Talents│Rules     │ │  │
+│  │  │      Databank (3,600+ reference entities)         │ │  │
+│  │  │ Creatures·Weapons·Armor·Items·Spells·Liturgies·   │ │  │
+│  │  │ Talents·SAs·Advantages·Species·Cultures·Profs     │ │  │
 │  │  └──────────────────────────────────────────────────┘ │  │
 │  └────────────────────────┬───────────────────────────────┘  │
 │                           │                                  │
 │  ┌────────────────────────┼───────────────────────────────┐  │
-│  │            AI Assist Layer (GM-only)                    │  │
-│  │  (Claude API: NPC help, rules Q&A, improv suggestions, │  │
-│  │   content extraction from PDFs/photos)                  │  │
+│  │            AI Assist Layer (GM-only, planned)           │  │
+│  │  Claude API — config-wired, not yet end-to-end.         │  │
 │  └────────────────────────────────────────────────────────┘  │
 │                                                              │
 │  ┌────────────────────────────────────────────────────────┐  │
 │  │                   Persistence Layer                     │  │
-│  │  PostgreSQL: accounts, characters, campaigns, lore,     │  │
-│  │  adventures, databank, session logs                     │  │
-│  │  Redis: live session state, combat state, timers        │  │
+│  │  SQLite (dev default) / PostgreSQL (prod) via async     │  │
+│  │  SQLAlchemy — accounts, characters, campaigns, lore,    │  │
+│  │  sessions, databank. Debounced 2-5 s session snapshots. │  │
+│  │  Redis optional (pub/sub, cache); in-memory fallback.   │  │
 │  └────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -4045,11 +4052,11 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 
 ## 11. Roadmap
 
-**See `TODO.md` for the full roadmap, open tasks, and recently completed work.**
+**See `ROADMAP.md` for the current milestone, active backlog, and completed-milestone summaries.**
 
-The roadmap was extracted from SPEC.md into a standalone file on 2026-03-27 to keep this spec focused on architecture and requirements. Claude Code reads TODO.md at session start and updates it when tasks are completed.
+The roadmap was extracted from SPEC.md into a standalone file on 2026-03-27 (originally as `TODO.md`) and restructured into the kickstart/Superpowers format on 2026-04-17 as `ROADMAP.md`. `/context` reads the Current Milestone at session start and `/log` updates it at the end. The phase-by-phase archive below is append-only — when a milestone in `ROADMAP.md` closes, its `[x]` lands here.
 
-<!-- Everything below this line was moved to TODO.md on 2026-03-27 -->
+<!-- Everything below this line was moved to the roadmap file on 2026-03-27 -->
 <!-- Phase 1: Playable MVP — DONE (2026-03-22)
 - [x] Browser-based app: React + Vite + TailwindCSS
 - [x] User accounts (email/password login, JWT auth)

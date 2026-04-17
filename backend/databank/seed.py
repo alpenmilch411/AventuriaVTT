@@ -667,10 +667,18 @@ def _create_test_campaign(session: Session, user_ids: Dict[str, str]):
     log.info("  Created campaign: Der Turm des Orkschamanen (Code: ORKTURM-42)")
 
 
-def seed(database_url: Optional[str] = None) -> Dict[str, int]:
-    """Run the full seed process."""
+def seed(database_url: Optional[str] = None, seed_test_users: Optional[bool] = None) -> Dict[str, int]:
+    """Run the full seed process.
+
+    Test accounts (gm@test.de + 4 players) and their pre-built characters +
+    demo campaign are only created when seed_test_users is True. If None, the
+    value is read from settings.SEED_TEST_USERS (env var SEED_TEST_USERS).
+    Default is False — a fresh deployment will NOT have guessable logins.
+    """
     settings = get_settings()
     url = database_url or settings.DATABASE_URL_SYNC
+    if seed_test_users is None:
+        seed_test_users = settings.SEED_TEST_USERS
 
     log.info("Connecting to database: %s", url)
     engine = create_engine(url, echo=False)
@@ -750,19 +758,26 @@ def seed(database_url: Optional[str] = None) -> Dict[str, int]:
         wiki_count = _seed_wiki_pages(session)
         results["wiki_pages.json"] = wiki_count
 
-        # Create test accounts
-        log.info("Creating test accounts...")
-        user_ids = _create_test_accounts(session)
+        if seed_test_users:
+            # Create test accounts
+            log.info("Creating test accounts...")
+            user_ids = _create_test_accounts(session)
 
-        # Create test characters
-        log.info("Creating test characters...")
-        _create_test_characters(session, user_ids)
+            # Create test characters
+            log.info("Creating test characters...")
+            _create_test_characters(session, user_ids)
 
-        session.commit()
+            session.commit()
 
-        # Create test campaign (needs committed users/characters)
-        log.info("Creating test campaign...")
-        _create_test_campaign(session, user_ids)
+            # Create test campaign (needs committed users/characters)
+            log.info("Creating test campaign...")
+            _create_test_campaign(session, user_ids)
+        else:
+            log.info(
+                "Skipping test accounts / characters / campaign "
+                "(SEED_TEST_USERS is false). Set SEED_TEST_USERS=true or pass "
+                "--seed-test-users to create gm@test.de + 4 players."
+            )
 
         session.commit()
         log.info("Seed complete. Committed all changes.")
@@ -787,6 +802,12 @@ if __name__ == "__main__":
         action="store_true",
         help="Load and validate JSON files without writing to DB.",
     )
+    parser.add_argument(
+        "--seed-test-users",
+        action="store_true",
+        help="Also seed gm@test.de + 4 player accounts + demo campaign. "
+             "Dev-only. Never pass this on a public deployment.",
+    )
     args = parser.parse_args()
 
     if args.dry_run:
@@ -803,18 +824,34 @@ if __name__ == "__main__":
         log.info("=== DRY RUN COMPLETE: %d total records across %d files ===",
                  total, len(SEED_MAP))
     else:
-        results = seed(database_url=args.database_url)
+        seed_test_users_flag = args.seed_test_users or None  # None → read from env
+        results = seed(
+            database_url=args.database_url,
+            seed_test_users=seed_test_users_flag,
+        )
         total = sum(results.values())
         log.info("=== SEED SUMMARY ===")
         for fname, count in results.items():
             log.info("  %s: %d rows", fname, count)
         log.info("Total: %d databank rows across %d files", total, len(results))
-        log.info("")
-        log.info("=== TEST ACCOUNTS ===")
-        log.info("  GM:      gm@test.de      / test1234")
-        log.info("  Player1: player1@test.de  / test1234  (Balgra Felszorn, Zwerg Krieger)")
-        log.info("  Player2: player2@test.de  / test1234  (Elara Sternenfunke, Elf Magierin)")
-        log.info("  Player3: player3@test.de  / test1234  (Thorben Praiosmund, Peraine-Geweihter)")
-        log.info("  Player4: player4@test.de  / test1234  (Yara Falkenauge, Halbelf Jägerin)")
-        log.info("")
-        log.info("  Campaign: 'Der Turm des Orkschamanen' (Code: ORKTURM-42)")
+
+        from config import get_settings as _get_settings
+        effective_seed_test = (
+            args.seed_test_users
+            if args.seed_test_users
+            else _get_settings().SEED_TEST_USERS
+        )
+        if effective_seed_test:
+            log.info("")
+            log.info("=== TEST ACCOUNTS ===")
+            log.info("  GM:      gm@test.de      / test1234")
+            log.info("  Player1: player1@test.de  / test1234  (Balgra Felszorn, Zwerg Krieger)")
+            log.info("  Player2: player2@test.de  / test1234  (Elara Sternenfunke, Elf Magierin)")
+            log.info("  Player3: player3@test.de  / test1234  (Thorben Praiosmund, Peraine-Geweihter)")
+            log.info("  Player4: player4@test.de  / test1234  (Yara Falkenauge, Halbelf Jägerin)")
+            log.info("")
+            log.info("  Campaign: 'Der Turm des Orkschamanen' (Code: ORKTURM-42)")
+        else:
+            log.info("")
+            log.info("Test accounts were NOT created (SEED_TEST_USERS is false).")
+            log.info("Pass --seed-test-users or set SEED_TEST_USERS=true to create them.")

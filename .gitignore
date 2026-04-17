@@ -2,6 +2,7 @@
 .env
 *.env.local
 .env.*
+!.env.example
 
 # Python
 __pycache__/
@@ -23,8 +24,16 @@ frontend/dist/
 *.db
 *.db-shm
 *.db-wal
+*.db.bak
 *.sqlite
 *.sqlite3
+*.bak
+
+# Secrets / credentials
+secrets/
+*.pem
+*.key
+client_secret_*.json
 
 # IDE
 .vscode/

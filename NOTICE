@@ -1,0 +1,25 @@
+# NOTICE
+
+Required Notice: Copyright alpenmilch411 (https://github.com/alpenmilch411/AventuriaVTT)
+
+Aventuria VTT is a fan-made, noncommercial tool. It is not produced, endorsed, supported, or affiliated with Ulisses Spiele, the publisher of *Das Schwarze Auge* (DSA / *The Dark Eye*).
+
+## DSA5 Intellectual Property
+
+*Das Schwarze Auge*, *The Dark Eye*, *Aventurien*, and all associated rules, settings, characters, creatures, spells, and proper names are trademarks and/or copyrights of **Ulisses Spiele GmbH**. See <https://ulisses-spiele.de> and <https://ulisses-ebooks.de/das-schwarze-auge/>.
+
+This project:
+- Implements DSA5 mechanics for private, personal tabletop use by the author's gaming group and anyone else who finds it useful noncommercially.
+- Does **not** redistribute the DSA5 Grundregelwerk (Core Rulebook) or any Ulisses published text. Rule references in the UI are short, functional implementations of mechanics (e.g. probe resolution, condition levels) — not verbatim rules text.
+- Uses reference data (species, cultures, professions, talents, spells, liturgies, items, etc.) derived from open community sources, most notably the **Optolith** character generator (<https://optolith.app>). Where Optolith data is used, attribution applies: "The Optolith Database and data is used by permission for noncommercial fan projects."
+- Is not a substitute for owning the DSA5 rulebooks. You need the official Grundregelwerk from Ulisses Spiele to play the game. Buy them — it's a good game and the authors deserve support.
+
+If you are a representative of Ulisses Spiele and would like any content adjusted or removed, please open an issue on the GitHub repository or contact the author directly.
+
+## Code License
+
+The code in this repository (exclusive of DSA5 game content referenced above) is licensed under the **PolyForm Noncommercial License 1.0.0** — see `LICENSE`. Commercial use is not permitted.
+
+## AI-Generated Content
+
+Portions of this codebase were written with significant AI assistance (Claude Code, Codex). This is a "vibecoded" personal project. Expect inconsistencies and rough edges. Pull requests welcome.

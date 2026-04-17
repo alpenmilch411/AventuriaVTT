@@ -4,6 +4,56 @@
 
 ---
 
+## Session 16 — Kickstart/Superpowers workflow adoption + public-repo prep + independent audits (2026-04-17)
+**Type:** Claude Code — single session, autonomous once authorized
+
+### Workflow restructure
+Adopted the hanago-style kickstart + Superpowers workflow.
+- New slash commands: `/context` (session start), `/log` (session end), `/kickstart` (reference).
+- `ROADMAP.md` created from the old `TODO.md`: Current Milestone (placeholder — user decides next session) + P1/P2/P3 backlog + Completed Milestones (Sessions 0-15).
+- `TODO.md` reduced to a redirect stub.
+- `SPEC.md` §11 pointer now references `ROADMAP.md`.
+- `CLAUDE.md` rewritten: Superpowers Integration section, Session Workflow (`/context` + `/log`), Session Workflow Heuristics adopted from hanago (Rule 1 — Codex 2-round cap with security/DSA5-engine exemptions; Rule 2 — plan-skip for small inline changes; Rule 3 — decennial audit every 10th milestone), Codex-as-reviewer note documenting the Bash-bypass workaround (`node codex-companion.mjs task "..."` rather than the broken `codex:rescue` slash command) and the "unittest model name" parser quirk, automatic SPEC/GOTCHAS trigger table, updated repo tree.
+- `docs/superpowers/specs/` and `docs/audits/` directories created (with `.gitkeep`).
+
+### Public-repo prep (repo went public during the session)
+- **Security hardening:**
+  - `backend/config.py`: `SECRET_KEY` dev default now triggers a loud warning on startup; `ENV=production` + default SECRET_KEY → `RuntimeError` at boot.
+  - `backend/databank/seed.py`: test accounts (`gm@test.de/test1234` + 4 players + demo campaign) gated behind `SEED_TEST_USERS` env var or `--seed-test-users` CLI flag. Default off.
+  - `.env.example` documents `ENV`, `SEED_TEST_USERS`, and the SECRET_KEY generation one-liner.
+  - `.gitignore` expanded to cover `.bak`, `secrets/`, `*.pem`, `*.key`, `client_secret_*.json`.
+  - `backend/aventuria_vtt.db.bak` was untracked but not gitignored — fixed (and the file remains on disk for the user to delete manually).
+- **Licensing:** `LICENSE` (PolyForm Noncommercial 1.0.0) + `NOTICE` (DSA5 fan-work disclaimer — Ulisses Spiele IP acknowledged; Optolith attribution; "vibecoded for personal use" caveat).
+- **Doc accuracy pass:**
+  - `README.md` rewritten: accurate device model (role = URL, not phone/TV/projector), WIP badge, test-account security warning, `docs/` pointer, license section.
+  - `OVERVIEW.md` new: plain-language pitch framing this as a personal / vibecoded tool built to support the author's group's GM, noncommercial, rough edges expected.
+  - `SPEC.md` §1 (Product Overview) / §2 (Current State) / §3.1 (Tech stack + architecture diagram) rewritten to drop the outdated three-client model (GM laptop / player phone / TV projector) and replace with "one responsive web app, two in-session routes `/gm/<code>` + `/play/<code>`." Banner at the top of the Quick Reference calls out that §4+ still use "phone"/"TV" as illustrative device examples but are not prescriptive.
+
+### Independent audit round
+Ran Claude and Codex audits in parallel, independently (neither saw the other's output) per hanago Rule 3 protocol.
+- **Codex output:** `docs/audits/AUDIT-2026-04-17-codex.md` — 6 HIGH / 11 MEDIUM / 4 LOW. Dominated by WebSocket trust-boundary findings (`/ws/{session_code}` accepts `user_id` + `role` from query params with no JWT validation; no session membership check before full-state sync; arbitrary character mutation over WS; GM role claim-based; player defense event-name drift `defense_result` vs `defense_choice`).
+- **Claude output:** `docs/audits/AUDIT-2026-04-17-claude.md` — 8 HIGH / 10 MEDIUM / 5 LOW. Agreed on the WS-auth root cause; additionally caught the Manöver -2 SF penalty being unenforced, the `buff_applied` payload mismatch (backend sends `payload.buff.*`, frontend reads `payload.*` → every WS-received buff lands inactive), snapshot-debounce trailing-edge data loss, CORS permissiveness, wiki endpoint authz, 16 sites of deprecated `datetime.utcnow()`, `_is_current_turn` ID comparison bug, and `BuffPill` per-buff setInterval churn.
+- **Synthesis:** `docs/audits/AUDIT-2026-04-17-synthesis.md` — cross-referenced both audits, resolved severity disagreements (rules-engine gap + condition-stacking + test-credential laxity elevated to HIGH), promoted 33 findings to ROADMAP.md as P1 / P2 / P3 items.
+
+### P1 audit items (next milestone candidates)
+1. WebSocket handshake auth (JWT on connect, server-derived user + GM)
+2. Character-ownership checks on WS mutations
+3. Seed test-users refuse when `ENV=production` regardless of flag
+4. Rules-engine policy decision (port critical modules to Python, or correct the SPEC claim)
+5. Apply Manöver -2 SF penalty
+6. Fix `buff_applied` payload read path
+7. Unify player defense event name
+
+### Files changed
+- New: `.claude/commands/{context,log,kickstart}.md`, `ROADMAP.md`, `OVERVIEW.md`, `LICENSE`, `NOTICE`, `docs/superpowers/specs/.gitkeep`, `docs/audits/{.gitkeep, AUDIT-2026-04-17-claude.md, AUDIT-2026-04-17-codex.md, AUDIT-2026-04-17-synthesis.md}`
+- Rewritten: `CLAUDE.md`, `README.md`, `SPEC.md` (§1, §2, §3.1, Quick Reference banner, §11 pointer)
+- Modified: `backend/config.py`, `backend/databank/seed.py`, `.env.example`, `.gitignore`, `TODO.md` (reduced to stub)
+
+### Next session should start with
+Run `/context`. Pick one of the P1 audit items as the next Current Milestone. Likely starting point: **WebSocket handshake auth + character-ownership checks** (same underlying fix, single milestone); this unblocks S3/S4 (condition stacking) because once the server is authoritative, stacking rules have somewhere to live.
+
+---
+
 ## Session 15 — Character Creator UX + Combat Polish (2026-03-28)
 **Type:** Claude Code — multi-agent teams (iterative testing)
 
