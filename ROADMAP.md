@@ -43,9 +43,6 @@ Ordered by priority. P1 = must fix before any further public-facing feature work
 | Title | Goal | Source |
 |--|--|--|
 | Guided combat flow (Basic complexity mode) | Step-by-step hints during combat for new GMs. Gate behind complexity level toggle. | §4 GM Cockpit / §10.10 Regelmodul |
-| Session recap (AI-generated) | Backend API stub exists — wire Claude API, add UI. | §9.3 AI session recap |
-| AI NPC dialog generation | Backend code exists, needs API key + live testing. | §9.2 AI NPC dialog |
-| AI Import Portal (PDF upload → extraction) | Backend code exists, UI needs polish, Claude API not wired. | §9.1 AI Import |
 | In-game time tracking UI | Backend handler `_handle_time_advance` exists, no frontend. | §10.2 Weather & Environment |
 | Weather system UI | Backend handler `_handle_weather_change` exists, no frontend. | §10.2 Weather & Environment |
 | Ranged reload tracking UI | Reload modifiers defined, no mid-combat reload state. | §4 Combat / §8 WebSocket |
