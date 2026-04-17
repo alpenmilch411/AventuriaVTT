@@ -95,9 +95,6 @@ class Character(Base):
     owner: Mapped["User"] = relationship(  # noqa: F821
         "User", back_populates="characters"
     )
-    campaign_players: Mapped[list["CampaignPlayer"]] = relationship(  # noqa: F821
-        "CampaignPlayer", back_populates="character", lazy="selectin"
-    )
     ap_awards: Mapped[list["APAward"]] = relationship(  # noqa: F821
         "APAward", back_populates="character", lazy="selectin"
     )

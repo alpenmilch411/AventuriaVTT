@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String, DateTime, Index, Text, func
+from sqlalchemy import String, DateTime, Index, func
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -34,18 +34,6 @@ class User(Base):
     # -- relationships --
     characters: Mapped[list["Character"]] = relationship(  # noqa: F821
         "Character", back_populates="owner", lazy="selectin"
-    )
-    created_groups: Mapped[list["Group"]] = relationship(  # noqa: F821
-        "Group", back_populates="creator", lazy="selectin"
-    )
-    gm_campaigns: Mapped[list["Campaign"]] = relationship(  # noqa: F821
-        "Campaign", back_populates="gm", lazy="selectin"
-    )
-    campaign_players: Mapped[list["CampaignPlayer"]] = relationship(  # noqa: F821
-        "CampaignPlayer", back_populates="user", lazy="selectin"
-    )
-    group_memberships: Mapped[list["GroupMember"]] = relationship(  # noqa: F821
-        "GroupMember", back_populates="user", lazy="selectin"
     )
     gm_sessions: Mapped[list["GameSession"]] = relationship(  # noqa: F821
         "GameSession", back_populates="gm", lazy="selectin"

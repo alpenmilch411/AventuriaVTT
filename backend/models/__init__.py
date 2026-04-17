@@ -6,17 +6,6 @@ from models.user import User
 # Character
 from models.character import Character
 
-# Campaign, groups, quests, lore
-from models.campaign import (
-    Group,
-    GroupMember,
-    Campaign,
-    CampaignPlayer,
-    Quest,
-    LoreEntry,
-    TimelineEvent,
-)
-
 # Live session & combat
 from models.session_state import (
     GameSession,
@@ -32,7 +21,6 @@ from models.session_state import (
 # Inventory
 from models.inventory import (
     InventoryItem,
-    GroupInventory,
 )
 
 # Wiki
@@ -65,14 +53,6 @@ __all__ = [
     "User",
     # character
     "Character",
-    # campaign
-    "Group",
-    "GroupMember",
-    "Campaign",
-    "CampaignPlayer",
-    "Quest",
-    "LoreEntry",
-    "TimelineEvent",
     # session
     "GameSession",
     "SessionPlayer",
@@ -84,7 +64,6 @@ __all__ = [
     "SessionFeedback",
     # inventory
     "InventoryItem",
-    "GroupInventory",
     # wiki
     "WikiPage",
     # databank
