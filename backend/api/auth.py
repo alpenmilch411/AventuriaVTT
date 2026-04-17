@@ -4,11 +4,13 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +20,11 @@ from models.user import User
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 settings = get_settings()
+
+# Per-IP rate limiter for login / register. Keyed by remote address; in-memory
+# storage is fine for a single-process dev deploy. Production should swap to
+# Redis via the `storage_uri` keyword when REDIS_URL is set.
+limiter = Limiter(key_func=get_remote_address)
 
 # ---------------------------------------------------------------------------
 # Security helpers
@@ -78,14 +85,16 @@ async def get_current_user(
 # ---------------------------------------------------------------------------
 
 class RegisterRequest(BaseModel):
-    username: str
+    username: str = Field(min_length=2, max_length=40)
     email: EmailStr
-    password: str
+    # Lower bound is deliberately modest (4 chars) to cover personal-group
+    # test accounts; the rate limiter is the actual brute-force defence.
+    password: str = Field(min_length=4, max_length=128)
 
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=1, max_length=128)
 
 
 class TokenResponse(BaseModel):
@@ -117,7 +126,8 @@ class UpdateProfileRequest(BaseModel):
 # ---------------------------------------------------------------------------
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("10/minute")
+async def register(request: Request, body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     """Create a new user account."""
     # Check duplicate email
     existing = await db.execute(select(User).where(User.email == body.email))
@@ -139,7 +149,8 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def login(request: Request, body: LoginRequest, db: AsyncSession = Depends(get_db)):
     """Authenticate and return a JWT token."""
     result = await db.execute(select(User).where(User.email == body.email))
     user = result.scalar_one_or_none()

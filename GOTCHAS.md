@@ -22,14 +22,40 @@ Affected: `engine/conditions.py`
 Found: 2026-03-22
 
 ## DSA5: Manöver combination limits
-Per attack: max 1 Basismanöver + 1 Spezialmanöver. Passive SFs stack freely. Klingensturm and Vorstoß are both Spezialmanöver and CANNOT be combined. Without the corresponding SF, Basismanöver (Wuchtschlag, Finte, Meisterparade) are an additional -2 harder.
+Per attack: max 1 Basismanöver + 1 Spezialmanöver. Passive SFs stack freely. Klingensturm and Vorstoß are both Spezialmanöver and CANNOT be combined. Without the corresponding SF, Basismanöver (Wuchtschlag, Finte) are optionally harder per the Regelwerk (see entry below).
 Affected: `engine/combat.py`
 Found: 2026-03-22
+
+## DSA5: Basismanöver values in this codebase diverge from canonical DSA5 + no-SF rule is unimplemented
+The baked-in modifiers in `frontend/src/engine/combatManeuvers.js` do NOT match the Ulisses Regel-Wiki values. Current code vs canonical:
+- Wuchtschlag I: code `-1 AT / +1 TP` → canonical `-2 AT / +2 TP`.
+- Wuchtschlag II: code `-2 AT / +2 TP` → canonical `-4 AT / +4 TP`.
+- Finte I: code `-1 AT / defender -1 PA` → canonical `-1 AT / defender -2 PA`.
+- Finte II: code `-2 AT / defender -2 PA` → canonical `-2 AT / defender -4 PA`.
+
+Additionally, the optional DSA5 rule "Manövern ohne Kampfsonderfertigkeit" (`https://dsa.ulisses-regelwiki.de/opt_Manoevern_ohne_Kampfsonderfertigkeit.html`) says the AT penalty on Basismanöver is **doubled** when the attacker lacks the matching SF — not a flat extra -2 as GOTCHAS originally described. This rule is not implemented anywhere.
+
+Consequences:
+- Maneuvers are easier/weaker than the Regelwerk intends.
+- Characters without SF "Wuchtschlag I" still get the full (simplified) bonus, which isn't canonical.
+- Finte on a successful hit still penalises the defender, which is correct per canonical rules (the optional no-SF rule only makes the maneuver harder to execute, it does NOT remove the defender penalty — do not carve that out when implementing).
+
+Why unfixed: changing the modifier values rebalances all existing combats / characters. The fix is in `ROADMAP.md` backlog (§C1) but marked as needing explicit buy-in on the balance impact, not a silent engine change. Meisterparade is a separate defensive manoeuver and is NOT part of this family per canonical DSA5 — don't lump it in.
+
+Affected: `frontend/src/engine/combatManeuvers.js`, `frontend/src/views/gm/TurnFlow.jsx`, `frontend/src/views/gm/CombatOverlay.jsx`
+Found: 2026-04-17 (via Codex review of C1 audit spec)
 
 ## DSA5: Spell Zauberdauer counts own actions only
 Multi-action spells count only the caster's own actions, not other combatants'. A spell with Zauberdauer 4 Aktionen takes 4 of the caster's Kampfrunden. If the caster is attacked during a longer spell and chooses to defend, the spell is immediately interrupted and lost.
 Affected: `engine/magic.py`
 Found: 2026-03-22
+
+## DSA5 simplification: Zauberdauer is displayed but not enforced
+The player spell cards show `Zauberdauer: N Aktionen`, but the current backend `_handle_spell_cast` resolves the cast immediately as a single relay + log event. It does not track a pending-spell state across turns, does not consume subsequent actions, and does not interrupt on `defense_choice`. In practice this means a Magier can cast a 4-Aktionen spell on their turn with full defensive capability remaining — which is easier for casters than the Regelwerk allows.
+Workaround at the table: the GM enforces the rule manually (block defenses / skip later turns for the caster) until the feature lands.
+When implementing: add `pending_spell` per combatant in `combat` state, decrement remaining actions on each of their turns, drop the spell on `defense_choice`. Keep logged / announced to the table at the start so the GM can adjudicate.
+Affected: `backend/ws/handlers.py::_handle_spell_cast`, `frontend/src/views/player/SpellBook.jsx`
+Found: 2026-04-17 (audit synthesis §S6)
 
 ## DSA5: Kampfrunde duration is variable (2-5 seconds)
 DSA5 Regelwerk S.226 defines a Kampfrunde as 2-5 seconds (not fixed 3 seconds as in DSA4). This matters for calculating spell durations and time-based effects.

@@ -9,3 +9,4 @@ passlib[bcrypt]==1.7.4
 python-multipart==0.0.20
 anthropic==0.42.0
 aiofiles==24.1.0
+slowapi==0.1.9
