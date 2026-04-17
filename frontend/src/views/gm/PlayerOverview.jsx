@@ -161,20 +161,24 @@ function PlayerCard({ player, onClick }) {
         )}
       </div>
 
-      {/* Row 3: Conditions (only if any) */}
-      {player.conditions.length > 0 && (
-        <div className="flex flex-wrap gap-0.5 mt-1">
-          {player.conditions.map((cond, i) => {
-            const name = typeof cond === 'string' ? cond : cond.name
-            const level = typeof cond === 'string' ? 1 : (cond.level || 1)
-            return (
-              <span key={i} className="text-[8px] px-1 py-0.5 rounded bg-yellow-900/40 text-yellow-400 border border-yellow-800/30">
-                {name}{level > 1 ? ` ${level}` : ''}
-              </span>
-            )
-          })}
-        </div>
-      )}
+      {/* Row 3: Conditions (only if any). Defensive: re-normalise via safeData
+          so this block survives if the parent ever stops pre-mapping conditions. */}
+      {(() => {
+        const conds = getConditions(player)
+        return conds.length > 0 ? (
+          <div className="flex flex-wrap gap-0.5 mt-1">
+            {conds.map((cond, i) => {
+              const name = typeof cond === 'string' ? cond : cond.name
+              const level = typeof cond === 'string' ? 1 : (cond.level || 1)
+              return (
+                <span key={i} className="text-[8px] px-1 py-0.5 rounded bg-yellow-900/40 text-yellow-400 border border-yellow-800/30">
+                  {name}{level > 1 ? ` ${level}` : ''}
+                </span>
+              )
+            })}
+          </div>
+        ) : null
+      })()}
 
       {charBuffs.length > 0 && (
         <div className="flex flex-wrap gap-0.5 mt-1">
@@ -335,11 +339,14 @@ function DetailStatCell({ label, val, icon: Icon, iconCls, conditions, statKey, 
 
 function PlayerDetailView({ player, sendMessage, gmControls, onClose, databankTemplates }) {
   const char = player.character || {}
-  const v = player.vitals
-  const mv = player.maxVitals
+  // Parent (PlayerOverview) normalises player.vitals / .maxVitals / .conditions
+  // via safeData. Fall back to the helpers here defensively so this view
+  // survives being rendered against a non-normalised player object.
+  const v = player.vitals || getVitalsFrom({ ...player, ...char })
+  const mv = player.maxVitals || getMaxVitals(char)
   const attrs = char.attributes || {}
   const dv = char.derived_values || {}
-  const conditions = player.conditions || []
+  const conditions = Array.isArray(player.conditions) ? player.conditions : getConditions({ ...player, ...char })
   const allBuffs = useCharacterStore((s) => s.activeBuffs)
   const charBuffs = allBuffs.filter(b => b.characterId === player.characterId)
 

@@ -8,7 +8,7 @@ import {
   Sparkles, Sun, ArrowLeft, Store
 } from 'lucide-react'
 import useWebSocket from '../../hooks/useWebSocket'
-import { getConditions } from '../../utils/safeData'
+import { getConditions, getVitalsFrom, getMaxVitals } from '../../utils/safeData'
 import useGMControls from '../../hooks/useGMControls'
 import useGameState from '../../hooks/useGameState'
 import useOffline from '../../hooks/useOffline'
@@ -834,15 +834,9 @@ function LivePlayerDetailModal({ playerId, onClose, sendMessage, gmControls }) {
   if (!player) return null
 
   const char = allCharacters.find(c => c.id === player.characterId) || player.character || {}
-  const vitals = (() => {
-    const cv = player.current_vitals || char.current_vitals || {}
-    const dv = char.derived_values || {}
-    return { lep: cv.lep ?? dv.LeP_max ?? 0, asp: cv.asp ?? dv.AsP_max ?? 0, kap: cv.kap ?? dv.KaP_max ?? 0, schip: cv.schip ?? dv.Schip ?? 0 }
-  })()
-  const maxVitals = (() => {
-    const dv = char.derived_values || {}
-    return { lepMax: dv.LeP_max ?? 0, aspMax: dv.AsP_max ?? 0, kapMax: dv.KaP_max ?? 0, schipMax: dv.Schip ?? 3 }
-  })()
+  // Use safeData helpers instead of reinventing vitals/derived-value extraction.
+  const vitals = getVitalsFrom({ ...player, ...char, current_vitals: player.current_vitals || char.current_vitals })
+  const maxVitals = getMaxVitals(char)
   const conditions = getConditions({ ...player, ...char })
 
   return (

@@ -26,6 +26,7 @@ import TradeTab from './TradeTab'
 import ShopTab from './ShopTab'
 import ProbePopup from './ProbePopup'
 import useShopStore from '../../stores/shopStore'
+import { getVitalsFrom } from '../../utils/safeData'
 import clsx from 'clsx'
 
 const TABS = [
@@ -179,16 +180,12 @@ export default function PlayerDashboard() {
       const playersData = await playersRes.json()
       const me = playersData.find(p => p.user_id === user?.id)
       if (me?.character) {
-        const cv = me.current_vitals || {}
-        const dv = me.character?.derived_values || {}
         useCharacterStore.getState().setMyCharacter({
           ...me.character,
-          current_vitals: {
-            lep: cv.lep ?? dv.LeP_max ?? 0,
-            asp: cv.asp ?? dv.AsP_max ?? 0,
-            kap: cv.kap ?? 0,
-            schip: cv.schip ?? 3,
-          },
+          current_vitals: getVitalsFrom({
+            current_vitals: me.current_vitals,
+            character: me.character,
+          }),
         })
         useCombatStore.getState().setMyCharacterId(me.character.id)
       } else {

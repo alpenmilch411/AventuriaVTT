@@ -5,7 +5,7 @@ import useCampaignStore from '../stores/campaignStore'
 import useCharacterStore from '../stores/characterStore'
 import useCombatStore from '../stores/combatStore'
 import useMapStore from '../stores/mapStore'
-import { getConditions } from '../utils/safeData'
+import { getConditions, getVitalsFrom, getMaxVitals } from '../utils/safeData'
 
 /**
  * Manages GM session lifecycle: auth check, campaign data loading,
@@ -63,21 +63,26 @@ export default function useGMSession(sessionCode) {
       const playersData = playersRes.ok ? await playersRes.json() : []
 
       if (Array.isArray(playersData) && playersData.length > 0) {
-        const cv = (p) => p.current_vitals || {}
-        useSessionStore.getState().setPlayers(playersData.map(p => ({
-          id: p.user_id, username: p.username, characterId: p.character_id, character: p.character,
-          connected: p.connected,
-          current_vitals: cv(p),
-          currentLeP: cv(p).lep, maxLeP: p.character?.derived_values?.LeP_max,
-          currentAsP: cv(p).asp, maxAsP: p.character?.derived_values?.AsP_max,
-          currentKaP: cv(p).kap, maxKaP: p.character?.derived_values?.KaP_max,
-          currentSchiP: cv(p).schip,
-          conditions: getConditions(p),
-        })))
+        useSessionStore.getState().setPlayers(playersData.map(p => {
+          const v = getVitalsFrom(p)
+          const mv = getMaxVitals(p)
+          return {
+            id: p.user_id, username: p.username, characterId: p.character_id, character: p.character,
+            connected: p.connected,
+            current_vitals: p.current_vitals || {},
+            // Legacy flat fields preserved for components that still read them;
+            // the safeData helpers also fall back to these, so either shape works.
+            currentLeP: v.lep, maxLeP: mv.lepMax,
+            currentAsP: v.asp, maxAsP: mv.aspMax,
+            currentKaP: v.kap, maxKaP: mv.kapMax,
+            currentSchiP: v.schip,
+            conditions: getConditions(p),
+          }
+        }))
         useCharacterStore.getState().setAllCharacters(
           playersData.filter(p => p.character).map(p => ({
             ...p.character,
-            current_vitals: cv(p),
+            current_vitals: p.current_vitals || {},
           }))
         )
       }
