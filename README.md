@@ -21,7 +21,6 @@ See [OVERVIEW.md](OVERVIEW.md) for the plain-language pitch.
 ## What's Rough
 
 - Automated tests are sparse — a handful of Playwright E2E scripts, no pytest suite yet
-- Map / fog-of-war / token visualization is partial
 - Mobile polish is uneven
 - Dead code from earlier design pivots is still being trimmed
 

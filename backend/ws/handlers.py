@@ -237,7 +237,7 @@ def _combat_snapshot(state: dict) -> Optional[dict]:
     return state.get("combat")
 
 
-def _sync_vitals_to_combat(state: dict, character_id: str, vitals: dict, token_id: str = None):
+def _sync_vitals_to_combat(state: dict, character_id: str, vitals: dict):
     """Propagate vitals changes into combat initiative_order and combatants dict.
 
     Without this, _handle_combat_next_turn would broadcast stale HP values
@@ -248,23 +248,17 @@ def _sync_vitals_to_combat(state: dict, character_id: str, vitals: dict, token_i
     if not combat:
         return
     vital_keys = ("lep", "asp", "kap", "schip")
-    # Update initiative_order entries (match by characterId, character_id, id, or token_id)
     for c in combat.get("initiative_order", []):
         cid = c.get("characterId") or c.get("character_id") or c.get("id")
-        match = (cid == character_id
-                 or c.get("id") == character_id
-                 or (token_id and c.get("id") == token_id))
-        if match:
+        if cid == character_id or c.get("id") == character_id:
             for key in vital_keys:
                 if key in vitals:
                     c[key] = vitals[key]
-    # Also update the combatants dict if it exists
     combatants = combat.get("combatants", {})
-    for lookup_id in (character_id, token_id):
-        if lookup_id and lookup_id in combatants:
-            for key in vital_keys:
-                if key in vitals:
-                    combatants[lookup_id][key] = vitals[key]
+    if character_id and character_id in combatants:
+        for key in vital_keys:
+            if key in vitals:
+                combatants[character_id][key] = vitals[key]
 
 
 # ---------------------------------------------------------------------------
@@ -767,8 +761,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.WHISPER: _handle_whisper,
         EventType.HALT: _handle_halt,
         EventType.HALT_RELEASE: _handle_halt_release,
-        EventType.TOKEN_SPAWN: _handle_token_spawn,
-        EventType.TOKEN_REMOVE: _handle_token_remove,
         EventType.HANDOUT_PUSH: _handle_handout_push,
         EventType.TIME_ADVANCE: _handle_time_advance,
         EventType.WEATHER_CHANGE: _handle_weather_change,
@@ -802,7 +794,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         EventType.ITEM_USE: _handle_item_use,
         EventType.ITEM_TRANSFER: _handle_item_transfer,
         EventType.SPELL_CAST: _handle_spell_cast,
-        EventType.TOKEN_MOVE: _handle_token_move,
         EventType.SHOP_BUY: _handle_shop_buy,
         EventType.SHOP_SELL: _handle_shop_sell,
     }
@@ -847,7 +838,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
     if event_type == "vitals_update" and not _is_gm(session_code, user_id) and payload.get("character_id"):
         cid = payload["character_id"]
         raw_vitals = payload.get("vitals", {})
-        token_id = payload.get("token_id")
         async with _get_char_lock(cid):
             # Ensure max_vitals are cached for delta resolution
             await _cache_character_vitals(session_code, cid)
@@ -857,7 +847,7 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
             existing = state.setdefault("vitals", {}).get(cid, {})
             state["vitals"][cid] = {**existing, **resolved}
             # Sync vitals into combat initiative_order so next_turn broadcasts current values
-            _sync_vitals_to_combat(state, cid, resolved, token_id=token_id)
+            _sync_vitals_to_combat(state, cid, resolved)
             _bump_version(state)
             _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
             out_payload = {**payload, "vitals": resolved, "state_version": state["state_version"]}
@@ -1046,15 +1036,6 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         logger.info("GM transferred item in %s", session_code)
         return
 
-    # GM → map_state_push (batched map update — update backend state + broadcast)
-    if _is_gm(session_code, user_id) and event_type == "map_state_push":
-        if payload.get("tokens"):
-            state["tokens"] = payload["tokens"]
-        msg = _msg(event_type, payload, from_user=user_id)
-        await manager.broadcast_to_room(session_code, msg)
-        logger.info("GM pushed map state to players in %s (%d tokens)", session_code, len(payload.get("tokens", [])))
-        return
-
     # GM → vitals_update / conditions_update / state_update (broadcast to all)
     if _is_gm(session_code, user_id) and event_type in (
         "vitals_update", "conditions_update", "state_update", "condition_change",
@@ -1066,13 +1047,12 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         if event_type == "vitals_update" and cid:
             async with _get_char_lock(cid):
                 raw_vitals = payload.get("vitals", {})
-                token_id = payload.get("token_id")
                 await _cache_character_vitals(session_code, cid)
                 resolved = _resolve_deltas(session_code, cid, raw_vitals)
                 existing = state.setdefault("vitals", {}).get(cid, {})
                 state["vitals"][cid] = {**existing, **resolved}
                 # Sync vitals into combat initiative_order so next_turn broadcasts current values
-                _sync_vitals_to_combat(state, cid, resolved, token_id=token_id)
+                _sync_vitals_to_combat(state, cid, resolved)
                 _bump_version(state)
                 _safe_create_task(_persist_vitals(cid, resolved), name=f"persist_vitals_{cid[:8]}")
                 out_payload = {**payload, "vitals": resolved, "state_version": state["state_version"]}
@@ -1081,11 +1061,10 @@ async def handle_message(websocket, user_id: str, session_code: str, raw: dict):
         elif event_type == "state_update" and cid and payload.get("current_lep") is not None:
             async with _get_char_lock(cid):
                 vitals_update = {"lep": payload["current_lep"]}
-                token_id = payload.get("token_id")
                 existing = state.setdefault("vitals", {}).get(cid, {})
                 state["vitals"][cid] = {**existing, **vitals_update}
                 # Sync vitals into combat initiative_order so next_turn broadcasts current values
-                _sync_vitals_to_combat(state, cid, vitals_update, token_id=token_id)
+                _sync_vitals_to_combat(state, cid, vitals_update)
                 _bump_version(state)
                 _safe_create_task(_persist_vitals(cid, vitals_update), name=f"persist_vitals_{cid[:8]}")
                 msg = _msg(event_type, {**out_payload, "state_version": state["state_version"]}, from_user=user_id)
@@ -1701,42 +1680,6 @@ async def _handle_halt_release(session_code: str, user_id: str, payload: dict, s
     msg = _msg(EventType.HALT_RELEASE, {}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     logger.info("Session %s halt released", session_code)
-
-
-async def _handle_token_spawn(session_code: str, user_id: str, payload: dict, state: dict):
-    """Spawn a new token on the active map."""
-    token = {
-        "token_id": payload.get("token_id"),
-        "entity_type": payload.get("entity_type", "creature"),
-        "entity_id": payload.get("entity_id"),
-        "name": payload.get("name", "Unknown"),
-        "position_x": payload.get("position_x", 0),
-        "position_y": payload.get("position_y", 0),
-        "token_size": payload.get("token_size", 1),
-        "visible_to_players": payload.get("visible_to_players", True),
-        "icon_id": payload.get("icon_id"),
-        "conditions": payload.get("conditions", []),
-        "current_lep": payload.get("current_lep"),
-        "max_lep": payload.get("max_lep"),
-    }
-    state["tokens"].append(token)
-
-    # Everyone sees visible tokens; GM-only tokens go to gm_table
-    if token["visible_to_players"]:
-        msg = _msg(EventType.TOKEN_SPAWN, token, from_user=user_id)
-        await manager.broadcast_to_room(session_code, msg)
-    else:
-        # Hidden-spawn: only GM sees it (table-view was removed 2026-04-17).
-        msg = _msg(EventType.TOKEN_SPAWN, token, from_user=user_id)
-        await manager.broadcast_to_room(session_code, msg, target="gm")
-
-
-async def _handle_token_remove(session_code: str, user_id: str, payload: dict, state: dict):
-    """Remove a token from the active map."""
-    token_id = payload.get("token_id")
-    state["tokens"] = [t for t in state["tokens"] if t.get("token_id") != token_id]
-    msg = _msg(EventType.TOKEN_REMOVE, {"token_id": token_id}, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
 
 
 async def _handle_handout_push(session_code: str, user_id: str, payload: dict, state: dict):
@@ -2466,41 +2409,6 @@ async def _handle_spell_cast(session_code: str, user_id: str, payload: dict, sta
             "data": spell_data,
             "timestamp": _ts(),
         })
-
-
-async def _handle_token_move(session_code: str, user_id: str, payload: dict, state: dict):
-    """Player moves their own token (validated against ownership)."""
-    token_id = payload.get("token_id")
-    target_x = payload.get("target_x")
-    target_y = payload.get("target_y")
-    path = payload.get("path", [])
-
-    # Verify the player owns this token
-    token_found = False
-    for token in state.get("tokens", []):
-        if token.get("token_id") == token_id:
-            # Only allow move if the token belongs to this player
-            if token.get("entity_type") == "player" and str(token.get("entity_id")) == user_id:
-                token["position_x"] = target_x
-                token["position_y"] = target_y
-                token_found = True
-            else:
-                await manager.send_to_user(user_id, _error("You do not control this token"))
-                return
-            break
-
-    if not token_found:
-        await manager.send_to_user(user_id, _error("Token not found"))
-        return
-
-    msg = _msg(EventType.TOKEN_MOVE, {
-        "token_id": token_id,
-        "user_id": user_id,
-        "target_x": target_x,
-        "target_y": target_y,
-        "path": path,
-    }, from_user=user_id)
-    await manager.broadcast_to_room(session_code, msg)
 
 
 # ===================================================================

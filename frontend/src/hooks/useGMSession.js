@@ -4,7 +4,6 @@ import useSessionStore from '../stores/sessionStore'
 import useCampaignStore from '../stores/campaignStore'
 import useCharacterStore from '../stores/characterStore'
 import useCombatStore from '../stores/combatStore'
-import useMapStore from '../stores/mapStore'
 import { getConditions, getVitalsFrom, getMaxVitals } from '../utils/safeData'
 
 /**
@@ -37,7 +36,6 @@ export default function useGMSession(sessionCode) {
       useCombatStore.getState().reset()
       useCharacterStore.getState().reset()
       useCampaignStore.getState().reset()
-      useMapStore.getState().reset()
     }
   }, [])
 

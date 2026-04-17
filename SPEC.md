@@ -138,7 +138,6 @@ Three pillars:
   - `/play/:sessionCode` → Player Dashboard (in-session player view)
   - `/session/:id/complete` → Post-session completion / feedback
   - (`/table/:code` redirects to `/dashboard` — legacy route, no longer a real view)
-- Konva.js for canvas-based map rendering (grid, tokens, fog, drawing tools) — partially wired
 
 **Backend**
 - Python 3.12 + FastAPI — REST API + WebSocket server
@@ -236,10 +235,7 @@ aventuria-vtt/
 │   │   ├── combat.py                  # Combat actions, initiative, damage
 │   │   ├── probes.py                  # Talent/spell/liturgy probes
 │   │   ├── inventory.py               # Item management, trade, shop
-│   │   ├── maps.py                    # Map CRUD, tokens, fog
-│   │   ├── databank.py                # Reference data browse/search
-│   │   ├── adventures.py              # Adventure import, scenes
-│   │   └── assist.py                  # AI assist endpoints (GM-only)
+│   │   └── databank.py                # Reference data browse/search
 │   │
 │   ├── ws/                            # WebSocket layer
 │   │   ├── manager.py                 # Connection manager, rooms
@@ -271,8 +267,6 @@ aventuria-vtt/
 │   │   ├── character.py               # Character (full lifecycle)
 │   │   ├── campaign.py                # Campaign, lore, quests, timeline
 │   │   ├── session_state.py           # Live session, combat state
-│   │   ├── adventure.py               # Adventure, chapters, scenes
-│   │   ├── map.py                     # Maps, tokens, fog state
 │   │   ├── npc.py                     # NPC registry with relationships
 │   │   ├── inventory.py               # Items, equipment
 │   │   └── databank.py                # Reference data tables
@@ -323,17 +317,9 @@ aventuria-vtt/
 │   │   │   │   ├── InventoryPanel.jsx
 │   │   │   │   ├── SpellBook.jsx
 │   │   │   │   ├── TalentList.jsx
-│   │   │   │   ├── MapView.jsx        # Player's fog-limited map
 │   │   │   │   ├── CombatActions.jsx  # Action/maneuver/dice UI
 │   │   │   │   ├── Journal.jsx        # Personal notes
 │   │   │   │   └── QuestTracker.jsx
-│   │   │   │
-│   │   │   ├── table/                 # Shared screen (TV/projector)
-│   │   │   │   ├── TableDisplay.jsx   # Main table layout
-│   │   │   │   ├── NarrativeView.jsx  # Story text display
-│   │   │   │   ├── MapDisplay.jsx     # Full map (GM-controlled visibility)
-│   │   │   │   ├── HandoutDisplay.jsx # Push images/text to screen
-│   │   │   │   └── CombatOverlay.jsx  # Initiative bar, combat log
 │   │   │   │
 │   │   │   └── prep/                  # Pre-session preparation
 │   │   │       ├── StoryBuilder.jsx   # Scene/chapter editor
@@ -343,7 +329,6 @@ aventuria-vtt/
 │   │   │       └── AdventureImport.jsx # PDF/photo import wizard
 │   │   │
 │   │   ├── components/                # Shared components
-│   │   │   ├── map/                   # Konva.js map components
 │   │   │   ├── combat/                # Combat UI components
 │   │   │   ├── character/             # Character display components
 │   │   │   ├── dice/                  # Dice input, probe display
@@ -359,12 +344,10 @@ aventuria-vtt/
 │   │   └── stores/                    # Zustand or similar
 │   │       ├── sessionStore.js
 │   │       ├── combatStore.js
-│   │       ├── mapStore.js
 │   │       ├── characterStore.js
 │   │       └── campaignStore.js
 │   │
 │   └── public/
-│       ├── tokens/                    # Default token icons
 │       └── sounds/                    # Ambient loops & SFX
 │
 ├── databank-seed/                     # JSON seed files
@@ -758,33 +741,7 @@ A simple heuristic, not a hard rule:
 
 ### 4.7 Map & Token Tools
 
-#### 4.7.1 GM Map Controls
-
-The GM's map view has a toolbar:
-- **Fog brush**: paint/erase fog of war (what players can see)
-- **Draw tool**: freehand drawing on the player-visible layer (paths, markers, circles)
-- **Wall tool**: click cell edges to toggle walls (blocks movement/pathfinding)
-- **Difficult terrain**: mark cells as double-cost movement
-- **Token palette**: drag creatures, NPCs, landmarks, items onto map
-- **Measure tool**: click two points → shows distance in Schritt
-- **Erase**: remove tokens, drawings, walls
-
-The GM sees everything (all tokens, all fog). Players see only revealed areas and tokens visible to them.
-
-#### 4.7.2 Token Management
-
-The GM can interact with any token:
-- **Click**: see stats, conditions, available actions
-- **Drag**: move to new position (no GS validation for GM — GM is god)
-- **Right-click / long-press**: context menu → remove, hide from players, add to initiative, edit stats
-- **Bulk select**: drag a selection box, move multiple tokens at once (useful for creature groups)
-
-#### 4.7.3 Pushing Views to Players
-
-The GM controls what appears on each client:
-- **Table View**: GM selects what the TV shows — map, handout image, narrative text, "scene loading" splash, or black screen
-- **Player phones**: map is auto-synced with fog. GM can push handouts to all or individual players
-- **Whisper**: GM taps a player → types a private message → appears only on that player's phone
+*Removed 2026-04-17 (issue #6).* The Konva-based map + token + fog-of-war + drawing toolchain was half-built and never rendered. All map-related WebSocket handlers (`token_spawn` / `token_remove` / `token_move` / `map_state_push` / `drawing_*` / `fog_*`) and the `mapStore` were deleted; the feature is no longer planned.
 
 ### 4.8 Whisper System
 
@@ -1374,124 +1331,7 @@ In **Advanced mode**, just: "QS 4 ✓"
 
 ### 5.8 Map View (Player Perspective)
 
-#### 5.8.1 What Players See
-
-The player sees the map on their phone, but **only what the GM has revealed**. Unrevealed areas are covered by fog of war (dark overlay). The player's own token is always centered and highlighted.
-
-Visible elements:
-- Revealed terrain and map background
-- Their own token (highlighted, always visible)
-- Other player tokens that are in revealed areas
-- Creature/NPC tokens that the GM has made visible to them
-- Landmark and item tokens in revealed areas
-- GM drawings on the player-visible layer
-
-NOT visible:
-- Fog-covered areas
-- Hidden tokens (creatures the GM hasn't revealed)
-- GM-only drawings and notes
-- Other players' movement range overlays
-
-#### 5.8.2 Token Interaction
-
-The player can interact with their own token:
-- **Tap own token** → shows movement range overlay (highlighted cells they can reach based on GS minus conditions)
-- **Drag own token** → movement request sent to backend for validation. If valid: token moves, all clients updated. If Passierschlag triggered: player is warned before confirming. If invalid (too far, wall in the way): token snaps back with a brief explanation ("Nicht genug Bewegung — GS 7, Entfernung 9")
-- **Tap other token** → shows name and public info (creature: just the name and a health indicator like "Schwer verwundet". Other players: just name. NPC: name and attitude if known)
-- **Tap item token** → "Aufheben?" prompt. In combat: costs 1 Aktion
-
-**Important: All player movement and actions go through the GM.** See 5.8.5 GM Interrupt System.
-
-#### 5.8.3 Map in Combat
-
-During combat, the map additionally shows:
-- Initiative order indicator (small number badges on tokens showing turn order)
-- Active-turn token has a glowing border
-- Distance measurement: tap own token, then tap target → shows distance in Schritt
-- Reach indicator: when attacking, shows whether target is in weapon reach
-
-#### 5.8.4 Pinch-to-Zoom
-
-The map supports standard mobile gestures:
-- Pinch to zoom in/out
-- Pan by dragging (when not dragging own token)
-- Double-tap to re-center on own token
-- The map starts centered on the player's token and follows it when moved
-
-#### 5.8.5 GM Interrupt System
-
-The GM can interrupt ANY player action before it resolves. This is fundamental — just like at the real table where the GM says "Moment, bevor du da hingehst..."
-
-**How it works — Movement:**
-
-When a player drags their token to move:
-1. The move request goes to the backend
-2. The backend checks rules (GS, walls, Passierschlag) AND checks if the GM has any interrupt triggers set on those cells
-3. **If no triggers**: move resolves normally
-4. **If the GM has set a trigger** (trap, hidden creature, event): the move is **paused mid-way**. The player's token stops at the trigger cell. The GM sees:
-
-```
-⚠️ INTERRUPT: Balgra bewegt sich über Feld (5,3)
-   Trigger: Fallgrube (versteckt)
-   
-   [Auslösen]  [Ignorieren]  [Probe verlangen]
-```
-
-The GM chooses:
-- **Auslösen**: "Der Boden bricht unter deinen Füßen weg!" → GM applies effect (damage, condition, position change)
-- **Ignorieren**: player had luck, move continues normally
-- **Probe verlangen**: "Würfle Sinnesschärfe" → if passed, player notices the trap before stepping on it. If failed, trigger activates
-
-**Real-time interrupt (no pre-set trigger):**
-
-The GM can also interrupt spontaneously. On the GM cockpit, there is always a prominent **"HALT!"** button visible during any player action. When pressed:
-
-1. All player actions freeze immediately — movements pause, dice inputs are locked
-2. Every player phone shows: "⏸️ Der Meister unterbricht..."
-3. The GM now has full control: narrate what happens, call a probe, spawn a creature, push a handout, apply damage, move tokens — anything
-4. When ready, the GM taps "Weiter" and the player's turn resumes (or is over, if the interrupt changed the situation)
-
-This is the digital equivalent of the GM holding up a hand at the table and saying "Stopp."
-
-**Pre-set triggers (Prep):**
-
-During session prep, the GM can place invisible triggers on map cells:
-
-```python
-class MapTrigger:
-    id: str
-    position: Cell               # Grid position
-    trigger_type: str            # "trap" | "encounter" | "event" | "discovery"
-    name: str                    # "Fallgrube" / "Hinterhalt" / "Geheimtür"
-    gm_description: str          # What the GM sees: "3 Schritt tief, 1W6+2 SP Sturzschaden"
-    
-    # Resolution options
-    auto_probe: Optional[Dict]   # {"talent": "Sinnesschärfe", "difficulty": 2} — auto-prompts probe
-    on_trigger: Optional[Dict]   # {"damage": "1W6+2", "condition": {"Schmerz": 1}, "status": "Liegend"}
-    on_success: Optional[str]    # "Du bemerkst lose Steine — hier ist eine Falle!"
-    on_failure: Optional[str]    # "Der Boden gibt nach!"
-    
-    # Visibility
-    visible_to_gm: bool         # Always true
-    revealed: bool              # False until triggered or detected
-    one_shot: bool              # Disappears after triggering once?
-    
-    # Trigger condition
-    trigger_on: str             # "any_player" | "specific_player" | "any_creature"
-```
-
-Triggers are invisible on the player map. On the GM map, they show as subtle icons (⚠️ for traps, 👁️ for discoveries, ⚔️ for ambush encounters).
-
-**Interrupt during combat actions (not just movement):**
-
-The HALT button works during any phase:
-- Player is choosing an action → HALT freezes the action menu
-- Player is about to roll dice → HALT pauses the dice input
-- Player declared an attack → GM interrupts: "Actually, the Ork ducks behind the pillar — you need to reposition first"
-- A creature was about to die → GM interrupts: "It cries for mercy in broken Garethi!"
-
-**The design principle: the GM always has veto power and narrative priority.** The app resolves mechanics, but the GM can override any mechanical outcome with narrative authority at any point. The HALT button is always 1 tap away.
-
+*Removed 2026-04-17 (issue #6).* Map rendering on the player side never shipped. See §4.7.
 ### 5.9 Combat Actions (Player Phone)
 
 #### 5.9.1 "Your Turn" Flow

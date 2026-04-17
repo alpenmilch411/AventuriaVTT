@@ -12,7 +12,6 @@ import useAuthStore from '../../stores/authStore'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
 import useCampaignStore from '../../stores/campaignStore'
-import useMapStore from '../../stores/mapStore'
 import VitalsBar from '../../components/common/VitalsBar'
 import useCombatValues from '../../hooks/useCombatValues'
 import Badge from '../../components/common/Badge'
@@ -99,7 +98,6 @@ export default function PlayerDashboard() {
       useCombatStore.getState().reset()
       useCharacterStore.getState().reset()
       useCampaignStore.getState().reset()
-      useMapStore.getState().reset()
       useShopStore.getState().reset()
     }
   }, [])

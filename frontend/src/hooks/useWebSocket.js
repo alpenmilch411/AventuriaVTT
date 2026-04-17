@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import useSessionStore from '../stores/sessionStore'
 import useCombatStore from '../stores/combatStore'
-import useMapStore from '../stores/mapStore'
 import useCharacterStore from '../stores/characterStore'
 import useCampaignStore from '../stores/campaignStore'
 import useAuthStore from '../stores/authStore'
@@ -169,11 +168,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
       })
     }
 
-    // ── Map events ──
-    else if (type === 'token_move' || type === 'token_spawn' || type === 'token_remove') {
-      useMapStore.getState().handleMapMessage(msg)
-    }
-
     // ── Buff add/remove (syncs temporary stat modifiers) ──
     else if (type === 'buff_add') {
       useCharacterStore.getState().addBuff(payload)
@@ -191,11 +185,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
       useSessionStore.getState().setSceneContent(payload.items || [])
     }
 
-    // ── Map state push (GM batched update to players) ──
-    else if (type === 'map_state_push') {
-      useMapStore.getState().handleMapMessage({ type: 'map_state_push', payload })
-    }
-
     // ── Character/vitals updates ──
     // Backend now always sends absolute values (deltas resolved server-side).
     else if (type === 'state_update' || type === 'vitals_update' || type === 'conditions_update' || type === 'condition_change') {
@@ -209,7 +198,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
       if (type === 'vitals_update' || type === 'state_update') {
         const rawVitals = type === 'vitals_update' ? (payload.vitals || {}) : {}
         const cid = payload.character_id
-        const tid = payload.token_id
         if (type === 'state_update' && payload.current_lep !== undefined) {
           rawVitals.lep = payload.current_lep
         }
@@ -225,7 +213,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
         const battles = combatState.battles
         for (const battle of Object.values(battles)) {
           const match = battle.initiativeOrder.find(c =>
-            (cid && (c.characterId === cid || c.id === cid)) || (tid && c.id === tid)
+            cid && (c.characterId === cid || c.id === cid)
           )
           if (match) {
             const newLep = resolve(rawVitals.lep, rawVitals.lep_delta, match.lep, match.lepMax)
