@@ -118,8 +118,7 @@ AventuriaVTT/
 │       ├── components/   # GM Cockpit, Player Dashboard, wizards, databank
 │       └── utils/safeData.js
 ├── databank-seed/        # JSON reference data (source for seed.py)
-├── docs/                 # Superpowers specs + Codex audit outputs
-└── adventures/           # Example adventure packages
+└── docs/                 # Superpowers specs + Codex audit outputs
 ```
 
 ## Contributing

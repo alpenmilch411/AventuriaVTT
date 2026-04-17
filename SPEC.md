@@ -259,7 +259,6 @@ aventuria-vtt/
 │   ├── ai/                            # AI assist (GM-only)
 │   │   ├── assist.py                  # Claude API orchestration
 │   │   ├── prompts.py                 # System prompt templates
-│   │   ├── extraction.py              # PDF/photo → structured adventure data
 │   │   └── npc_generator.py           # On-demand NPC generation
 │   │
 │   ├── models/                        # SQLAlchemy / Pydantic models
@@ -288,8 +287,7 @@ aventuria-vtt/
 │   │
 │   └── importers/                     # External data import
 │       ├── dsa_ultimate.py            # DSA Ultimate JSON parser
-│       ├── optolith.py                # Optolith JSON parser
-│       └── adventure_pdf.py           # AI-assisted PDF extraction
+│       └── optolith.py                # Optolith JSON parser
 │
 ├── frontend/
 │   ├── package.json
@@ -363,9 +361,6 @@ aventuria-vtt/
 │   ├── herbs_potions.json
 │   ├── poisons_diseases.json
 │   └── rules_reference.json
-│
-└── adventures/                        # Example adventure packages
-    └── README.md
 ```
 
 ### 3.4 Deployment & Repo Setup
@@ -2643,183 +2638,7 @@ Several open-source projects and free asset libraries can accelerate databank po
 
 ### 7.3 Adventure Import Pipeline
 
-Adventures are the stories the GM runs. They can be original creations or adaptations of published DSA5 adventures. The import pipeline turns unstructured content (PDFs, photos, notes) into the structured format the app understands.
-
-#### 7.3.1 Adventure Structure
-
-```python
-class Adventure:
-    id: str
-    title: str                      # "Der Turm des Orkschamanen"
-    description: str
-    author: str                     # "Original" or "Adaptiert von [Verlag]"
-    difficulty: str                 # "Leicht" | "Mittel" | "Schwer" | "Tödlich"
-    player_count: str               # "3-5 Spieler"
-    estimated_duration: str         # "2-3 Sessions"
-    setting: str                    # "Mittelreich, Nähe Gareth"
-    
-    # Structure
-    chapters: List[Chapter]
-    
-    # NPCs
-    npcs: List[NPCData]            # All NPCs with personality, knowledge, stats
-    
-    # Maps
-    maps: List[MapData]            # Map images + grid config
-    
-    # Encounters
-    encounters: List[EncounterData] # Pre-built encounters
-    
-    # Handouts
-    handouts: List[Handout]        # Images, letters, documents
-    
-    # Loot
-    loot_tables: List[LootTable]   # Adventure-specific loot
-    
-    # Metadata
-    source: str                     # "original" | "imported" | "community"
-    tags: List[str]                 # ["dungeon", "ork", "einsteiger"]
-
-class Chapter:
-    id: str
-    title: str                      # "Kapitel 1: Die Ankunft"
-    summary: str                    # Brief chapter summary for GM
-    scenes: List[Scene]             # Scenes in this chapter
-    chapter_goal: str               # "Die Spieler erfahren von der Bedrohung"
-
-class Scene:
-    id: str
-    title: str
-    read_aloud: Optional[str]       # Text for GM to narrate
-    gm_notes: str                   # Private notes, secrets, hints
-    gm_secrets: List[str]           # Revealed by specific probes/actions
-    
-    npcs: List[str]                 # NPC IDs present in this scene
-    encounter_id: Optional[str]     # Linked encounter
-    map_id: Optional[str]           # Linked map
-    handouts: List[str]             # Handout IDs to push
-    
-    transitions: List[SceneTransition]
-    triggers: List[MapTrigger]      # Traps, events, discoveries
-    
-    mood: Optional[str]
-    ambient_sound: Optional[str]
-    time_advance: Optional[str]
-
-class SceneTransition:
-    target_scene_id: str
-    label: str                      # "Nordpfad nehmen"
-    condition: Optional[str]        # "has_item:schlüssel" | "probe_success:überreden"
-    gm_note: Optional[str]
-
-class NPCData:
-    id: str; name: str
-    icon_id: str                    # Asset library reference (pre-assigned)
-    personality_tags: List[str]
-    voice_notes: Optional[str]
-    knows: List[str]
-    secrets: List[str]
-    attitude: str
-    combat_stats: Optional[str]     # Creature template ID if combatant
-
-class EncounterData:
-    id: str; name: str
-    creatures: List[Dict]           # [{"template_id": "ork_raeuber", "count": 3, "positions": [...]}]
-    difficulty_estimate: str
-    gm_tactics: str                 # "Die Orks flankieren, der Schamane bleibt hinten"
-    loot_table_id: Optional[str]
-    map_id: Optional[str]
-
-class Handout:
-    id: str; name: str
-    type: str                       # "image" | "text" | "letter" | "map"
-    content: str                    # URL (image) or text content
-    gm_note: Optional[str]         # "Zeig das erst nach der Probe"
-
-class MapData:
-    id: str; name: str
-    image_url: str                  # Background image
-    grid_config: Dict               # {"type": "square", "width": 20, "height": 15, "cell_px": 50}
-    walls: List[Dict]               # Wall segments
-    difficult_terrain: List[Dict]   # Cells with double movement cost
-    initial_fog: str                # "all_hidden" | "all_revealed" | "custom"
-    landmarks: List[Dict]           # Pre-placed landmark tokens with icons
-```
-
-#### 7.3.2 Three Ways to Create an Adventure
-
-**Method 1: Manual Creation (in-app)**
-
-The GM uses the Prep Workshop (`/prep`) to build an adventure from scratch:
-1. Create adventure shell (title, description)
-2. Add chapters and scenes using a visual editor
-3. Write read-aloud text and GM notes per scene
-4. Create NPCs via the NPC creator (pick personality traits, assign knowledge, select icon from asset library)
-5. Build encounters using the Encounter Builder (drag creatures from databank onto maps)
-6. Upload or select maps, draw walls and triggers
-7. Add handouts (upload images, write letters)
-8. Define scene transitions (which scene leads where)
-
-This is the most control but the most work.
-
-**Method 2: AI-Assisted Import (from PDF/photos)**
-
-The GM uploads content from a published adventure:
-1. Upload: PDF pages, or photos of physical book pages
-2. AI extraction: Claude analyzes the content and produces a **structured draft**:
-   - Identifies chapters, scenes, read-aloud text
-   - Extracts NPC names, descriptions, stats
-   - Identifies creature encounters with stat blocks
-   - Recognizes maps (if included in PDF)
-   - Extracts handout content (letters, documents)
-3. **Review editor**: the GM sees the draft in a side-by-side view:
-   - Left: original PDF/photo page
-   - Right: extracted structured data
-   - GM corrects errors, fills gaps, adjusts
-4. **Finalize**: GM confirms, adventure is saved and playable
-
-**Critical: the AI draft is always a starting point, never final.** It's clearly marked as "Entwurf — bitte prüfen" throughout. Expected accuracy: ~70-80% for well-formatted PDFs, lower for photos of physical books. The GM is the final authority.
-
-**Extraction quality by content type:**
-| Content | Expected accuracy | Common issues |
-|---------|------------------|---------------|
-| Read-aloud text | High (90%+) | Usually clearly formatted in books |
-| NPC names + descriptions | High (85%+) | Personality nuances may be missed |
-| Creature stats | Medium (75%) | Table formats vary, non-standard layouts |
-| Maps | Low (50%) | Can identify that a map exists, can't auto-extract walls |
-| Scene structure | Medium (70%) | Chapter/scene boundaries not always clear |
-| Transitions | Low (40%) | Requires understanding narrative flow |
-
-**Method 3: Community Templates**
-
-Pre-built adventures shared by other GMs:
-1. GM browses a template library (future feature)
-2. Downloads an adventure package (JSON + assets)
-3. Imports into their campaign
-4. Adjusts as needed (rename NPCs, adjust difficulty, change loot)
-
-For MVP: only Methods 1 and 2. Community sharing is post-launch.
-
-#### 7.3.3 Adventure-to-Campaign Flow
-
-An adventure is a template. A campaign is a living instance:
-
-```
-Adventure (template, reusable)
-    │
-    │  GM selects "Use this adventure"
-    ▼
-Campaign (live instance, mutable)
-    │
-    │  Story progresses, choices made,
-    │  scenes skipped, new scenes added,
-    │  NPCs killed, loot distributed
-    ▼
-Archived Campaign (frozen, readable)
-```
-
-When a campaign uses an adventure, it creates a copy of the adventure structure. From that point, the campaign's story can diverge freely: scenes can be reordered, skipped, or added. The original adventure template is unchanged — it can be used again for a different group.
-
+*Removed 2026-04-17 (issue #7).* Adventure/Story content scaffolding (imports, scene structure, authored adventure packages) was aspirational and never shipped as code. The `adventures/` directory was empty and has been deleted.
 ### 7.4 Pre-Built Encounter Templates
 
 Quick-use encounter templates for GMs who need a combat fast:
@@ -2897,23 +2716,7 @@ Each template is a fully valid DSA5 character with all stats, talents, spells, e
 
 ### 7.6 Map Templates
 
-Pre-built generic maps for common scenarios:
-
-| Map | Grid size | Use case |
-|-----|-----------|----------|
-| Waldstraße | 16×10 | Ambush, roadside encounter |
-| Taverne (Erdgeschoss) | 12×10 | Tavern brawl, social scene |
-| Taverne (Obergeschoss) | 10×8 | Bedroom investigation, assassination |
-| Höhle | 14×12 | Spider nest, troll lair, bandit hideout |
-| Krypta | 12×14 | Undead encounter, tomb exploration |
-| Stadtmarkt | 20×16 | Chase, social scene, pickpocket |
-| Turm (pro Stockwerk) | 8×8 | Tower assault, mage tower |
-| Brücke | 16×6 | Bridge battle, toll encounter |
-| Lagerplatz | 12×12 | Camp attack, night ambush |
-| Arena | 14×14 | Duel, gladiatorial combat |
-
-Each includes: background image, pre-drawn walls, default landmarks (tables, doors, stairs), and suggested token placement zones. The GM can use them as-is, modify them, or replace the background with their own map image.
-
+*Removed 2026-04-17 (issue #6).* Map templates were scaffolding for the deleted map feature.
 ### 7.7 Content Import Formats
 
 The app accepts various input formats:
@@ -2922,13 +2725,9 @@ The app accepts various input formats:
 |-------|-----------|--------|
 | DSA Ultimate JSON | Direct parse | Full character |
 | Optolith JSON | Direct parse | Full character |
-| Adventure PDF | AI extraction → GM review | Structured adventure draft |
-| Adventure photos | AI extraction → GM review | Structured adventure draft |
-| Map image (JPG/PNG) | Load as background | Map ready for grid overlay |
-| Token image (PNG) | Store as custom asset | Custom token/portrait |
 | Handout image (JPG/PNG) | Store as handout | Pushable to players |
 | CSV (items/creatures) | Parse columns | Bulk databank import |
-| Aventuria VTT JSON | Direct import | Adventure/campaign/character package |
+| Aventuria VTT JSON | Direct import | Character package |
 
 ### 7.8 Export Formats
 
@@ -2936,10 +2735,7 @@ The app accepts various input formats:
 |--------|----------|----------|
 | Character JSON | Full character data (Aventuria VTT format) | Backup, share, move to another instance |
 | Character Optolith JSON | Converted to Optolith format | Use character in Optolith |
-| Campaign JSON | Full campaign (adventure, lore, sessions, characters) | Backup, migrate |
-| Adventure JSON | Adventure template (reusable) | Share with other GMs |
 | Session Log PDF/Markdown | Single session record | Physical archive, blog post |
-| Lore Book PDF | Campaign lore in readable format | Campaign memento |
 
 ---
 
@@ -3268,390 +3064,13 @@ On a local WiFi network with a good internet connection to the cloud server, the
 
 ### 9.1 AI Import Portal
 
-A dedicated workflow for converting raw adventure content (PDFs, photos, notes) into fully structured, playable campaign data. This is the GM's primary prep tool for imported adventures.
-
-#### 9.1.1 Portal Workflow
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                   AI IMPORT PORTAL                        │
-│                                                           │
-│  ┌─────────┐    ┌──────────┐    ┌──────────┐    ┌─────┐│
-│  │ UPLOAD  │ →  │ AI       │ →  │ REVIEW   │ →  │DONE ││
-│  │         │    │ EXTRACT  │    │ & EDIT   │    │     ││
-│  │ PDFs    │    │          │    │          │    │Ready││
-│  │ Photos  │    │ Claude   │    │ GM fixes │    │to   ││
-│  │ Notes   │    │ processes│    │ & adjusts│    │play ││
-│  └─────────┘    └──────────┘    └──────────┘    └─────┘│
-└─────────────────────────────────────────────────────────┘
-```
-
-**Step 1: Upload**
-
-The GM uploads raw content:
-- **PDF pages** from a published adventure (drag & drop, multi-page)
-- **Photos** of physical book pages (camera or gallery upload)
-- **Text notes** (free-form text the GM typed or copy-pasted)
-- **Map images** (scans/photos of adventure maps)
-- **Mixed** — any combination of the above
-
-The portal accepts everything at once. No need to sort by type first.
-
-**Step 2: AI Extraction**
-
-Claude API processes the uploaded content and produces a structured draft:
-
-```json
-{
-  "adventure": {
-    "title": "Der Turm des Orkschamanen",
-    "description": "Ein Abenteuer für 3-5 erfahrene Helden...",
-    "chapters": [
-      {
-        "title": "Kapitel 1: Der Hilferuf",
-        "scenes": [
-          {
-            "title": "Die Taverne zum Goldenen Keiler",
-            "read_aloud": "Die schwere Eichentür knarrt auf...",
-            "gm_notes": "Die Spieler treffen hier auf den Köhler...",
-            "npcs": ["koehler_gregor"],
-            "transitions": [
-              {"target": "scene_1_2", "label": "Dem Köhler folgen"},
-              {"target": "scene_1_3", "label": "In der Taverne bleiben"}
-            ],
-            "mood": "mysterious",
-            "map_description": "Taverne: Gastraum 10x8 Schritt, Theke links, 6 Tische, Kamin hinten rechts, Treppe nach oben hinten links, Eingangstür Süden, Hintertür Osten zum Hof"
-          }
-        ]
-      }
-    ],
-    "npcs": [...],
-    "encounters": [...],
-    "maps": [...],
-    "handouts": [...]
-  },
-  "extraction_confidence": {
-    "scenes": 0.85,
-    "npcs": 0.90,
-    "encounters": 0.70,
-    "maps": 0.40
-  },
-  "warnings": [
-    "Kreaturenwerte auf Seite 14 schlecht lesbar — bitte prüfen",
-    "Karte auf Seite 8 erkannt aber nicht automatisch extrahierbar"
-  ]
-}
-```
-
-The AI also generates a `map_description` for every scene that has a location — a structured text description of the physical space. This feeds into the AI Map Generator (see 9.2).
-
-**Processing pipeline per content type:**
-
-| Upload type | AI processing | Output |
-|-------------|--------------|--------|
-| PDF (text-readable) | Direct text extraction + Claude structured analysis | Scenes, NPCs, encounters, read-aloud, transitions |
-| PDF (scanned/image) | OCR first, then Claude analysis | Same, but lower confidence |
-| Photo of book page | Vision API → OCR → Claude analysis | Same, lowest confidence |
-| Map image | Image stored as-is + Claude describes what it sees | Map image + AI description for map generation |
-| Free-form text notes | Claude structures into scenes/NPCs | Flexible — adapts to whatever format the GM writes in |
-
-**Step 3: Review & Edit**
-
-The GM sees a side-by-side editor:
-
-```
-┌──────────────────────┬───────────────────────┐
-│ ORIGINAL (uploaded)  │ EXTRACTED (structured) │
-│                      │                        │
-│ [PDF page image]     │ Szene: "Die Taverne"   │
-│                      │ Vorlesetext: "..."      │
-│                      │ GM-Notizen: "..."       │
-│                      │ NPCs: Gregor [✏️]       │
-│                      │ Übergänge: [✏️]         │
-│                      │ Karte: [Generieren →]   │
-│                      │                        │
-│ [confidence: 85%]    │ ⚠️ Kreaturenwerte       │
-│                      │    bitte prüfen         │
-└──────────────────────┴───────────────────────┘
-```
-
-The GM can:
-- **Edit** any extracted field (fix OCR errors, adjust descriptions)
-- **Delete** incorrectly extracted content
-- **Add** missing content the AI didn't catch
-- **Re-extract** a section ("Versuch nochmal mit Seite 14")
-- **Generate map** from the scene's `map_description` (see 9.2)
-- **Assign icons** to NPCs and creatures from the asset library
-- **Link** scenes to each other (transition graph)
-- **Mark as reviewed** — turns confidence indicator green
-
-**Step 4: Finalize**
-
-GM taps "Abenteuer fertigstellen" → the structured data becomes a playable Adventure in the app. It can be attached to a campaign immediately.
-
-#### 9.1.2 AI Processing Architecture
-
-```python
-# ai/extraction.py — Pipeline
-
-async def extract_adventure(uploads: List[Upload]) -> AdventureDraft:
-    # 1. Classify each upload
-    classified = [classify_content(u) for u in uploads]  # pdf_text, pdf_scan, photo, map_image, text_notes
-    
-    # 2. Extract text from non-text sources
-    texts = []
-    for item in classified:
-        if item.type == "pdf_text":
-            texts.append(extract_pdf_text(item))
-        elif item.type in ("pdf_scan", "photo"):
-            texts.append(await ocr(item))  # Whisper Vision or similar
-        elif item.type == "text_notes":
-            texts.append(item.content)
-        elif item.type == "map_image":
-            texts.append(await describe_map_image(item))  # Claude Vision
-    
-    # 3. Send all text to Claude with structured extraction prompt
-    draft = await claude_extract(
-        system_prompt=ADVENTURE_EXTRACTION_PROMPT,
-        content=texts,
-        output_schema=AdventureDraft.schema()
-    )
-    
-    # 4. Post-process: validate creature stats, link NPC references, etc.
-    draft = post_process(draft)
-    
-    # 5. Generate map descriptions for scenes that have locations
-    for scene in draft.scenes:
-        if scene.location_description and not scene.map_id:
-            scene.map_description = await generate_map_description(scene)
-    
-    return draft
-```
-
-**Prompt engineering** is critical. The extraction prompt tells Claude:
-- Extract in German (adventure content is German)
-- Separate read-aloud text (usually italicized or boxed in books) from GM notes
-- Identify NPC names and create stub NPC entries
-- Parse creature stat blocks (AT, PA, LeP, RS, TP format is consistent in DSA5 books)
-- Identify scene boundaries (chapter breaks, location changes)
-- Generate `map_description` as a structured spatial layout
-- Flag low-confidence extractions with warnings
-- Never invent content that isn't in the source material
-
-#### 9.1.3 Cost Estimate
-
-Per adventure import (typical 30-page adventure):
-- Claude API (Sonnet, ~50K tokens input, ~10K output): ~$2-5
-- OCR if needed: negligible (on-device or cheap API)
-- Total: ~$3-6 per adventure import
-
-For a friend group importing a few adventures: negligible cost.
-
+*Removed 2026-04-17 (issue #7).* Adventure-import pipeline is moot without the Adventure content type. AI features themselves were also dropped from the roadmap.
 ### 9.2 AI Map Generation
 
-Maps can be generated from text descriptions — either from AI-extracted `map_description` fields or from free-form GM input.
-
-#### 9.2.1 Two Generation Modes
-
-**Mode 1: Structured Map (JSON-based, rendered in-app)**
-
-Claude generates a map as structured data that the app renders natively on the Konva.js canvas:
-
-```
-GM input: "Taverne: Gastraum 10x8 Schritt, Theke links, 6 Tische, 
-           Kamin hinten rechts, Treppe nach oben hinten links, 
-           Eingangstür Süden, Hintertür Osten zum Hof"
-
-Claude outputs:
-```
-```json
-{
-  "grid": {"width": 12, "height": 10, "cell_schritt": 1},
-  "walls": [
-    {"from": [0,0], "to": [12,0]},
-    {"from": [0,0], "to": [0,10]},
-    {"from": [12,0], "to": [12,10]},
-    {"from": [0,10], "to": [12,10]},
-    {"from": [0,3], "to": [3,3]},
-    {"from": [0,3], "to": [0,7]}
-  ],
-  "doors": [
-    {"position": [6,10], "type": "door", "label": "Eingangstür"},
-    {"position": [12,5], "type": "door", "label": "Hintertür"}
-  ],
-  "objects": [
-    {"type": "counter", "position": [1,4], "size": [1,4], "icon": "theke", "label": "Theke"},
-    {"type": "furniture", "position": [4,2], "icon": "tisch", "label": "Tisch 1"},
-    {"type": "furniture", "position": [7,2], "icon": "tisch", "label": "Tisch 2"},
-    {"type": "furniture", "position": [4,5], "icon": "tisch", "label": "Tisch 3"},
-    {"type": "furniture", "position": [7,5], "icon": "tisch", "label": "Tisch 4"},
-    {"type": "furniture", "position": [4,8], "icon": "tisch", "label": "Tisch 5"},
-    {"type": "furniture", "position": [7,8], "icon": "tisch", "label": "Tisch 6"},
-    {"type": "feature", "position": [10,1], "icon": "kamin", "label": "Kamin"},
-    {"type": "stairs", "position": [1,1], "icon": "treppe_hoch", "label": "Treppe nach oben"}
-  ],
-  "terrain": [
-    {"type": "wood_floor", "area": "all"}
-  ],
-  "lighting": "warm_indoor"
-}
-```
-
-The app renders this as a proper grid map with walls, objects placed from the asset library, and doors. The GM can then edit everything: move objects, add walls, change icons.
-
-**Advantages:** fast, editable, uses existing asset library, lightweight, always consistent style.
-
-**Mode 2: Image Generation (AI-generated artwork)**
-
-For atmosphere and visual richness, Claude (or a dedicated image API) generates an actual map image:
-
-```
-GM input: "Düstere Waldlichtung bei Nacht. Nebelschwaden. In der Mitte 
-           ein verwitterter Steinschrein der Peraine. Rechts ein schmaler 
-           Pfad nach Norden. Links ein großer Felsbrocken."
-
-→ AI generates a top-down battle map image (1024x768)
-→ Image loaded as map background
-→ GM overlays grid, places tokens, marks walls
-```
-
-This uses an image generation API (Dall-E, Stable Diffusion, or similar). The output is a background image that still needs the grid/wall/token overlay added manually.
-
-**Advantages:** visually rich, atmospheric, unique per scene.
-**Disadvantages:** slower, costs more, not directly editable, needs manual grid overlay.
-
-#### 9.2.2 Recommended Approach: Structured First, Image Optional
-
-For gameplay, **Mode 1 (structured)** is the default. It's fast, editable, cheap, and the asset library icons provide a consistent look. Every scene with a `map_description` gets an auto-generated structured map that the GM can use immediately or tweak.
-
-**Mode 2 (image)** is optional for GMs who want prettier maps for important scenes (boss fights, dramatic locations). The GM explicitly requests "Karte als Bild generieren" in the portal or map editor.
-
-#### 9.2.3 Map Generation from Adventure Import
-
-When the AI Import Portal extracts an adventure, it automatically:
-1. Identifies scenes that take place in a physical location
-2. Generates a `map_description` for each (spatial layout in text)
-3. Converts each `map_description` to a structured map JSON (Mode 1)
-4. Pre-renders the map in the Review step so the GM can see and edit it
-5. Objects are auto-assigned icons from the asset library (tisch → table icon, kamin → fireplace icon, etc.)
-
-The GM never has to manually build a map unless they want to. For a 30-page adventure, the portal generates ~5-8 playable maps automatically.
-
-#### 9.2.4 Map Description Schema
-
-The AI generates map descriptions in a consistent format:
-
-```python
-class MapDescription:
-    name: str                       # "Taverne Erdgeschoss"
-    environment: str                # "indoor" | "outdoor" | "underground" | "mixed"
-    size: Dict                      # {"width": 12, "height": 10, "unit": "schritt"}
-    
-    # Structural elements
-    walls: List[WallDesc]           # Outer walls, inner walls, partial walls
-    doors: List[DoorDesc]           # Doors, gates, openings with positions
-    stairs: List[StairsDesc]        # Stairs, ladders, trapdoors
-    windows: List[WindowDesc]       # Windows (line of sight, not movement)
-    
-    # Objects & furniture
-    objects: List[ObjectDesc]       # Tables, chairs, counters, altars, etc.
-    features: List[FeatureDesc]     # Fireplace, fountain, well, statue, etc.
-    
-    # Terrain
-    terrain_zones: List[TerrainDesc]  # Wood floor, stone, grass, water, difficult terrain
-    elevation: Optional[List[ElevationDesc]]  # Height differences, ledges, pits
-    
-    # Atmosphere
-    lighting: str                   # "bright" | "dim" | "dark" | "mixed"
-    mood: str                       # "warm" | "cold" | "eerie" | "grand"
-    
-    # Pre-placed tokens
-    npcs: List[TokenPlacement]      # NPCs with suggested positions
-    creatures: List[TokenPlacement] # Hidden creatures (GM-only visibility)
-    items: List[TokenPlacement]     # Discoverable items
-    triggers: List[TriggerPlacement]  # Traps, events, secrets
-
-class ObjectDesc:
-    type: str                       # "tisch" | "stuhl" | "theke" | "bett" | "truhe" | "altar"
-    position: List[int]             # [x, y] grid coordinates
-    size: Optional[List[int]]       # [w, h] if larger than 1 cell
-    icon_hint: str                  # Suggested icon from asset library
-    label: Optional[str]            # "Tisch des Wirts"
-    interactable: bool              # Can players interact?
-    interaction_hint: Optional[str] # "Truhe: verschlossen, Schloss Qualität 4"
-```
-
+*Removed 2026-04-17 (issues #6 + #7).* Tied to the deleted map feature; moot without map rendering.
 ### 9.3 AI Whisper-Assistant (GM Only)
 
-Expanded from Batch 2 (Section 4.10). The AI assist panel has specialized modes:
-
-#### 9.3.1 Assist Modes
-
-**🗣️ NPC Dialog:**
-```
-GM: "Gregor der Wirt, die Spieler fragen ihn nach dem Nordpfad"
-AI: "Gregor wird nervös, wischt sich die Hände an der Schürze ab.
-     'Den Nordpfad? Nein, nein, da geht kein vernünftiger Mensch hin.
-     Seit Wochen kommen Geräusche aus dem Wald. Bleibt lieber hier,
-     ich mach euch einen guten Preis fürs Zimmer.'"
-```
-AI uses the NPC's personality tags, knowledge, and attitude from the NPC registry.
-
-**📖 Regel-Frage:**
-```
-GM: "Wie funktioniert Fernkampf wenn der Schütze sich bewegt hat?"
-AI: "Bewegt sich der Schütze in derselben Kampfrunde, in der er schießt,
-     erhält er -2 auf FK (bei Sprinten: -4). Quelle: Regelwerk S. 245."
-```
-Searches the rules reference databank first, then general DSA5 knowledge.
-
-**💡 Improvisation:**
-```
-GM: "Die Spieler wollen in die Kanalisation von Gareth einsteigen, 
-     das war nicht geplant. Was könnte da unten sein?"
-AI: "Drei Vorschläge:
-     1. Ein verwahrlostes Rattenvolk-Lager (2-3 Rattenogger, Beute: Kanalplan)
-     2. Ein vergessener Praios-Schrein, halb überflutet, mit einem Rätsel
-     3. Die Leiche eines Händlers mit einem mysteriösen Brief in der Tasche
-     Alle passen zum Mittelreich-Setting und können zum Hauptplot führen."
-```
-
-**📝 Session Recap:**
-```
-GM: "Fasse die heutige Session zusammen"
-AI: [reads session log: scenes visited, combats, probes, lore revealed, quests updated]
-    "Session 7: Die Gruppe erreichte den Turm des Orkschamanen nach 
-     einem Hinterhalt auf der Waldstraße (3 Orkräuber besiegt, Balgra 
-     verletzt). Elara entdeckte magische Spuren am Wegschrein. Der 
-     Köhler wies ihnen den Weg. Im Turm angekommen, begann der 
-     Kampf gegen den Schamanen und seine Wachen."
-```
-
-**🗺️ Karten-Generator:**
-```
-GM: "Generier eine Karte für eine kleine Schmiede"
-AI: [generates structured map JSON] → rendered in map editor
-```
-
-#### 9.3.2 Context Management
-
-The AI assist has access to (per API call, as needed):
-- Current scene data + GM notes
-- Active NPC profiles (personality, knowledge, attitude)
-- Campaign lore book (player layer + GM layer)
-- Recent session events (last 5-10 actions/scenes)
-- Databank lookups (creature stats, spell rules)
-- Full adventure structure (scene graph, if imported)
-
-It does NOT have:
-- Player private data (journal, whisper history)
-- Other campaigns or groups
-- Anything outside this campaign's scope
-
-Context is managed to stay within Claude's context window (~100K tokens). For large campaigns, only relevant slices are loaded per query.
-
----
-
+*Removed 2026-04-17.* AI features were dropped from the roadmap (commit c83bb37).
 ## 10. Extended Features (Nice-to-Have)
 
 ### 10.1 Trade & Shop System
