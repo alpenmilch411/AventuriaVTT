@@ -303,6 +303,7 @@ async def _append_session_log(session_code: str, entry_type: str, text: str, *, 
     # Keep last 500 entries
     if len(log) > 500:
         state["session_log"] = log[-500:]
+    _bump_version(state)
     # Broadcast to all clients
     await manager.broadcast_to_room(session_code, _msg("session_log_entry", entry))
 
@@ -1337,6 +1338,7 @@ async def _handle_combat_start(session_code: str, user_id: str, payload: dict, s
         "log": [],
     }
     state["combat"] = combat
+    _bump_version(state)
     msg = _msg(EventType.COMBAT_START, {
         "name": payload.get("name", "Kampf"),
         "battle_id": payload.get("battle_id"),
@@ -1355,6 +1357,7 @@ async def _handle_combat_end(session_code: str, user_id: str, payload: dict, sta
     """End combat — forward the full payload (result, survivors, fallen, rounds) to all clients."""
     summary = payload.get("summary", "")
     state["combat"] = None
+    _bump_version(state)
     # Forward the entire payload so players receive result/fallen/survivors/rounds for the
     # victory/defeat screen.  The GM client constructs these fields in CombatOverlay.handleNextTurn.
     broadcast_payload = {
@@ -1668,6 +1671,7 @@ async def _handle_halt(session_code: str, user_id: str, payload: dict, state: di
     """Halt the session — blocks all player actions."""
     manager.set_halt(session_code, True)
     state["halted"] = True
+    _bump_version(state)
     msg = _msg(EventType.HALT, {"reason": payload.get("reason", "")}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     logger.info("Session %s halted", session_code)
@@ -1677,6 +1681,7 @@ async def _handle_halt_release(session_code: str, user_id: str, payload: dict, s
     """Release the halt — players may act again."""
     manager.set_halt(session_code, False)
     state["halted"] = False
+    _bump_version(state)
     msg = _msg(EventType.HALT_RELEASE, {}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     logger.info("Session %s halt released", session_code)
@@ -1711,6 +1716,7 @@ async def _handle_time_advance(session_code: str, user_id: str, payload: dict, s
         advanced_by_minutes = 0
 
     state["in_game_time"] = new_time
+    _bump_version(state)
     msg = _msg(EventType.TIME_ADVANCE, {
         "new_time": new_time,
         "advanced_by_minutes": int(advanced_by_minutes),
@@ -1748,6 +1754,7 @@ async def _handle_weather_change(session_code: str, user_id: str, payload: dict,
         return
 
     state["weather"] = weather
+    _bump_version(state)
     msg = _msg(EventType.WEATHER_CHANGE, {"weather": weather}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     await _append_session_log(session_code, "system", f"Wetter: {weather}", icon="cloud")
@@ -1773,6 +1780,7 @@ async def _handle_rest_start(session_code: str, user_id: str, payload: dict, sta
         "duration_hours": int(duration_hours),
         "started_at": _ts(),
     }
+    _bump_version(state)
 
     msg = _msg(EventType.REST_START, {
         "character_ids": character_ids,
@@ -1882,9 +1890,11 @@ async def _handle_rest_end(session_code: str, user_id: str, payload: dict, state
                     "state_version": state["state_version"],
                 }, from_user=user_id))
             if cond_log:
+                _bump_version(state)
                 await manager.broadcast_to_room(session_code, _msg("conditions_update", {
                     "character_id": cid,
                     "conditions": new_conditions,
+                    "state_version": state["state_version"],
                 }, from_user=user_id))
 
             summary_parts = regen_log + cond_log
@@ -1913,6 +1923,7 @@ async def _handle_rest_end(session_code: str, user_id: str, payload: dict, state
 
     # Clear rest state
     state.pop("rest", None)
+    _bump_version(state)
     _safe_create_task(_snapshot_session_state(session_code), name=f"snapshot_rest_{session_code}")
     logger.info("Rest ended in %s: %d characters healed", session_code, len(results))
 
@@ -1922,6 +1933,7 @@ async def _handle_attention(session_code: str, user_id: str, payload: dict, stat
     """Enter attention mode — all players should look at the GM screen."""
     manager.set_attention(session_code, True)
     state["attention"] = True
+    _bump_version(state)
     msg = _msg(EventType.ATTENTION, {"reason": payload.get("reason", "")}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
 
@@ -1930,6 +1942,7 @@ async def _handle_attention_release(session_code: str, user_id: str, payload: di
     """Release attention mode."""
     manager.set_attention(session_code, False)
     state["attention"] = False
+    _bump_version(state)
     msg = _msg(EventType.ATTENTION_RELEASE, {}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
 
@@ -1981,6 +1994,7 @@ async def _handle_session_start(session_code: str, user_id: str, payload: dict, 
     """Transition the session from lobby to active."""
     state["status"] = "active"
     state["connected_users"] = manager.get_connected_users(session_code)
+    _bump_version(state)
 
     # Reset SchiP to max for all characters in this session
     character_ids = payload.get("character_ids", [])
@@ -2005,6 +2019,7 @@ async def _handle_session_start(session_code: str, user_id: str, payload: dict, 
 async def _handle_session_pause(session_code: str, user_id: str, payload: dict, state: dict):
     """Pause the session."""
     state["status"] = "paused"
+    _bump_version(state)
     msg = _msg(EventType.SESSION_PAUSE, {"reason": payload.get("reason", "")}, from_user=user_id)
     await manager.broadcast_to_room(session_code, msg)
     logger.info("Session %s paused", session_code)
@@ -2029,6 +2044,7 @@ async def _delayed_session_cleanup(session_code: str, delay: int = _SESSION_END_
 async def _handle_session_end(session_code: str, user_id: str, payload: dict, state: dict):
     """End the session."""
     state["status"] = "ended"
+    _bump_version(state)
     summary = payload.get("summary", "")
     # Frontend sends "awards" (QuestSessionTab) or "ap_awards" (legacy) — accept both
     ap_awards = payload.get("ap_awards") or payload.get("awards") or []
@@ -3199,6 +3215,7 @@ async def handle_connect(session_code: str, user_id: str, role: str):
 
     state = _ensure_state(session_code)
     state["connected_users"] = manager.get_connected_users(session_code)
+    _bump_version(state)
 
     msg = _msg(EventType.PLAYER_CONNECTED, {
         "user_id": user_id,
@@ -3238,6 +3255,7 @@ async def handle_disconnect(session_code: str, user_id: str):
     """Called when a WebSocket drops — notify survivors and clean up pending actions."""
     state = _ensure_state(session_code)
     state["connected_users"] = manager.get_connected_users(session_code)
+    _bump_version(state)
 
     msg = _msg(EventType.PLAYER_DISCONNECTED, {
         "user_id": user_id,
@@ -3310,6 +3328,7 @@ async def handle_reconnect(session_code: str, user_id: str):
         await _restore_state_from_snapshot(session_code)
     state = _ensure_state(session_code)
     state["connected_users"] = manager.get_connected_users(session_code)
+    _bump_version(state)
 
     # Notify others
     msg = _msg(EventType.PLAYER_RECONNECTED, {
