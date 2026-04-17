@@ -9,8 +9,6 @@ const useSessionStore = create((set, get) => ({
   isHalted: false,
   isAttentionMode: false,
   players: [],
-  tableViewMode: 'lobby', // lobby | map | handout | atmosphere | combat_overlay | scene_splash | black
-  tableViewData: null,
   sessionInfo: null,
 
   notifications: [],
@@ -97,42 +95,14 @@ const useSessionStore = create((set, get) => ({
     players: state.players.map(p => p.id === playerId ? { ...p, ...updates } : p),
   })),
 
-  setTableViewMode: (mode, data = null) => set({
-    tableViewMode: mode,
-    tableViewData: data,
-  }),
-
-  joinSession: async (sessionCode, role = 'player') => {
-    try {
-      const res = await fetch(`/api/sessions/${sessionCode}/join`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('avtt_token')}`,
-        },
-        body: JSON.stringify({ role }),
-      })
-      if (!res.ok) throw new Error('Beitritt fehlgeschlagen')
-      const data = await res.json()
-      set({
-        sessionCode,
-        sessionId: data.session_id,
-        campaignId: data.campaign_id,
-        isGM: role === 'gm',
-        phase: data.phase || 'lobby',
-        players: data.players || [],
-      })
-      return data
-    } catch (err) {
-      console.error('Session join error:', err)
-      throw err
-    }
-  },
+  // joinSession was removed 2026-04-17 — it posted to a non-existent endpoint
+  // (/api/sessions/<code>/join with {role}). The real join flow lives in
+  // dashboardStore.joinSession + POST /api/sessions/join (code + character_id).
 
   reset: () => set({
     sessionCode: null, sessionId: null, campaignId: null,
     phase: 'lobby', isGM: false, isHalted: false, isAttentionMode: false,
-    players: [], tableViewMode: 'lobby', tableViewData: null, sessionInfo: null,
+    players: [], sessionInfo: null,
     notifications: [], activeProcesses: [], pendingRequest: null, activeLoot: null,
     lootReceived: null, sceneContent: [], sessionLog: [],
     outgoingTrade: null, incomingTrade: null, tradeResult: null,
@@ -147,8 +117,6 @@ const useSessionStore = create((set, get) => ({
     isHalted: false,
     isAttentionMode: false,
     players: [],
-    tableViewMode: 'lobby',
-    tableViewData: null,
     outgoingTrade: null,
     incomingTrade: null,
     tradeResult: null,
@@ -210,10 +178,6 @@ const useSessionStore = create((set, get) => ({
       }
       case 'player_update':
         get().updatePlayer(payload.player_id, payload.updates)
-        break
-      case 'table_view':
-      case 'table_view_mode':
-        set({ tableViewMode: payload.mode, tableViewData: payload.data || null })
         break
       case 'session_start': {
         set({ phase: 'active' })

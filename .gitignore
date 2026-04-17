@@ -49,8 +49,10 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 
-# Claude Code local settings (user-specific, not shared)
+# Claude Code local state (user-specific, not shared)
 frontend/.claude/settings.local.json
+.claude/settings.local.json
+.claude/worktrees/
 
 # Test artifacts
 /tmp/e2e_*.png

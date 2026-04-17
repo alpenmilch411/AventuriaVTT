@@ -1,7 +1,7 @@
 """WebSocket connection manager with session-room routing.
 
 Maintains a registry of active connections organised by session code.
-Supports targeted broadcasting (all, gm, players, table, individual).
+Supports targeted broadcasting (all, gm, players, individual).
 """
 
 import asyncio
@@ -19,8 +19,6 @@ class ConnectionManager:
         self.rooms: dict[str, dict[str, WebSocket]] = {}
         # session_code -> gm_user_id
         self.room_gms: dict[str, str] = {}
-        # session_code -> set of table view connection user_ids
-        self.room_tables: dict[str, set[str]] = {}
         # session_code -> bool (is halted)
         self.halted: dict[str, bool] = {}
         # session_code -> bool (attention mode)
@@ -32,12 +30,11 @@ class ConnectionManager:
         self._DLQ_MAX = 50
 
     async def connect(self, websocket: WebSocket, session_code: str, user_id: str,
-                      role: str = "player", is_table_view: bool = False):
+                      role: str = "player"):
         """Connect a client to a session room."""
         await websocket.accept()
         if session_code not in self.rooms:
             self.rooms[session_code] = {}
-            self.room_tables[session_code] = set()
             self.halted[session_code] = False
             self.attention_mode[session_code] = False
 
@@ -46,18 +43,14 @@ class ConnectionManager:
 
         if role == "gm":
             self.room_gms[session_code] = user_id
-        if is_table_view:
-            self.room_tables[session_code].add(user_id)
 
     def disconnect(self, user_id: str):
         session_code = self.user_sessions.get(user_id)
         if session_code and session_code in self.rooms:
             self.rooms[session_code].pop(user_id, None)
-            self.room_tables.get(session_code, set()).discard(user_id)
             if not self.rooms[session_code]:
                 del self.rooms[session_code]
                 self.room_gms.pop(session_code, None)
-                self.room_tables.pop(session_code, None)
                 self.halted.pop(session_code, None)
                 self.attention_mode.pop(session_code, None)
                 # Clean up in-memory session state to prevent memory leak
@@ -83,9 +76,7 @@ class ConnectionManager:
         """Broadcast with targeting:
         'all' - everyone
         'gm' - only GM
-        'players' - all players (not GM, not table)
-        'table' - table view connections only
-        'gm_table' - GM + table views
+        'players' - all players (not GM)
         'player:{id}' - specific player
         """
         if session_code not in self.rooms:
@@ -93,7 +84,6 @@ class ConnectionManager:
 
         room = self.rooms[session_code]
         gm_id = self.room_gms.get(session_code)
-        table_ids = self.room_tables.get(session_code, set())
 
         targets = set()
 
@@ -103,13 +93,7 @@ class ConnectionManager:
             if gm_id:
                 targets = {gm_id}
         elif target == "players":
-            targets = {uid for uid in room.keys() if uid != gm_id and uid not in table_ids}
-        elif target == "table":
-            targets = table_ids & set(room.keys())
-        elif target == "gm_table":
-            targets = (table_ids & set(room.keys()))
-            if gm_id:
-                targets.add(gm_id)
+            targets = {uid for uid in room.keys() if uid != gm_id}
         elif target.startswith("player:"):
             player_id = target.split(":", 1)[1]
             if player_id in room:

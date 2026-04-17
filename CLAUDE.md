@@ -170,7 +170,7 @@ Single hook managing the WS connection. Auto-reconnect with exponential backoff 
 All messages follow `{ type: string, payload: object, timestamp: ms }`.
 
 ### Backend WebSocket (`ws/handlers.py`, `ws/manager.py`)
-`manager.py` manages session rooms with per-user connections and broadcast targeting (all, gm, players, table, specific player). `handlers.py` contains the bulk of game logic — combat resolution, vitals sync, condition management, dice, spells, inventory. Per-character asyncio locks prevent race conditions. In-memory session state with debounced (5s) DB snapshots.
+`manager.py` manages session rooms with per-user connections and broadcast targeting (all, gm, players, specific player). `handlers.py` contains the bulk of game logic — combat resolution, vitals sync, condition management, dice, spells, inventory. Per-character asyncio locks prevent race conditions. In-memory session state with debounced (2s leading edge + trailing retry) DB snapshots.
 
 ### DSA5 Rules Engine
 Pure-function modules in both `frontend/src/engine/` and `backend/engine/`:

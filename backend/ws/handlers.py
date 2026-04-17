@@ -61,10 +61,15 @@ def _safe_create_task(coro, *, name: str = ""):
 
 _session_state: dict[str, dict[str, Any]] = {}
 
+# Per-session set of user_ids that have ever connected — used to distinguish
+# a fresh join from a reconnect (tab refresh / network blip / server restart).
+_seen_users: dict[str, set[str]] = {}
+
 
 def cleanup_session_state(session_code: str) -> None:
     """Remove in-memory state for a session when all clients disconnect."""
     _session_state.pop(session_code, None)
+    _seen_users.pop(session_code, None)
     # Clean up character locks for this session to prevent unbounded growth
     # (locks are per-character, not per-session, so we leave them — they're cheap)
 
@@ -74,17 +79,30 @@ def cleanup_session_state(session_code: str) -> None:
 # ---------------------------------------------------------------------------
 
 _last_snapshot: dict[str, float] = {}
+_pending_trailing_snapshot: dict[str, asyncio.Task] = {}
 SNAPSHOT_DEBOUNCE = 2.0  # seconds
 
 
 async def _snapshot_session_state(session_code: str) -> None:
     """Persist a full copy of the in-memory session state to the DB.
 
-    Debounced: skips if fewer than SNAPSHOT_DEBOUNCE seconds have elapsed
-    since the last snapshot for this session.
+    Leading-edge debounce with trailing-edge retry: if fewer than
+    SNAPSHOT_DEBOUNCE seconds have elapsed since the last snapshot for this
+    session, schedule (or reschedule) a trailing-edge snapshot so the last
+    mutation in a burst is not lost.
     """
     now = time.monotonic()
     if session_code in _last_snapshot and (now - _last_snapshot[session_code]) < SNAPSHOT_DEBOUNCE:
+        # Cancel any pending trailing task and schedule a fresh one that
+        # fires once the debounce window expires.
+        prev = _pending_trailing_snapshot.get(session_code)
+        if prev and not prev.done():
+            prev.cancel()
+        delay = SNAPSHOT_DEBOUNCE - (now - _last_snapshot[session_code])
+        _pending_trailing_snapshot[session_code] = _safe_create_task(
+            _trailing_snapshot(session_code, delay),
+            name=f"trailing_snapshot_{session_code}",
+        )
         return
 
     state = _session_state.get(session_code)
@@ -121,6 +139,21 @@ async def _snapshot_session_state(session_code: str) -> None:
         logger.debug("Snapshot saved for session %s", session_code)
     except Exception as e:
         logger.error("Failed to save snapshot for session %s: %s", session_code, e)
+
+
+async def _trailing_snapshot(session_code: str, delay: float) -> None:
+    """Wait for the debounce window to close, then snapshot.
+
+    Paired with the leading-edge debounce in _snapshot_session_state — this
+    guarantees the last mutation in a burst is persisted even if no further
+    mutation follows to re-trigger the leading-edge path.
+    """
+    try:
+        await asyncio.sleep(delay)
+    except asyncio.CancelledError:
+        return
+    _pending_trailing_snapshot.pop(session_code, None)
+    await _snapshot_session_state(session_code)
 
 
 async def _delete_session_snapshot(session_code: str) -> None:
@@ -1693,8 +1726,9 @@ async def _handle_token_spawn(session_code: str, user_id: str, payload: dict, st
         msg = _msg(EventType.TOKEN_SPAWN, token, from_user=user_id)
         await manager.broadcast_to_room(session_code, msg)
     else:
+        # Hidden-spawn: only GM sees it (table-view was removed 2026-04-17).
         msg = _msg(EventType.TOKEN_SPAWN, token, from_user=user_id)
-        await manager.broadcast_to_room(session_code, msg, target="gm_table")
+        await manager.broadcast_to_room(session_code, msg, target="gm")
 
 
 async def _handle_token_remove(session_code: str, user_id: str, payload: dict, state: dict):
@@ -2033,6 +2067,22 @@ async def _handle_session_pause(session_code: str, user_id: str, payload: dict, 
     logger.info("Session %s paused", session_code)
 
 
+_SESSION_END_GRACE_SECONDS = 30
+
+
+async def _delayed_session_cleanup(session_code: str, delay: int = _SESSION_END_GRACE_SECONDS):
+    """Pop in-memory state + delete snapshot after a grace period.
+
+    The delay lets in-flight handlers (already past their `state["status"]`
+    check) finish their work without recreating an empty state dict under
+    the same session_code.
+    """
+    await asyncio.sleep(delay)
+    _session_state.pop(session_code, None)
+    await _delete_session_snapshot(session_code)
+    logger.info("Session %s state cleaned up", session_code)
+
+
 async def _handle_session_end(session_code: str, user_id: str, payload: dict, state: dict):
     """End the session."""
     state["status"] = "ended"
@@ -2050,11 +2100,15 @@ async def _handle_session_end(session_code: str, user_id: str, payload: dict, st
             _persist_ap_awards(session_code, ap_awards),
             name=f"persist_ap_awards_{session_code}",
         )
-    # Clean up in-memory state after a short delay to allow clients to process
-    _session_state.pop(session_code, None)
-    # Delete the persisted snapshot — session is over, no need to restore
-    _safe_create_task(_delete_session_snapshot(session_code), name=f"snapshot_delete_{session_code}")
-    logger.info("Session %s ended", session_code)
+    # Delay cleanup so late in-flight handlers (already holding a ref to
+    # the old state dict) finish without racing a fresh empty state under
+    # the same session_code. Handlers that check state["status"] == "ended"
+    # can short-circuit during this grace window.
+    _safe_create_task(
+        _delayed_session_cleanup(session_code),
+        name=f"session_end_cleanup_{session_code}",
+    )
+    logger.info("Session %s ended; cleanup scheduled in %ds", session_code, _SESSION_END_GRACE_SECONDS)
 
 
 # ===================================================================
@@ -2114,10 +2168,7 @@ async def _handle_dice_result(session_code: str, user_id: str, payload: dict, st
     await manager.broadcast_to_room(session_code, _msg(
         EventType.DICE_RESULT, result, from_user=user_id,
     ), target="gm")
-    # Send to table view
-    await manager.broadcast_to_room(session_code, _msg(
-        EventType.DICE_RESULT, result, from_user=user_id,
-    ), target="table")
+    # Table view removed 2026-04-17; dice result already delivered to GM above.
     # Broadcast a summarised probe result to all players (only for talent probes)
     if result.get("request_type") == "talent_probe" or result.get("skill"):
         probe_result = _msg(EventType.PROBE_RESULT, {
@@ -3218,12 +3269,26 @@ def _format_price(purse: dict) -> str:
 # Connection lifecycle handlers
 # ===================================================================
 
-async def handle_connect(session_code: str, user_id: str, role: str, is_table_view: bool = False):
-    """Called after a WebSocket is accepted — notify the room and send full sync."""
+async def handle_connect(session_code: str, user_id: str, role: str):
+    """Called after a WebSocket is accepted — notify the room and send full sync.
+
+    If this user has been seen in this session before (tab refresh, network
+    blip, or server restart with snapshot restored), route through
+    handle_reconnect instead so the room gets a PLAYER_RECONNECTED event
+    rather than a fresh PLAYER_CONNECTED. Either path ends with SYNC_FULL.
+    """
     # If this session has no in-memory state, try to restore from a DB snapshot
     # (e.g. after a server restart while a session was active).
     if session_code not in _session_state:
         await _restore_state_from_snapshot(session_code)
+
+    # Reconnect detection: this user_id was already seen in this session.
+    seen = _seen_users.setdefault(session_code, set())
+    if user_id in seen:
+        await handle_reconnect(session_code, user_id)
+        return
+    seen.add(user_id)
+
     state = _ensure_state(session_code)
     state["connected_users"] = manager.get_connected_users(session_code)
 
@@ -3348,6 +3413,8 @@ async def handle_reconnect(session_code: str, user_id: str):
     # Send full sync to the reconnecting client
     sync = get_full_sync(session_code)
     await manager.send_to_user(user_id, sync)
+    # Flush any messages that were queued while this user was disconnected
+    await manager.flush_dead_letters(user_id)
     logger.info("User %s reconnected to session %s — full sync sent", user_id, session_code)
 
 

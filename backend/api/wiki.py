@@ -129,11 +129,14 @@ async def get_page(slug: str, db: AsyncSession = Depends(get_db)):
 
 @router.get("/search", response_model=SearchResponse)
 async def search_wiki(
-    q: str = Query(..., min_length=1, description="Search term"),
+    q: str = Query(..., min_length=3, max_length=100, description="Search term (min 3 chars)"),
     db: AsyncSession = Depends(get_db),
 ):
     """Search across wiki pages and databank tables."""
-    pattern = f"%{q}%"
+    # Escape SQL LIKE wildcards in the user-supplied term so `%foo%` can't be
+    # abused to do a full-table scan and `_` can't mask noise.
+    safe = q.replace("\\", "\\\\").replace("%", r"\%").replace("_", r"\_")
+    pattern = f"%{safe}%"
     results: list[SearchResult] = []
 
     # 1. Search wiki pages (title + content)

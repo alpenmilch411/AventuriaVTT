@@ -104,13 +104,12 @@ async def websocket_endpoint(
     session_code: str,
     user_id: str = Query(...),
     role: str = Query(default="player"),
-    is_table_view: bool = Query(default=False),
 ):
     ws_logger = logging.getLogger("aventuria.ws")
 
-    await manager.connect(websocket, session_code, user_id, role, is_table_view)
+    await manager.connect(websocket, session_code, user_id, role)
     ws_logger.info(f"WS connected: {user_id} as {role} to {session_code}")
-    await handle_connect(session_code, user_id, role, is_table_view)
+    await handle_connect(session_code, user_id, role)
 
     try:
         while True:

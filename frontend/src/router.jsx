@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import LoginPage from './views/auth/LoginPage'
 import RegisterPage from './views/auth/RegisterPage'
 import Dashboard from './views/auth/Dashboard'
@@ -35,10 +35,5 @@ export const router = createBrowserRouter([
   {
     path: '/play/:sessionCode',
     element: <PlayerDashboard />,
-  },
-  // Legacy routes redirect to dashboard
-  {
-    path: '/table/:sessionCode',
-    element: <Navigate to="/dashboard" replace />,
   },
 ])

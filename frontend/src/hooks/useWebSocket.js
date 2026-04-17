@@ -14,7 +14,7 @@ const RECONNECT_MAX_DELAY = 30000
 const HEARTBEAT_INTERVAL = 30000
 const PONG_TIMEOUT = 10000
 
-export default function useWebSocket(sessionCode, userId, role = 'player', isTableView = false) {
+export default function useWebSocket(sessionCode, userId, role = 'player') {
   const wsRef = useRef(null)
   const reconnectAttempts = useRef(0)
   const reconnectTimeout = useRef(null)
@@ -296,7 +296,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
 
     // ── Handout push (GM → all) ──
     else if (type === 'handout_push') {
-      useSessionStore.getState().setTableViewMode('handout', payload)
       useSessionStore.getState().addNotification({
         id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, type: 'handout', from: 'Spielleiter',
         text: payload.text ? 'Neues Handout vom Spielleiter' : 'Handout empfangen',
@@ -961,11 +960,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       useSessionStore.getState().handleSessionMessage(msg)
     }
 
-    // ── Table view mode ──
-    else if (type === 'table_view_mode') {
-      useSessionStore.getState().setTableViewMode(payload.mode, payload.data)
-    }
-
     // ── Fallback: try all handlers ──
     else {
       try { useSessionStore.getState().handleSessionMessage(msg) } catch(e) { console.error('Unhandled session message:', e) }
@@ -984,7 +978,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
     const params = new URLSearchParams({
       user_id: userId,
       role,
-      is_table_view: isTableView.toString(),
     })
     const url = `${protocol}//${host}/ws/${sessionCode}?${params}`
 
@@ -1035,7 +1028,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player', isTab
       console.error('[WS] Connection error:', err)
       scheduleReconnect()
     }
-  }, [sessionCode, userId, role, isTableView, dispatchMessage])
+  }, [sessionCode, userId, role, dispatchMessage])
 
   const scheduleReconnect = useCallback(() => {
     const delay = Math.min(RECONNECT_BASE_DELAY * Math.pow(2, reconnectAttempts.current), RECONNECT_MAX_DELAY)

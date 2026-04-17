@@ -105,14 +105,6 @@ export default function useGMControls(sendMessage) {
     })
   }, [sendMessage])
 
-  const setTableView = useCallback((mode, data = null) => {
-    useSessionStore.getState().setTableViewMode(mode, data)
-    sendMessage?.({
-      type: 'table_view_mode',
-      payload: { mode, data },
-    })
-  }, [sendMessage])
-
   const setWorldClock = useCallback((clock) => {
     sendMessage?.({
       type: 'time_advance',
@@ -211,7 +203,6 @@ export default function useGMControls(sendMessage) {
     advanceTurn,
     addCombatant,
     removeCombatant,
-    setTableView,
     setWorldClock,
     setWeather,
     spawnToken,
