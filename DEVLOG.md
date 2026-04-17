@@ -4,6 +4,32 @@
 
 ---
 
+## Session 18 — P1/P2 ripout + hardening pass (2026-04-17)
+**Type:** Claude Code — autonomous, closed 4 GitHub issues. Written retroactively; `/log` was skipped at the end of the original session.
+
+### Issues closed
+- **#6 (P1) — Map feature removed end-to-end.** Commit 6ff0bc1. Frontend: `mapStore.js` deleted; `useMapStore` imports + `reset()` calls dropped from `authStore`, `useGMSession`, `PlayerDashboard`; `token_move/spawn/remove` + `map_state_push` dispatch removed from `useWebSocket.js`; dead `token_id` fallback in vitals-sync combatant-matching removed. Backend: `_handle_token_spawn/remove/move` handlers gone from `ws/handlers.py`; GM `map_state_push` branch gone; `TOKEN_SPAWN/REMOVE/MOVE` gone from `EventType`; dispatch table entries removed; `_sync_vitals_to_combat` lost its `token_id` param at 3 call sites. SPEC §4.7 and §5.8 → tombstones; architecture trees cleaned (no more `maps.py`, `map.py`, `MapView.jsx`, `MapDisplay.jsx`, Konva map/, tokens/ public dir); Konva.js line removed from tech stack. `state["tokens"]` still referenced by `scene_activate` — dies with #1.
+- **#7 (P2) — Story + Adventures scaffolding removed.** Commit 392175d. Empty `adventures/` dir deleted. SPEC tombstoned: §7.3 (Adventure Import Pipeline ~180 lines), §7.6 (Map Templates ~20 lines), §9.1 (AI Import Portal ~180 lines), §9.2 (AI Map Generation ~135 lines), §9.3 (AI Whisper-Assistant ~70 lines). §7.7 import formats dropped Adventure PDF/photos/Map image rows; AVVT JSON row renamed from "Adventure/campaign/character package" to "Character package". §7.8 dropped Adventure JSON + Campaign JSON adventure field + Lore Book PDF. §3 architecture tree dropped `adventures/`, `extraction.py`, `adventure_pdf.py`. Incidental "adventure" mentions in Campaign schema / session-end / quest tracker left for issue #1 (drop campaigns).
+- **#8 (P2) — `_bump_version` sweep on state-mutating WS handlers.** Commit 58504ae. Gap detection was silently failing because many handlers mutated state without bumping. Fixed: `_handle_combat_start/end`, `_handle_halt/release`, `_handle_time_advance`, `_handle_weather_change`, `_handle_rest_start/end`, `_handle_attention/release`, `_handle_session_start/pause/end`. Plus infrastructure bumps: `_append_session_log`, `handle_connect/disconnect/reconnect` (connected_users). Skipped `_handle_scene_activate`, `_handle_quest_update`, `_handle_lore_reveal` — those die with issue #1.
+- **#9 (P2) — DLQ Redis persistence + character-lock lifecycle.** Commit 7f903ba. (1) `ConnectionManager._enqueue_dead_letter` / `flush_dead_letters` are now async; per-user DLQ stored as Redis LIST at `avtt:dlq:<user_id>`, trimmed to `DLQ_MAX` (50), 1-week TTL; Redis client lazy-initialised, failures fall back to in-memory dict permanently for the process (no retry thrashing); in-memory leftovers also drained on flush. `manager.py` gets a logger; `redis==5.2.1` added to `requirements.txt`. (2) `_delayed_session_cleanup` now sweeps `_character_locks` for characters belonging to the ended session (previously leaked every character that ever entered combat) and pops `_seen_users[session_code]` which was leaking too. Locks recreate lazily if same character joins another session.
+
+### Supporting commits
+- **06c1f79** Refresh stale commit SHAs in DEVLOG/ROADMAP after a `git-filter-repo` history rewrite that stripped personal identifiers from all 110 commits.
+- **5d0eb7c** Drop AI features from P3 roadmap: Session recap (AI-generated), AI NPC dialog generation, AI Import Portal — not planned.
+- **dab331e** Issue-claim workflow. New "Before you start: claim an issue" section in `CONTRIBUTING.md`; CLAUDE.md session-workflow rule to check open issues and self-assign before starting work (matches the 5 P1 issues just created on GitHub).
+- **c83bb37** Track map-removal (#6) + story/adventures cleanup (#7) in ROADMAP, verbatim to the GitHub issue text.
+- **a80eecb** README: drop "AI features" from "What's Rough"; drop `ANTHROPIC_API_KEY` row; replace loose Contributing paragraph with pointer to `CONTRIBUTING.md`. Map/campaign/adventure prose left for the respective issue branches.
+- **e2cfbf9** Remove stray 547-line DSA5 compliance report from `.claude/` that got swept in via `git add -A` during the #6 commit. Content remains in git history (6ff0bc1).
+
+### Doc state after this session
+- ROADMAP still listed #6 and #7 in the active backlog tables — not yet moved to Completed Milestones (retroactive `/log` will do that).
+- SPEC §4.7, §5.8, §7.3, §7.6, §9.1, §9.2, §9.3 are now tombstones pointing forward to the issue that removed them.
+
+### Next session should start with
+Run `/context`. Remaining open issues per `gh issue list --state open`: check for #1 (Drop campaigns P1), #2 (WS handshake auth P1), #3 (Character-ownership checks on WS P1), #4 (Rules-engine policy P1), #5 (Manöver values + SF rule P1) — the P1 security/correctness block is still in play. Pick one as Current Milestone.
+
+---
+
 ## Session 17 — Autonomous audit-fix pass (2026-04-17)
 **Type:** Claude Code — autonomous, user granted "cover all technical milestones… for complex stuff challenge with codex"
 
