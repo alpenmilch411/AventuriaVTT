@@ -3,7 +3,6 @@ import { create } from 'zustand'
 const useSessionStore = create((set, get) => ({
   sessionCode: null,
   sessionId: null,
-  campaignId: null,
   phase: 'lobby', // lobby | exploration | combat
   isGM: false,
   isHalted: false,
@@ -80,7 +79,6 @@ const useSessionStore = create((set, get) => ({
   setSession: (data) => set({
     sessionCode: data.sessionCode,
     sessionId: data.sessionId,
-    campaignId: data.campaignId,
     isGM: data.isGM || false,
   }),
 
@@ -109,7 +107,7 @@ const useSessionStore = create((set, get) => ({
   // dashboardStore.joinSession + POST /api/sessions/join (code + character_id).
 
   reset: () => set({
-    sessionCode: null, sessionId: null, campaignId: null,
+    sessionCode: null, sessionId: null,
     phase: 'lobby', isGM: false, isHalted: false, isAttentionMode: false,
     players: [], sessionInfo: null,
     notifications: [], activeProcesses: [], pendingRequest: null, activeLoot: null,
@@ -123,7 +121,6 @@ const useSessionStore = create((set, get) => ({
   leaveSession: () => set({
     sessionCode: null,
     sessionId: null,
-    campaignId: null,
     phase: 'lobby',
     isGM: false,
     isHalted: false,

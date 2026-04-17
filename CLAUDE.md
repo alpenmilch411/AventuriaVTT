@@ -138,11 +138,10 @@ AventuriaVTT/
 │   ├── src/App.jsx, main.jsx
 │   ├── src/engine/          # Mirrors backend DSA5 rules for computed values
 │   ├── src/hooks/           # useCombatValues, useWebSocket, ...
-│   ├── src/stores/          # Zustand slices (auth, session, combat, character, campaign, map)
+│   ├── src/stores/          # Zustand slices (auth, session, combat, character)
 │   ├── src/components/      # GM Cockpit, Player Dashboard, Wizards, Databank
 │   └── src/utils/safeData.js
-├── databank-seed/   # JSON reference data (creatures, weapons, spells, ...)
-└── adventures/      # Demo adventure content
+└── databank-seed/   # JSON reference data (creatures, weapons, spells, ...)
 ```
 
 ## Architecture
@@ -158,12 +157,12 @@ AventuriaVTT/
 |-------|------|--------|
 | `/gm/:sessionCode` | GM Cockpit | Laptop/tablet |
 | `/play/:sessionCode` | Player Dashboard | Phone |
-| `/dashboard` | Campaign/character management | Any |
+| `/dashboard` | Session + character management | Any |
 
 ### Frontend State (Zustand)
 All stores are independent slices in `src/stores/`. Each exposes a `handle*Message(msg)` method that the WebSocket hook dispatches to by message `type` prefix.
 
-Key stores: `authStore` (JWT), `sessionStore` (phase, HALT, players), `combatStore` (multi-battle tracker keyed by `battleId`), `characterStore` (player character + GM's allCharacters), `campaignStore` (scenes, NPCs, quests, lore), `mapStore` (tokens, fog, drawings).
+Key stores: `authStore` (JWT), `sessionStore` (phase, HALT, players, weather, time, NPCs), `combatStore` (multi-battle tracker keyed by `battleId`), `characterStore` (player character + GM's allCharacters).
 
 ### WebSocket (`src/hooks/useWebSocket.js`)
 Single hook managing the WS connection. Auto-reconnect with exponential backoff (1s→30s), 30s heartbeat, message deduplication by `type:timestamp`, state versioning with gap detection, dead letter queue for offline buffering.
@@ -193,7 +192,6 @@ API, WS, and stores return player data in different shapes. Always use `getCondi
 - **Vitals pattern:** `current_vitals` = mutable values (lep, asp, kap, schip). `derived_values` = maximums (LeP_max, AsP_max, etc.).
 - **Tailwind theme:** Custom `dsa-*` color palette (dsa-bg, dsa-gold, dsa-parchment, dsa-blood, dsa-forest, dsa-mana, dsa-karma). Dark mode only.
 - **Zustand selectors:** Components use `useStore((s) => s.field)` selectors. Never call `getState()` in render paths. Never call `setState()` inside a subscriber on the same store (infinite loop).
-- **Inventory scoping:** Always read from Kampagnen-Inventar during sessions, never Basis-Inventar directly.
 - **No emojis in code** unless the user asks.
 
 ## DSA5 Rules Gotchas

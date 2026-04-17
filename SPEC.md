@@ -1,7 +1,7 @@
 # Aventuria VTT — SPEC.md
 **Version:** 3.1.0
 **Last updated:** 2026-04-17
-**Status:** Work in progress. Working end-to-end for the author's own group's sessions: 3,638 databank entities, full combat (SchiP, opposed probes, conditions, Manöver), shop system, weather/time/rest, group inventory, character lifecycle, session feedback, exports. A lot still needs cleanup. Not production-hardened — personal project, noncommercial (PolyForm NC 1.0.0).
+**Status:** Work in progress. Working end-to-end for the author's own group's sessions: 3,638 databank entities, full combat (SchiP, opposed probes, conditions, Manöver), shop system, weather/time/rest, character lifecycle, session feedback, exports. A lot still needs cleanup. Not production-hardened — personal project, noncommercial (PolyForm NC 1.0.0).
 
 ---
 
@@ -18,7 +18,6 @@
 - Working on Nice-to-Have?         → Sections 10.1–10.12
 - Deployment issue?                → Section 3.4
 - DSA5 Rules reference?            → Section 3.5
-- **Campaigns are internal only** — the user-facing unit is Sessions. GMs create sessions directly. Campaign backend/models remain for internal use (group inventory, quests use campaign_id).
 - Roadmap / what's next?           → Section 11
 
 ---
@@ -41,11 +40,11 @@ A DSA5 GM juggles narrative, mechanics, bookkeeping, rules reference, and visual
 
 Three pillars:
 
-**Prep** (before the session): The GM browses the databank (3,600+ entities from Optolith), builds NPCs and encounters, sketches campaign lore, sets quests. Players create or import characters via the wizard. Characters persist across sessions, campaigns, and retirements.
+**Prep** (before the session): The GM browses the databank (3,600+ entities from Optolith), builds NPCs and encounters. Players create or import characters via the wizard. Characters persist across sessions and retirements.
 
 **Play** (at the table): The GM starts a session; players join by code. Combat, probes, conditions, inventory, shops, trades are resolved in the app based on physical dice input. Every connected client stays in sync over WebSocket with reconnection/gap-detection safety nets. The GM controls information flow — creature HP is hidden from players unless revealed, whispers stay private.
 
-**Persist** (across sessions): Characters level up, die, retire. Campaigns accumulate lore, NPCs, quest state, a world clock, a party inventory. Session feedback and exports close each sitting.
+**Persist** (across sessions): Characters level up, die, retire. AP awards and loot from the SessionEndPanel write back to each character. Session feedback and exports close each sitting.
 
 ### 1.4 Core Design Principles
 
@@ -77,7 +76,7 @@ Three pillars:
   - Physical dice with manual input — camera recognition is not on the near-term roadmap
   - AI as GM whisper-assistant only; currently config-wired but not yet end-to-end (see §9)
   - **100% browser-based** — no native app, no install
-  - **Account-based** — every player/GM has a personal account. Characters, campaigns, groups travel with the account
+  - **Account-based** — every player/GM has a personal account. Characters travel with the account
   - **Role = URL, not device.** `/gm/<code>` and `/play/<code>` are the two in-session views. Layout is responsive; no device-gated routes. The old `/table/<code>` "Table View" route is gone — it redirects to `/dashboard`.
   - **Cloud-hostable, locally runnable.** SQLite dev default means zero service setup. Postgres + Redis for prod.
   - All combat/probe mechanics computed deterministically — centralized `useCombatValues` hook as single source of truth
@@ -104,7 +103,6 @@ Three pillars:
   - Session Protokoll: Bloomberg-terminal style log with type labels, deduplication, auto-scroll + "Aktuell" jump button
   - Phone-responsive combat layout (stacks vertically on small screens)
   - 12 key components wrapped in React.memo for optimized rendering
-  - Quest tracking with per-player objectives
   - Combat condition rules: Handlungsunfähig at level IV or sum ≥ 8, magical/physical stacking, Berauscht KL/IN penalties
 
 ---
@@ -121,9 +119,9 @@ Three pillars:
 
 **Accounts**
 - Every player and GM has a personal account (email + password, future: OAuth with Google/Apple)
-- Login once, access everything: characters, groups, campaigns, prep work — across all devices
-- GM preps a campaign on PC at home on Tuesday → opens the same campaign on iPad at game night on Friday → everything synced
-- A player's characters travel with their account. Guest at another group? Log in, pick your character, play.
+- Login once, access everything: characters, prep work — across all devices
+- GM preps a session on PC at home on Tuesday → opens the same session on iPad at game night on Friday → everything synced
+- A player's characters travel with their account. Guest at another session? Log in, pick your character, play.
 - **No account required for quick-play**: a GM can create a session where players join with just a room code and a name (guest mode). Characters created in guest mode can later be claimed by creating an account.
 
 **Frontend**
@@ -184,8 +182,8 @@ Three pillars:
 │  │  │ Combat   │ │ Probes    │ │ Inventory │ │ Magic/ │ │  │
 │  │  │ Manöver  │ │ 1W20/3W20 │ │ Equip     │ │ Liturgy│ │  │
 │  │  ├──────────┤ ├───────────┤ ├───────────┤ ├────────┤ │  │
-│  │  │Condition │ │ Character │ │ Time &    │ │Campaign│ │  │
-│  │  │ stacking │ │ lifecycle │ │ Weather   │ │ & Lore │ │  │
+│  │  │Condition │ │ Character │ │ Time &    │ │Session │ │  │
+│  │  │ stacking │ │ lifecycle │ │ Weather   │ │ End AP │ │  │
 │  │  └──────────┘ └───────────┘ └───────────┘ └────────┘ │  │
 │  │                                                        │  │
 │  │  ┌──────────────────────────────────────────────────┐ │  │
@@ -203,8 +201,9 @@ Three pillars:
 │  ┌────────────────────────────────────────────────────────┐  │
 │  │                   Persistence Layer                     │  │
 │  │  SQLite (dev default) / PostgreSQL (prod) via async     │  │
-│  │  SQLAlchemy — accounts, characters, campaigns, lore,    │  │
-│  │  sessions, databank. Debounced 2-5 s session snapshots. │  │
+│  │  SQLAlchemy — accounts, characters, sessions, session   │  │
+│  │  logs, ap_awards, databank. Debounced 2-5 s session     │  │
+│  │  snapshots.                                             │  │
 │  │  Redis optional (pub/sub, cache); in-memory fallback.   │  │
 │  └────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
@@ -231,7 +230,6 @@ aventuria-vtt/
 │   │   ├── auth.py                    # Login, accounts
 │   │   ├── sessions.py                # Session create/join/leave
 │   │   ├── characters.py              # Character CRUD, import, leveling
-│   │   ├── campaigns.py               # Campaign CRUD, lore, quests
 │   │   ├── combat.py                  # Combat actions, initiative, damage
 │   │   ├── probes.py                  # Talent/spell/liturgy probes
 │   │   ├── inventory.py               # Item management, trade, shop
@@ -264,7 +262,6 @@ aventuria-vtt/
 │   ├── models/                        # SQLAlchemy / Pydantic models
 │   │   ├── user.py                    # User accounts
 │   │   ├── character.py               # Character (full lifecycle)
-│   │   ├── campaign.py                # Campaign, lore, quests, timeline
 │   │   ├── session_state.py           # Live session, combat state
 │   │   ├── npc.py                     # NPC registry with relationships
 │   │   ├── inventory.py               # Items, equipment
@@ -306,7 +303,7 @@ aventuria-vtt/
 │   │   │   │   ├── PlayerOverview.jsx # All players at a glance
 │   │   │   │   ├── NPCRegistry.jsx    # NPC cards & relationships
 │   │   │   │   ├── EncounterBuilder.jsx
-│   │   │   │   ├── MapEditor.jsx      # Map + fog + drawing tools
+│   │   │   │   ├── SessionEndPanel.jsx # AP + loot award flow
 │   │   │   │   └── AssistPanel.jsx    # AI whisper-assistant
 │   │   │   │
 │   │   │   ├── player/                # Player Dashboard views
@@ -316,15 +313,11 @@ aventuria-vtt/
 │   │   │   │   ├── SpellBook.jsx
 │   │   │   │   ├── TalentList.jsx
 │   │   │   │   ├── CombatActions.jsx  # Action/maneuver/dice UI
-│   │   │   │   ├── Journal.jsx        # Personal notes
-│   │   │   │   └── QuestTracker.jsx
+│   │   │   │   └── Journal.jsx        # Personal notes
 │   │   │   │
 │   │   │   └── prep/                  # Pre-session preparation
-│   │   │       ├── StoryBuilder.jsx   # Scene/chapter editor
 │   │   │       ├── NPCCreator.jsx
-│   │   │       ├── EncounterPrep.jsx
-│   │   │       ├── MapUploader.jsx
-│   │   │       └── AdventureImport.jsx # PDF/photo import wizard
+│   │   │       └── EncounterPrep.jsx
 │   │   │
 │   │   ├── components/                # Shared components
 │   │   │   ├── combat/                # Combat UI components
@@ -342,8 +335,7 @@ aventuria-vtt/
 │   │   └── stores/                    # Zustand or similar
 │   │       ├── sessionStore.js
 │   │       ├── combatStore.js
-│   │       ├── characterStore.js
-│   │       └── campaignStore.js
+│   │       └── characterStore.js
 │   │
 │   └── public/
 │       └── sounds/                    # Ambient loops & SFX
@@ -698,7 +690,7 @@ class NPC:
 
 During a session, the GM taps an NPC card and sees everything at a glance: personality, knowledge, attitude, relationships. When the players talk to the NPC, the GM roleplays them using the personality notes. If stuck, the AI assist can suggest dialog lines based on the NPC profile — but the GM chooses to use them, adapt them, or ignore them.
 
-NPCs auto-populate in the campaign's Lore Book under "Personen" when the GM marks them as `known_to_players`.
+NPCs are GM-owned and surfaced in the NPC Registry. (Auto-populating lore was removed with §6.6 in issue #1.)
 
 #### 4.5.3 Relationship Map
 
@@ -783,8 +775,8 @@ A collapsible side panel, **only visible to the GM, never to players**.
 **Critical constraints**:
 - Response time must feel instant (<3 seconds for simple queries)
 - AI never auto-acts. Every suggestion requires GM confirmation
-- AI has access to: current scene data, NPC profiles, campaign lore, adventure structure, active combat state
-- AI does NOT have access to: player private data, other campaigns, anything outside this session's scope
+- AI has access to: current scene data, NPC profiles, active combat state
+- AI does NOT have access to: player private data, other sessions, anything outside this session's scope
 
 ### 4.11 Soundboard
 
@@ -984,7 +976,7 @@ The key phrase is **"Sag es am Tisch"**. The app reminds players that talking is
 
 #### 4.15.3 Complexity Levels
 
-Three levels, set by the GM per campaign:
+Three levels, set by the GM per session:
 
 **Basic** (new groups):
 - Full step-by-step guidance in combat
@@ -1006,7 +998,7 @@ Three levels, set by the GM per campaign:
 - All optional rules enabled (Trefferzonen, Patzertabellen, etc.)
 - GM Flow Guide hidden by default
 
-The GM can switch complexity mid-campaign. Individual players cannot override the GM's setting (prevents one veteran player from hiding hints that the group needs).
+The GM can switch complexity mid-session. Individual players cannot override the GM's setting (prevents one veteran player from hiding hints that the group needs).
 
 #### 4.15.4 Table View (Shared Screen) Philosophy
 
@@ -1203,26 +1195,15 @@ Tap an item → expands with action buttons:
 - **Ausrüsten / Ablegen** — for weapons, armor, shields. Equipping in combat costs 1 Aktion (or freie Aktion with Schnellziehen SF)
 - **Info** — shows full item description from databank
 
-#### 5.5.3 Inventory Persistence (Hybrid Model)
+#### 5.5.3 Inventory Persistence
 
-Characters have a **Basis-Inventar** that persists across campaigns (core equipment, personal items). When joining a campaign, a **Kampagnen-Snapshot** is created. Loot and changes during the campaign are tracked in the snapshot. When the campaign ends, the GM approves which items carry over to the Basis-Inventar.
+Characters have a single `basis_inventory` that persists across sessions. Loot awarded at session end (via SessionEndPanel) is appended to it through the `_persist_loot_awards` WS handler, which broadcasts an `inventory_change` event so the player sees items live.
 
-```
-Basis-Inventar (persistent):
-  Magierstab, Reiserobe, Schreibzeug, 20 Silbertaler
-
-Kampagnen-Inventar (this campaign):
-  Basis + Heiltrank ×2, Alraune, Seil, Fackeln, +27 Silbertaler
-  
-End of campaign → GM approves:
-  ✓ Alraune → goes to Basis
-  ✓ +10 Silbertaler → goes to Basis
-  ✗ Heiltränke → consumed/lost
-```
+> **Historical note (2026-04-17, issue #1):** Earlier revisions described a two-tier Basis-/Kampagnen-Inventar snapshot model tied to campaigns. Campaigns were removed; `basis_inventory` is now single-source.
 
 #### 5.5.4 Group Inventory
 
-A shared inventory space for items carried collectively (on a pack mule, in the camp, etc.). Any player can view it. Moving items between personal and group inventory is a simple drag or button tap. The GM can also add/remove items from group inventory directly.
+Removed 2026-04-17 (issue #1). Group-shared loot is handled GM-side through character inventory transfers.
 
 ### 5.6 Spells & Liturgies
 
@@ -1447,31 +1428,7 @@ JOURNAL                              + Neue Notiz
 
 ### 5.11 Quest Tracker
 
-Quests assigned by the GM appear here:
-
-```
-AUFGABEN
-
-🔴 HAUPTQUEST
-   Das Schwert des Königs finden
-   "Der Schwarzmagier Tharnax hat das Schwert in die
-    Ogerruine gebracht. Findet und bringt es zurück."
-
-🟡 NEBENQUEST
-   Die verschwundenen Ziegen
-   "Der Köhler vermisst seine Ziegen. Spuren führen
-    zum Nordpfad."
-
-🔵 PERSÖNLICH
-   Balgras Rache
-   "Den Mörder deines Vaters finden. Letzter Hinweis:
-    Er wurde in Gareth gesehen."
-
-✅ ABGESCHLOSSEN
-   Den Ork-Überfall überleben (Session 3)
-```
-
-The player can see quests but not edit them — only the GM creates, updates, and completes quests. Players see quest status changes in real-time.
+Removed 2026-04-17 (issue #1). Quest tracking was part of the Campaign model and was deleted with it. GMs who want to surface quests during play use free-text in session notes.
 
 ### 5.12 Whisper Inbox
 
@@ -1517,7 +1474,7 @@ The app validates:
 - Prerequisites (minimum attribute values, required SFs, minimum KtW)
 - Maximum values per Erfahrungsgrad
 
-Changes are **staged** — the player queues upgrades and confirms. The GM can optionally review before they apply (configurable per campaign). Derived values (AT, PA, LeP, AsP, etc.) auto-recalculate.
+Changes are **staged** — the player queues upgrades and confirms. The GM can optionally review before they apply (configurable per session). Derived values (AT, PA, LeP, AsP, etc.) auto-recalculate.
 
 ### 5.14 Character Profile & History
 
@@ -1576,7 +1533,7 @@ Letzte Worte: "Für meinen Vater!"
 [Charakter archivieren]
 ```
 
-The character moves to the player's archive — fully readable, never deletable. The player can then create or import a new character for the campaign. The dead character's achievements remain in the campaign lore.
+The character moves to the player's archive — fully readable, never deletable. The player can then create or import a new character and bring it into the next session. The dead character remains on the player's account for reference.
 
 ### 5.16 Notifications & Attention Model
 
@@ -1603,25 +1560,22 @@ The phone stays quiet until input is needed:
 
 ## 6. Persistence Layer
 
-Everything in Aventuria VTT survives between sessions. Characters grow, campaigns accumulate lore, NPCs evolve, quests progress, and the world remembers. This section defines what persists, how it's structured, and who owns what.
+Everything in Aventuria VTT survives between sessions. Characters grow, NPCs evolve, and session state is restored on reconnect. This section defines what persists, how it's structured, and who owns what.
+
+> **Scope note (2026-04-17, issue #1):** Campaigns, Groups, Quest log, Lore Book, Timeline, and Campaign Session Logs were removed end-to-end. The user-facing persistence unit is the **Session** plus the **Character** (owned by a user). Subsections that described those removed entities are tombstoned below; see §11 phase archive for the original framing.
 
 ### 6.1 Entity Hierarchy
 
 ```
 User Account
-├── Characters (owned by this player, usable across campaigns)
-│   ├── Balgra Felszorn (active in "Orkkrieg" campaign)
-│   ├── Grimwald der Söldner (resting — no active campaign)
-│   └── Elric der Weise (dead — archived from "Goblinplage")
+├── Characters (owned by this player)
+│   ├── Balgra Felszorn (active)
+│   ├── Grimwald der Söldner (resting)
+│   └── Elric der Weise (dead — archived)
 │
-├── Groups (player is a member)
-│   ├── "Die Tavernentrinker" (weekly group)
-│   └── "One-Shot Crew" (occasional)
-│
-└── Campaigns (as GM or player)
-    ├── "Der Turm des Orkschamanen" (GM, active)
-    ├── "Orkkrieg" (player as Balgra, active)
-    └── "Goblinplage" (player as Elric, archived — Elric died)
+└── Sessions (as GM or player; ephemeral room codes)
+    ├── "ORKTURM-42" (GM)
+    └── "TAVERNE-9"  (player as Balgra)
 ```
 
 ### 6.2 User Accounts
@@ -1633,28 +1587,26 @@ class User:
     email: str                      # For login
     password_hash: str
     created_at: datetime
-    
+
     # Ownership
     characters: List[Character]     # All characters this user owns
-    groups: List[GroupMembership]   # Groups they belong to
-    campaigns: List[CampaignRole]  # Campaigns with role (gm / player)
-    
+
     # Preferences
     preferred_complexity: str       # "basic" | "standard" | "advanced"
     notification_settings: Dict     # Vibration, sound, etc.
     theme: str                      # "dark" (default) | future themes
 ```
 
-Users can be in multiple groups and campaigns simultaneously. A user can be GM in one campaign and player in another.
+A user can GM one session and play in another simultaneously.
 
 #### 6.2.1 Character Management (in User Account)
 
-Characters are owned by the user, not by campaigns. Character import and management happens in the user's personal account area — accessible anytime, not just during sessions:
+Characters are owned by the user. Character import and management happens in the user's personal account area — accessible anytime, not just during sessions:
 
 **"Meine Charaktere" section in the user account:**
 - **Import character**: upload JSON from DSA Ultimate or Optolith → app parses and validates → character appears in the user's character list
 - **Create from template**: pick a quick-template archetype (Kriegerin, Magier, etc.) → customize name/bio → ready to play
-- **View & manage**: see all characters with their state (active/resting/retired/dead), campaign assignments, AP totals
+- **View & manage**: see all characters with their state (active/resting/retired/dead), AP totals
 - **Level up**: spend AP on any resting or active character (between sessions). App validates against DSA5 Steigerungstabelle.
 - **Edit bio/portrait**: update character profile, upload portrait image
 - **Export**: download character as JSON (Aventuria VTT format or Optolith-compatible)
@@ -1667,251 +1619,59 @@ This is available 24/7 via the cloud-hosted app — a player can import a charac
 3. App detects format (DSA Ultimate vs Optolith) and parses accordingly
 4. Validation screen: shows parsed character with all stats, highlights any warnings ("Voraussetzung für SF Ausfall nicht erfüllt — trotzdem importieren?")
 5. Player confirms → character saved to their account in "Created" state
-6. Character is now available to assign to any campaign
+6. Character is now available to bring into any session
 
 ### 6.3 Groups
 
-A group is a stable set of people who play together regularly. Groups exist independently of campaigns — the same group can play multiple campaigns sequentially or in parallel.
-
-```python
-class Group:
-    id: str
-    name: str                       # "Die Tavernentrinker"
-    created_by: str                 # User ID of creator
-    members: List[GroupMember]
-    campaigns: List[str]            # Campaign IDs (active + archived)
-    created_at: datetime
-
-class GroupMember:
-    user_id: str
-    display_name: str               # Can differ from username
-    role: str                       # "admin" | "member"
-    joined_at: datetime
-```
-
-Groups are optional. A campaign can exist without a group (ad-hoc session with a room code). But groups provide continuity: shared history, recurring players, persistent roster.
+Removed 2026-04-17 (issue #1). Group/GroupMember/GroupInventory tables were deleted; continuity across sessions is handled at the Character level (AP totals, inventory, profile persist on the user's account).
 
 ### 6.4 Campaigns
 
-A campaign is the central persistence unit. It contains everything about an ongoing story: the adventure being played, the characters involved, the accumulated lore, the world state.
+Removed 2026-04-17 (issue #1). The Campaign / CampaignPlayer tables, `/api/campaigns/*` REST surface, Kampagnen-Code invite flow, end-of-campaign carry-over, and `campaign_id` FK on sessions/inventory were all deleted.
 
-```python
-class Campaign:
-    id: str
-    name: str                       # "Der Turm des Orkschamanen"
-    description: str                # Brief campaign pitch
-    group_id: Optional[str]         # Linked group (optional)
-    
-    # Roles
-    gm_user_id: str                 # Who is the Game Master
-    players: List[CampaignPlayer]   # Players with assigned characters
-    
-    # Story
-    adventure_id: Optional[str]     # Imported adventure (if any)
-    chapters: List[Chapter]         # Story structure (can diverge from adventure)
-    current_scene_id: Optional[str]
-    
-    # World State
-    lore_book: LoreBook
-    quest_log: List[Quest]
-    world_clock: WorldClock
-    weather: str
-    
-    # NPCs
-    npc_registry: List[str]         # NPC IDs active in this campaign
-    
-    # Maps
-    maps: List[str]                 # Map IDs used in this campaign
-    
-    # History
-    sessions: List[SessionLog]      # Completed session records
-    current_session: Optional[str]  # Active session ID (if playing now)
-    
-    # Settings
-    complexity_level: str           # "basic" | "standard" | "advanced"
-    optional_rules: Dict[str, bool] # {"trefferzonen": false, "patzertabelle": true, ...}
-    
-    # Lifecycle
-    status: str                     # "active" | "paused" | "archived"
-    created_at: datetime
-    last_played: datetime
+Sessions are now the only user-facing unit. The GM creates a session directly, players join by session code, and every mutation is routed through the session's WebSocket room.
 
-class CampaignPlayer:
-    user_id: str
-    character_id: str               # Which character they're playing
-    joined_at: datetime
-    status: str                     # "active" | "absent" | "left"
-```
+#### 6.4.1 Session Join Flow
 
-#### 6.4.1 Campaign Creation & Invite Flow
+1. GM logs in → Dashboard → "Neue Session" → session row with a short code (e.g., `ORKTURM-42`).
+2. GM opens `/gm/<code>` → session state loads from DB (or initializes fresh).
+3. Players open the app → "Session beitreten" → enter code → app picks one of the player's characters → they land on `/play/<code>`.
+4. The GM sees connected players in the cockpit lobby; session transitions out of `lobby` once the GM starts play.
+5. Reconnection: player's client re-enters the session on `/play/<code>` with full WS state replay and version-gap detection.
 
-The GM creates a campaign and invites players. Characters stay on the player's account — the campaign only holds a reference.
+#### 6.4.2 Session End Flow
 
-**Creation:**
-1. GM logs in → "Neue Kampagne erstellen"
-2. Sets name, description, complexity level, optional rules
-3. Optionally imports an adventure (see Batch 5)
-4. Campaign is created with status "active" and a unique **Kampagnen-Code** (e.g., `ORKKRIEG-7X`)
-
-**Inviting players — three methods:**
-
-**Method 1: Kampagnen-Code (primary)**
-- GM shares the code verbally, via chat, or shows it on screen
-- Player logs into their account → "Kampagne beitreten" → enters code
-- Player appears in the campaign lobby with status "eingeladen"
-- GM sees the player and confirms: "Annehmen" or "Ablehnen"
-
-**Method 2: Direct invite (if in same group)**
-- GM opens campaign settings → "Spieler einladen"
-- Sees list of group members → taps to invite
-- Player gets a notification on their account: "Du wurdest zur Kampagne 'Orkkrieg' eingeladen"
-- Player accepts or declines
-
-**Method 3: Open lobby (for one-shots / pickup games)**
-- GM creates campaign with "Offene Lobby" enabled
-- Anyone with the code can join without GM approval
-- GM can still kick players from the lobby before starting
-
-**After joining — Character assignment:**
-1. Player is in the campaign lobby
-2. Player selects which character to play from their account:
-   - Pick an existing character (Resting or Created state)
-   - Import a new character (JSON upload)
-   - Use a quick template (pre-built archetype for new players)
-3. Selected character's state changes to "Active" and a **Kampagnen-Snapshot** is created:
-   - LeP, AsP, KaP set to max
-   - Conditions cleared
-   - Basis-Inventar copied into the Kampagnen-Inventar
-   - Campaign-specific data initialized (empty quest log, no NPC relationships yet)
-4. GM sees the character in the campaign overview and approves
-5. Player is ready to play
-
-**Key principle: the character lives on the player's account, not in the campaign.** The campaign holds:
-- A reference to the character (`character_id`)
-- The Kampagnen-Snapshot (campaign-specific inventory, current LeP/conditions, relationships)
-- Session participation history
-
-The character's core data (attributes, talents, spells, SFs, AP total, Basis-Inventar, profile, history) stays on the player's account and is updated there when AP are spent or when campaign-end carry-over happens.
-
-```
-PLAYER ACCOUNT                      CAMPAIGN
-┌─────────────────────┐             ┌──────────────────────────┐
-│ Character: Balgra   │◄──ref──────│ CampaignPlayer:          │
-│                     │             │   character_id: balgra   │
-│ Core Data:          │             │                          │
-│   Attributes        │             │ Kampagnen-Snapshot:      │
-│   Talents           │             │   Current LeP: 28/34     │
-│   Spells / SFs      │             │   Conditions: Schmerz 1  │
-│   Total AP: 975     │             │   Kampagnen-Inventar:    │
-│   Basis-Inventar    │             │     Basis + Heiltrank ×2 │
-│   Profile & History │             │     + 27 Silbertaler     │
-│                     │             │   NPC Relationships      │
-│ Campaign History:   │             │   Quest Progress         │
-│   Orkkrieg (active) │             │                          │
-│   Goblinplage (done)│             │ Session Logs             │
-└─────────────────────┘             └──────────────────────────┘
-```
-
-**Leaving a campaign:**
-- Player can leave voluntarily → character returns to "Resting" state, Kampagnen-Snapshot is preserved (in case they rejoin)
-- GM can remove a player → same effect
-- Character death → character archived on player's account, player can join with a new character
-
-**Rejoining:**
-- If a player left and wants to return, the GM re-invites them
-- The preserved Kampagnen-Snapshot is restored (character picks up where they left off)
-- If the player wants to bring a different character, they create a new snapshot
-
-#### 6.4.2 Session Join Flow (Game Night)
-
-Different from campaign joining — this is the "sit down at the table and connect" flow:
-
-1. GM opens the campaign → "Session starten"
-2. A **Session-Code** is generated (short-lived, e.g., `TAVERNE-42`). This is different from the Kampagnen-Code — it's ephemeral and only valid for this game night.
-3. Session-Code displayed on GM screen and Table View (TV)
-4. Players open the app on their phone → already logged in → tap "Session beitreten" → enter Session-Code
-5. App recognizes the player's account, finds their character in this campaign, and loads the Kampagnen-Snapshot
-6. Player appears on GM's cockpit as "Verbunden ✓"
-7. When all players are connected (or the GM decides to start), GM taps "Los geht's"
-8. Session is live — last session's state is restored (map positions, world clock, quest status, everything)
-
-**If a player isn't in the campaign yet** (guest, new player, someone's friend tagging along):
-- They enter the Session-Code → app detects they're not in this campaign
-- Quick-join flow: pick a character (from account, import, or quick template) → GM approves in real-time → player is added to the campaign and the session simultaneously
-
-**Reconnection:**
-- If a player's phone disconnects (battery, WiFi dropout), their character stays in the session
-- Player reopens the app → re-enters Session-Code (or it auto-reconnects if same session) → instantly back with full state
-
-#### 6.4.3 End-of-Campaign Flow
-
-When a campaign concludes (story finished, group decides to stop, or TPK):
-
-1. GM marks campaign as "Abgeschlossen"
-2. **AP Final Award**: GM awards final AP for the campaign conclusion
-3. **Inventory Carry-Over**: for each player character, the GM reviews what carries over to Basis-Inventar (see 6.5.2)
-4. **Character state update**: 
-   - Surviving characters → "Resting" state on player's account
-   - Core data updated: total AP, Basis-Inventar, campaign added to history
-   - Kampagnen-Snapshot preserved in the archived campaign (for reference)
-5. **Campaign archived**: fully readable by all participants, not editable. Lore Book, Session Logs, Timeline, Combat Replays — all preserved.
-6. **Characters are free**: players can now assign them to a new campaign or let them rest
+End-of-session uses the **SessionEndPanel** (GM cockpit) with the `session_end` WS message. The backend `_persist_loot_awards` handler writes AP to `ap_awards` and appends loot items to each recipient's `basis_inventory`, broadcasting `inventory_change` so players see the items live. No REST path, no phantom end-of-campaign.
 
 ### 6.5 Character Lifecycle
 
-A character exists independently from any campaign. It is owned by a user and can participate in multiple campaigns over its lifetime.
+A character is owned by a user and can participate in multiple sessions over its lifetime.
 
 #### 6.5.1 Character States
 
 ```
-CREATED ──→ ACTIVE ──→ RESTING ──→ ACTIVE (new campaign)
+CREATED ──→ ACTIVE ──→ RESTING ──→ ACTIVE (new session)
                 │                         │
                 ├──→ RETIRED (voluntary)   │
                 │                         │
                 └──→ DEAD (in-game death) ─┘ (archived, never deleted)
 ```
 
-- **Created**: freshly imported or built. Not yet in a campaign.
-- **Active**: assigned to a campaign, currently being played.
-- **Resting**: between campaigns. Character exists with all their stats, inventory, and history intact. Can be assigned to a new campaign.
-- **Retired**: player chose to stop playing this character. Preserved in archive. Can be "un-retired" if desired.
-- **Dead**: character died in-game. Permanently archived with full history and death record. Cannot be un-retired (death is final — this is DSA, not a video game).
+- **Created**: freshly imported or built. Never played.
+- **Active**: currently in a live session.
+- **Resting**: between sessions. Full stats, inventory, history intact.
+- **Retired**: player stopped playing this character. Preserved in archive. Can be un-retired.
+- **Dead**: character died in-game. Permanently archived with death record. Cannot be un-retired (DSA, not a video game).
 
-#### 6.5.2 Character Data Across Campaigns
+#### 6.5.2 Character Data Across Sessions
 
-**What persists (travels with the character):**
+Everything travels with the character:
 - Attributes (MU, KL, etc.) and derived values
 - Talents, spells, liturgies, special abilities (and their levels)
 - Total AP earned and spent
-- Basis-Inventar (core equipment approved by GM at campaign end)
+- `basis_inventory` — single-source inventory, updated live during sessions and extended by SessionEndPanel loot awards
 - Character profile: bio, portrait, achievements
-- Full campaign history (which campaigns, what happened, when)
-
-**What is campaign-specific (Kampagnen-Snapshot):**
-- Kampagnen-Inventar (loot, consumables, money gained during this campaign)
-- Current LeP, AsP, KaP (resets to max when joining a new campaign)
-- Active conditions (clear when campaign ends)
-- Relationships to campaign-specific NPCs
-- Quest progress within this campaign
-
-**End-of-campaign transfer flow:**
-1. Campaign ends (GM marks as complete or archived)
-2. For each player character, the GM sees a "Mitnahme" (carry-over) screen:
-   ```
-   Balgra — Kampagnen-Ende: "Turm des Orkschamanen"
-   
-   AP verdient in dieser Kampagne: 150 AP
-   → Automatisch übernommen ✓
-   
-   Inventar-Übernahme ins Basis-Inventar:
-   ✓ Magisches Amulett des Praios     (GM approved)
-   ✓ +30 Silbertaler                  (GM approved)
-   ✗ 5× Heiltrank                     (verbraucht/zurückgelassen)
-   ✗ Schlüssel zum Turm               (kampagnenspezifisch)
-   
-   [Bestätigen]
-   ```
-3. Approved items merge into Basis-Inventar. Character returns to "Resting" state.
+- Current LeP / AsP / KaP and conditions (persisted between sessions; GM can reset via rest flows)
 
 #### 6.5.3 Character Import
 
@@ -1925,229 +1685,37 @@ On import, the app validates the character against DSA5 rules: are the AP costs 
 
 ### 6.6 Lore Book
 
-Every campaign has a living Lore Book that grows as the group plays. It is the collective memory of the story.
-
-#### 6.6.1 Structure
-
-```python
-class LoreBook:
-    campaign_id: str
-    
-    persons: List[LoreEntry]        # NPCs the group has met
-    locations: List[LoreEntry]      # Places the group has visited
-    discoveries: List[LoreEntry]    # Secrets, lore, knowledge uncovered
-    events: List[LoreEntry]         # Major story events
-    items: List[LoreEntry]          # Notable items found/lost
-    factions: List[LoreEntry]       # Organizations, cults, kingdoms
-
-class LoreEntry:
-    id: str
-    category: str                   # "person" | "location" | "discovery" | ...
-    title: str                      # "Gregor der Wirt"
-    
-    # Dual-layer visibility
-    player_text: str                # What the PLAYERS know
-    gm_text: str                    # What the GM knows (includes spoilers)
-    
-    # Metadata
-    first_encountered: str          # "Session 3, Szene: Die Taverne"
-    last_updated: str               # "Session 7"
-    tags: List[str]                 # ["questgeber", "gareth", "verdächtig"]
-    linked_entries: List[str]       # Related lore entries
-    linked_npcs: List[str]          # NPC IDs
-    linked_quests: List[str]        # Quest IDs
-    
-    # Reveal history
-    reveals: List[LoreReveal]       # Track when info was revealed to players
-
-class LoreReveal:
-    session: int
-    previous_player_text: str       # What they knew before
-    new_player_text: str            # What they know now
-    trigger: str                    # "Magiekunde-Probe QS 3" | "NPC told them" | "GM revealed"
-```
-
-#### 6.6.2 Dual-Layer Visibility
-
-Every lore entry has two text layers:
-
-**Player-visible** (`player_text`): what the group collectively knows. Updated when new information is discovered. This is what players see in their Lore tab.
-
-**GM-only** (`gm_text`): the full truth, including unrevealed secrets, future plot points, and hidden connections. Only visible on the GM cockpit.
-
-Example:
-```
-"Gregor der Wirt"
-Player-visible: "Grimmiger Wirt der Taverne zum Goldenen Keiler in Gareth. 
-                 Schien nervös als wir nach dem Nordpfad fragten."
-GM-only:        "Gregor ist der Bruder des Banditenführers Rondrik.
-                 Er schickt Reisende absichtlich zum Nordpfad wo Rondriks
-                 Bande sie überfällt. Wird kooperieren wenn konfrontiert."
-```
-
-When the players discover the truth (through probes, NPC dialog, or story events), the GM updates the player-visible text. The reveal is logged with session number and trigger.
-
-#### 6.6.3 Auto-Population
-
-The Lore Book fills automatically from game events:
-- **NPC met**: when the GM activates a scene with NPCs and marks them as "introduced", they appear in the Lore Book under "Personen" with their `player_visible_info`
-- **Location visited**: when the GM activates a scene with a map, the location is logged
-- **Combat won/lost**: major combat events logged under "Ereignisse"
-- **Quest completed**: logged under "Ereignisse"
-- **Item found**: notable items (GM-flagged) logged under "Gegenstände"
-
-The GM can always edit, delete, or manually add entries. Auto-population is a convenience, not a constraint.
-
-#### 6.6.4 Player Access
-
-Players see the Lore Book in their dashboard (new tab: "📖 Lore"). They can browse, search, and read — but not edit. It answers "What did we learn about...?" without the GM having to remember or the players having to dig through notes.
+Removed 2026-04-17 (issue #1). LoreEntry / LoreReveal / player-vs-GM dual-layer model, auto-population hooks, and the player-side Lore tab were all dropped. The GM's external notes tooling (paper, Notion, whatever) is the current fallback.
 
 ### 6.7 Quest System
 
-```python
-class Quest:
-    id: str
-    campaign_id: str
-    
-    title: str                      # "Das Schwert des Königs finden"
-    description: str                # Longer quest description
-    type: str                       # "main" | "side" | "personal"
-    assigned_to: Optional[str]      # Character ID (for personal quests) or None (group quest)
-    
-    # Progress
-    status: str                     # "active" | "completed" | "failed" | "abandoned"
-    objectives: List[QuestObjective]
-    
-    # Story
-    given_by: Optional[str]         # NPC ID who gave the quest
-    reward_description: Optional[str]  # "Der König verspricht 500 Dukaten"
-    
-    # Metadata
-    created_session: int
-    completed_session: Optional[int]
-    gm_notes: str                   # Private GM notes about this quest
-
-class QuestObjective:
-    id: str
-    description: str                # "Finde den Eingang zur Ogerruine"
-    completed: bool
-    completed_session: Optional[int]
-    hidden: bool                    # GM can hide objectives that aren't discovered yet
-```
-
-The GM creates and manages quests. Players see active quests on their phone (see 5.11). The GM can reveal hidden objectives as the story progresses: "Ihr erfahrt, dass das Schwert in der Ogerruine liegt" → objective becomes visible.
+Removed 2026-04-17 (issue #1). Quest / QuestObjective tables, the quest log, and the player-side Quest tab were all dropped. The `quest_update` WS event was removed.
 
 ### 6.8 Timeline
 
-A chronological record of everything that happened in the campaign:
-
-```python
-class TimelineEvent:
-    id: str
-    campaign_id: str
-    
-    # When (in-game)
-    game_date: str                  # "Praios 15, 1041 BF"
-    game_time: Optional[str]       # "Abend"
-    
-    # When (real-world)
-    session_number: int
-    real_date: date
-    
-    # What
-    event_type: str                 # "story" | "combat" | "discovery" | "death" | "quest" | "npc_met" | "level_up"
-    title: str                      # "Überfall auf der Waldstraße"
-    description: str                # Brief summary
-    
-    # Who was involved
-    characters_involved: List[str]  # Character IDs
-    npcs_involved: List[str]        # NPC IDs
-    
-    # Links
-    linked_lore: List[str]          # Lore entry IDs
-    linked_quest: Optional[str]     # Quest ID if related
-```
-
-The timeline auto-populates from game events (combat results, scene transitions, quest changes) and can be manually edited by the GM.
-
-Players see the timeline in their Lore tab as a scrollable chronology. It's the definitive "what happened when" reference for the group.
+Removed 2026-04-17 (issue #1). TimelineEvent / auto-populated chronology / player-side timeline view were all dropped.
 
 ### 6.9 Session Logs
 
-Each session is automatically recorded:
+Each session records per-event log entries (combat, probe, whisper, system) via the `SessionLog` table, plus an `ap_awards` row per character per session. No campaign linkage — `session_id` is the FK.
 
 ```python
 class SessionLog:
     id: str
-    campaign_id: str
-    session_number: int
-    
-    # Timing
-    started_at: datetime
-    ended_at: datetime
-    duration: timedelta
-    
-    # Participants
-    gm_user_id: str
-    players_present: List[str]      # Character IDs who were at this session
-    players_absent: List[str]       # Character IDs who missed this session
-    
-    # Content
-    scenes_visited: List[str]       # Scene IDs activated during session
-    combat_encounters: List[CombatRecord]
-    probes_rolled: List[ProbeRecord]
-    lore_revealed: List[str]        # Lore entry IDs newly revealed
-    quests_updated: List[str]       # Quest IDs that changed status
-    
-    # Economy
-    ap_awarded: Dict[str, int]      # {character_id: AP amount}
-    items_gained: List[Dict]        # [{character_id, item_id, source}]
-    items_lost: List[Dict]          # [{character_id, item_id, reason}]
-    
-    # Narrative
-    gm_session_notes: str           # GM's post-session notes
-    recap_text: Optional[str]       # AI-generated or GM-written recap
-    
-    # Replay data
-    combat_logs: List[CombatLogEntry]  # Full combat replay data
+    session_id: str                 # FK → game_sessions.id
+    entry_type: str                 # "combat" | "probe" | "whisper" | "system"
+    data: dict                      # event-type-specific payload
+    timestamp: datetime
 
-class CombatRecord:
-    encounter_name: str
-    rounds: int
-    outcome: str                    # "victory" | "defeat" | "flee" | "negotiated"
-    damage_dealt: Dict[str, int]    # {character_id: total SP dealt}
-    damage_taken: Dict[str, int]    # {character_id: total SP taken}
-    kills: Dict[str, List[str]]     # {character_id: [creature names killed]}
-    deaths: List[str]               # Character IDs who died
-
-class ProbeRecord:
-    character_id: str
-    talent: str
-    difficulty: int
-    result: str                     # "QS 3 ✓" or "Misslungen ✗"
-    context: str                    # "Versuchte den Wirt zu überreden"
+class APAward:
+    id: str
+    session_id: str                 # FK → game_sessions.id
+    character_id: str               # FK → characters.id
+    amount: int
+    reason: Optional[str]
 ```
 
-#### 6.9.1 Session Recap
-
-At the end of each session, the GM can:
-1. **Write a recap manually**: free text describing what happened
-2. **Generate a recap**: the AI assist reads the session log (scenes, combats, probes, lore) and generates a 2-3 paragraph narrative summary
-3. **Edit the generated recap**: the GM tweaks the AI output
-4. **Skip it**: not every session needs a formal recap
-
-The recap is stored in the session log and can be pushed to all players' phones before the next session starts. It solves the "What happened last time?" problem.
-
-#### 6.9.2 Combat Replay
-
-After a session, the GM (and optionally players) can step through each combat round-by-round:
-- Who attacked whom
-- Dice results and outcomes
-- Damage dealt and taken
-- When conditions were applied/expired
-- Final outcome
-
-This is useful for: dramatic retelling ("Remember when Balgra landed that critical hit?"), rules disputes ("Was that Wuchtschlag actually allowed?"), and GM learning (analyzing encounter balance).
+Scene-visited / lore-revealed / quest-updated tracking was removed alongside scenes/lore/quests (issue #1). Combat replay is a future item; currently we only persist raw log entries.
 
 ### 6.10 AP (Abenteuerpunkte) System
 
@@ -2185,40 +1753,30 @@ Players spend AP in the Leveling screen (see 5.13). The app validates all purcha
 
 ### 6.11 World State Persistence
 
-The campaign's world state persists between sessions:
+World state persists between sessions, scoped to the session row (or to the character, where per-player):
 
 | Data | Persists where | Updated by |
 |------|---------------|------------|
-| World clock (date, time) | Campaign | GM (manual advance) |
-| Weather | Campaign | GM (manual set) |
-| Map fog of war states | Per map | GM (painting) |
-| Token positions | Per map | GM + players (movement) |
-| NPC attitudes | NPC registry | GM (story events) |
-| Quest status | Quest log | GM |
-| Character LeP/AsP/KaP | Character snapshot | Engine (damage, rest, spells) |
-| Character conditions | Character snapshot | Engine (combat, events) |
-| Character inventory | Character snapshot | Engine (trade, loot, use) |
-| Lore entries | Lore book | GM + auto-population |
+| World clock (date, time) | Session (sessionStore-backed column) | GM (manual advance) |
+| Weather | Session | GM (manual set) |
+| NPC attitudes | NPC registry (per session) | GM (story events) |
+| Character LeP/AsP/KaP | Character | Engine (damage, rest, spells) |
+| Character conditions | Character | Engine (combat, events) |
+| Character inventory | Character (`basis_inventory`) | Engine (trade, loot, use) + SessionEndPanel |
 | Session notes | Session log | GM |
 
-When a new session starts, everything is exactly where it was when the last session ended. No manual re-setup needed.
+Reconnecting to an active session replays current state via WS; between-session continuity is Character-level.
 
 ### 6.12 Data Ownership & Privacy
 
 | Data | Visible to |
 |------|-----------|
 | Character stats, inventory, spells | Owning player + GM |
-| Character profile, achievements | All players in campaign |
+| Character profile, achievements | All players in session |
 | Player journal notes | Owning player only (not even GM) |
 | GM whispers | Recipient player + GM |
-| Lore book (player layer) | All players |
-| Lore book (GM layer) | GM only |
 | NPC registry (full) | GM only |
 | NPC registry (player-visible) | All players |
-| Quest objectives (hidden) | GM only |
-| Quest objectives (revealed) | All players |
-| Session recap | All players |
-| Combat replay | All players (optional, GM can restrict) |
 | Other player's character sheet | Never (only GM sees all) |
 | Other player's inventory | Never (only GM sees all) |
 
@@ -2226,19 +1784,13 @@ This strict separation mirrors the physical table: you don't look at another pla
 
 ### 6.13 Backup & Export
 
-- **Campaign export**: full JSON export of entire campaign (adventure, lore, sessions, characters). Can be imported to another instance.
 - **Character export**: individual character as JSON (compatible with DSA Ultimate / Optolith format where possible).
 - **Session log export**: single session as PDF or Markdown for archiving.
 - **Automatic backup**: PostgreSQL daily snapshots (self-hosted: user configures backup location).
 
 ### 6.14 Multi-GM Support
 
-A user can be GM in one campaign and player in another simultaneously. Within a single campaign, the GM role can be transferred:
-- "Spielleiter übergeben" → select another group member → they become the new GM
-- Previous GM becomes a player (needs to assign a character)
-- All GM-only data (NPC secrets, lore GM-layer, encounter prep) transfers to the new GM
-
-This supports groups where the GM role rotates between adventures.
+A user can GM one session and play in another simultaneously. Mid-session GM handover ("Spielleiter übergeben") is a future item; currently the session has a single owning GM (user_id on `game_sessions`).
 
 ---
 
@@ -2290,7 +1842,7 @@ The GM can optionally:
 
 Customizations are scoped:
 - **Per-character**: player's portrait applies everywhere that character appears
-- **Per-campaign**: GM replaces the Goblin icon for this campaign → only affects this campaign
+- **Per-session**: GM's icon overrides for a given session
 - **Per-instance**: this specific Goblin ("Grukk the Boss") gets a unique icon, other Goblins keep the default
 
 #### 7.1.4 Asset Style & Format
@@ -2551,7 +2103,7 @@ class RulesSnippet:
 
 **Phase 3 (community):**
 - Community contribution system: users submit entries → reviewed → merged
-- GM homebrew entries: per-campaign custom creatures/items/spells
+- GM homebrew entries: custom creatures/items/spells scoped to the owning GM
 
 #### 7.2.3 Databank Storage & Access
 
@@ -2584,7 +2136,7 @@ PUT    /api/databank/{type}/{id}               # Update homebrew entry
 
 Types: `creatures`, `weapons`, `armor`, `shields`, `items`, `spells`, `liturgies`, `special_abilities`, `talents`, `herbs`, `potions`, `poisons`, `diseases`, `loot_tables`, `rules`
 
-**Homebrew entries** are flagged `source: "homebrew"` and scoped to the campaign. They don't pollute the global databank.
+**Homebrew entries** are flagged `source: "homebrew"` and owned by the creating user (GM). They don't pollute the global databank.
 
 #### 7.2.4 Legal Note
 
@@ -2748,7 +2300,7 @@ Everything that happens at the table must be reflected instantly on all connecte
 
 ### 8.1 WebSocket Architecture
 
-All live communication runs over WebSocket connections. REST is used only for CRUD operations (character management, campaign editing, databank browsing) that happen outside of live sessions.
+All live communication runs over WebSocket connections. REST is used only for CRUD operations (character management, databank browsing) that happen outside of live sessions.
 
 ```
 GM Cockpit ◄──── WebSocket ────► Backend ◄──── WebSocket ────► Player Phone 1
@@ -2784,11 +2336,13 @@ Every WebSocket message is a typed JSON envelope:
 
 | Category | Direction | Examples |
 |----------|-----------|---------|
-| **GM Commands** | GM → Backend → Clients | `scene_activate`, `combat_start`, `probe_request`, `whisper`, `halt`, `token_spawn`, `fog_update`, `handout_push`, `time_advance`, `sound_play`, `attention` |
+| **GM Commands** | GM → Backend → Clients | `combat_start`, `probe_request`, `whisper`, `halt`, `time_advance`, `sound_play`, `attention` |
 | **Player Actions** | Player → Backend → GM | `action_declare`, `dice_result`, `defense_choice`, `move_request`, `item_use`, `item_transfer`, `schip_use` |
-| **State Updates** | Backend → All/Target | `state_update` (LeP, AsP, conditions changed), `initiative_update`, `token_move`, `inventory_change`, `combat_log_entry`, `quest_update`, `lore_reveal` |
+| **State Updates** | Backend → All/Target | `state_update` (LeP, AsP, conditions changed), `initiative_update`, `inventory_change`, `combat_log_entry` |
 | **Session Control** | GM ↔ Backend | `session_start`, `session_pause`, `session_end`, `player_connected`, `player_disconnected`, `player_reconnected` |
 | **System** | Backend → Client | `error`, `validation_fail`, `sync_full` (full state resync on reconnect) |
+
+> **`session_end` payload update (2026-04-17, issue #1):** The `session_end` WS message now carries `loot` (per-character item arrays) alongside `awards` (per-character AP). Backend handler `_persist_loot_awards` writes to `ap_awards` and appends to `characters.basis_inventory`, then broadcasts an `inventory_change` event per recipient so the player's dashboard updates live.
 
 #### 8.1.2 Broadcast Targeting
 
@@ -2805,12 +2359,12 @@ Not every message goes to everyone. The backend filters by recipient:
 
 #### 8.1.3 State Synchronization
 
-The backend holds the authoritative game state in Redis (ephemeral session data) and PostgreSQL (persistent campaign data).
+The backend holds the authoritative game state in Redis (ephemeral session data) and PostgreSQL (persistent user/character/session data).
 
 **On connect/reconnect:** Client receives a `sync_full` message containing the entire current state relevant to their role:
-- GM: full game state (all players, all creatures, all fog, all triggers)
-- Player: their character state + visible map + combat status + active quests
-- Table View: current display mode + visible map + initiative + combat log
+- GM: full game state (all players, all creatures, all triggers)
+- Player: their character state + combat status
+- Table View: current display mode + initiative + combat log
 
 **During session:** Incremental `state_update` messages push only changed fields. Clients apply patches to their local state. If a client detects inconsistency (e.g., local LeP doesn't match server), it requests a `sync_full`.
 
@@ -3253,7 +2807,7 @@ Beyond basic ambient + SFX (see Batch 2, 4.11):
 
 ### 10.10 Regelmodul-System
 
-DSA5 has many optional rules. The GM configures per campaign which are active:
+DSA5 has many optional rules. The GM configures per session which are active:
 
 ```
 OPTIONALE REGELN
@@ -3281,31 +2835,12 @@ This dramatically reduces complexity for new groups. Start with minimal rules, e
 Beyond basic GM transfer (see Batch 4, 6.14):
 
 - **Co-GM mode**: two GMs control a session together. Both see the full cockpit. Useful for large groups or training a new GM.
-- **GM rotation per session**: in groups where GM rotates, the app tracks who GMed which session. Campaign data is shared, but prep notes are per-GM.
+- **GM rotation per session**: a different user can run the next session. Sessions are independent entities; each has its own owning GM.
 - **Player-as-temporary-GM**: a player temporarily controls an NPC or creature in combat (e.g., a player's animal companion). GM grants control of specific tokens to a player.
 
 ### 10.12 Campaign Achievements
 
-Auto-tracked achievements for the campaign:
-
-```
-KAMPAGNEN-ERFOLGE
-
-🏆 Erste Blut — Erster Kampf gewonnen
-🏆 Orkjäger — 10 Orks besiegt
-🏆 Goldgrube — 1000 Silbertaler angesammelt (Gruppe)
-🏆 Wunderkind — QS 6 bei einer Probe erreicht
-🏆 Überlebenskünstler — Unter 5 LeP überlebt
-🏆 Zungenfertig — 5 NPCs erfolgreich überredet
-🏆 Kartograph — 10 verschiedene Orte besucht
-🏆 Bücherratte — 20 Lore-Einträge entdeckt
-🏆 Langlebig — 10 Sessions gespielt
-
-🔒 Geheim — ???
-🔒 Geheim — ???
-```
-
-Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM can create custom achievements for campaign-specific milestones.
+Removed 2026-04-17 (issue #1). Campaign concept is gone.
 
 ---
 
@@ -3314,6 +2849,8 @@ Fun, nicht mechanisch relevant. Adds a meta-layer of accomplishment tracking. GM
 **See `ROADMAP.md` for the current milestone, active backlog, and completed-milestone summaries.**
 
 The roadmap was extracted from SPEC.md into a standalone file on 2026-03-27 (originally as `TODO.md`) and restructured into the kickstart/Superpowers format on 2026-04-17 as `ROADMAP.md`. `/context` reads the Current Milestone at session start and `/log` updates it at the end. The phase-by-phase archive below is append-only — when a milestone in `ROADMAP.md` closes, its `[x]` lands here.
+
+> **Historical note (2026-04-17):** Entries below reference campaigns/scenes/quests/lore, which were removed in issue #1. Historical only — do not re-implement without a new ROADMAP item.
 
 <!-- Everything below this line was moved to the roadmap file on 2026-03-27 -->
 <!-- Phase 1: Playable MVP — DONE (2026-03-22)
