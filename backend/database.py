@@ -69,6 +69,11 @@ async def init_db():
             await conn.run_sync(_migrate_add_character_variant_columns)
             await conn.run_sync(_migrate_add_source_book_to_adv_dis_sa)
 
+        # Dialect-branched campaign rip migration (SQLite + Postgres). Handles
+        # its own dialect check internally so it runs unconditionally.
+        # Idempotent: no-op on fresh DBs and on already-migrated DBs.
+        await conn.run_sync(_migrate_drop_campaign_tables)
+
 
 def _migrate_add_character_variant_columns(connection):
     """Add species_variant and profession_variant columns to characters table."""
@@ -390,3 +395,114 @@ def _migrate_add_improvement_cost_columns(connection):
             connection.execute(
                 text(f"ALTER TABLE {table} ADD COLUMN improvement_cost VARCHAR(4)")
             )
+
+
+def _migrate_drop_campaign_tables(connection):
+    """Drop Campaign/Group/Quest/Lore/Timeline tables and FK columns.
+
+    Two-phase, FK-safe, idempotent.
+
+    Phase 1: drop campaign_id columns on game_sessions and inventory_items.
+      SQLite: table-rebuild via SQLAlchemy reflection of post-rip models.
+      Postgres: ALTER TABLE ... DROP COLUMN CASCADE.
+    Phase 2: drop campaign tables in FK-child-first order.
+
+    Safe on fresh DB (nothing to drop). Idempotent.
+    """
+    from sqlalchemy import text, inspect
+    from models.session_state import GameSession
+    from models.inventory import InventoryItem
+
+    insp = inspect(connection)
+    existing_tables = set(insp.get_table_names())
+    dialect = connection.engine.dialect.name  # "sqlite" | "postgresql"
+
+    # Phase 1: drop campaign_id columns
+    if dialect == "sqlite":
+        # defer_foreign_keys=ON works inside open transactions
+        # (foreign_keys=OFF is a no-op inside an open transaction).
+        connection.execute(text("PRAGMA defer_foreign_keys=ON"))
+
+        for table_name, model_cls in [
+            ("game_sessions", GameSession),
+            ("inventory_items", InventoryItem),
+        ]:
+            if table_name not in existing_tables:
+                continue
+            cols = {c["name"] for c in insp.get_columns(table_name)}
+            if "campaign_id" not in cols:
+                continue
+            _sqlite_table_rebuild_drop_col(connection, table_name, model_cls, "campaign_id")
+    else:  # postgresql (and other dialects supporting ALTER DROP COLUMN)
+        for table_name in ("game_sessions", "inventory_items"):
+            if table_name not in existing_tables:
+                continue
+            cols = {c["name"] for c in insp.get_columns(table_name)}
+            if "campaign_id" in cols:
+                connection.execute(text(
+                    f"ALTER TABLE {table_name} DROP COLUMN campaign_id CASCADE"
+                ))
+
+    # Phase 2: drop campaign tables in FK-child-first order
+    drop_order = [
+        "group_inventories", "campaign_players", "quests", "lore_entries",
+        "timeline_events", "campaigns", "group_members", "groups",
+    ]
+    for tbl in drop_order:
+        if tbl in existing_tables:
+            connection.execute(text(f"DROP TABLE IF EXISTS {tbl}"))
+
+
+def _sqlite_table_rebuild_drop_col(connection, old_table, model_cls, drop_col):
+    """Rebuild a SQLite table without one column, using SQLAlchemy reflection
+    of the current (post-rip) model's metadata to construct the new schema.
+
+    Requires defer_foreign_keys=ON on the current transaction. Uses
+    Table.to_metadata() against the model's existing MetaData (under a
+    temporary name) so that cross-table ForeignKey references (e.g.
+    game_sessions.gm_user_id -> users.id) resolve against the already-
+    registered target tables. No SQL string surgery.
+    """
+    from sqlalchemy import text, inspect
+    from sqlalchemy.schema import CreateTable, CreateIndex
+
+    insp = inspect(connection)
+    existing_cols = [c["name"] for c in insp.get_columns(old_table)]
+    keep_cols = [c for c in existing_cols if c != drop_col]
+    col_list_sql = ", ".join(keep_cols)
+
+    tmp_name = f"{old_table}__rebuild"
+    source_metadata = model_cls.__table__.metadata
+
+    # If a prior failed run left the temp table behind in the DB, drop it so
+    # CreateTable doesn't collide.
+    connection.execute(text(f"DROP TABLE IF EXISTS {tmp_name}"))
+
+    # Pop any stale Table object from the MetaData registry before re-copying.
+    if tmp_name in source_metadata.tables:
+        source_metadata.remove(source_metadata.tables[tmp_name])
+
+    try:
+        tmp_table = model_cls.__table__.to_metadata(source_metadata, name=tmp_name)
+
+        connection.execute(CreateTable(tmp_table))
+        connection.execute(text(
+            f"INSERT INTO {tmp_name} ({col_list_sql}) SELECT {col_list_sql} FROM {old_table}"
+        ))
+        connection.execute(text(f"DROP TABLE {old_table}"))
+        connection.execute(text(f"ALTER TABLE {tmp_name} RENAME TO {old_table}"))
+    finally:
+        # Remove the temp Table object from MetaData so later create_all /
+        # migrations don't see a phantom table under the temp name.
+        if tmp_name in source_metadata.tables:
+            source_metadata.remove(source_metadata.tables[tmp_name])
+
+    # Recreate indexes declared on the original model (now resolved against
+    # the renamed table by name). Swallow "already exists" on retries.
+    from sqlalchemy.exc import OperationalError
+    for idx in model_cls.__table__.indexes:
+        try:
+            connection.execute(CreateIndex(idx))
+        except OperationalError as e:
+            if "already exists" not in str(e).lower():
+                raise

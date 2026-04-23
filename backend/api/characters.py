@@ -848,34 +848,24 @@ async def update_vitals(
 ):
     """Update a character's current vitals (LeP, AsP, KaP, SchiP).
 
-    Can be called by the character owner or by the GM of their campaign.
+    Owner-only. TODO(#2/#3): GM mid-session auth via SessionPlayer membership.
     """
     result = await db.execute(select(Character).where(Character.id == character_id))
     char = result.scalar_one_or_none()
     if not char:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
 
+    # Owner-only authorization (must come before lock check to avoid leaking lock state).
+    # TODO(#2/#3): GM mid-session auth via SessionPlayer membership.
+    # Campaign-GM bypass removed 2026-04-17 (issue #1).
+    if char.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
     if char.locked_session_id is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Charakter ist in einer aktiven Sitzung — Werte nur über die Sitzung änderbar",
         )
-
-    # Allow owner or GM
-    if char.user_id != current_user.id:
-        from models.campaign import Campaign, CampaignPlayer
-        player_result = await db.execute(
-            select(CampaignPlayer).where(CampaignPlayer.character_id == character_id)
-        )
-        is_gm = False
-        for cp in player_result.scalars().all():
-            campaign_result = await db.execute(select(Campaign).where(Campaign.id == cp.campaign_id))
-            campaign = campaign_result.scalar_one_or_none()
-            if campaign and campaign.gm_user_id == current_user.id:
-                is_gm = True
-                break
-        if not is_gm:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No access")
 
     current_vitals = dict(char.current_vitals or {})
     dv = char.derived_values or {}
@@ -914,20 +904,11 @@ async def update_conditions(
     if not char:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
 
+    # Owner-only authorization.
+    # TODO(#2/#3): GM mid-session auth via SessionPlayer membership.
+    # Campaign-GM bypass removed 2026-04-17 (issue #1).
     if char.user_id != current_user.id:
-        from models.campaign import Campaign, CampaignPlayer
-        player_result = await db.execute(
-            select(CampaignPlayer).where(CampaignPlayer.character_id == character_id)
-        )
-        is_gm = False
-        for cp in player_result.scalars().all():
-            campaign_result = await db.execute(select(Campaign).where(Campaign.id == cp.campaign_id))
-            campaign = campaign_result.scalar_one_or_none()
-            if campaign and campaign.gm_user_id == current_user.id:
-                is_gm = True
-                break
-        if not is_gm:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No access")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
     char.conditions = body.conditions
     await db.commit()
@@ -1084,7 +1065,10 @@ async def mark_character_dead(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Mark a character as dead and store memorial data. Owner or GM."""
+    """Mark a character as dead and store memorial data.
+
+    Owner-only. TODO(#2/#3): GM mid-session auth via SessionPlayer membership.
+    """
     result = await db.execute(
         select(Character).where(Character.id == character_id)
     )
@@ -1092,21 +1076,11 @@ async def mark_character_dead(
     if not char:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
 
-    # Allow owner or any GM (check if user is GM of a campaign this character is in)
+    # Owner-only authorization.
+    # TODO(#2/#3): GM mid-session auth via SessionPlayer membership.
+    # Campaign-GM bypass removed 2026-04-17 (issue #1).
     if char.user_id != current_user.id:
-        from models.campaign import CampaignPlayer, Campaign
-        cp_result = await db.execute(
-            select(CampaignPlayer).where(CampaignPlayer.character_id == character_id)
-        )
-        cp = cp_result.scalar_one_or_none()
-        if cp:
-            cam_result = await db.execute(
-                select(Campaign).where(Campaign.id == cp.campaign_id, Campaign.gm_user_id == current_user.id)
-            )
-            if not cam_result.scalar_one_or_none():
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
-        else:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
     if char.status == "dead":
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Character is already dead")

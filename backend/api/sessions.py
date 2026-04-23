@@ -6,7 +6,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
-from sqlalchemy import select, func as sa_func
+from sqlalchemy import select, update, func as sa_func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -160,7 +160,6 @@ class SessionResponse(BaseModel):
     id: str
     name: str
     gm_user_id: str
-    campaign_id: Optional[str] = None
     session_code: str
     status: str
     started_at: Optional[datetime] = None
@@ -256,7 +255,6 @@ async def create_session(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
@@ -380,7 +378,6 @@ async def get_session_by_code(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
@@ -451,7 +448,6 @@ async def get_session(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
@@ -510,6 +506,88 @@ async def delete_session(
     await db.commit()
 
 
+async def finalize_session_completion(
+    session: GameSession,
+    db: AsyncSession,
+) -> dict:
+    """Apply session-complete DB bookkeeping.
+
+    For each active SessionPlayer:
+    - Carry over session-scoped InventoryItem records (clear session_id)
+    - Clear Character.locked_session_id
+    - Append player snapshot entry to completion_snapshot
+
+    Then set session.status = 'complete', completed_at, completion_snapshot.
+
+    Caller is responsible for commit/rollback. This helper mutates ORM-tracked
+    objects in-place and flushes nothing itself; the enclosing transaction
+    decides when to commit.
+
+    Used by both the REST complete_session endpoint and the WS session_end
+    handler so both produce the same persistent state.
+
+    Returns the completion_snapshot dict (also assigned to session).
+    """
+    from models.inventory import InventoryItem
+
+    sp_result = await db.execute(
+        select(SessionPlayer).where(
+            SessionPlayer.session_id == session.id,
+            SessionPlayer.status == "active",
+        )
+    )
+    active_players = sp_result.scalars().all()
+
+    completion_snapshot: dict = {"players": []}
+
+    for sp in active_players:
+        if not sp.character_id:
+            continue
+        char_result = await db.execute(
+            select(Character).where(Character.id == sp.character_id)
+        )
+        char = char_result.scalar_one_or_none()
+        if not char:
+            continue
+
+        # --- Inventory carry-over ---
+        # Session-scoped InventoryItem records become permanent
+        # (clear session_id so they survive as base character items)
+        inv_result = await db.execute(
+            select(InventoryItem).where(
+                InventoryItem.character_id == sp.character_id,
+                InventoryItem.session_id == session.id,
+            )
+        )
+        for item in inv_result.scalars().all():
+            item.session_id = None
+
+        # current_vitals, conditions, basis_inventory, active_buffs
+        # are already the "live" state from the session — they persist
+        # as the base state going forward (session changes are permanent).
+
+        completion_snapshot["players"].append({
+            "user_id": sp.user_id,
+            "character_id": sp.character_id,
+            "character_name": char.name,
+            "final_vitals": dict(char.current_vitals) if char.current_vitals else None,
+            "final_conditions": list(char.conditions) if char.conditions else None,
+            "final_inventory_count": len(
+                (char.basis_inventory or {}).get("items", [])
+                if isinstance(char.basis_inventory, dict)
+                else (char.basis_inventory or [])
+            ),
+        })
+
+        # Unlock the character
+        char.locked_session_id = None
+
+    session.status = "complete"
+    session.completed_at = datetime.now(timezone.utc)
+    session.completion_snapshot = completion_snapshot
+    return completion_snapshot
+
+
 @router.put("/{session_id}/complete", response_model=SessionResponse)
 async def complete_session(
     session_id: str,
@@ -526,89 +604,33 @@ async def complete_session(
     session = await _get_session(session_id, db)
     await _verify_gm(session, current_user)
 
-    if session.status not in ("active", "paused"):
+    # "lobby" is accepted so a GM can finalize a session that was created but
+    # never formally started.  WS path accepts the same set — symmetric semantics.
+    if session.status not in ("active", "paused", "lobby"):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Cannot complete session in '{session.status}' state, must be 'active' or 'paused'",
+            detail=f"Cannot complete session in '{session.status}' state, must be 'active', 'paused', or 'lobby'",
         )
 
-    # Get all active session players
-    sp_result = await db.execute(
-        select(SessionPlayer).where(
-            SessionPlayer.session_id == session.id,
-            SessionPlayer.status == "active",
-        )
+    # Atomic claim: set status='complete' only if not already complete.
+    # Guards against concurrent REST/WS or double-REST finalization overwriting
+    # completion_snapshot or completed_at. WS _persist_session_complete uses
+    # the same pattern for symmetry.
+    claim_result = await db.execute(
+        update(GameSession)
+        .where(GameSession.id == session.id)
+        .where(GameSession.status != "complete")
+        .values(status="complete", completed_at=datetime.now(timezone.utc))
     )
-    active_players = sp_result.scalars().all()
+    if claim_result.rowcount == 0:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Session is already complete",
+        )
 
-    completion_snapshot = {"players": []}
-
-    from models.inventory import InventoryItem
-    from models.campaign import CampaignPlayer
-
-    for sp in active_players:
-        # Get the character
-        if sp.character_id:
-            char_result = await db.execute(
-                select(Character).where(Character.id == sp.character_id)
-            )
-            char = char_result.scalar_one_or_none()
-            if char:
-                # --- Inventory carry-over ---
-                # Session-scoped InventoryItem records become permanent
-                # (clear session_id so they survive as base character items)
-                inv_result = await db.execute(
-                    select(InventoryItem).where(
-                        InventoryItem.character_id == sp.character_id,
-                        InventoryItem.session_id == session.id,
-                    )
-                )
-                for item in inv_result.scalars().all():
-                    item.session_id = None
-
-                # current_vitals, conditions, basis_inventory, active_buffs
-                # are already the "live" state from the session — they persist
-                # as the base state going forward (session changes are permanent).
-
-                completion_snapshot["players"].append({
-                    "user_id": sp.user_id,
-                    "character_id": sp.character_id,
-                    "character_name": char.name,
-                    "final_vitals": dict(char.current_vitals) if char.current_vitals else None,
-                    "final_conditions": list(char.conditions) if char.conditions else None,
-                    "final_inventory_count": len(
-                        (char.basis_inventory or {}).get("items", [])
-                        if isinstance(char.basis_inventory, dict)
-                        else (char.basis_inventory or [])
-                    ),
-                })
-
-                # Update CampaignPlayer snapshot with post-session state
-                if session.campaign_id:
-                    cp_result = await db.execute(
-                        select(CampaignPlayer).where(
-                            CampaignPlayer.campaign_id == session.campaign_id,
-                            CampaignPlayer.character_id == sp.character_id,
-                        )
-                    )
-                    cp = cp_result.scalar_one_or_none()
-                    if cp:
-                        vitals = char.current_vitals or {}
-                        cp.campaign_snapshot = {
-                            "current_lep": vitals.get("lep", 0),
-                            "current_asp": vitals.get("asp", 0),
-                            "current_kap": vitals.get("kap", 0),
-                            "current_schip": vitals.get("schip", 0),
-                            "conditions": char.conditions or [],
-                            "campaign_inventory": char.basis_inventory,
-                        }
-
-                # Unlock the character
-                char.locked_session_id = None
-
-    session.status = "complete"
-    session.completed_at = datetime.now(timezone.utc)
-    session.completion_snapshot = completion_snapshot
+    await db.refresh(session)
+    await finalize_session_completion(session, db)
 
     await db.commit()
     await db.refresh(session)
@@ -626,7 +648,6 @@ async def complete_session(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,
@@ -735,7 +756,6 @@ async def join_session(
             id=session.id,
             name=session.name,
             gm_user_id=session.gm_user_id,
-            campaign_id=session.campaign_id,
             session_code=session.session_code,
             status=session.status,
             started_at=session.started_at,
@@ -773,7 +793,6 @@ async def join_session(
         id=session.id,
         name=session.name,
         gm_user_id=session.gm_user_id,
-        campaign_id=session.campaign_id,
         session_code=session.session_code,
         status=session.status,
         started_at=session.started_at,

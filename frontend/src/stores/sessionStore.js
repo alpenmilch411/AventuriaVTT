@@ -3,7 +3,6 @@ import { create } from 'zustand'
 const useSessionStore = create((set, get) => ({
   sessionCode: null,
   sessionId: null,
-  campaignId: null,
   phase: 'lobby', // lobby | exploration | combat
   isGM: false,
   isHalted: false,
@@ -14,6 +13,15 @@ const useSessionStore = create((set, get) => ({
   notifications: [],
   activeProcesses: [], // { id, type: 'probe'|'trade', label, data, timestamp }
   pendingRequest: null, // { id, type, label, timestamp } — player's pending request awaiting GM
+
+  // ── World state (formerly in campaignStore; owned by the session now) ──
+  weather: 'klar',
+  worldClock: { date: '1. Praios 1040 BF', time: '12:00', dayNight: 'day' },
+  restResults: null, // { results: [...], duration_hours: int } — set by rest_end WS
+
+  setWeather: (weather) => set({ weather }),
+  setWorldClock: (clock) => set({ worldClock: clock }),
+  setRestResults: (results) => set({ restResults: results }),
 
   setPendingRequest: (request) => set({ pendingRequest: request }),
   clearPendingRequest: () => set({ pendingRequest: null }),
@@ -71,7 +79,6 @@ const useSessionStore = create((set, get) => ({
   setSession: (data) => set({
     sessionCode: data.sessionCode,
     sessionId: data.sessionId,
-    campaignId: data.campaignId,
     isGM: data.isGM || false,
   }),
 
@@ -100,18 +107,20 @@ const useSessionStore = create((set, get) => ({
   // dashboardStore.joinSession + POST /api/sessions/join (code + character_id).
 
   reset: () => set({
-    sessionCode: null, sessionId: null, campaignId: null,
+    sessionCode: null, sessionId: null,
     phase: 'lobby', isGM: false, isHalted: false, isAttentionMode: false,
     players: [], sessionInfo: null,
     notifications: [], activeProcesses: [], pendingRequest: null, activeLoot: null,
     lootReceived: null, sceneContent: [], sessionLog: [],
     outgoingTrade: null, incomingTrade: null, tradeResult: null,
+    weather: 'klar',
+    worldClock: { date: '1. Praios 1040 BF', time: '12:00', dayNight: 'day' },
+    restResults: null,
   }),
 
   leaveSession: () => set({
     sessionCode: null,
     sessionId: null,
-    campaignId: null,
     phase: 'lobby',
     isGM: false,
     isHalted: false,

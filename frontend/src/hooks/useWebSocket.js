@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import useSessionStore from '../stores/sessionStore'
 import useCombatStore from '../stores/combatStore'
 import useCharacterStore from '../stores/characterStore'
-import useCampaignStore from '../stores/campaignStore'
 import useAuthStore from '../stores/authStore'
 import useShopStore from '../stores/shopStore'
 import { createBuff } from '../engine/buffSystem'
@@ -63,20 +62,8 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
       })
     }
 
-    // ── Scene events ──
-    if (type === 'scene_activate') {
-      useCampaignStore.getState().handleCampaignMessage(msg)
-      const scenes = useCampaignStore.getState().scenes
-      scenes.forEach(s => {
-        useCampaignStore.getState().updateScene(s.id, {
-          isActive: s.id === payload.scene_id,
-          status: s.id === payload.scene_id ? 'active' : 'upcoming',
-        })
-      })
-    }
-
     // ── Combat events ──
-    else if (type === 'combat_start' || type === 'combat_end' || type === 'combat_next_turn' || type === 'initiative_update') {
+    if (type === 'combat_start' || type === 'combat_end' || type === 'combat_next_turn' || type === 'initiative_update') {
       useCombatStore.getState().handleCombatMessage(msg)
       // Mirror combat lifecycle events to Protokoll
       if (type === 'combat_start') {
@@ -293,15 +280,15 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
 
     // ── Time & Weather (GM → all) ──
     else if (type === 'time_advance') {
-      useCampaignStore.getState().setWorldClock(payload.new_time || payload.world_clock || payload)
+      useSessionStore.getState().setWorldClock(payload.new_time || payload.world_clock || payload)
     }
     else if (type === 'weather_change') {
-      useCampaignStore.getState().setWeather(payload.weather || payload)
+      useSessionStore.getState().setWeather(payload.weather || payload)
     }
 
     // ── Rest (GM → all) ──
     else if (type === 'rest_end') {
-      useCampaignStore.getState().setRestResults(payload)
+      useSessionStore.getState().setRestResults(payload)
     }
 
     // ── Shop state (created/updated/closed/purchase/sale) ──
@@ -742,21 +729,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
       // silently clear spotlight
     }
 
-    // ── Quest update ──
-    else if (type === 'quest_update') {
-      useCampaignStore.getState().handleCampaignMessage(msg)
-    }
-
-    // ── Lore reveal ──
-    else if (type === 'lore_reveal') {
-      useCampaignStore.getState().addLoreEntry(payload)
-      useSessionStore.getState().addNotification({
-        id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, type: 'lore', from: 'Spielleiter',
-        text: `Neues Wissen: ${payload.title || 'Entdeckung'}`,
-        timestamp: msg.timestamp,
-      })
-    }
-
     // ── Full sync (on reconnect) ──
     else if (type === 'sync_full') {
       // Reset version tracking to server's current version
@@ -773,13 +745,8 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
       if (payload.halted !== undefined) useSessionStore.getState().setHalted(payload.halted)
       if (payload.attention !== undefined) useSessionStore.getState().setAttentionMode(payload.attention)
       if (payload.status) useSessionStore.getState().setPhase(payload.status)
-      if (payload.weather) useCampaignStore.getState().setWeather(payload.weather)
-      if (payload.in_game_time) useCampaignStore.getState().setWorldClock(payload.in_game_time)
-      if (payload.active_scene) {
-        useCampaignStore.getState().handleCampaignMessage({
-          type: 'scene_activate', payload: payload.active_scene,
-        })
-      }
+      if (payload.weather) useSessionStore.getState().setWeather(payload.weather)
+      if (payload.in_game_time) useSessionStore.getState().setWorldClock(payload.in_game_time)
       if (payload.combat) {
         // Merge vitals into initiative_order combatants so HP bars are correct
         const vitalsMap = payload.vitals || {}
@@ -951,7 +918,6 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
     // ── Fallback: try all handlers ──
     else {
       try { useSessionStore.getState().handleSessionMessage(msg) } catch(e) { console.error('Unhandled session message:', e) }
-      try { useCampaignStore.getState().handleCampaignMessage(msg) } catch(e) { console.error('Unhandled campaign message:', e) }
     }
     } catch (error) {
       console.error('[WS] Message dispatch error:', error, 'Message:', msg.type)
@@ -1032,7 +998,7 @@ export default function useWebSocket(sessionCode, userId, role = 'player') {
       wsRef.current.send(JSON.stringify(message))
     } else {
       // Queue critical messages for retry on reconnect
-      const criticalTypes = ['dice_result', 'probe_request_from_player', 'vitals_update', 'conditions_update', 'inventory_change', 'probe_cancel', 'request_withdraw']
+      const criticalTypes = ['dice_result', 'probe_request_from_player', 'vitals_update', 'conditions_update', 'inventory_change', 'probe_cancel', 'request_withdraw', 'session_end']
       if (criticalTypes.includes(message.type)) {
         messageQueueRef.current.push(message)
         console.warn('[WS] Queued for retry:', message.type, `(${messageQueueRef.current.length} queued)`)

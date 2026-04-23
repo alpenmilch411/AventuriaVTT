@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { X, Play, Pause, Square, Clock, Cloud, Sun, CloudRain, CloudSnow, Wind, CloudLightning, CloudHail, CloudFog, Moon, Heart, ChevronDown, ChevronUp, Check, Loader2 } from 'lucide-react'
 import useSessionStore from '../../stores/sessionStore'
-import useCampaignStore from '../../stores/campaignStore'
-import Modal from '../../components/common/Modal'
 import clsx from 'clsx'
 
 const WEATHER_OPTIONS = [
@@ -22,22 +20,21 @@ const REST_PRESETS = [
   { id: 'custom', label: 'Benutzerdefiniert', hours: 0, desc: '' },
 ]
 
-function SessionControls({ onClose, sendMessage, gmControls }) {
+function SessionControls({ onClose, sendMessage, gmControls, setShowSessionEnd }) {
   const players = useSessionStore((s) => s.players)
-  const worldClock = useCampaignStore((s) => s.worldClock)
-  const weather = useCampaignStore((s) => s.weather)
-  const setWeather = useCampaignStore((s) => s.setWeather)
+  const worldClock = useSessionStore((s) => s.worldClock)
+  const weather = useSessionStore((s) => s.weather)
+  const setWeather = useSessionStore((s) => s.setWeather)
 
   const [sessionActive, setSessionActive] = useState(true)
-  const [showEndConfirm, setShowEndConfirm] = useState(false)
 
   // Listen for rest_end results from WS
-  const storeRestResults = useCampaignStore((s) => s.restResults)
+  const storeRestResults = useSessionStore((s) => s.restResults)
   useEffect(() => {
     if (storeRestResults?.results) {
       setRestResults(storeRestResults.results)
       setRestPending(false)
-      useCampaignStore.getState().setRestResults(null)
+      useSessionStore.getState().setRestResults(null)
     }
   }, [storeRestResults])
 
@@ -138,7 +135,7 @@ function SessionControls({ onClose, sendMessage, gmControls }) {
               Pause
             </button>
             <button
-              onClick={() => setShowEndConfirm(true)}
+              onClick={() => setShowSessionEnd?.(true)}
               className="flex-1 py-2 rounded-sm flex items-center justify-center gap-2 text-sm font-medium bg-dsa-bg-card text-dsa-parchment-dark hover:bg-dsa-danger/20 hover:text-red-400 transition-colors"
             >
               <Square className="w-4 h-4" />
@@ -293,33 +290,15 @@ function SessionControls({ onClose, sendMessage, gmControls }) {
         </div>
       </div>
 
-      {/* End Session Confirmation */}
-      <Modal
-        isOpen={showEndConfirm}
-        onClose={() => setShowEndConfirm(false)}
-        title="Session beenden"
-        size="sm"
-        footer={
-          <>
-            <button onClick={() => setShowEndConfirm(false)} className="btn-ghost">Abbrechen</button>
-            <button
-              onClick={() => {
-                sendMessage?.({ category: 'session', type: 'session_end', payload: {} })
-                setSessionActive(false)
-                setShowEndConfirm(false)
-              }}
-              className="px-4 py-2 bg-dsa-danger text-white rounded-sm text-sm font-medium hover:bg-red-600 transition-colors"
-            >
-              <Square className="w-4 h-4 inline mr-1" /> Session beenden
-            </button>
-          </>
-        }
-      >
-        <div className="text-center py-2">
-          <p className="text-sm text-dsa-parchment">Bist du sicher, dass du die Session beenden moechtest?</p>
-          <p className="text-xs text-dsa-parchment-dark mt-2">Alle Spieler werden benachrichtigt und die Verbindung wird getrennt.</p>
-        </div>
-      </Modal>
+      {/* End Session Button — opens SessionEndPanel for AP + loot distribution */}
+      <div className="px-4 pb-4">
+        <button
+          onClick={() => setShowSessionEnd?.(true)}
+          className="w-full px-4 py-2 bg-dsa-danger/20 border border-dsa-danger/40 text-dsa-danger rounded-sm text-sm font-medium hover:bg-dsa-danger/30 transition-colors flex items-center justify-center gap-2"
+        >
+          <Square className="w-4 h-4" /> Session beenden
+        </button>
+      </div>
     </div>
   )
 }

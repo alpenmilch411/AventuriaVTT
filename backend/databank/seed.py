@@ -50,7 +50,6 @@ from models.databank import (  # noqa: E402
 from models.wiki import WikiPage  # noqa: E402
 from models.user import User  # noqa: E402
 from models.character import Character  # noqa: E402
-from models.campaign import Campaign, CampaignPlayer, Group, GroupMember  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -587,84 +586,44 @@ def _create_test_characters(session: Session, user_ids: Dict[str, str]):
         log.info("  Created character: %s (%s)", char_data["name"], char_data["species"])
 
 
-def _create_test_campaign(session: Session, user_ids: Dict[str, str]):
-    """Create a test campaign with all players assigned."""
-    gm_id = user_ids.get("gm@test.de")
-    if not gm_id:
-        return
+def _create_test_session(session: Session, user_ids: Dict[str, str]):
+    """Create a demo GameSession with 4 players pre-joined (lobby status)."""
+    from models.session_state import GameSession, SessionPlayer
 
-    existing = session.query(Campaign).filter_by(campaign_code="ORKTURM-42").first()
+    existing = session.query(GameSession).filter_by(session_code="ORKTURM-42").first()
     if existing:
-        log.info("  Test campaign already exists: ORKTURM-42")
+        log.info("  Test session already exists: ORKTURM-42")
         return
 
-    # Create group
-    group_id = str(uuid4())
-    group = Group(
-        id=group_id,
-        name="Die Tavernentrinker",
-        created_by=gm_id,
-    )
-    session.add(group)
+    gm_user_id = user_ids.get("gm@test.de")
+    if not gm_user_id:
+        log.warning("  No gm@test.de user — skipping test session")
+        return
 
-    # Add all users to group
-    for email, uid in user_ids.items():
-        member = GroupMember(
-            id=str(uuid4()),
-            group_id=group_id,
-            user_id=uid,
-            display_name=email.split("@")[0].replace("player", "Spieler "),
-            role="admin" if email == "gm@test.de" else "member",
-        )
-        session.add(member)
-
-    # Create campaign
-    campaign_id = str(uuid4())
-    campaign = Campaign(
-        id=campaign_id,
+    session_id = str(uuid4())
+    game_session = GameSession(
+        id=session_id,
         name="Der Turm des Orkschamanen",
-        description="Ein Abenteuer im Mittelreich nahe Gareth. Die Helden müssen den Turm eines mächtigen Orkschamanen infiltrieren und das gestohlene Schwert des Königs zurückbringen.",
-        group_id=group_id,
-        gm_user_id=gm_id,
-        complexity_level="standard",
-        campaign_code="ORKTURM-42",
-        status="active",
-        weather="klar",
-        world_clock={"date": "Praios 15, 1041 BF", "time": "Nachmittag", "day_night": "tag"},
+        gm_user_id=gm_user_id,
+        session_code="ORKTURM-42",
+        status="lobby",
     )
-    session.add(campaign)
+    session.add(game_session)
 
-    # Assign characters to campaign
-    player_emails = ["player1@test.de", "player2@test.de", "player3@test.de", "player4@test.de"]
-    for email in player_emails:
-        uid = user_ids.get(email)
-        if not uid:
+    for email in ["player1@test.de", "player2@test.de", "player3@test.de", "player4@test.de"]:
+        user_id = user_ids.get(email)
+        if not user_id:
             continue
-        char = session.query(Character).filter_by(user_id=uid).first()
-        if not char:
-            continue
-
-        cp = CampaignPlayer(
+        char = session.query(Character).filter_by(user_id=user_id).first()
+        session.add(SessionPlayer(
             id=str(uuid4()),
-            campaign_id=campaign_id,
-            user_id=uid,
-            character_id=str(char.id),
+            session_id=session_id,
+            user_id=user_id,
+            character_id=char.id if char else None,
             status="active",
-            campaign_snapshot={
-                "current_lep": char.derived_values.get("LeP_max", 30),
-                "current_asp": char.derived_values.get("AsP_max", 0),
-                "current_kap": char.derived_values.get("KaP_max", 0),
-                "current_schip": char.derived_values.get("Schip", 3),
-                "conditions": {},
-                "campaign_inventory": char.basis_inventory or [],
-            },
-        )
-        session.add(cp)
+        ))
 
-        # Set character to active
-        char.status = "active"
-
-    log.info("  Created campaign: Der Turm des Orkschamanen (Code: ORKTURM-42)")
+    log.info("  Created session: Der Turm des Orkschamanen (Code: ORKTURM-42, status=lobby)")
 
 
 def seed(database_url: Optional[str] = None, seed_test_users: Optional[bool] = None) -> Dict[str, int]:
@@ -711,6 +670,13 @@ def seed(database_url: Optional[str] = None, seed_test_users: Optional[bool] = N
             _migrate_add_species_extra_columns(conn)
             _migrate_add_source_book_to_adv_dis_sa(conn)
             conn.commit()
+
+    # Drop stale campaign tables on both SQLite and Postgres (handles its own
+    # dialect check internally; idempotent on fresh DBs).
+    from database import _migrate_drop_campaign_tables
+    with engine.connect() as conn:
+        _migrate_drop_campaign_tables(conn)
+        conn.commit()
 
     results: Dict[str, int] = {}
     all_records: Dict[str, List[dict]] = {}
@@ -779,12 +745,12 @@ def seed(database_url: Optional[str] = None, seed_test_users: Optional[bool] = N
 
             session.commit()
 
-            # Create test campaign (needs committed users/characters)
-            log.info("Creating test campaign...")
-            _create_test_campaign(session, user_ids)
+            # Create demo session (needs committed users/characters)
+            log.info("Creating test session...")
+            _create_test_session(session, user_ids)
         else:
             log.info(
-                "Skipping test accounts / characters / campaign. "
+                "Skipping test accounts / characters / session. "
                 "Set SEED_TEST_USERS=true (or pass --seed-test-users) AND "
                 "keep ENV != production to create gm@test.de + 4 players."
             )
@@ -815,7 +781,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--seed-test-users",
         action="store_true",
-        help="Also seed gm@test.de + 4 player accounts + demo campaign. "
+        help="Also seed gm@test.de + 4 player accounts + demo session. "
              "Dev-only. Never pass this on a public deployment.",
     )
     args = parser.parse_args()
@@ -860,7 +826,7 @@ if __name__ == "__main__":
             log.info("  Player3: player3@test.de  / test1234  (Thorben Praiosmund, Peraine-Geweihter)")
             log.info("  Player4: player4@test.de  / test1234  (Yara Falkenauge, Halbelf Jägerin)")
             log.info("")
-            log.info("  Campaign: 'Der Turm des Orkschamanen' (Code: ORKTURM-42)")
+            log.info("  Session: 'Der Turm des Orkschamanen' (Code: ORKTURM-42, status=lobby)")
         else:
             log.info("")
             log.info("Test accounts were NOT created (SEED_TEST_USERS is false).")

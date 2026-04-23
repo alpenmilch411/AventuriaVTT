@@ -26,10 +26,6 @@ class GameSession(Base):
         String(36), ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
-    campaign_id: Mapped[Optional[str]] = mapped_column(
-        String(36), ForeignKey("campaigns.id", ondelete="CASCADE"),
-        nullable=True, index=True,
-    )
     session_code: Mapped[str] = mapped_column(
         String(32), unique=True, nullable=False, index=True
     )
@@ -60,9 +56,6 @@ class GameSession(Base):
     # relationships
     gm: Mapped["User"] = relationship(  # noqa: F821
         "User", back_populates="gm_sessions"
-    )
-    campaign: Mapped[Optional["Campaign"]] = relationship(  # noqa: F821
-        "Campaign", back_populates="sessions"
     )
     session_players: Mapped[list["SessionPlayer"]] = relationship(
         "SessionPlayer", back_populates="session", lazy="selectin",
@@ -243,7 +236,7 @@ class SessionLog(Base):
     )
     entry_type: Mapped[str] = mapped_column(
         String(16), nullable=False
-    )  # "combat" | "probe" | "scene" | "lore" | "quest" | "whisper" | "system"
+    )  # "combat" | "probe" | "whisper" | "system"
     data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False

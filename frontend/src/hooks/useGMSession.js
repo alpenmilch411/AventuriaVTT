@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react'
 import useAuthStore from '../stores/authStore'
 import useSessionStore from '../stores/sessionStore'
-import useCampaignStore from '../stores/campaignStore'
 import useCharacterStore from '../stores/characterStore'
 import useCombatStore from '../stores/combatStore'
 import { getConditions, getVitalsFrom, getMaxVitals } from '../utils/safeData'
 
 /**
- * Manages GM session lifecycle: auth check, campaign data loading,
- * session setup, and store cleanup on unmount.
+ * Manages GM session lifecycle: auth check, session setup,
+ * and store cleanup on unmount.
  */
 export default function useGMSession(sessionCode) {
   const user = useAuthStore((s) => s.user)
@@ -35,7 +34,6 @@ export default function useGMSession(sessionCode) {
       useSessionStore.getState().reset()
       useCombatStore.getState().reset()
       useCharacterStore.getState().reset()
-      useCampaignStore.getState().reset()
     }
   }, [])
 

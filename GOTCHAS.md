@@ -92,7 +92,7 @@ Claude can generate structured map JSON (walls, objects, tokens) reliably. Image
 Affected: `ai/assist.py`, map rendering
 Found: 2026-03-22
 
-## Character inventory: snapshot vs base confusion
-Characters have Basis-Inventar (persistent on account) and Kampagnen-Inventar (per campaign snapshot). The engine must always read from the Kampagnen-Inventar during a session, never from Basis-Inventar directly. Basis-Inventar is only relevant at campaign-join (initial copy) and campaign-end (carry-over approval). Mixing these up will cause items to appear/disappear unexpectedly.
-Affected: `engine/inventory.py`, `models/character.py`
-Found: 2026-03-22
+## Character inventory: single-source now (historical: Basis vs Kampagnen)
+The two-tier Basis-Inventar / Kampagnen-Inventar split was removed with the campaign concept in issue #1 (2026-04-17). Characters now have a single `basis_inventory` (JSON array on `characters`). The engine reads/writes it directly during sessions; session-end loot is appended via the WS `_persist_loot_awards` handler. If you encounter "Kampagnen-Inventar" or a snapshot copy in old code or docs, treat it as stale — the distinction no longer exists.
+Affected: `backend/ws/handlers.py::_persist_loot_awards`, `backend/models/character.py`, `frontend/src/stores/characterStore.js`
+Found: 2026-04-17 (originally 2026-03-22)

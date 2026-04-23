@@ -43,22 +43,6 @@ const useCharacterStore = create((set, get) => ({
     }
   },
 
-  fetchAllCharacters: async (campaignId) => {
-    set({ loading: true })
-    try {
-      const res = await fetch(`/api/campaigns/${campaignId}/characters`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('avtt_token')}` },
-      })
-      if (!res.ok) throw new Error('Charaktere konnten nicht geladen werden')
-      const characters = await res.json()
-      set({ allCharacters: characters, loading: false })
-      return characters
-    } catch (err) {
-      set({ error: err.message, loading: false })
-      throw err
-    }
-  },
-
   // Vitals — single source: current_vitals (falls back to derived_values for max)
   getVitals: () => {
     const char = get().myCharacter

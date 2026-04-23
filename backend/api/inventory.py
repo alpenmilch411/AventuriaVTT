@@ -1,4 +1,4 @@
-"""Inventory management — personal and group inventory endpoints."""
+"""Inventory management — personal inventory endpoints."""
 
 import uuid
 from typing import Optional
@@ -12,8 +12,7 @@ from api.auth import get_current_user
 from database import get_db
 from models.user import User
 from models.character import Character
-from models.campaign import Campaign, CampaignPlayer
-from models.inventory import InventoryItem, GroupInventory
+from models.inventory import InventoryItem
 
 router = APIRouter(prefix="/api/inventory", tags=["inventory"])
 
@@ -25,7 +24,6 @@ router = APIRouter(prefix="/api/inventory", tags=["inventory"])
 class InventoryItemResponse(BaseModel):
     id: str
     character_id: Optional[str] = None
-    campaign_id: Optional[str] = None
     item_template_id: Optional[str] = None
     name: str
     quantity: int
@@ -69,21 +67,6 @@ class DropItemRequest(BaseModel):
     position_y: Optional[float] = None
 
 
-class GroupInventoryResponse(BaseModel):
-    id: str
-    campaign_id: str
-    items: Optional[list] = None
-
-    model_config = {"from_attributes": True}
-
-
-class MoveGroupItemRequest(BaseModel):
-    item_id: str
-    direction: str  # "to_group" | "to_personal"
-    character_id: Optional[str] = None  # required for "to_personal"
-    quantity: int = 1
-
-
 class ExchangeItem(BaseModel):
     name: str
     quantity: int = 1
@@ -118,26 +101,18 @@ class ExecuteExchangeRequest(BaseModel):
 async def _verify_character_access(
     character_id: str, user: User, db: AsyncSession
 ) -> Character:
-    """Verify the user owns the character or is GM of their campaign."""
+    """Load the character and verify the caller owns it.
+
+    TODO(#2/#3): GM mid-session auth via SessionPlayer membership.
+    Campaign-GM bypass removed 2026-04-17 (issue #1).
+    """
     result = await db.execute(select(Character).where(Character.id == character_id))
     char = result.scalar_one_or_none()
     if not char:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
-
-    if char.user_id == user.id:
-        return char
-
-    # Check if user is GM of a campaign this character is in
-    player_result = await db.execute(
-        select(CampaignPlayer).where(CampaignPlayer.character_id == character_id)
-    )
-    for cp in player_result.scalars().all():
-        campaign_result = await db.execute(select(Campaign).where(Campaign.id == cp.campaign_id))
-        campaign = campaign_result.scalar_one_or_none()
-        if campaign and campaign.gm_user_id == user.id:
-            return char
-
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No access to this character's inventory")
+    if char.user_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+    return char
 
 
 async def _get_item(item_id: str, character_id: str, db: AsyncSession) -> InventoryItem:
@@ -176,7 +151,6 @@ async def get_inventory(
         {
             "id": it.id,
             "character_id": it.character_id,
-            "campaign_id": it.campaign_id,
             "item_template_id": it.item_template_id,
             "name": it.name,
             "quantity": it.quantity,
@@ -374,189 +348,6 @@ async def drop_item(
 
 
 # ---------------------------------------------------------------------------
-# Group inventory endpoints
-# ---------------------------------------------------------------------------
-
-@router.get("/group/{campaign_id}", response_model=GroupInventoryResponse)
-async def get_group_inventory(
-    campaign_id: str,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Get the group inventory for a campaign."""
-    # Verify membership
-    campaign_result = await db.execute(select(Campaign).where(Campaign.id == campaign_id))
-    campaign = campaign_result.scalar_one_or_none()
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
-
-    if campaign.gm_user_id != current_user.id:
-        player_check = await db.execute(
-            select(CampaignPlayer).where(
-                CampaignPlayer.campaign_id == campaign_id,
-                CampaignPlayer.user_id == current_user.id,
-            )
-        )
-        if not player_check.scalar_one_or_none():
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a member of this campaign")
-
-    result = await db.execute(
-        select(GroupInventory).where(GroupInventory.campaign_id == campaign_id)
-    )
-    group_inv = result.scalar_one_or_none()
-    if not group_inv:
-        # Create empty group inventory
-        group_inv = GroupInventory(campaign_id=campaign_id, items=[])
-        db.add(group_inv)
-        await db.commit()
-        await db.refresh(group_inv)
-
-    # Enrich group inventory items with template data
-    from utils.inventory_enrichment import enrich_inventory_items
-    raw_items = group_inv.items or []
-    # Add template_id alias for items that use item_template_id
-    items_for_enrichment = []
-    for it in raw_items:
-        d = dict(it) if isinstance(it, dict) else it
-        if d.get("item_template_id") and not d.get("template_id"):
-            d["template_id"] = d["item_template_id"]
-        items_for_enrichment.append(d)
-    enriched_items = await enrich_inventory_items(items_for_enrichment, db)
-
-    return GroupInventoryResponse(
-        id=group_inv.id,
-        campaign_id=group_inv.campaign_id,
-        items=enriched_items,
-    )
-
-
-@router.post("/group/{campaign_id}/move", response_model=dict)
-async def move_group_item(
-    campaign_id: str,
-    body: MoveGroupItemRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Move an item between personal and group inventory."""
-    # Verify membership
-    campaign_result = await db.execute(select(Campaign).where(Campaign.id == campaign_id))
-    campaign = campaign_result.scalar_one_or_none()
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
-
-    if body.direction == "to_group":
-        # Move from personal to group
-        if not body.character_id:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="character_id required for to_group direction",
-            )
-
-        item_result = await db.execute(
-            select(InventoryItem).where(
-                InventoryItem.id == body.item_id,
-                InventoryItem.character_id == body.character_id,
-            )
-        )
-        item = item_result.scalar_one_or_none()
-        if not item:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
-
-        # Get or create group inventory
-        gi_result = await db.execute(
-            select(GroupInventory).where(GroupInventory.campaign_id == campaign_id)
-        )
-        group_inv = gi_result.scalar_one_or_none()
-        if not group_inv:
-            group_inv = GroupInventory(campaign_id=campaign_id, items=[])
-            db.add(group_inv)
-
-        # Add to group inventory
-        items_list = list(group_inv.items or [])
-        items_list.append({
-            "name": item.name,
-            "quantity": min(body.quantity, item.quantity),
-            "item_template_id": item.item_template_id,
-            "properties": item.properties,
-        })
-        group_inv.items = items_list
-
-        # Remove from personal
-        if body.quantity >= item.quantity:
-            await db.delete(item)
-        else:
-            item.quantity -= body.quantity
-
-        await db.commit()
-        return {"status": "moved_to_group", "item": item.name, "quantity": body.quantity}
-
-    elif body.direction == "to_personal":
-        if not body.character_id:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="character_id required for to_personal direction",
-            )
-
-        gi_result = await db.execute(
-            select(GroupInventory).where(GroupInventory.campaign_id == campaign_id)
-        )
-        group_inv = gi_result.scalar_one_or_none()
-        if not group_inv:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group inventory is empty")
-
-        # Find item in group inventory by item_id (stored as index or name match)
-        items_list = list(group_inv.items or [])
-        if not items_list:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group inventory is empty")
-
-        # For simplicity, find by matching the first item with matching name
-        # In production, items would have proper IDs
-        found_idx = None
-        for idx, gi_item in enumerate(items_list):
-            if gi_item.get("name") and str(body.item_id) in str(gi_item):
-                found_idx = idx
-                break
-
-        if found_idx is None and items_list:
-            # Fallback: use first item
-            found_idx = 0
-
-        if found_idx is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found in group inventory")
-
-        gi_item = items_list[found_idx]
-        moved_qty = min(body.quantity, gi_item.get("quantity", 1))
-
-        # Create personal inventory item
-        new_item = InventoryItem(
-            character_id=body.character_id,
-            campaign_id=campaign_id,
-            name=gi_item["name"],
-            quantity=moved_qty,
-            item_template_id=gi_item.get("item_template_id"),
-            properties=gi_item.get("properties"),
-        )
-        db.add(new_item)
-
-        # Update group inventory
-        remaining = gi_item.get("quantity", 1) - moved_qty
-        if remaining <= 0:
-            items_list.pop(found_idx)
-        else:
-            items_list[found_idx]["quantity"] = remaining
-        group_inv.items = items_list
-
-        await db.commit()
-        return {"status": "moved_to_personal", "item": gi_item["name"], "quantity": moved_qty}
-
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="direction must be 'to_group' or 'to_personal'",
-        )
-
-
-# ---------------------------------------------------------------------------
 # Exchange execution (transfer / trade)
 # ---------------------------------------------------------------------------
 
@@ -640,10 +431,14 @@ async def execute_exchange(
 ):
     """Execute an item/money exchange between two characters.
 
-    Only the GM (or the character owner for simple operations) may call this.
-    Modifies basis_inventory on both characters and persists to DB.
-    Returns the updated inventories for both characters.
+    Narrowed to owner-only on BOTH sides. Cross-owner trades use the WS trade
+    flow (proposer → GM approval → broadcast). TODO(#2/#3): session-scoped
+    GM auth for REST cross-owner trades.
     """
+    # Self-exchange rejection (before DB round-trips)
+    if body.from_character_id == body.to_character_id:
+        raise HTTPException(status_code=400, detail="Cannot exchange with self")
+
     # Load both characters
     from_result = await db.execute(select(Character).where(Character.id == body.from_character_id))
     from_char = from_result.scalar_one_or_none()
@@ -655,18 +450,12 @@ async def execute_exchange(
     if not to_char:
         raise HTTPException(status_code=404, detail="Target character not found")
 
-    # Verify caller is GM of a campaign containing both characters, or owns from_char
-    is_gm = False
-    from_cp = await db.execute(select(CampaignPlayer).where(CampaignPlayer.character_id == body.from_character_id))
-    for cp in from_cp.scalars().all():
-        camp_result = await db.execute(select(Campaign).where(Campaign.id == cp.campaign_id))
-        camp = camp_result.scalar_one_or_none()
-        if camp and camp.gm_user_id == current_user.id:
-            is_gm = True
-            break
-
-    if not is_gm and from_char.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to execute this exchange")
+    # Both-sides-owned narrowing. TODO(#2/#3): session-scoped GM auth for cross-owner trades.
+    if from_char.user_id != current_user.id or to_char.user_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Exchange requires ownership of both characters; cross-owner trades use the WS trade flow.",
+        )
 
     # Perform the exchange on basis_inventory
     from_inv = _normalize_inv(from_char.basis_inventory)

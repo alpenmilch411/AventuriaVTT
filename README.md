@@ -14,8 +14,8 @@ See [OVERVIEW.md](OVERVIEW.md) for the plain-language pitch.
 - **Session flow** — GM creates session, players join by code, real-time state sync, reconnection with gap detection + dead-letter replay
 - **Full combat** — initiative, AT/PA/AW, damage, conditions with level rules, reactions + SchiP accounting, dual-wield, opposed probes, Manöver combinations, range brackets
 - **Magic & spirituality** — spells and liturgies with correct costs/durations/properties, spell/liturgy enhancements
-- **Inventory, shops, loot** — equipment rules, session-scoped shop system, GM loot distribution
-- **Campaign fabric** — lore/NPC registry, quests, world clock, weather, group inventory
+- **Inventory, shops, loot** — equipment rules, session-scoped shop system, GM loot distribution, session-end loot awards persisted to the character's `basis_inventory`
+- **Session fabric** — NPC registry, world clock, weather, session-end AP awards
 - **Databank** — 3,600+ DSA5 entities imported from Optolith (species, cultures, professions, advantages, disadvantages, special abilities, spells, liturgies, items, weapons, armor, ...)
 
 ## What's Rough
@@ -59,7 +59,7 @@ npm run dev
 cd backend
 python -m databank.seed
 
-# Optional: also seed a demo GM + 4 players + campaign for local testing
+# Optional: also seed a demo GM + 4 players + session for local testing
 python -m databank.seed --seed-test-users
 # or set SEED_TEST_USERS=true in .env
 ```
@@ -73,7 +73,7 @@ Then open http://localhost:5173 in your browser.
 | GM | `gm@test.de` | `test1234` |
 | Player 1–4 | `player{1,2,3,4}@test.de` | `test1234` |
 
-A demo campaign "Der Turm des Orkschamanen" (code `ORKTURM-42`) is also created. **Never enable test users on a public deployment** — the credentials are published in this README.
+A demo session "Der Turm des Orkschamanen" (code `ORKTURM-42`) is also created. **Never enable test users on a public deployment** — the credentials are published in this README.
 
 ## Environment Variables
 

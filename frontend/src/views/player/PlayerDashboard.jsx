@@ -11,7 +11,6 @@ import useSessionStore from '../../stores/sessionStore'
 import useAuthStore from '../../stores/authStore'
 import useCharacterStore from '../../stores/characterStore'
 import useCombatStore from '../../stores/combatStore'
-import useCampaignStore from '../../stores/campaignStore'
 import VitalsBar from '../../components/common/VitalsBar'
 import useCombatValues from '../../hooks/useCombatValues'
 import Badge from '../../components/common/Badge'
@@ -57,9 +56,9 @@ export default function PlayerDashboard() {
   const pendingDiceRequest = useCombatStore((s) => s.pendingDiceRequest)
   const pendingDefense = useCombatStore((s) => s.pendingDefense)
   const phase = useSessionStore((s) => s.phase)
-  const worldClock = useCampaignStore((s) => s.worldClock)
-  const weather = useCampaignStore((s) => s.weather)
-  const restResults = useCampaignStore((s) => s.restResults)
+  const worldClock = useSessionStore((s) => s.worldClock)
+  const weather = useSessionStore((s) => s.weather)
+  const restResults = useSessionStore((s) => s.restResults)
 
   const [activeTab, setActiveTab] = useState('character')
   const [showNotifications, setShowNotifications] = useState(false)
@@ -97,7 +96,6 @@ export default function PlayerDashboard() {
       useSessionStore.getState().reset()
       useCombatStore.getState().reset()
       useCharacterStore.getState().reset()
-      useCampaignStore.getState().reset()
       useShopStore.getState().reset()
     }
   }, [])

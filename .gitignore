@@ -60,3 +60,4 @@ frontend/.claude/settings.local.json
 # Logs
 *.log
 nohup.out
+CLAUDE.md
